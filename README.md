@@ -7,7 +7,7 @@ This project implements a cellular automata simulator.
 
 ### Timeline
 
- * Start Date: 
+ * Start Date: 01/23/25
 
  * Finish Date: 
 
