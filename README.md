@@ -1,6 +1,6 @@
 # cell society
 ## TEAM NUMBER 1
-## Billy McCune, Hsuan-Kai Liao, Jacob You
+#### Billy McCune wrm29, Jacob You jay27, Hsuan-Kai Liao hl475
 
 
 This project implements a cellular automata simulator.
