@@ -4,18 +4,67 @@
 
 ### High Level Design Goals
 
-
+Weapon class: Contains data about the weapon and what it beats/loses to)
+Player class: Contains data about player, name, hand, etc.
+GameInput class: Takes in information from a config file
+GameLogic class: Calculates who wins and who loses based on hands
+GUI class: Shows the users who wins/loses and provides an input for each player
+Main class: Start the program
 
 ### CRC Card Classes
 
-This class's purpose or value is to represent a customer's order:
+This class's purpose is to represent the weapon class, containing what the weapons
+wins and loses against.
 
-|Order| |
-|---|---|
-|boolean isInStock(OrderLine)         |OrderLine|
-|double getTotalPrice(OrderLine)      |Customer|
-|boolean isValidPayment (Customer)    | |
-|void deliverTo (OrderLine, Customer) | |
+| Weapon                                                                 |           |
+|------------------------------------------------------------------------|-----------|
+| Weapon(String name, ArrayList<> winsAgainst, ArrayList<> losesAgainst) | Main      |
+| ArrayList getWinsAgainst()                                             | GameLogic |
+| ArrayList getLosesAgainst()                                            | Weapon    |
+| void setWinAgainst(ArrayList<> newWeapons)                             | GUI       |
+| void setLoseAgainst(ArrayList<> newWeapons)                            |           |
+| String toString()                                                      |           |
+
+This class's purpose is to contain data about player name, player wins, player losses
+
+| Player              | Collaborators |
+|---------------------|---------------|
+| Player(String name) | Main          |
+| void setWeapon()    | GUI           |
+| Weapon getWeapon()  |               |
+| int getWins()       |               |
+| int getLosses()     |               |
+
+This class's purpose is to take in a file and pass information about weapons and players
+
+| GameInput                            | Collaborators |
+|--------------------------------------|---------------|
+| HashMap<> parseFile(String fileName) | Main          |
+
+This class's purpose is to handle game logic on who wins and who loses in one hand
+
+| GameLogic                                     | Collaborators |
+|-----------------------------------------------|---------------|
+| HashMap<> getResults(HashMap<String, Weapon>) | GUI           |
+|                                               | Main          |
+
+This class's purpose is to act as the GUI, allowing users to throw weapons and see who wins and loses
+
+| GUI                               | Collaborators |
+|-----------------------------------|---------------|
+| void showWinLoss(HashMap results) | Main          |
+| String getWeaponInput()           | GameLogic     |
+|                                   | Player        |
+
+This class's purpose is to start the program, contains the game data passed by GameInput, and has the game loop
+
+| Main                                  | Collaborators |
+|---------------------------------------|---------------|
+| static void main(String[] args)       | GameInput     |
+| void start(Stage stage)               | GUI           |
+| void step(double elapsedTime)         | Player        |
+| void getWeaponInteractions(HashMap<>) | Weapon        |
+
 
 
 This class's purpose or value is to represent a customer's order:
