@@ -9,7 +9,7 @@ import java.util.List;
  * implement specific rules.
  */
 public abstract class Logic {
-  private Grid grid;
+  protected Grid grid;
 
   public Logic(Grid grid) {
     this.grid = grid;
