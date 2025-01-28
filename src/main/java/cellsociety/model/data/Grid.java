@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Jacob You Purpose: Represents a grid of cells for a cellular automaton. The grid is a
- * two-dimensional list where each element is a {@link Cell}. Assumptions: Assumes that cells is not
- * empty and that all rows have the same number of columns Dependecies: Cell (classes or packages):
+ * @author Jacob You
+ * Purpose: Represents a grid of cells for a cellular automaton.
+ * The grid is a two-dimensional list where each element is a {@link Cell}.
+ * Assumptions: Assumes that cells is not empty and that all rows have the same number of columns
+ * Dependecies: Cell (classes or packages):
  * How to Use: Call methods to set the next stage, then update to switch the cell to the next step.
  */
 
