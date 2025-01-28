@@ -2,7 +2,7 @@ package cellsociety.model.data.cells;
 
 import cellsociety.model.data.states.PercolationState;
 
-public class PercolationCell extends Cell {
+public class PercolationCell extends Cell<PercolationState> {
 
   /**
    * Constructs a Cell with specified row, column, and initial state.

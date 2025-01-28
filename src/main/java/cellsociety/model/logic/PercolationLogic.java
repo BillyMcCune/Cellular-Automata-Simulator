@@ -1,19 +1,23 @@
 package cellsociety.model.logic;
 
-import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.states.PercolationState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Concrete implementation of {@link Logic} for Princeton's Percolation Automota.
+ * Concrete implementation of {@link Logic} for Princeton's Percolation Automata.
  */
-public class PercolationLogic extends Logic {
+public class PercolationLogic extends Logic<PercolationState> {
 
   /**
    * Constructs a {@code PercolationLogic} instance with the specified grid.
    *
-   * @param grid the grid representing the current state of grid
+   * @param grid the grid representing the current state of the grid
    */
-  public PercolationLogic(Grid grid) {
+  public PercolationLogic(Grid<PercolationState> grid) {
     super(grid);
   }
 
@@ -25,41 +29,44 @@ public class PercolationLogic extends Logic {
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
 
-    // Determine next state for each cell
+    // Determine the next state for each cell
     for (int row = 0; row < numRows; row++) {
       for (int col = 0; col < numCols; col++) {
-        updateSingleCell(grid.getCell(row, col));
+        Cell<PercolationState> cell = grid.getCell(row, col);
+        updateSingleCell(cell);
       }
     }
+
+    // Update all cells to their next state
     grid.updateGrid();
   }
 
-  private void updateSingleCell(Cell cell) {
-    int currentState = cell.getCurrState();
-    int liveNeighbors = countLiveNeighbors(cell.getRow(), cell.getCol());
+  /**
+   * Updates the next state of a single cell based on its current state and neighbors.
+   *
+   * @param cell the cell to update
+   */
+  private void updateSingleCell(Cell<PercolationState> cell) {
+    PercolationState currentState = cell.getCurrentState();
+    List<Cell<PercolationState>> openNeighbors = getOpenNeighbors(cell);
 
-    if (currentState != 1) {
-      if (liveNeighbors < 2 || liveNeighbors > 3) {
-        cell.setNextState(0);
-      } else {
-        cell.setNextState(1);
-      }
-    } else {
-      if (liveNeighbors == 3) {
-        cell.setNextState(1);
-      } else {
-        cell.setNextState(0);
+    if (currentState == PercolationState.PERCOLATED) {
+      for (Cell<PercolationState> neighbor : openNeighbors) {
+        neighbor.setNextState(PercolationState.PERCOLATED);
       }
     }
   }
 
-  private int countLiveNeighbors(int row, int col) {
-    int liveCount = 0;
-    for (Cell neighbor : grid.getAllNeighbors(row, col)) {
-      if (neighbor.getCurrState() == 1) {
-        liveCount++;
+  private List<Cell<PercolationState>> getOpenNeighbors(Cell<PercolationState> cell) {
+    List<Cell<PercolationState>> neighbors = grid.getNeighbors(cell);
+    List<Cell<PercolationState>> openNeighbors = new ArrayList<>();
+
+    for (Cell<PercolationState> neighbor : neighbors) {
+      PercolationState neighborState = neighbor.getCurrentState();
+      if (neighborState == PercolationState.OPEN) {
+        openNeighbors.add(neighbor);
       }
     }
-    return liveCount;
+    return openNeighbors;
   }
 }

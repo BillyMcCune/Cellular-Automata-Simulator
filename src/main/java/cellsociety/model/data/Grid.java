@@ -1,67 +1,66 @@
 package cellsociety.model.data;
 
 import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.factories.CellFactory;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Jacob You
- * Purpose: Represents a grid of cells for a cellular automaton.
- * The grid is a two-dimensional list where each element is a {@link Cell}.
- * Assumptions: Assumes that cells is not empty and that all rows have the same number of columns
- * Dependecies: Cell (classes or packages):
- * How to Use: Call methods to set the next stage, then update to switch the cell to the next step.
+ * Represents a grid of cells for cellular automata models.
+ *
+ * @param <T> the enum type representing the cell state
  */
-
-public class Grid {
+public class Grid<T extends Enum<T>> {
 
   /**
-   * Utility class responsible for loading and creating the grid of cells.
+   * Represents all directions
    */
-  private static class GridLoader {
-
-    /**
-     * Creates a two-dimensional grid of {@link Cell} objects from a two-dimensional list of integer
-     * states.
-     *
-     * @param cells a two-dimensional list of integers representing the initial states of the cells
-     * @return a two-dimensional list of {@link Cell} objects initialized with the given states
-     */
-    private static List<List<Cell>> createGrid(List<List<Integer>> cells) {
-      List<List<Cell>> grid = new ArrayList<>();
-      for (int row = 0; row < cells.size(); row++) {
-        List<Cell> newCells = new ArrayList<>();
-        for (int col = 0; col < cells.get(0).size(); col++) {
-          newCells.add(new Cell(row, col, cells.get(row).get(col)));
-        }
-        grid.add(newCells);
-      }
-      return grid;
-    }
-  }
-
-  private List<List<Cell>> grid = new ArrayList<>();
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}
+  protected static final int[][] DIRECTIONS = {
+      {-1, -1}, {-1,  0}, {-1,  1}, { 0, -1}, { 0,  1}, { 1, -1}, { 1,  0}, { 1,  1}
   };
 
   /**
-   * Constructs a {@code Grid} from a two-dimensional list of integer states. Each integer in the
-   * list represents the initial state of a corresponding {@link Cell}.
-   *
-   * @param cells a two-dimensional list of integers representing the initial states of the cells
+   * The two-dimensional grid of {@link Cell} objects.
    */
-  public Grid(List<List<Integer>> cells) {
-    grid = GridLoader.createGrid(cells);
+  private final List<List<Cell<T>>> grid = new ArrayList<>();
+
+  /**
+   * Constructs a {@code Grid} from a two-dimensional list of states and a cell factory.
+   * Each state in the list represents the initial state of a corresponding {@link Cell}.
+   *
+   * @param rawGrid a two-dimensional list of integer states representing the initial states of the cells
+   * @param factory the factory to create cells
+   */
+  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+    initializeGrid(rawGrid, factory);
   }
 
   /**
-   * Constructs a new {@code Grid} from a new configuration file.
+   * Initializes the grid by creating cell instances based on the provided states and factory.
    *
-   * @param cells a two-dimensional list of integers with the new initial states of the cells
+   * @param rawGrid a two-dimensional list of states
+   * @param factory the factory to create cells
    */
-  public void setGrid(List<List<Integer>> cells) {
-    grid = GridLoader.createGrid(cells);
+  private void initializeGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+    for (int row = 0; row < rawGrid.size(); row++) {
+      List<Cell<T>> newRow = new ArrayList<>();
+      for (int col = 0; col < rawGrid.get(row).size(); col++) {
+        Cell<T> cell = factory.createCell(row, col, rawGrid.get(row).get(col));
+        newRow.add(cell);
+      }
+      grid.add(newRow);
+    }
+  }
+
+  /**
+   * Sets a new grid from a two-dimensional list of states and a cell factory.
+   *
+   * @param rawGrid a two-dimensional list of Integer states representing the new states of the cells
+   * @param factory the factory to create cells
+   */
+  public void setGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+    grid.clear();
+    initializeGrid(rawGrid, factory);
   }
 
   /**
@@ -69,28 +68,26 @@ public class Grid {
    *
    * @param row the row index of the desired cell
    * @param col the column index of the desired cell
-   * @return the {@link Cell} at the specified position
+   * @return the {@link Cell<T>} at the specified position
    */
-  public Cell getCell(int row, int col) {
+  public Cell<T> getCell(int row, int col) {
     return grid.get(row).get(col);
   }
 
   /**
-   * Retrieves all neighboring {@link Cell} objects surrounding the cell at the specified row and
-   * column. Neighbors are considered in all eight possible directions.
+   * Retrieves all neighboring {@link Cell<T>} objects surrounding the cell at the specified row and column.
    *
-   * @param row the row index of the target cell
-   * @param col the column index of the target cell
-   * @return a list of neighboring {@link Cell} objects
+   * @param cell The specified cell
+   * @return a list of neighboring {@link Cell<T>} objects
    */
-  public List<Cell> getAllNeighbors(int row, int col) {
-    List<Cell> neighbors = new ArrayList<>();
+  public List<Cell<T>> getNeighbors(Cell cell) {
+    List<Cell<T>> neighbors = new ArrayList<>();
     int numRows = grid.size();
     int numCols = grid.getFirst().size();
 
     for (int[] direction : DIRECTIONS) {
-      int neighborRow = row + direction[0];
-      int neighborCol = col + direction[1];
+      int neighborRow = cell.getRow() + direction[0];
+      int neighborCol = cell.getCol() + direction[1];
 
       if (neighborRow >= 0 && neighborRow < numRows &&
           neighborCol >= 0 && neighborCol < numCols) {
@@ -101,20 +98,19 @@ public class Grid {
   }
 
   /**
-   * Updates all cells in the grid by setting each cell's current state to its next state. This
-   * should be called after all cells have had their next states computed based on the automaton's
-   * rules.
+   * Updates all cells in the grid by setting each cell's current state to its next state.
+   * This should be called after all cells have had their next states computed based on the automaton's rules.
    */
   public void updateGrid() {
-    for (List<Cell> row : grid) {
-      for (Cell cell : row) {
+    for (List<Cell<T>> row : grid) {
+      for (Cell<T> cell : row) {
         cell.update();
       }
     }
   }
 
   /**
-   * Returns the number of rows in the grid
+   * Returns the number of rows in the grid.
    *
    * @return the number of rows in the grid
    */
@@ -123,7 +119,7 @@ public class Grid {
   }
 
   /**
-   * Returns the number of columns in the grid
+   * Returns the number of columns in the grid.
    *
    * @return the number of columns in the grid
    */

@@ -51,7 +51,7 @@ public abstract class Cell<T extends Enum<T>> {
    *
    * @return the current state
    */
-  public T getCurrState() {
+  public T getCurrentState() {
     return currState;
   }
 

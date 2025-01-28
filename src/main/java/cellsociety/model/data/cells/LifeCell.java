@@ -2,7 +2,7 @@ package cellsociety.model.data.cells;
 
 import cellsociety.model.data.states.LifeState;
 
-public class LifeCell extends Cell {
+public class LifeCell extends Cell<LifeState> {
 
   /**
    * Constructs a Cell with specified row, column, and initial state.

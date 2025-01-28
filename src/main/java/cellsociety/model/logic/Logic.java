@@ -5,11 +5,13 @@ import cellsociety.model.data.Grid;
 /**
  * Abstract superclass responsible for managing the logic of a cellular automaton. Subclasses should
  * implement specific rules.
+ *
+ * @param <T> The enum type representing the cell state
  */
-public abstract class Logic {
-  protected Grid grid;
+public abstract class Logic<T extends Enum<T>> {
+  protected Grid<T> grid;
 
-  public Logic(Grid grid) {
+  public Logic(Grid<T> grid) {
     this.grid = grid;
   }
 
