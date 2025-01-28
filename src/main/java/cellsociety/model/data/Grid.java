@@ -102,4 +102,22 @@ public class Grid {
       }
     }
   }
+
+  /**
+   * Returns the number of rows in the grid
+   *
+   * @return the number of rows in the grid
+   */
+  public int getNumRows() {
+    return grid.size();
+  }
+
+  /**
+   * Returns the number of columns in the grid
+   *
+   * @return the number of columns in the grid
+   */
+  public int getNumCols() {
+    return grid.getFirst().size();
+  }
 }
