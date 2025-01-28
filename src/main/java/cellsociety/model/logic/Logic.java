@@ -1,8 +1,6 @@
 package cellsociety.model.logic;
 
-import cellsociety.model.data.Cell;
 import cellsociety.model.data.Grid;
-import java.util.List;
 
 /**
  * Abstract superclass responsible for managing the logic of a cellular automaton. Subclasses should

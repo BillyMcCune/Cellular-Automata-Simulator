@@ -55,6 +55,15 @@ public class Grid {
   }
 
   /**
+   * Constructs a new {@code Grid} from a new configuration file.
+   *
+   * @param cells a two-dimensional list of integers with the new initial states of the cells
+   */
+  public void setGrid(List<List<Integer>> cells) {
+    grid = GridLoader.createGrid(cells);
+  }
+
+  /**
    * Retrieves a specific cell from the grid based on its row and column indices.
    *
    * @param row the row index of the desired cell
@@ -76,7 +85,7 @@ public class Grid {
   public List<Cell> getNeighbors(int row, int col) {
     List<Cell> neighbors = new ArrayList<>();
     int numRows = grid.size();
-    int numCols = grid.get(0).size();
+    int numCols = grid.getFirst().size();
 
     for (int[] direction : DIRECTIONS) {
       int neighborRow = row + direction[0];
