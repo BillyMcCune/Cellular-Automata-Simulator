@@ -4,7 +4,7 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.LifeCell;
 import cellsociety.model.data.states.LifeState;
 
-public class LifeCellFactory implements CellFactory {
+public class LifeCellFactory implements CellFactory<LifeState> {
 
   @Override
   public Cell createCell(int row, int col, int initialState) {

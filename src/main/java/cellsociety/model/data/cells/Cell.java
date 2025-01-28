@@ -9,8 +9,8 @@ package cellsociety.model.data.cells;
 
 public abstract class Cell<T extends Enum<T>> {
 
-  protected int row;
-  protected int col;
+  protected final int row;
+  protected final int col;
   protected T currState;
   protected T nextState;
 

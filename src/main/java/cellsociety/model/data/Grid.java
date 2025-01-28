@@ -83,7 +83,7 @@ public class Grid<T extends Enum<T>> {
   public List<Cell<T>> getNeighbors(Cell cell) {
     List<Cell<T>> neighbors = new ArrayList<>();
     int numRows = grid.size();
-    int numCols = grid.getFirst().size();
+    int numCols = grid.get(0).size();
 
     for (int[] direction : DIRECTIONS) {
       int neighborRow = cell.getRow() + direction[0];
@@ -124,6 +124,6 @@ public class Grid<T extends Enum<T>> {
    * @return the number of columns in the grid
    */
   public int getNumCols() {
-    return grid.getFirst().size();
+    return grid.get(0).size();
   }
 }
