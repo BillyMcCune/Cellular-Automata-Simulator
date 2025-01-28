@@ -1,4 +1,4 @@
-package cellsociety;
+package cellsociety.model.config;
 
 import java.io.File;
 import java.io.IOException;
