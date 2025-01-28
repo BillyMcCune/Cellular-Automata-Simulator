@@ -25,8 +25,9 @@ import org.xml.sax.SAXException;
  */
 public class ConfigWriter {
 
+  //Writes to the XML file
+  public ArrayList<> writeConfig(){
 
-
-
+  }
 
 }

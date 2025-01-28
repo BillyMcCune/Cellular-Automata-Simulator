@@ -35,7 +35,7 @@ public class ConfigReader extends Application {
 
 
   /**
-     Purpose:
+     Purpose: Loads and parses config file data
      Assumptions:
      Parameters:
      Exceptions:
@@ -53,10 +53,7 @@ public class ConfigReader extends Application {
   }
 
   /**
-   * Returns number of blocks needed to cover the width and height given in the data file.
-   */
-  /**
-   Purpose:
+   Purpose: Returns number of blocks needed to cover the width and height given in the data file.
    Assumptions:
    Parameters:
    Exceptions:
@@ -85,10 +82,7 @@ public class ConfigReader extends Application {
   }
 
   /**
-   * A method to test getting internal resources.
-   */
-  /**
-   Purpose:
+   Purpose: A method to test getting internal resources.
    Assumptions:
    Parameters:
    Exceptions:
