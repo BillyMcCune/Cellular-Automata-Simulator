@@ -7,7 +7,7 @@ package cellsociety.model.data.cells;
  * @param <T> the enum type representing the cell state
  */
 
-public abstract class Cell {
+public abstract class Cell<T extends Enum<T>> {
 
   protected int row;
   protected int col;

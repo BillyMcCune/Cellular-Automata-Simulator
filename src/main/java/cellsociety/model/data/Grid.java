@@ -1,5 +1,6 @@
 package cellsociety.model.data;
 
+import cellsociety.model.data.cells.Cell;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class Grid {
    * @param col the column index of the target cell
    * @return a list of neighboring {@link Cell} objects
    */
-  public List<Cell> getNeighbors(int row, int col) {
+  public List<Cell> getAllNeighbors(int row, int col) {
     List<Cell> neighbors = new ArrayList<>();
     int numRows = grid.size();
     int numCols = grid.getFirst().size();

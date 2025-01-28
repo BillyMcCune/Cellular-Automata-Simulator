@@ -4,21 +4,21 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.Grid;
 
 /**
- * Concrete implementation of {@link Logic} for Conway's Game of Life.
+ * Concrete implementation of {@link Logic} for Princeton's Percolation Automota.
  */
-public class LifeLogic extends Logic {
+public class PercolationLogic extends Logic {
 
   /**
-   * Constructs a {@code LifeLogic} instance with the specified grid.
+   * Constructs a {@code PercolationLogic} instance with the specified grid.
    *
    * @param grid the grid representing the current state of grid
    */
-  public LifeLogic(Grid grid) {
+  public PercolationLogic(Grid grid) {
     super(grid);
   }
 
   /**
-   * Updates the entire game state by one tick following Conway's Game of Life rules.
+   * Updates the entire game state by one tick following Princeton's Percolation rules.
    */
   @Override
   public void update() {
@@ -36,9 +36,9 @@ public class LifeLogic extends Logic {
 
   private void updateSingleCell(Cell cell) {
     int currentState = cell.getCurrState();
-    int liveNeighbors = countLiveNeighbors(cell.getCoordinates()[0], cell.getCoordinates()[1]);
+    int liveNeighbors = countLiveNeighbors(cell.getRow(), cell.getCol());
 
-    if (currentState == 1) {
+    if (currentState != 1) {
       if (liveNeighbors < 2 || liveNeighbors > 3) {
         cell.setNextState(0);
       } else {
