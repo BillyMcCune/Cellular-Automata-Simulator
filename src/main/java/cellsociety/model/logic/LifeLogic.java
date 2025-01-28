@@ -1,11 +1,10 @@
 package cellsociety.model.logic;
 
-import cellsociety.model.data.Cell;
-import java.util.List;
+import cellsociety.model.data.Grid;
 
 public class LifeLogic extends Logic {
-  public LifeLogic(List<Cell> cells) {
-    super(cells);
+  public LifeLogic(Grid grid) {
+    super(grid);
   }
 
   @Override
