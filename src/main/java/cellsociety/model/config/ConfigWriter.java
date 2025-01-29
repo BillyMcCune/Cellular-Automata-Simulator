@@ -2,6 +2,8 @@ package cellsociety.model.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
@@ -26,8 +28,8 @@ import org.xml.sax.SAXException;
 public class ConfigWriter {
 
   //Writes to the XML file
-  public ArrayList<> writeConfig(){
-
+  public ArrayList<Object> writeConfig(){
+      return null;
   }
 
 }
