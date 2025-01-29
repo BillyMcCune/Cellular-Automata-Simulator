@@ -1,4 +1,4 @@
-package cellsociety.model.Scene;
+package cellsociety.view.scene;
 
 import java.io.File;
 import javafx.geometry.Insets;
