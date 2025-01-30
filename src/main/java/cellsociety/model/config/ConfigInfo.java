@@ -1,23 +1,8 @@
 package cellsociety.model.config;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
-import javafx.application.Application;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * @author Billy McCune
@@ -28,6 +13,7 @@ import org.xml.sax.SAXException;
  * Any Other Details:
  */
 public class ConfigInfo {
+  private SimulationType myType;
   private String myTitle;
   private String myAuthor;
   private String myDescription;
@@ -37,13 +23,41 @@ public class ConfigInfo {
   private List<List<Integer>> myGrid;
 
   public enum SimulationType {
-
+    GAMEOFLIFE, GAMEOFLIFEGLIDER, PERCOLATION, SPREADINGOFFIRE
   }
 
 
-  //Sets the current config info for the simulation
-  public static void setConfig(ArrayList<Object> config) {
-      return;
+  /**
+   * Sets the config data from a generic Object list.
+   * Expects the ArrayList<Object> order:
+   *   0: String of the simulation type (e.g., "GAMEOFLIFE")
+   *   1: String of the title
+   *   2: String of the author
+   *   3: String of the description
+   *   4: Integer for grid width
+   *   5: Integer for grid height
+   *   6: Integer for tick speed
+   *   7: List<List<Integer>> for the initial grid
+   */
+  public void setConfig(ArrayList<Object> config) {
+      SimulationType.valueOf((String) config.get(0));
+      myTitle = (String)config.get(1);
+      myAuthor = (String)config.get(2);
+      myDescription = (String)config.get(3);
+      myGridWidth = (int)config.get(4);
+      myGridHeight = (int)config.get(5);
+      myTickSpeed = (int)config.get(6);
+
+      myGrid = createGridFromConfig((List<List<Integer>>) config.get(7));
+  }
+
+  private List<List<Integer>> createGridFromConfig(List<List<Integer>> inputGrid) {
+    List<List<Integer>> newGrid = new ArrayList<>();
+    for (List<Integer> row : inputGrid) {
+      // create a copy of each row
+      newGrid.add(new ArrayList<>(row));
+    }
+    return newGrid;
   }
 
   //Returns the simulation type
@@ -68,7 +82,16 @@ public class ConfigInfo {
 
   //Returns the parameters passed in
   public ArrayList<Object> getParameters(){
-    return new ArrayList<Object>();
+    ArrayList<Object> params = new ArrayList<>();
+    params.add(myType.toString());
+    params.add(myTitle);
+    params.add(myAuthor);
+    params.add(myDescription);
+    params.add(myGridWidth);
+    params.add(myGridHeight);
+    params.add(myTickSpeed);
+    params.add(myGrid);
+    return params;
   }
 
   //Returns the width
@@ -92,6 +115,7 @@ public class ConfigInfo {
   }
 
   //Updates the grid
+  //TODO Finish this
   public void updateGrid(List<List<Integer>> cells){
     GridPane grid = new GridPane();
   }

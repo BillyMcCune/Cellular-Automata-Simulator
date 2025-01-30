@@ -35,7 +35,10 @@ public class ConfigReader {
   private Stage primaryStage;
 
   /**
-   * Purpose: Loads and parses config file data Assumptions: Parameters: Exceptions: return value:
+   * Purpose: Loads and parses config file data Assumptions: The DATA_FILE_FOLDER is where our
+   * desired configurations are Parameters: None Exceptions: if after reading the configuration file
+   * the array of objects is empty then an alert is mode return value: ArrayList<Object> which
+   * contains the data from the configuration file
    */
   public ArrayList<Object> readConfig() {
     System.out.println("Looking for file at: " + DATA_FILE_FOLDER);
@@ -44,7 +47,6 @@ public class ConfigReader {
     File dataFile = FILE_CHOOSER.showOpenDialog(primaryStage);
     if (dataFile != null) {
       configInformation = getConfigInformation(dataFile);
-      System.out.println(configInformation);
       if (configInformation.isEmpty()) {
         showMessage(AlertType.INFORMATION,
             String.format("Configuration file not found or is empty"));
@@ -80,7 +82,8 @@ public class ConfigReader {
       configInformation.add(height);
       configInformation.add(defaultSpeed);
       configInformation.add(initialStatesForGrid);
-      showMessage(AlertType.INFORMATION, String.format("Configuration file: %s", xmlFile.getName()));
+      showMessage(AlertType.INFORMATION,
+          String.format("Configuration file: %s", xmlFile.getName()));
       showMessage(AlertType.INFORMATION, String.format("Version: %s", getVersion()));
       showMessage(AlertType.INFORMATION, configInformation.toString());
       return configInformation;
@@ -97,7 +100,10 @@ public class ConfigReader {
   }
 
   /**
-   * Purpose: A method to test getting internal resources. Assumptions: Parameters: Exceptions:
+   * Purpose: A method to test getting internal resources.
+   * Assumptions:
+   * Parameters:
+   * Exceptions:
    * return value:
    */
   public double getVersion() {
@@ -132,6 +138,13 @@ public class ConfigReader {
     return result;
   }
 
+  /**
+   * Purpose: A method for parsing the grid in the xml configuration file
+   * Assumptions: The initial state node is in the xml configuration and the data for the grid is contained in row nodes
+   * Parameters: the root node of the xml file
+   * Exceptions: the rows of the grid must be children of the initials States node in the xml file
+   * return value: List<List<Integer>> which contains the data from each of the cells defined in the configuration file
+   */
   private List<List<Integer>> parseInitialGrid(Element root) {
     List<List<Integer>> initialStatesForGrid = new ArrayList<>();
 
