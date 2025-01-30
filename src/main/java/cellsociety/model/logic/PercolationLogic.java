@@ -21,24 +21,8 @@ public class PercolationLogic extends Logic<PercolationState> {
     super(grid);
   }
 
-  /**
-   * Updates the entire game state by one tick following Princeton's Percolation rules.
-   */
-  @Override
   public void update() {
-    int numRows = grid.getNumRows();
-    int numCols = grid.getNumCols();
-
-    // Determine the next state for each cell
-    for (int row = 0; row < numRows; row++) {
-      for (int col = 0; col < numCols; col++) {
-        Cell<PercolationState> cell = grid.getCell(row, col);
-        updateSingleCell(cell);
-      }
-    }
-
-    // Update all cells to their next state
-    grid.updateGrid();
+    super.update();
   }
 
   /**
@@ -46,11 +30,11 @@ public class PercolationLogic extends Logic<PercolationState> {
    *
    * @param cell the cell to update
    */
-  private void updateSingleCell(Cell<PercolationState> cell) {
+  protected void updateSingleCell(Cell<PercolationState> cell) {
     PercolationState currentState = cell.getCurrentState();
-    List<Cell<PercolationState>> openNeighbors = getOpenNeighbors(cell);
 
     if (currentState == PercolationState.PERCOLATED) {
+      List<Cell<PercolationState>> openNeighbors = getOpenNeighbors(cell);
       for (Cell<PercolationState> neighbor : openNeighbors) {
         neighbor.setNextState(PercolationState.PERCOLATED);
       }

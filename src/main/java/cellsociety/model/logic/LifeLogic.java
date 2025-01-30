@@ -18,24 +18,12 @@ public class LifeLogic extends Logic<LifeState> {
     super(grid);
   }
 
-  /**
-   * Updates the entire game state by one tick following Conway's Game of Life rules.
-   */
-  @Override
-  public void update() {
-    int numRows = grid.getNumRows();
-    int numCols = grid.getNumCols();
 
-    // Determine next state for each cell
-    for (int row = 0; row < numRows; row++) {
-      for (int col = 0; col < numCols; col++) {
-        updateSingleCell(grid.getCell(row, col));
-      }
-    }
-    grid.updateGrid();
+  public void update() {
+    super.update();
   }
 
-  private void updateSingleCell(Cell<LifeState> cell) {
+  protected void updateSingleCell(Cell<LifeState> cell) {
     LifeState currentState = cell.getCurrentState();
     int liveNeighbors = countLiveNeighbors(cell);
 
@@ -43,8 +31,7 @@ public class LifeLogic extends Logic<LifeState> {
       if (liveNeighbors < 2 || liveNeighbors > 3) {
         cell.setNextState(LifeState.DEAD);
       }
-    }
-    else {
+    } else {
       if (liveNeighbors == 3) {
         cell.setNextState(LifeState.ALIVE);
       }

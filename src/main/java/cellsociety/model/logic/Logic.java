@@ -1,6 +1,8 @@
 package cellsociety.model.logic;
 
 import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.states.PercolationState;
 
 /**
  * Abstract superclass responsible for managing the logic of a cellular automaton. Subclasses should
@@ -9,6 +11,7 @@ import cellsociety.model.data.Grid;
  * @param <T> The enum type representing the cell state
  */
 public abstract class Logic<T extends Enum<T>> {
+
   protected final Grid<T> grid;
 
   public Logic(Grid<T> grid) {
@@ -19,5 +22,19 @@ public abstract class Logic<T extends Enum<T>> {
    * Updates the entire game state by one tick. Subclasses should provide an implementation for this
    * method.
    */
-  public abstract void update();
+  public void update() {
+    int numRows = grid.getNumRows();
+    int numCols = grid.getNumCols();
+
+    // Determine the next state for each cell
+    for (int row = 0; row < numRows; row++) {
+      for (int col = 0; col < numCols; col++) {
+        Cell<T> cell = grid.getCell(row, col);
+        updateSingleCell(cell);
+      }
+    }
+    grid.updateGrid();
+  }
+
+  protected abstract void updateSingleCell(Cell<T> cell);
 }
