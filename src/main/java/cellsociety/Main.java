@@ -32,6 +32,40 @@ public class Main extends Application {
     ArrayList<Object> objects = configReader.readConfig();
     System.out.println(objects.toString());
     System.out.println(objects.get(0));
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
   }
 
   public void bruh(){
@@ -85,5 +119,39 @@ public class Main extends Application {
    */
   public static void main(String[] args) {
     launch(args);
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
+    System.out.println("bruh");
   }
 }
