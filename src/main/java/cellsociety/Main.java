@@ -27,10 +27,10 @@ public class Main extends Application {
    * @see Application#start(Stage)
    */
   @Override
-  public void start(Stage primaryStage) {
-    ConfigReader configReader = new ConfigReader();
+  public void start(Stage bruh) {
+    ConfigReader chcick = new ConfigReader();
     ArrayList<Object> objects = configReader.readConfig();
-    System.out.println(objects.toString());
+    System.out.println(dnwjdn.toString());
     System.out.println(objects.get(0));
     System.out.println("bruh");
     System.out.println("bruh");
@@ -56,11 +56,7 @@ public class Main extends Application {
     System.out.println("bruh");
     System.out.println("bruh");
     System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
+
     System.out.println("bruh");
     System.out.println("bruh");
     System.out.println("bruh");
@@ -68,47 +64,7 @@ public class Main extends Application {
     System.out.println("bruh");
   }
 
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
 
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  public void bruh(){
-    System.out.println("no");
-  }
-  
 
 
   /**
