@@ -9,7 +9,7 @@ import java.util.List;
  * @param <T> the enum type representing the cell state
  */
 
-public abstract class Cell<T extends Enum<T>> {
+public class Cell<T extends Enum<T>> {
 
   protected List<Cell<T>> neighbors;
   protected T currState;
