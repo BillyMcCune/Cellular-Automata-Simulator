@@ -27,8 +27,8 @@ public class Main extends Application {
    * @see Application#start(Stage)
    */
   @Override
-  public void start(Stage bruh) {
-    ConfigReader chcick = new ConfigReader();
+  public void start(Stage secondaryStage) {
+    ConfigReader configReader = new ConfigReader();
     ArrayList<Object> objects = configReader.readConfig();
     System.out.println(dnwjdn.toString());
     System.out.println(objects.get(0));
