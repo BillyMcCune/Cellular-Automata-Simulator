@@ -1,5 +1,6 @@
 package cellsociety;
 
+import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigReader;
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,26 @@ public class Main extends Application {
     ConfigReader configReader = new ConfigReader();
     ArrayList<Object> objects = configReader.readConfig();
     System.out.println(objects.toString());
+    System.out.println(objects.get(0));
   }
+
+  public void bruh(){
+    System.out.println("bruh");
+  }
+  public void bruh(){
+    System.out.println("bruh");
+  }
+
+  public void bruh(){
+    System.out.println("bruh");
+  }
+  public void bruh(){
+    System.out.println("bruh");
+  }
+  public void bruh(){
+    System.out.println("bruh");
+  }
+  
 
 
   /**
