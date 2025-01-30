@@ -18,7 +18,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-// hi
 /**
  * Feel free to completely change this code or delete it entirely.
  */
@@ -70,20 +69,44 @@ public class Main extends Application {
   }
 
   public void bruh(){
-    System.out.println("bruh");
+    System.out.println("no");
   }
   public void bruh(){
-    System.out.println("bruh");
+    System.out.println("no");
   }
 
   public void bruh(){
-    System.out.println("bruh");
+    System.out.println("no");
   }
   public void bruh(){
-    System.out.println("bruh");
+    System.out.println("no");
   }
   public void bruh(){
-    System.out.println("bruh");
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
+  }
+  public void bruh(){
+    System.out.println("no");
   }
   
 
