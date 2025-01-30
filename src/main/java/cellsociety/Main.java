@@ -27,7 +27,7 @@ public class Main extends Application {
    * @see Application#start(Stage)
    */
   @Override
-  public void start(Stage primaryStage) {
+  public void start(Stage secondaryStage) {
     ConfigReader configReader = new ConfigReader();
     ArrayList<Object> objects = configReader.readConfig();
     System.out.println(objects.toString());
