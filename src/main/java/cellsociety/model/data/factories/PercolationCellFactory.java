@@ -7,8 +7,8 @@ import cellsociety.model.data.states.PercolationState;
 public class PercolationCellFactory extends CellFactory<PercolationState> {
 
   @Override
-  public Cell<PercolationState> createCell(int row, int col, int initialState) {
+  public Cell<PercolationState> createCell(int initialState) {
     PercolationState state = PercolationState.fromInt(initialState);
-    return new PercolationCell(row, col, state);
+    return new PercolationCell(state);
   }
 }

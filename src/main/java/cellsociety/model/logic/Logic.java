@@ -9,7 +9,7 @@ import cellsociety.model.data.Grid;
  * @param <T> The enum type representing the cell state
  */
 public abstract class Logic<T extends Enum<T>> {
-  protected Grid<T> grid;
+  protected final Grid<T> grid;
 
   public Logic(Grid<T> grid) {
     this.grid = grid;

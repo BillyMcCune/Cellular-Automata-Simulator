@@ -7,9 +7,9 @@ import cellsociety.model.data.states.LifeState;
 public class LifeCellFactory extends CellFactory<LifeState> {
 
   @Override
-  public Cell<LifeState> createCell(int row, int col, int initialState) {
+  public Cell<LifeState> createCell(int initialState) {
     LifeState state = LifeState.fromInt(initialState);
-    return new LifeCell(row, col, state);
+    return new LifeCell(state);
   }
 }
 

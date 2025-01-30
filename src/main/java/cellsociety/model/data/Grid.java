@@ -66,10 +66,10 @@ public class Grid<T extends Enum<T>> {
    * @param factory the factory to create cells
    */
   private void initializeGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
-    for (int row = 0; row < rawGrid.size(); row++) {
+    for (List<Integer> integers : rawGrid) {
       List<Cell<T>> newRow = new ArrayList<>();
-      for (int col = 0; col < rawGrid.get(row).size(); col++) {
-        Cell<T> cell = factory.createCell(rawGrid.get(row).get(col));
+      for (Integer integer : integers) {
+        Cell<T> cell = factory.createCell(integer);
         newRow.add(cell);
       }
       grid.add(newRow);
@@ -126,6 +126,6 @@ public class Grid<T extends Enum<T>> {
    * @return the number of columns in the grid
    */
   public int getNumCols() {
-    return grid.get(0).size();
+    return grid.getFirst().size();
   }
 }

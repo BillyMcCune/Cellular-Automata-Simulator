@@ -58,7 +58,7 @@ public class PercolationLogic extends Logic<PercolationState> {
   }
 
   private List<Cell<PercolationState>> getOpenNeighbors(Cell<PercolationState> cell) {
-    List<Cell<PercolationState>> neighbors = grid.getNeighbors(cell);
+    List<Cell<PercolationState>> neighbors = cell.getNeighbors();
     List<Cell<PercolationState>> openNeighbors = new ArrayList<>();
 
     for (Cell<PercolationState> neighbor : neighbors) {
