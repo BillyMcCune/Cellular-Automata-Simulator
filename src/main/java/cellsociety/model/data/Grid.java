@@ -33,6 +33,30 @@ public class Grid<T extends Enum<T>> {
    */
   public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
     initializeGrid(rawGrid, factory);
+    assignNeighbors();
+  }
+
+  /**
+   * Assigns a {@link Cell<T>} all neighboring {@link Cell<T>} objects surrounding the cell
+   */
+  public void assignNeighbors() {
+    int numRows = getNumRows();
+    int numCols = getNumCols();
+
+    for (int row = 0; row < numRows; row++) {
+      for (int col = 0; col < numCols; col++) {
+        List<Cell<T>> neighbors = new ArrayList<>();
+        for (int[] direction : DIRECTIONS) {
+          int neighborRow = row + direction[0];
+          int neighborCol = col + direction[1];
+          if (neighborRow >= 0 && neighborRow < numRows &&
+              neighborCol >= 0 && neighborCol < numCols) {
+            neighbors.add(getCell(row, col));
+          }
+        }
+        getCell(row, col).setNeighbors(neighbors);
+      }
+    }
   }
 
   /**
@@ -45,12 +69,13 @@ public class Grid<T extends Enum<T>> {
     for (int row = 0; row < rawGrid.size(); row++) {
       List<Cell<T>> newRow = new ArrayList<>();
       for (int col = 0; col < rawGrid.get(row).size(); col++) {
-        Cell<T> cell = factory.createCell(row, col, rawGrid.get(row).get(col));
+        Cell<T> cell = factory.createCell(rawGrid.get(row).get(col));
         newRow.add(cell);
       }
       grid.add(newRow);
     }
   }
+
 
   /**
    * Sets a new grid from a two-dimensional list of states and a cell factory.
@@ -72,29 +97,6 @@ public class Grid<T extends Enum<T>> {
    */
   public Cell<T> getCell(int row, int col) {
     return grid.get(row).get(col);
-  }
-
-  /**
-   * Retrieves all neighboring {@link Cell<T>} objects surrounding the cell at the specified row and column.
-   *
-   * @param cell The specified cell
-   * @return a list of neighboring {@link Cell<T>} objects
-   */
-  public List<Cell<T>> getNeighbors(Cell cell) {
-    List<Cell<T>> neighbors = new ArrayList<>();
-    int numRows = grid.size();
-    int numCols = grid.get(0).size();
-
-    for (int[] direction : DIRECTIONS) {
-      int neighborRow = cell.getRow() + direction[0];
-      int neighborCol = cell.getCol() + direction[1];
-
-      if (neighborRow >= 0 && neighborRow < numRows &&
-          neighborCol >= 0 && neighborCol < numCols) {
-        neighbors.add(getCell(neighborRow, neighborCol));
-      }
-    }
-    return neighbors;
   }
 
   /**

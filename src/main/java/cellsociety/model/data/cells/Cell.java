@@ -1,5 +1,7 @@
 package cellsociety.model.data.cells;
 
+import java.util.List;
+
 /**
  * Abstract generic base class representing a cell in a grid.
  *
@@ -9,41 +11,25 @@ package cellsociety.model.data.cells;
 
 public abstract class Cell<T extends Enum<T>> {
 
-  protected final int row;
-  protected final int col;
+  protected List<Cell<T>> neighbors;
   protected T currState;
   protected T nextState;
 
   /**
    * Constructs a Cell with specified row, column, and initial state.
    *
-   * @param row   the row position of the cell in the grid
-   * @param col   the column position of the cell in the grid
    * @param state the initial state of the cell
    */
-  public Cell(int row, int col, T state) {
-    this.row = row;
-    this.col = col;
+  public Cell(T state) {
     currState = state;
     nextState = currState;
   }
 
   /**
-   * Returns the row of the cell.
-   *
-   * @return the row of the cell
+   * Retrieves the neighbors of the cell
    */
-  public int getRow() {
-    return row;
-  }
-
-  /**
-   * Returns the column of the cell.
-   *
-   * @return the column of the cell
-   */
-  public int getCol() {
-    return col;
+  public List<Cell<T>> getNeighbors() {
+    return neighbors;
   }
 
   /**
@@ -53,6 +39,13 @@ public abstract class Cell<T extends Enum<T>> {
    */
   public T getCurrentState() {
     return currState;
+  }
+
+  /**
+   * Sets the neighbors of the cell
+   */
+  public void setNeighbors(List<Cell<T>> neighbors) {
+    this.neighbors = neighbors;
   }
 
   /**
