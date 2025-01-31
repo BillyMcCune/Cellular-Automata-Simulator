@@ -1,5 +1,6 @@
 package cellsociety;
 
+import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigReader;
 import java.io.File;
@@ -31,8 +32,8 @@ public class Main extends Application {
   public void start(Stage secondaryStage) {
     ConfigReader configReader = new ConfigReader();
     List<String> fileNames = configReader.getFileNames();
-    ArrayList<Object> objects = configReader.readConfig(fileNames.getFirst());
-    System.out.println(objects);
+    ConfigInfo myInfo = configReader.readConfig(fileNames.getFirst());
+    System.out.println(myInfo.getAuthor());
   }
 
 

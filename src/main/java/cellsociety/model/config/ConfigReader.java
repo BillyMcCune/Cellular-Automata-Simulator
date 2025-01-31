@@ -36,14 +36,14 @@ public class ConfigReader {
    * the array of objects is empty then an alert is mode return value: ArrayList<Object> which
    * contains the data from the configuration file
    */
-  public ArrayList<Object> readConfig(String fileName) {
+  public ConfigInfo readConfig(String fileName) {
     if (!fileMap.containsKey(fileName)) {
       createListOfConfigFiles();
     }
     File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + DATA_FILE_FOLDER);
-    ArrayList<Object> configInformation = getConfigInformation(dataFile);
-      if (configInformation.isEmpty()) {
+    ConfigInfo configInformation = getConfigInformation(dataFile);
+      if (configInformation.isValid()) {
             System.err.println("Configuration file not found or is empty");
     }
     return configInformation;
@@ -53,8 +53,8 @@ public class ConfigReader {
    * Purpose: Returns number of blocks needed to cover the width and height given in the data file.
    * Assumptions: Parameters: Exceptions: return value:
    */
-  public ArrayList<Object> getConfigInformation(File xmlFile) {
-    ArrayList<Object> configInformation = new ArrayList<>();
+  public ConfigInfo getConfigInformation(File xmlFile) {
+    ConfigInfo configInformation = ConfigInfo.createInstance();
     try {
       Document xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()
           .parse(xmlFile);
@@ -68,14 +68,13 @@ public class ConfigReader {
       int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
 
       List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
-      configInformation.add(type);
-      configInformation.add(title);
-      configInformation.add(author);
-      configInformation.add(description);
-      configInformation.add(width);
-      configInformation.add(height);
-      configInformation.add(defaultSpeed);
-      configInformation.add(initialStatesForGrid);
+      configInformation.setMyTitle(title);
+      configInformation.setMyAuthor(author);
+      configInformation.setMyDescription(description);
+      configInformation.setMyGridWidth(width);
+      configInformation.setMyGridHeight(height);
+      configInformation.setTickSpeed(defaultSpeed);
+      configInformation.setMyGrid(initialStatesForGrid);
       System.out.println("Configuration file:" + xmlFile.getName());
       System.out.println("Configuration info:" + configInformation);
       return configInformation;
