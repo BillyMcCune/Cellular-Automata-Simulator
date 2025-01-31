@@ -5,6 +5,7 @@ import cellsociety.model.config.ConfigReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
@@ -29,39 +30,9 @@ public class Main extends Application {
   @Override
   public void start(Stage secondaryStage) {
     ConfigReader configReader = new ConfigReader();
-    ArrayList<Object> objects = configReader.readConfig();
-    System.out.println(dnwjdn.toString());
-    System.out.println(objects.get(0));
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
+    List<String> fileNames = configReader.getFileNames();
+    ArrayList<Object> objects = configReader.readConfig(fileNames.getFirst());
+    System.out.println(objects);
   }
 
 
@@ -75,39 +46,5 @@ public class Main extends Application {
    */
   public static void main(String[] args) {
     launch(args);
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
-    System.out.println("bruh");
   }
 }

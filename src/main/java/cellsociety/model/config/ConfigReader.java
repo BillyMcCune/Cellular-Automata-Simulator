@@ -4,6 +4,7 @@ import cellsociety.model.config.ConfigInfo.SimulationType;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import java.util.Map;
 
 /**
  * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
@@ -21,15 +23,12 @@ import org.xml.sax.SAXException;
 public class ConfigReader {
 
   // kind of data files to look for
-  public static final String DATA_FILE_EXTENSION = "*.xml";
+  private static final String DATA_FILE_EXTENSION = "*.xml";
   // starts in the resources folder
-  public static final String DATA_FILE_FOLDER = System.getProperty("user.dir") +
+  private static final String DATA_FILE_FOLDER = System.getProperty("user.dir") +
       "/src/main/resources/cellsociety/SimulationConfigurationData";
-  // NOTE: make ONE chooser since generally accepted behavior is that it remembers where user left it last
-  //private final static FileChooser FILE_CHOOSER = makeChooser(DATA_FILE_EXTENSION);
-  // internal configuration file
-  public static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
-
+  private static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
+  private final Map<String,File> fileMap = new HashMap<>();
 
   /**
    * Purpose: Loads and parses config file data Assumptions: The DATA_FILE_FOLDER is where our
@@ -37,18 +36,15 @@ public class ConfigReader {
    * the array of objects is empty then an alert is mode return value: ArrayList<Object> which
    * contains the data from the configuration file
    */
-  public ArrayList<Object> readConfig(File file) {
+  public ArrayList<Object> readConfig(String fileName) {
+    if (!fileMap.containsKey(fileName)) {
+      createListOfConfigFiles();
+    }
+    File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + DATA_FILE_FOLDER);
-    ArrayList<Object> configInformation = new ArrayList<>();
-    //showMessage(AlertType.INFORMATION, String.format("Version: %s", getVersion()));
-    //File dataFile = FILE_CHOOSER.showOpenDialog(primaryStage);
-    File dataFile = file;
-    if (dataFile != null) {
-      configInformation = getConfigInformation(dataFile);
+    ArrayList<Object> configInformation = getConfigInformation(dataFile);
       if (configInformation.isEmpty()) {
-        //showMessage(AlertType.INFORMATION,
             System.err.println("Configuration file not found or is empty");
-      }
     }
     return configInformation;
   }
@@ -80,10 +76,8 @@ public class ConfigReader {
       configInformation.add(height);
       configInformation.add(defaultSpeed);
       configInformation.add(initialStatesForGrid);
-      //showMessage(AlertType.INFORMATION,
-          String.format("Configuration file: %s", xmlFile.getName()));
-      //showMessage(AlertType.INFORMATION, String.format("Version: %s", getVersion()));
-      //showMessage(AlertType.INFORMATION, configInformation.toString());
+      System.out.println("Configuration file:" + xmlFile.getName());
+      System.out.println("Configuration info:" + configInformation);
       return configInformation;
     } catch (NumberFormatException e) {
       System.err.println("Invalid number given in data");
@@ -95,6 +89,31 @@ public class ConfigReader {
       System.err.println("Invalid XML Data");
       return configInformation;
     }
+  }
+
+
+
+  public void createListOfConfigFiles() {
+    File folder = new File(DATA_FILE_FOLDER);
+
+    if (folder.exists() && folder.isDirectory()) {
+      File[] fileList = folder.listFiles();
+
+      if (fileList != null) {
+        for (File file : fileList) {
+          if (file.isFile()) {
+            fileMap.put(file.getName(), file);
+          }
+        }
+      }
+    }
+  }
+
+  public List<String> getFileNames(){
+    if (fileMap.isEmpty()) {
+      createListOfConfigFiles();
+    }
+    return new ArrayList<>(fileMap.keySet());
   }
 
   /**
@@ -119,22 +138,6 @@ public class ConfigReader {
       return "";
     }
   }
-
-  // display given message to user using the given type of Alert dialog box
-  //void showMessage(AlertType type, String message) {
-   // new Alert(type, message).showAndWait();
-//  }
-
-  // set some sensible defaults when the FileChooser is created
-  //private static FileChooser makeChooser(String extensionAccepted) {
-  //  FileChooser result = new FileChooser();
-  //  result.setTitle("Open Data File");
-    // pick a reasonable place to start searching for files
- //   result.setInitialDirectory(new File(DATA_FILE_FOLDER));
-  //  result.getExtensionFilters()
-//      .setAll(new FileChooser.ExtensionFilter("Data Files", extensionAccepted));
-   // return result;
-//  }
 
   /**
    * Purpose: A method for parsing the grid in the xml configuration file
