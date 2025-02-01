@@ -124,8 +124,8 @@ public class ConfigInfo {
   }
 
   //Returns the grid
-  public int getGrid(){
-    return myGrid.size();
+  public List<List<Integer>> getGrid(){
+    return myGrid;
   }
 
   public void setMyTitle(String title){
