@@ -27,12 +27,14 @@ public class SimulationScene {
   private static final String BORDER_COLOR = "#cccccc";
 
   // UI components
+  private Label titleLabel;
   private GridPane grid;
   private Slider speedSlider;
+  private TextField directoryField;
   private Label infoLabel;
-  private Stage primaryStage;
 
-  // UI variables
+  // Instance variables
+  private final Stage primaryStage;
 
   /**
    * Constructor for the SimulationScene class
@@ -58,13 +60,14 @@ public class SimulationScene {
    * @param elapsedTime the time elapsed since the last update
    */
   public void step(double elapsedTime) {
+
     System.out.println("Simulation step executed with elapsedTime: " + elapsedTime);
   }
 
   /* PRIVATE UI SETUP METHODS */
 
   private HBox createTitleLabel() {
-    Label titleLabel = new Label("Simulation Title");
+    titleLabel = new Label("Simulation Title");
     titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + LABEL_TEXT_COLOR + ";");
 
     HBox titleContainer = new HBox(titleLabel);
@@ -100,7 +103,7 @@ public class SimulationScene {
     Button directoryButton = new Button("📂");
 
     // Create directory text field
-    TextField directoryField = new TextField();
+    directoryField = new TextField();
     directoryField.setPromptText("No directory selected");
     directoryField.setEditable(false);
 
@@ -182,5 +185,14 @@ public class SimulationScene {
     infoLabel.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-padding: 10px; -fx-background-color: " + CONTROL_BG_COLOR + "; -fx-alignment: CENTER_LEFT;");
     infoLabel.setMaxWidth(Double.MAX_VALUE);
     return infoLabel;
+  }
+
+  /* PUBLIC UI SETS METHOD */
+  public void setTitleLabelText(String text) {
+    titleLabel.setText(text);
+  }
+
+  public void setInfoLabelText(String text) {
+    infoLabel.setText(text);
   }
 }
