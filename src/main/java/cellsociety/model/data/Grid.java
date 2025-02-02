@@ -1,7 +1,8 @@
 package cellsociety.model.data;
 
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.factories.CellFactory;
+import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * @param <T> the enum type representing the cell state
  */
-public class Grid<T extends Enum<T>> {
+public class Grid<T extends Enum<T> & State> {
 
   /**
    * Represents all directions
@@ -37,7 +38,24 @@ public class Grid<T extends Enum<T>> {
   }
 
   /**
-   * Assigns a {@link Cell<T>} all neighboring {@link Cell<T>} objects surrounding the cell
+   * Initializes the grid by creating cell instances based on the provided states and factory.
+   *
+   * @param rawGrid a two-dimensional list of states
+   * @param factory the factory to create cells
+   */
+  private void initializeGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+    for (List<Integer> rowStates : rawGrid) {
+      List<Cell<T>> newRow = new ArrayList<>();
+      for (Integer state : rowStates) {
+        Cell<T> cell = factory.createCell(state);
+        newRow.add(cell);
+      }
+      grid.add(newRow);
+    }
+  }
+
+  /**
+   * Assigns each {@link Cell<T>} all neighboring {@link Cell<T>} objects surrounding the cell.
    */
   public void assignNeighbors() {
     int numRows = getNumRows();
@@ -51,7 +69,8 @@ public class Grid<T extends Enum<T>> {
           int neighborCol = col + direction[1];
           if (neighborRow >= 0 && neighborRow < numRows &&
               neighborCol >= 0 && neighborCol < numCols) {
-            neighbors.add(getCell(row, col));
+            // Fix: Add the neighbor cell, not the cell itself.
+            neighbors.add(getCell(neighborRow, neighborCol));
           }
         }
         getCell(row, col).setNeighbors(neighbors);
@@ -60,27 +79,9 @@ public class Grid<T extends Enum<T>> {
   }
 
   /**
-   * Initializes the grid by creating cell instances based on the provided states and factory.
-   *
-   * @param rawGrid a two-dimensional list of states
-   * @param factory the factory to create cells
-   */
-  private void initializeGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
-    for (List<Integer> integers : rawGrid) {
-      List<Cell<T>> newRow = new ArrayList<>();
-      for (Integer integer : integers) {
-        Cell<T> cell = factory.createCell(integer);
-        newRow.add(cell);
-      }
-      grid.add(newRow);
-    }
-  }
-
-
-  /**
    * Sets a new grid from a two-dimensional list of states and a cell factory.
    *
-   * @param rawGrid a two-dimensional list of Integer states representing the new states of the cells
+   * @param rawGrid a two-dimensional list of integer states representing the new states of the cells
    * @param factory the factory to create cells
    */
   public void setGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
@@ -126,6 +127,7 @@ public class Grid<T extends Enum<T>> {
    * @return the number of columns in the grid
    */
   public int getNumCols() {
-    return grid.getFirst().size();
+    // Fix: Use grid.get(0) instead of grid.getFirst() since List does not have getFirst().
+    return grid.get(0).size();
   }
 }

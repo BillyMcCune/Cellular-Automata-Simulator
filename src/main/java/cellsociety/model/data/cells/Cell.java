@@ -1,5 +1,7 @@
 package cellsociety.model.data.cells;
 
+import cellsociety.model.data.states.State;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,9 +11,9 @@ import java.util.List;
  * @param <T> the enum type representing the cell state
  */
 
-public class Cell<T extends Enum<T>> {
+public class Cell<T extends Enum<T> & State> {
 
-  protected List<Cell<T>> neighbors;
+  protected List<Cell<T>> neighbors = new ArrayList<>();
   protected T currState;
   protected T nextState;
 
