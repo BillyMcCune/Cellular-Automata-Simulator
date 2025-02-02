@@ -14,7 +14,7 @@ public class ConfigInfoTest {
 
   @Test
   void getTitle_ConfigIsGameOfLifeGlider_isCorrect() {
-    assertEquals(GameOfLifeGliderTitle, ConfigInfo.getTitle());
+    assertEquals(GameOfLifeGliderTitle, configInfo.getTitle());
   }
 
 

@@ -63,6 +63,8 @@ public class CellTest {
     assertTrue(cell.getNeighbors().isEmpty(), "Expected neighbors list to be empty");
   }
 
+  // Null Pointer Exception tests: Should never happen realistically, as null values should never get here.
+
   @Test
   public void Cell_SetNeighborsToNull_GetNeighborsThrowsNullPointerExceptionOnIteration() {
     Cell<TestState> cell = new Cell<>(TestState.ZERO);
