@@ -150,26 +150,27 @@ public class SceneController {
     SimulationType type = SimulationType.GAMEOFLIFE;
 
     switch (type) {
-      case SimulationType.GAMEOFLIFE -> {
-        cellFactory = new LifeCellFactory();
-        grid = new Grid<>(configInfo.getGrid(), cellFactory);
-        gameLogic = new LifeLogic((Grid<LifeState>) grid);
+      case GAMEOFLIFE -> {
+        CellFactory<LifeState> lifeFactory = new CellFactory<>(LifeState.class);
+        Grid<LifeState> lifeGrid = new Grid<>(configInfo.getGrid(), lifeFactory);
+        gameLogic = new LifeLogic(lifeGrid);
+        grid = lifeGrid;
       }
-
-      case SimulationType.PERCOLATION -> {
-        cellFactory = new PercolationCellFactory();
-        grid = new Grid<>(configInfo.getGrid(), cellFactory);
-        gameLogic = new PercolationLogic((Grid<PercolationState>) grid);
+      case PERCOLATION -> {
+        CellFactory<PercolationState> percFactory = new CellFactory<>(PercolationState.class);
+        Grid<PercolationState> percGrid = new Grid<>(configInfo.getGrid(), percFactory);
+        gameLogic = new PercolationLogic(percGrid);
+        grid = percGrid;
       }
-
-      case SimulationType.SPREADINGOFFIRE -> {
-        cellFactory = new FireCellFactory();
-        grid = new Grid<>(configInfo.getGrid(), cellFactory);
-        gameLogic = new FireLogic((Grid<FireState>) grid);
+      case SPREADINGOFFIRE -> {
+        CellFactory<FireState> fireFactory = new CellFactory<>(FireState.class);
+        Grid<FireState> fireGrid = new Grid<>(configInfo.getGrid(), fireFactory);
+        gameLogic = new FireLogic(fireGrid);
+        grid = fireGrid;
       }
-
-      // TODO: Add more cases for other simulation types
+      default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
     }
+      // TODO: Add more cases for other simulation types
 
     // Set the grid to the scene
     simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
