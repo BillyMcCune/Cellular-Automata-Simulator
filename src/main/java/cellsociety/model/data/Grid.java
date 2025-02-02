@@ -33,8 +33,7 @@ public class Grid<T extends Enum<T> & State> {
    * @param factory the factory to create cells
    */
   public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
-    initializeGrid(rawGrid, factory);
-    assignNeighbors();
+    setGrid(rawGrid, factory);
   }
 
   /**
@@ -57,7 +56,10 @@ public class Grid<T extends Enum<T> & State> {
   /**
    * Assigns each {@link Cell<T>} all neighboring {@link Cell<T>} objects surrounding the cell.
    */
-  public void assignNeighbors() {
+  private void assignNeighbors() {
+    if (grid.isEmpty()) {
+      return;
+    }
     int numRows = getNumRows();
     int numCols = getNumCols();
 
@@ -86,7 +88,10 @@ public class Grid<T extends Enum<T> & State> {
    */
   public void setGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
     grid.clear();
-    initializeGrid(rawGrid, factory);
+    if (rawGrid != null && !rawGrid.isEmpty()) {
+      initializeGrid(rawGrid, factory);
+      assignNeighbors();
+    }
   }
 
   /**
@@ -127,7 +132,9 @@ public class Grid<T extends Enum<T> & State> {
    * @return the number of columns in the grid
    */
   public int getNumCols() {
-    // Fix: Use grid.get(0) instead of grid.getFirst() since List does not have getFirst().
-    return grid.get(0).size();
+    if (!grid.isEmpty()) {
+      return grid.getFirst().size();
+    }
+    return 0;
   }
 }
