@@ -2,11 +2,14 @@ package cellsociety.view.scene;
 
 import cellsociety.view.controller.SceneController;
 import java.io.File;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -30,6 +33,7 @@ public class SimulationScene {
   private static final String BUTTON_LOAD_COLOR = "#2196F3";
   private static final String BUTTON_SAVE_COLOR = "#FF9800";
   private static final String BUTTON_DIRECTORY_COLOR = "#9E9E9E";
+  private static final String GRID_BACKGROUND_COLOR = "#AEAEAE";
   private static final String BACKGROUND_COLOR = "#d4d4d9";
   private static final String LABEL_TEXT_COLOR = "#333333";
   private static final String BUTTON_TEXT_COLOR = "#ffffff";
@@ -61,17 +65,30 @@ public class SimulationScene {
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
 
+    Pane gridParent = createGrid();
+    VBox.setVgrow(gridParent, Priority.ALWAYS);
+
+    // 创建其他控件
+    HBox titleLabel = createTitleLabel();
+    Pane speedControl = createSpeedControl();
+    Pane controls = createControls();
+    Label infoLabel = createInfoLabel();
+
+    // 设置infoLabel的Vgrow属性
+    VBox.setVgrow(infoLabel, Priority.ALWAYS);
+
     VBox root = new VBox(10,
-        createTitleLabel(),
-        createGrid(),
-        createSpeedControl(),
-        createControls(),
-        createInfoLabel()
+        titleLabel,
+        gridParent,
+        speedControl,
+        controls,
+        infoLabel
     );
     root.setStyle("-fx-padding: 20px; -fx-background-color: " + BACKGROUND_COLOR + ";");
 
     primaryStage.setScene(new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT));
   }
+
 
   /**
    * Method to update the grid with the new state of the simulation
@@ -97,14 +114,67 @@ public class SimulationScene {
     return titleContainer;
   }
 
-  private GridPane createGrid() {
-    grid = new GridPane();
-    grid.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-background-color: " + CONTROL_BG_COLOR + "; -fx-min-height: 300px;");
-    grid.setMinHeight(300);
-    grid.setMaxHeight(300);
+  private Pane createGrid() {
+    this.grid = new GridPane();
 
-    return grid;
+    Pane pane = new Pane();
+    pane.setPrefSize(300, 200);
+    pane.setStyle("-fx-background-color:" + GRID_BACKGROUND_COLOR + "; -fx-border-color: black;");
+
+    // Clip the Pane to the desired size
+    Rectangle clip = new Rectangle(300, 200);
+    pane.setClip(clip); // 将 Clip 设置为 Pane 的裁剪区域
+
+    // Update Clip and GridPane size when the Pane size changes
+    pane.widthProperty().addListener((observable, oldValue, newValue) -> {
+      clip.setWidth(newValue.doubleValue());
+      centerGrid(pane);
+    });
+    pane.heightProperty().addListener((observable, oldValue, newValue) -> {
+      clip.setHeight(newValue.doubleValue());
+      centerGrid(pane);
+    });
+
+    pane.getChildren().add(grid);
+
+    // Mouse and Scroll event handlers
+    final double[] mouseX = new double[1];
+    final double[] mouseY = new double[1];
+    pane.setOnMousePressed(event -> {
+      mouseX[0] = event.getSceneX() - grid.getLayoutX();
+      mouseY[0] = event.getSceneY() - grid.getLayoutY();
+    });
+    pane.setOnMouseDragged(event -> {
+      double offsetX = event.getSceneX() - mouseX[0];
+      double offsetY = event.getSceneY() - mouseY[0];
+      grid.relocate(offsetX, offsetY);
+    });
+
+    final double[] scale = {1.0};  // 初始缩放比例
+    pane.setOnZoom(event -> {
+      double zoomFactor = event.getZoomFactor(); // 获取缩放因子
+
+      scale[0] *= zoomFactor;
+
+      // limit the scale to reasonable values
+      scale[0] = Math.max(0.1, Math.min(scale[0], 5.0));
+
+      grid.setScaleX(scale[0]);
+      grid.setScaleY(scale[0]);
+    });
+
+    // Reset the GridPane to the center when the R key is pressed
+    pane.setOnKeyPressed(event -> {
+      if (event.getCode().toString().equals("R")) {
+        centerGrid(pane);
+      }
+
+      System.out.println("Key Pressed: " + event.getCode().toString());
+    });
+
+    return pane;
   }
+
 
   private HBox createSpeedControl() {
     speedSlider = new Slider(MIN_SPEED, MAX_SPEED, (MAX_SPEED + MIN_SPEED) / 2);
@@ -295,10 +365,27 @@ public class SimulationScene {
     // TODO: Save the current simulation
   }
 
+  private void centerGrid(Pane pane) {
+    // Center the GridPane in the Pane after the grid loading is done
+    Platform.runLater(() -> {
+      double paneWidth = pane.getWidth();
+      double paneHeight = pane.getHeight();
+
+      double gridWidth = grid.getWidth();
+      double gridHeight = grid.getHeight();
+
+      double centerX = (paneWidth - gridWidth) / 2;
+      double centerY = (paneHeight - gridHeight) / 2;
+
+      grid.relocate(centerX, centerY);
+    });
+  }
+
   /* PUBLIC UI SETS METHOD */
 
   public void setGrid(int numOfRows, int numOfCols) {
     SceneRenderer.drawGrid(grid, numOfRows, numOfCols);
+    centerGrid((Pane) grid.getParent());
   }
 
   public void setCell(int row, int col, Enum<?> state) {

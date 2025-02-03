@@ -8,11 +8,14 @@ import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 public class SceneRenderer {
 
   public static final Color DEFAULT_BACKGROUND_COLOR = Color.DIMGRAY;
-  public static final Color DEFAULT_BORDER_COLOR = Color.BLACK;
+  public static final Color DEFAULT_BORDER_COLOR = Color.LIGHTGRAY;
+  public static final int DEFAULT_CELL_SIZE = 50;
+  public static final int DEFAULT_BORDER_SIZE = 1;
 
   /// The default colors for each cell state
   public static final Map<Enum<?>, Color> DEFAULT_CELL_COLORS = Map.of(
@@ -36,16 +39,16 @@ public class SceneRenderer {
    */
   public static void drawGrid(GridPane grid, int numOfRows, int numOfCols) {
     grid.getChildren().clear();
+    grid.setStyle("-fx-border-color: black; -fx-border-width: " + 3 * DEFAULT_BORDER_SIZE + "; -fx-border-style: solid;");
 
-    double cellWidth = Math.floor(grid.getWidth() / numOfCols - 3);
-    double cellHeight = Math.floor(grid.getHeight() / numOfRows - 3);
 
     for (int i = 0; i < numOfCols; i++) {
       for (int j = 0; j < numOfRows; j++) {
-        Rectangle square = new Rectangle(cellWidth, cellHeight);
+        Rectangle square = new Rectangle(DEFAULT_CELL_SIZE, DEFAULT_CELL_SIZE);
         square.setFill(DEFAULT_BACKGROUND_COLOR);
         square.setStroke(DEFAULT_BORDER_COLOR);
-        square.setStrokeWidth(3);
+        square.setStrokeType(StrokeType.INSIDE);
+        square.setStrokeWidth(DEFAULT_BORDER_SIZE);
         grid.add(square, i, j);
       }
     }
@@ -60,6 +63,8 @@ public class SceneRenderer {
    * @param state The state of the cell
    */
   public static void drawCell(GridPane grid, int row, int col, Enum<?> state) {
+    System.out.println("Drawing cell at " + row + ", " + col + " with state " + state);
+
     for (Node node : grid.getChildren()) {
       if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
           GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
