@@ -19,7 +19,7 @@ public class Main extends Application {
 
     // Set up the primary stage
     primaryStage.setTitle("Game of Life Simulation");
-    primaryStage.setResizable(false);
+    primaryStage.setResizable(true);
     primaryStage.show();
 
     // Set up the game loop
