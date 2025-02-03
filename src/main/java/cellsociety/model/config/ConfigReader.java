@@ -42,8 +42,8 @@ public class ConfigReader {
     File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     ConfigInfo configInformation = getConfigInformation(dataFile);
-      if (configInformation.isValid()) {
-            System.err.println("Configuration file not found or is empty");
+    if (!configInformation.isValid()) {
+      System.err.println("Configuration file not found or is empty");
     }
     return configInformation;
   }
@@ -65,15 +65,19 @@ public class ConfigReader {
       int width = Integer.parseInt(getTextValue(root, "width"));
       int height = Integer.parseInt(getTextValue(root, "height"));
       int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
-
       List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
-      configInformation.setMyTitle(title);
-      configInformation.setMyAuthor(author);
-      configInformation.setMyDescription(description);
-      configInformation.setMyGridWidth(width);
-      configInformation.setMyGridHeight(height);
-      configInformation.setTickSpeed(defaultSpeed);
-      configInformation.setMyGrid(initialStatesForGrid);
+
+      configInformation.setConfig(new ArrayList<>(List.of(
+          type,
+          title,
+          author,
+          description,
+          width,
+          height,
+          defaultSpeed,
+          initialStatesForGrid
+      )));
+
       System.out.println("Configuration file:" + xmlFile.getName());
       System.out.println("Configuration info:" + configInformation);
       return configInformation;

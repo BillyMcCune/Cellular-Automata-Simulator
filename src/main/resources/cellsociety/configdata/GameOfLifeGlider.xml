@@ -1,5 +1,5 @@
 <simulation>
-  <type>GameOfLife</type>
+  <type>GAMEOFLIFE</type>
   <title>Glider Test</title>
   <author>Richard Guy</author>
   <description>A classic glider pattern in Game of Life.</description>

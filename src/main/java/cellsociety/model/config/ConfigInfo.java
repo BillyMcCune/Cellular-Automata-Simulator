@@ -44,7 +44,7 @@ public class ConfigInfo {
 
   /**
    * Sets the config data from a generic Object list.
-   * Expects the ArrayList<Object> order:
+   * Expects the ArrayList<> order:
    *   0: String of the simulation type (e.g., "GAMEOFLIFE")
    *   1: String of the title
    *   2: String of the author
@@ -55,14 +55,14 @@ public class ConfigInfo {
    *   7: List<List<Integer>> for the initial grid
    */
   public void setConfig(ArrayList<Object> config) {
-      myType = SimulationType.valueOf((String)config.get(0));
-      myTitle = (String)config.get(1);
-      myAuthor = (String)config.get(2);
-      myDescription = (String)config.get(3);
-      myGridWidth = (int)config.get(4);
-      myGridHeight = (int)config.get(5);
-      myTickSpeed = (int)config.get(6);
-      myGrid = createGridFromConfig((List<List<Integer>>) config.get(7));
+      setMyType((String) config.get(0));
+      setMyTitle((String) config.get(1));
+      setMyAuthor((String) config.get(2));
+      setMyDescription((String) config.get(3));
+      setMyGridWidth((int) config.get(4));
+      setMyGridHeight((int) config.get(5));
+      setTickSpeed((int) config.get(6));
+      setMyGrid((List<List<Integer>>) config.get(7));
   }
 
   private List<List<Integer>> createGridFromConfig(List<List<Integer>> inputGrid) {
@@ -74,9 +74,9 @@ public class ConfigInfo {
     return newGrid;
   }
 
-  //Returns the simulation type
+  // Returns the simulation type
   public SimulationType getType(){
-      return SimulationType.values()[myGrid.size()];
+    return myType;
   }
 
   // Returns the author name
@@ -84,17 +84,17 @@ public class ConfigInfo {
     return myAuthor;
   }
 
-  //Returns the title
+  // Returns the title
   public String getTitle(){
     return myTitle;
   }
 
-  //Returns the description
+  // Returns the description
   public String getDescription(){
     return myDescription;
   }
 
-  //Returns the parameters passed in
+  // Returns the parameters passed in
   public ArrayList<Object> getParameters(){
     ArrayList<Object> params = new ArrayList<>();
     params.add(myType.toString());
@@ -128,6 +128,9 @@ public class ConfigInfo {
     return myGrid;
   }
 
+  public void setMyType(String type){
+    myType = SimulationType.valueOf(type);
+  }
   public void setMyTitle(String title){
     myTitle = title;
   }
@@ -146,13 +149,14 @@ public class ConfigInfo {
   public void setTickSpeed(int tickSpeed){
     myTickSpeed = tickSpeed;
   }
-
   public void setMyGrid(List<List<Integer>> grid){
     myGrid = grid;
   }
 
-  //Updates the grid
-  //TODO Finish this
+  // Updates the grid
+  // TODO Finish this
+  // NOTE: I think this is unnecessary, the grid control should be handled by the scene controller
+  //   BY: Hsuan-Kai Liao
   public void updateGrid(List<List<Integer>> cells){
     GridPane grid = new GridPane();
   }
