@@ -52,7 +52,6 @@ public class SceneController {
    * Update the simulation scene with the latest data from the model.
    */
   public void update() {
-    // TODO: Implement update method for the model
     if (!isPaused) {
       for (int i = 0; i < grid.getNumRows(); i++) {
         for (int j = 0; j < grid.getNumCols(); j++) {
