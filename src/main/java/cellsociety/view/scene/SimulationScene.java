@@ -126,11 +126,19 @@ public class SimulationScene {
     // Update Clip and GridPane size when the Pane size changes
     pane.widthProperty().addListener((observable, oldValue, newValue) -> {
       clip.setWidth(newValue.doubleValue());
-      centerGrid(pane);
+      centerGrid();
     });
     pane.heightProperty().addListener((observable, oldValue, newValue) -> {
       clip.setHeight(newValue.doubleValue());
-      centerGrid(pane);
+      centerGrid();
+    });
+
+    // Update GridPane position when the GridPane size changes
+    grid.widthProperty().addListener((observable, oldValue, newValue) -> {
+      centerGrid();
+    });
+    grid.heightProperty().addListener((observable, oldValue, newValue) -> {
+      centerGrid();
     });
 
     pane.getChildren().add(grid);
@@ -164,7 +172,7 @@ public class SimulationScene {
     // Reset the GridPane to the center when the R key is pressed
     pane.setOnKeyPressed(event -> {
       if (event.getCode().toString().equals("R")) {
-        centerGrid(pane);
+        centerGrid();
       }
 
       System.out.println("Key Pressed: " + event.getCode().toString());
@@ -324,14 +332,14 @@ public class SimulationScene {
 
     // Update the Speed
     speedSlider.setValue(controller.getConfigSpeed());
+
+    // Center the grid
+    centerGrid();
   }
 
   private void loadCallback(String filename) {
     // Load a new simulation
     if (!"None".equals(filename) && filename != null && !filename.isEmpty()) {
-      controller.loadConfig(filename);
-      controller.resetModel();
-
       // Force to pause
       if ("Pause".equals(startPauseButton.getText())) {
         startPauseButton.setText("Start");
@@ -339,12 +347,19 @@ public class SimulationScene {
         controller.setStartPause(true);
       }
 
+      // Load the config file
+      controller.loadConfig(filename);
+      controller.resetModel();
+
       // Update the Speed
       speedSlider.setValue(controller.getConfigSpeed());
 
       // Update the UI Text
       titleLabel.setText(controller.getConfigTitle());
       infoLabel.setText(controller.getConfigInformation());
+
+      // Center the grid
+      centerGrid();
     }
   }
 
@@ -363,27 +378,25 @@ public class SimulationScene {
     // TODO: Save the current simulation
   }
 
-  private void centerGrid(Pane pane) {
-    // Center the GridPane in the Pane after the grid loading is done
-    Platform.runLater(() -> {
-      double paneWidth = pane.getWidth();
-      double paneHeight = pane.getHeight();
+  private void centerGrid() {
+    Pane pane = (Pane) grid.getParent();
 
-      double gridWidth = grid.getWidth();
-      double gridHeight = grid.getHeight();
+    double paneWidth = pane.getWidth();
+    double paneHeight = pane.getHeight();
 
-      double centerX = (paneWidth - gridWidth) / 2;
-      double centerY = (paneHeight - gridHeight) / 2;
+    double gridWidth = grid.getWidth();
+    double gridHeight = grid.getHeight();
 
-      grid.relocate(centerX, centerY);
-    });
+    double centerX = (paneWidth - gridWidth) / 2;
+    double centerY = (paneHeight - gridHeight) / 2;
+
+    grid.relocate(centerX, centerY);
   }
 
   /* PUBLIC UI SETS METHOD */
 
   public void setGrid(int numOfRows, int numOfCols) {
     SceneRenderer.drawGrid(grid, numOfRows, numOfCols);
-    centerGrid((Pane) grid.getParent());
   }
 
   public void setCell(int row, int col, Enum<?> state) {

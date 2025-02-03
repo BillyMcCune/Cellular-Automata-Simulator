@@ -41,7 +41,6 @@ public class SceneRenderer {
     grid.getChildren().clear();
     grid.setStyle("-fx-border-color: black; -fx-border-width: " + 3 * DEFAULT_BORDER_SIZE + "; -fx-border-style: solid;");
 
-
     for (int i = 0; i < numOfCols; i++) {
       for (int j = 0; j < numOfRows; j++) {
         Rectangle square = new Rectangle(DEFAULT_CELL_SIZE, DEFAULT_CELL_SIZE);
