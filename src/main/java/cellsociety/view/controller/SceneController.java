@@ -97,9 +97,7 @@ public class SceneController {
         "Author: %s\nTitle: %s\nType: %s\nDescription: %s",
         configInfo.getAuthor(),
         configInfo.getTitle(),
-        // TODO: Uncomment this line after implementing the getType method in ConfigInfo
-        // configInfo.getType(),
-        ' ',
+        configInfo.getType(),
         configInfo.getDescription()
     );
 
@@ -135,18 +133,16 @@ public class SceneController {
    * Reset the model with the current configuration.
    */
   public void resetModel() {
-    // BY: Hsuan-Kai Liao
     // NOTES: Maybe we can redesign a map to take in a SimulationType,
     //        so that we can get rid of the annoying switch statement.
     //        This is just a temporary solution.
+    //    BY: Hsuan-Kai Liao
 
     if (configInfo == null) {
       return;
     }
 
-    // TODO: implement the getType method in ConfigInfo
-    // SimulationType type = configInfo.getType();
-    SimulationType type = SimulationType.GAMEOFLIFE;
+    SimulationType type = configInfo.getType();
 
     switch (type) {
       case GAMEOFLIFE -> {
