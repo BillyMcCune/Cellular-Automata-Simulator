@@ -25,8 +25,7 @@ public class ConfigReader {
   // kind of data files to look for
   private static final String DATA_FILE_EXTENSION = "*.xml";
   // starts in the resources folder
-  private static final String DATA_FILE_FOLDER = System.getProperty("user.dir") +
-      "/src/main/resources/cellsociety/SimulationConfigurationData";
+  private static final String DATA_FILE_FOLDER = "/src/main/resources/cellsociety/configdata";
   private static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
   private final Map<String,File> fileMap = new HashMap<>();
 
@@ -41,7 +40,7 @@ public class ConfigReader {
       createListOfConfigFiles();
     }
     File dataFile = fileMap.get(fileName);
-    System.out.println("Looking for file at: " + DATA_FILE_FOLDER);
+    System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     ConfigInfo configInformation = getConfigInformation(dataFile);
       if (configInformation.isValid()) {
             System.err.println("Configuration file not found or is empty");
@@ -93,7 +92,7 @@ public class ConfigReader {
 
 
   public void createListOfConfigFiles() {
-    File folder = new File(DATA_FILE_FOLDER);
+    File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
 
     if (folder.exists() && folder.isDirectory()) {
       File[] fileList = folder.listFiles();
