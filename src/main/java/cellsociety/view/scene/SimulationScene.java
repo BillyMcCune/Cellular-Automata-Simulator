@@ -65,16 +65,14 @@ public class SimulationScene {
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
 
+    // Create the UI components
     Pane gridParent = createGrid();
-    VBox.setVgrow(gridParent, Priority.ALWAYS);
-
-    // 创建其他控件
     HBox titleLabel = createTitleLabel();
     Pane speedControl = createSpeedControl();
     Pane controls = createControls();
     Label infoLabel = createInfoLabel();
 
-    // 设置infoLabel的Vgrow属性
+    VBox.setVgrow(gridParent, Priority.ALWAYS);
     VBox.setVgrow(infoLabel, Priority.ALWAYS);
 
     VBox root = new VBox(10,
@@ -150,9 +148,9 @@ public class SimulationScene {
       grid.relocate(offsetX, offsetY);
     });
 
-    final double[] scale = {1.0};  // 初始缩放比例
+    final double[] scale = {1.0};
     pane.setOnZoom(event -> {
-      double zoomFactor = event.getZoomFactor(); // 获取缩放因子
+      double zoomFactor = event.getZoomFactor();
 
       scale[0] *= zoomFactor;
 
