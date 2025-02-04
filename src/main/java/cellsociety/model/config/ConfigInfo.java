@@ -157,7 +157,8 @@ public class ConfigInfo {
   // TODO Finish this
   // NOTE: I think this is unnecessary, the grid control should be handled by the scene controller
   //   BY: Hsuan-Kai Liao
-  public void updateGrid(List<List<Integer>> cells){
+  // I think the update grid is just for saving the grid
+  public void saveGrid(List<List<Integer>> cells){
     GridPane grid = new GridPane();
   }
 
