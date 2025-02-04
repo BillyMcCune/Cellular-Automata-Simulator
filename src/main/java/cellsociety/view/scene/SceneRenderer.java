@@ -62,8 +62,6 @@ public class SceneRenderer {
    * @param state The state of the cell
    */
   public static void drawCell(GridPane grid, int row, int col, Enum<?> state) {
-    System.out.println("Drawing cell at " + row + ", " + col + " with state " + state);
-
     for (Node node : grid.getChildren()) {
       if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
           GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {

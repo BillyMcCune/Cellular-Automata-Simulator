@@ -169,15 +169,6 @@ public class SimulationScene {
       grid.setScaleY(scale[0]);
     });
 
-    // Reset the GridPane to the center when the R key is pressed
-    pane.setOnKeyPressed(event -> {
-      if (event.getCode().toString().equals("R")) {
-        centerGrid();
-      }
-
-      System.out.println("Key Pressed: " + event.getCode().toString());
-    });
-
     return pane;
   }
 
