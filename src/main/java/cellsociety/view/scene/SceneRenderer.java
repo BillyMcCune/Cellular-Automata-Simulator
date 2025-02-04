@@ -14,7 +14,7 @@ public class SceneRenderer {
 
   public static final Color DEFAULT_BACKGROUND_COLOR = Color.DIMGRAY;
   public static final Color DEFAULT_BORDER_COLOR = Color.LIGHTGRAY;
-  public static final int DEFAULT_CELL_SIZE = 50;
+  public static final int DEFAULT_CELL_SIZE = 20;
   public static final int DEFAULT_BORDER_SIZE = 1;
 
   /// The default colors for each cell state
