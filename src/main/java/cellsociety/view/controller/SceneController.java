@@ -192,4 +192,12 @@ public class SceneController {
   public boolean isLoaded() {
     return isLoaded;
   }
+
+  /**
+   * Check if the simulation is currently paused.
+   * @return True if the simulation is paused, false otherwise
+   */
+  public boolean isPaused() {
+    return isPaused;
+  }
 }

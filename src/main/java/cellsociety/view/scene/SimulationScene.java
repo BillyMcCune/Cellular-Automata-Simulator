@@ -21,24 +21,18 @@ import javafx.stage.Stage;
  */
 public class SimulationScene {
   // Constants
+  public static final String STYLE_PATH = "/cellsociety/style/style.css";
+
   public static final double DEFAULT_WIDTH = 600;
   public static final double DEFAULT_HEIGHT = 700;
-  public static final double MAX_SPEED = 10;
-  public static final double MIN_SPEED = 1;
 
-  // Color constants
-  private static final String BUTTON_START_COLOR = "#4CAF50";
-  private static final String BUTTON_PAUSE_COLOR = "#FF5722";
-  private static final String BUTTON_RESET_COLOR = "#f44336";
-  private static final String BUTTON_LOAD_COLOR = "#2196F3";
-  private static final String BUTTON_SAVE_COLOR = "#FF9800";
-  private static final String BUTTON_DIRECTORY_COLOR = "#9E9E9E";
-  private static final String GRID_BACKGROUND_COLOR = "#AEAEAE";
-  private static final String BACKGROUND_COLOR = "#d4d4d9";
-  private static final String LABEL_TEXT_COLOR = "#333333";
-  private static final String BUTTON_TEXT_COLOR = "#ffffff";
-  private static final String CONTROL_BG_COLOR = "#ffffff";
-  private static final String BORDER_COLOR = "#cccccc";
+  public static final double DEFAULT_GRID_WIDTH = 300;
+  public static final double DEFAULT_GRID_HEIGHT = 300;
+  public static final double MAX_ZOOM_RATE = 5.0;
+  public static final double MIN_ZOOM_RATE = 0.1;
+
+  public static final double MAX_SPEED = 20;
+  public static final double MIN_SPEED = 1;
 
   // UI components
   private Button startPauseButton;
@@ -82,7 +76,7 @@ public class SimulationScene {
         controls,
         infoLabel
     );
-    root.setStyle("-fx-padding: 20px; -fx-background-color: " + BACKGROUND_COLOR + ";");
+    root.getStylesheets().add(getClass().getResource(STYLE_PATH).toExternalForm());
 
     primaryStage.setScene(new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT));
   }
@@ -96,7 +90,7 @@ public class SimulationScene {
     timeSinceLastUpdate += elapsedTime;
     if (timeSinceLastUpdate >= updateInterval) {
       controller.update();
-      timeSinceLastUpdate = 0.0; // 重置计时器
+      timeSinceLastUpdate = 0.0;
     }
   }
 
@@ -104,7 +98,7 @@ public class SimulationScene {
 
   private HBox createTitleLabel() {
     titleLabel = new Label("Simulation Title");
-    titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: " + LABEL_TEXT_COLOR + ";");
+    titleLabel.getStyleClass().add("title-label");
 
     HBox titleContainer = new HBox(titleLabel);
     titleContainer.setAlignment(javafx.geometry.Pos.CENTER);
@@ -116,12 +110,12 @@ public class SimulationScene {
     this.grid = new GridPane();
 
     Pane pane = new Pane();
-    pane.setPrefSize(300, 200);
-    pane.setStyle("-fx-background-color:" + GRID_BACKGROUND_COLOR + "; -fx-border-color: black;");
+    pane.setPrefSize(DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT);
+    pane.getStyleClass().add("grid-pane");
 
     // Clip the Pane to the desired size
-    Rectangle clip = new Rectangle(300, 200);
-    pane.setClip(clip); // 将 Clip 设置为 Pane 的裁剪区域
+    Rectangle clip = new Rectangle(DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT);
+    pane.setClip(clip);
 
     // Update Clip and GridPane size when the Pane size changes
     pane.widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -163,7 +157,7 @@ public class SimulationScene {
       scale[0] *= zoomFactor;
 
       // limit the scale to reasonable values
-      scale[0] = Math.max(0.1, Math.min(scale[0], 5.0));
+      scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
 
       grid.setScaleX(scale[0]);
       grid.setScaleY(scale[0]);
@@ -172,16 +166,24 @@ public class SimulationScene {
     return pane;
   }
 
-
   private HBox createSpeedControl() {
     speedSlider = new Slider(MIN_SPEED, MAX_SPEED, (MAX_SPEED + MIN_SPEED) / 2);
     speedSlider.setMaxWidth(Double.MAX_VALUE);
     Label speedLabel = new Label("Speed: ");
-    Label minLabel = new Label("Min " + MIN_SPEED);
-    Label maxLabel = new Label("Max " + MAX_SPEED);
+    speedLabel.getStyleClass().add("speed-label");
+
+    // Add tooltips for hover information
+    Label minLabel = new Label("Min");
+    Label maxLabel = new Label(" Max");
+    Tooltip minTooltip = new Tooltip("Minimum speed (" + MIN_SPEED + ").");
+    Tooltip maxTooltip = new Tooltip("Maximum speed (" + MAX_SPEED + ").");
+    minLabel.setTooltip(minTooltip);
+    maxLabel.setTooltip(maxTooltip);
+
+    // Set slider style
     HBox speedControl = new HBox(10, speedLabel, minLabel, speedSlider, maxLabel);
     HBox.setHgrow(speedSlider, Priority.ALWAYS);
-    speedControl.setStyle("-fx-padding: 10px; -fx-background-color: " + CONTROL_BG_COLOR + "; -fx-border-color: #dddddd;");
+    speedControl.getStyleClass().add("speed-control");
 
     // Add listener to the slider
     speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -228,11 +230,11 @@ public class SimulationScene {
     directoryField.setMinWidth(directoryFieldWidth);
 
     // Style buttons with colors
-    startPauseButton.setStyle("-fx-background-color: " + BUTTON_START_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + "; -fx-background-insets: 0,1,2; -fx-background-radius: 3,2,1;");
-    resetButton.setStyle("-fx-background-color: " + BUTTON_RESET_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + "; -fx-background-insets: 0,1,2; -fx-background-radius: 3,2,1;");
-    loadButton.setStyle("-fx-background-color: " + BUTTON_LOAD_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + "; -fx-background-insets: 0,1,2; -fx-background-radius: 3,2,1;");
-    saveButton.setStyle("-fx-background-color: " + BUTTON_SAVE_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + "; -fx-background-insets: 0,1,2; -fx-background-radius: 3,2,1;");
-    directoryButton.setStyle("-fx-background-color: " + BUTTON_DIRECTORY_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + "; -fx-background-insets: 0,1,2; -fx-background-radius: 3,2,1;");
+    startPauseButton.getStyleClass().add("start-button");
+    resetButton.getStyleClass().add("reset-button");
+    loadButton.getStyleClass().add("load-button");
+    saveButton.getStyleClass().add("save-button");
+    directoryButton.getStyleClass().add("directory-button");
 
     // Set ComboBox
     selectType = new ComboBox<>();
@@ -271,7 +273,7 @@ public class SimulationScene {
 
   private Label createInfoLabel() {
     infoLabel = new Label("Information");
-    infoLabel.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-padding: 10px; -fx-background-color: " + CONTROL_BG_COLOR + "; -fx-alignment: CENTER_LEFT; -fx-font-size: 16px; -fx-font-weight: bold;");
+    infoLabel.getStyleClass().add("info-label");
     infoLabel.setMaxWidth(Double.MAX_VALUE);
     return infoLabel;
   }
@@ -284,15 +286,7 @@ public class SimulationScene {
       return;
     }
 
-    if ("Start".equals(startPauseButton.getText())) {
-      startPauseButton.setText("Pause");
-      startPauseButton.setStyle("-fx-background-color: " + BUTTON_PAUSE_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + ";");
-      controller.setStartPause(false);
-    } else {
-      startPauseButton.setText("Start");
-      startPauseButton.setStyle("-fx-background-color: " + BUTTON_START_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + ";");
-      controller.setStartPause(true);
-    }
+    toggleStartPauseButton(!controller.isPaused());
   }
 
   private void speedChangeCallback(double speed) {
@@ -315,11 +309,7 @@ public class SimulationScene {
     controller.resetModel();
 
     // Force to pause
-    if ("Pause".equals(startPauseButton.getText())) {
-      startPauseButton.setText("Start");
-      startPauseButton.setStyle("-fx-background-color: " + BUTTON_START_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + ";");
-      controller.setStartPause(true);
-    }
+    toggleStartPauseButton(true);
 
     // Update the Speed
     speedSlider.setValue(controller.getConfigSpeed());
@@ -332,11 +322,7 @@ public class SimulationScene {
     // Load a new simulation
     if (!"None".equals(filename) && filename != null && !filename.isEmpty()) {
       // Force to pause
-      if ("Pause".equals(startPauseButton.getText())) {
-        startPauseButton.setText("Start");
-        startPauseButton.setStyle("-fx-background-color: " + BUTTON_START_COLOR + "; -fx-text-fill: " + BUTTON_TEXT_COLOR + ";");
-        controller.setStartPause(true);
-      }
+      toggleStartPauseButton(true);
 
       // Load the config file
       controller.loadConfig(filename);
@@ -392,5 +378,20 @@ public class SimulationScene {
 
   public void setCell(int row, int col, Enum<?> state) {
     SceneRenderer.drawCell(grid, row, col, state);
+  }
+
+
+  /* PRIVATE UI HELPER METHODS */
+
+  private void toggleStartPauseButton(boolean isPause) {
+    if (isPause) {
+      startPauseButton.setText("Start");
+      startPauseButton.getStyleClass().setAll("button", "start-button");
+      controller.setStartPause(true);
+    } else {
+      startPauseButton.setText("Pause");
+      startPauseButton.getStyleClass().setAll("button", "pause-button");
+      controller.setStartPause(false);
+    }
   }
 }

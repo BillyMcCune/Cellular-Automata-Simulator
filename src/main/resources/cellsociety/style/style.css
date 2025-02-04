@@ -1,0 +1,113 @@
+.root {
+  -fx-padding: 20px;
+  -fx-background-color: #d4d4d9;
+}
+
+.title-label {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #333333;
+}
+
+.grid-pane {
+  -fx-background-color: #AEAEAE;
+  -fx-border-color: black;
+}
+
+.speed-label {
+  -fx-font-weight: bold;
+}
+
+.speed-control {
+  -fx-padding: 10px;
+  -fx-background-color: #ffffff;
+  -fx-border-color: #dddddd;
+}
+
+/* Base Button */
+.button {
+  -fx-text-fill: #ffffff;
+  -fx-alignment: center;
+  -fx-font-weight: bold;
+  -fx-background-insets: 0,1,2;
+  -fx-background-radius: 3,2,1;
+}
+
+/* Start Button */
+.start-button {
+  -fx-background-color: #4CAF50;
+}
+.start-button:hover {
+  -fx-background-color: derive(#4CAF50, 15%);
+}
+.start-button:pressed {
+  -fx-background-color: derive(#4CAF50, -15%);
+}
+
+/* Pause Button */
+.pause-button {
+  -fx-background-color: #FFC107;
+}
+.pause-button:hover {
+  -fx-background-color: derive(#FFC107, 15%);
+}
+.pause-button:pressed {
+  -fx-background-color: derive(#FFC107, -15%);
+}
+
+/* Reset Button */
+
+.reset-button {
+  -fx-background-color: #f44336;
+}
+.reset-button:hover {
+  -fx-background-color: derive(#f44336, 15%);
+}
+.reset-button:pressed {
+  -fx-background-color: derive(#f44336, -15%);
+}
+
+/* Load Button */
+
+.load-button {
+  -fx-background-color: #2196F3;
+}
+.load-button:hover {
+  -fx-background-color: derive(#2196F3, 15%);
+}
+.load-button:pressed {
+  -fx-background-color: derive(#2196F3, -15%);
+}
+
+/* Save Button */
+
+.save-button {
+  -fx-background-color: #FF9800;
+}
+.save-button:hover {
+  -fx-background-color: derive(#FF9800, 15%);
+}
+.save-button:pressed {
+  -fx-background-color: derive(#FF9800, -15%);
+}
+
+/* Directory Button */
+
+.directory-button {
+  -fx-background-color: #9E9E9E;
+}
+.directory-button:hover {
+  -fx-background-color: derive(#9E9E9E, 15%);
+}
+.directory-button:pressed {
+  -fx-background-color: derive(#9E9E9E, -15%);
+}
+
+.info-label {
+  -fx-border-color: #cccccc;
+  -fx-padding: 10px;
+  -fx-background-color: #ffffff;
+  -fx-alignment: CENTER_LEFT;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+}
