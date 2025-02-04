@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import java.util.Map;
+import org.w3c.dom.Node;
 
 /**
  * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
@@ -42,6 +43,7 @@ public class ConfigReader {
     File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     ConfigInfo configInformation = getConfigInformation(dataFile);
+    System.out.println(configInformation.getParameters());
     if (!configInformation.isValid()) {
       System.err.println("Configuration file not found or is empty");
     }
@@ -66,6 +68,8 @@ public class ConfigReader {
       int height = Integer.parseInt(getTextValue(root, "height"));
       int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
       List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
+      Map<String,Double> parameters = parseForParameters(root);
+
 
       configInformation.setConfig(new ArrayList<>(List.of(
           type,
@@ -75,11 +79,12 @@ public class ConfigReader {
           width,
           height,
           defaultSpeed,
-          initialStatesForGrid
+          initialStatesForGrid,
+          parameters
       )));
 
       System.out.println("Configuration file:" + xmlFile.getName());
-      System.out.println("Configuration info:" + configInformation);
+      System.out.println("Configuration info:" + configInformation.getAllConfigInfo());
       return configInformation;
     } catch (NumberFormatException e) {
       System.err.println("Invalid number given in data");
@@ -172,5 +177,42 @@ public class ConfigReader {
       initialStatesForGrid.add(row);
     }
     return initialStatesForGrid;
+  }
+
+  /**
+   * Purpose: A method to test getting internal resources.
+   * Assumptions:
+   * Parameters:
+   * Exceptions:
+   * return value:
+   */
+  private Map<String, Double> parseForParameters(Element root) {
+    Map<String, Double> parametersMap = new HashMap<>();
+    Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
+    if (parametersElement == null) {
+      return parametersMap;
+    }
+
+    NodeList params = parametersElement.getChildNodes();
+    for (int i = 0; i < params.getLength(); i++) {
+      Node child = params.item(i);
+
+      if (child.getNodeType() == Node.ELEMENT_NODE) {
+        Element paramElement = (Element) child;
+        String paramName = paramElement.getNodeName();
+        String paramValueStr = paramElement.getTextContent().trim();
+
+        if (!paramValueStr.isEmpty()) {
+          try {
+            double paramValue = Double.parseDouble(paramValueStr);
+            parametersMap.put(paramName, paramValue);
+          } catch (NumberFormatException e) {
+            System.err.println("Could not parse parameter '" + paramName
+                + "' with value: '" + paramValueStr + "'");
+          }
+        }
+      }
+    }
+    return parametersMap;
   }
 }
