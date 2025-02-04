@@ -3,6 +3,7 @@ package cellsociety.model.logic;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.PercolationState;
+import cellsociety.model.data.states.SegregationState;
 import cellsociety.model.data.states.State;
 
 /**

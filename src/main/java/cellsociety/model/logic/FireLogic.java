@@ -18,10 +18,6 @@ public class FireLogic extends Logic<FireState> {
     FireLogic.probCatch = probCatch;
   }
 
-  public void update() {
-    super.update();
-  }
-
   @Override
   protected void updateSingleCell(Cell<FireState> cell) {
     FireState currentState = cell.getCurrentState();

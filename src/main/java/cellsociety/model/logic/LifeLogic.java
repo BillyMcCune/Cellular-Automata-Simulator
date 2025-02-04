@@ -18,11 +18,7 @@ public class LifeLogic extends Logic<LifeState> {
     super(grid);
   }
 
-
-  public void update() {
-    super.update();
-  }
-
+  @Override
   protected void updateSingleCell(Cell<LifeState> cell) {
     LifeState currentState = cell.getCurrentState();
     int liveNeighbors = countLiveNeighbors(cell);

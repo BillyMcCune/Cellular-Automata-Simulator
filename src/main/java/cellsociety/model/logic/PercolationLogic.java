@@ -21,15 +21,12 @@ public class PercolationLogic extends Logic<PercolationState> {
     super(grid);
   }
 
-  public void update() {
-    super.update();
-  }
-
   /**
    * Updates the next state of a single cell based on its current state and neighbors.
    *
    * @param cell the cell to update
    */
+  @Override
   protected void updateSingleCell(Cell<PercolationState> cell) {
     PercolationState currentState = cell.getCurrentState();
 
