@@ -1,0 +1,18 @@
+<simulation>
+  <type>PERCOLATION</type>
+  <title>Default Percolation Simulation</title>
+  <author>Billy</author>
+  <description>A default version of the percolation simulation.</description>
+  <parameters>
+  </parameters>
+  <width>5</width>
+  <height>5</height>
+  <defaultSpeed>2</defaultSpeed>
+  <initialStates>
+    <row>0 0 1 2 2</row>
+    <row>1 2 1 2 0</row>
+    <row>0 0 1 0 0</row>
+    <row>0 0 1 0 0</row>
+    <row>0 0 0 1 0</row>
+  </initialStates>
+</simulation>
