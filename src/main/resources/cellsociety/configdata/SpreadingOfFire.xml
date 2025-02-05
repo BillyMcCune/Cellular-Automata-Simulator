@@ -1,0 +1,22 @@
+<simulation>
+  <type>SPREADINGOFFIRE</type>
+  <title>Basic Fire</title>
+  <author>Billy</author>
+  <description>A basic fire in the spreading of fire simulation.</description>
+  <parameters>
+    <probCatch>0.5</probCatch>
+  </parameters>
+  <width>8</width>
+  <height>8</height>
+  <defaultSpeed>2</defaultSpeed>
+  <initialStates>
+    <row>1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1</row>
+    <row>1 1 2 1 1 1 1 1</row>
+    <row>1 2 0 0 0 1 1 1</row>
+    <row>1 1 2 0 1 1 1 1</row>
+    <row>1 1 1 2 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1</row>
+  </initialStates>
+</simulation>
