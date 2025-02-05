@@ -161,6 +161,7 @@ public class SceneController {
         CellFactory<FireState> fireFactory = new CellFactory<>(FireState.class);
         Grid<FireState> fireGrid = new Grid<>(configInfo.getGrid(), fireFactory);
         gameLogic = new FireLogic(fireGrid);
+        ((FireLogic) gameLogic).setProbCatch(configInfo.getParameters().get("probCatch"));
         grid = fireGrid;
       }
       default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
