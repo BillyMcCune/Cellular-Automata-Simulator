@@ -10,6 +10,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
+/**
+ * The SceneRenderer class is responsible for rendering the simulation scene.
+ * It provides methods to draw the grid and cells on the screen.
+ *
+ * @author Hsuan-Kai Liao
+ */
 public class SceneRenderer {
 
   public static final Color DEFAULT_BACKGROUND_COLOR = Color.DIMGRAY;

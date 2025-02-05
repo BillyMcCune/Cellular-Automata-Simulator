@@ -3,28 +3,46 @@
   -fx-background-color: #d4d4d9;
 }
 
+/* Title */
+
 .title-label {
   -fx-font-size: 20px;
   -fx-font-weight: bold;
   -fx-text-fill: #333333;
 }
 
+/* Grid */
+
 .grid-pane {
   -fx-background-color: #AEAEAE;
   -fx-border-color: black;
 }
 
-.speed-label {
+/* Parameter */
+
+.parameter-title {
+  -fx-font-size: 18px;
   -fx-font-weight: bold;
 }
 
-.speed-control {
+.parameter-label {
+  -fx-font-weight: bold;
+}
+
+.parameter-container {
   -fx-padding: 10px;
-  -fx-background-color: #ffffff;
-  -fx-border-color: #dddddd;
+  -fx-background-color: #e3e3e3;
+  -fx-border-color: #afafaf;
+}
+
+.parameter-control {
+  -fx-padding: 10px;
+  -fx-background-color: #f3f3f3;
+  -fx-border-color: #838383;
 }
 
 /* Base Button */
+
 .button {
   -fx-text-fill: #ffffff;
   -fx-alignment: center;
@@ -106,7 +124,7 @@
 .info-label {
   -fx-border-color: #cccccc;
   -fx-padding: 10px;
-  -fx-background-color: #ffffff;
+  -fx-background-color: #e3e3e3;
   -fx-alignment: CENTER_LEFT;
   -fx-font-size: 16px;
   -fx-font-weight: bold;

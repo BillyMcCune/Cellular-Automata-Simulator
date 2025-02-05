@@ -18,15 +18,17 @@ import java.util.List;
 /**
  * The SceneController class is responsible for controlling the flow of the application and managing the different scenes.
  * It communicates with the ConfigIO parts and the main Model Logics.
+ *
+ * @author Hsuan-Kai Liao
  */
 public class SceneController {
 
   // ConfigIO
-  private ConfigReader configReader;
+  private final ConfigReader configReader;
   private ConfigInfo configInfo;
 
   // Scene
-  private SimulationScene simulationScene;
+  private final SimulationScene simulationScene;
 
   // Model
   private Grid<?> grid;
@@ -93,15 +95,13 @@ public class SceneController {
       return "";
     }
 
-    String info = String.format(
+    return String.format(
         "Author: %s\nTitle: %s\nType: %s\nDescription: %s",
         configInfo.getAuthor(),
         configInfo.getTitle(),
         configInfo.getType(),
         configInfo.getDescription()
     );
-
-    return info;
   }
 
   /**
@@ -161,12 +161,23 @@ public class SceneController {
         CellFactory<FireState> fireFactory = new CellFactory<>(FireState.class);
         Grid<FireState> fireGrid = new Grid<>(configInfo.getGrid(), fireFactory);
         gameLogic = new FireLogic(fireGrid);
-        ((FireLogic) gameLogic).setProbCatch(configInfo.getParameters().get("probCatch"));
         grid = fireGrid;
+
+        // Set the probability of catching fire
+        ((FireLogic) gameLogic).setProbCatch(configInfo.getParameters().get("probCatch"));
+        simulationScene.setParameter(
+            "Flame Spread Probability",
+            0,
+            1,
+            (configInfo.getParameters().get("probCatch")),
+            "The probability that a tree will catch fire from a burning neighbor.",
+            ((FireLogic) gameLogic)::setProbCatch
+        );
       }
+      // TODO: Add more cases for other simulation types
+
       default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
     }
-      // TODO: Add more cases for other simulation types
 
     // Set the grid to the scene
     simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
@@ -201,4 +212,5 @@ public class SceneController {
   public boolean isPaused() {
     return isPaused;
   }
+
 }

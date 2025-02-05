@@ -2,12 +2,12 @@ package cellsociety.view.scene;
 
 import cellsociety.view.controller.SceneController;
 import java.io.File;
-import javafx.application.Platform;
+import java.util.Objects;
+import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
@@ -24,7 +24,7 @@ public class SimulationScene {
   public static final String STYLE_PATH = "/cellsociety/style/style.css";
 
   public static final double DEFAULT_WIDTH = 600;
-  public static final double DEFAULT_HEIGHT = 700;
+  public static final double DEFAULT_HEIGHT = 600;
 
   public static final double DEFAULT_GRID_WIDTH = 300;
   public static final double DEFAULT_GRID_HEIGHT = 300;
@@ -33,12 +33,13 @@ public class SimulationScene {
 
   public static final double MAX_SPEED = 20;
   public static final double MIN_SPEED = 1;
+  public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
   // UI components
   private Button startPauseButton;
   private Label titleLabel;
   private GridPane grid;
-  private Slider speedSlider;
+  private VBox parameterBox;
   private ComboBox<String> selectType;
   private TextField directoryField;
   private Label infoLabel;
@@ -62,23 +63,27 @@ public class SimulationScene {
     // Create the UI components
     Pane gridParent = createGrid();
     HBox titleLabel = createTitleLabel();
-    Pane speedControl = createSpeedControl();
     Pane controls = createControls();
     Label infoLabel = createInfoLabel();
+    Pane parameterPanel = createParameterPanel();
 
     VBox.setVgrow(gridParent, Priority.ALWAYS);
-    VBox.setVgrow(infoLabel, Priority.ALWAYS);
 
-    VBox root = new VBox(10,
+    VBox rootContent = new VBox(10,
         titleLabel,
         gridParent,
-        speedControl,
+        parameterPanel,
         controls,
         infoLabel
     );
-    root.getStylesheets().add(getClass().getResource(STYLE_PATH).toExternalForm());
+    rootContent.setPadding(new Insets(10));
+    rootContent.getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
 
-    primaryStage.setScene(new Scene(root, DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    ScrollPane scrollPane = new ScrollPane(rootContent);
+    scrollPane.setFitToWidth(true);
+    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+    primaryStage.setScene(new Scene(scrollPane, DEFAULT_WIDTH, DEFAULT_HEIGHT));
   }
 
 
@@ -166,31 +171,47 @@ public class SimulationScene {
     return pane;
   }
 
-  private HBox createSpeedControl() {
-    speedSlider = new Slider(MIN_SPEED, MAX_SPEED, (MAX_SPEED + MIN_SPEED) / 2);
-    speedSlider.setMaxWidth(Double.MAX_VALUE);
-    Label speedLabel = new Label("Speed: ");
-    speedLabel.getStyleClass().add("speed-label");
+  private VBox createParameterPanel() {
+    parameterBox = new VBox(5);
+    parameterBox.setAlignment(Pos.CENTER);
+
+    Label parametersLabel = new Label("Parameters");
+    parametersLabel.getStyleClass().add("parameter-title");
+
+    // Add speed parameter
+    setParameter("Speed", MIN_SPEED, MAX_SPEED, (MAX_SPEED + MIN_SPEED) / 2, SPEED_TOOLTIP, this::speedChangeCallback);
+
+    VBox parameterContainer = new VBox(10, parametersLabel, parameterBox);
+    parameterContainer.setAlignment(Pos.CENTER);
+    parameterContainer.getStyleClass().add("parameter-container");
+    parameterContainer.setPadding(new Insets(10));
+
+    return parameterContainer;
+  }
+
+  private HBox createParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
+    Slider slider = new Slider(min, max, defaultValue);
+    slider.setMaxWidth(Double.MAX_VALUE);
+
+    Label speedLabel = new Label(label + ": ");
+    speedLabel.getStyleClass().add("parameter-label");
+    speedLabel.setTooltip(new Tooltip(tooltip));
 
     // Add tooltips for hover information
-    Label minLabel = new Label("Min");
-    Label maxLabel = new Label(" Max");
-    Tooltip minTooltip = new Tooltip("Minimum speed (" + MIN_SPEED + ").");
-    Tooltip maxTooltip = new Tooltip("Maximum speed (" + MAX_SPEED + ").");
-    minLabel.setTooltip(minTooltip);
-    maxLabel.setTooltip(maxTooltip);
+    Label minLabel = new Label(min + " ");
+    Label maxLabel = new Label(" " + max);
 
-    // Set slider style
-    HBox speedControl = new HBox(10, speedLabel, minLabel, speedSlider, maxLabel);
-    HBox.setHgrow(speedSlider, Priority.ALWAYS);
-    speedControl.getStyleClass().add("speed-control");
+    // Set slider
+    HBox parameterControl = new HBox(5, speedLabel, minLabel, slider, maxLabel);
+    HBox.setHgrow(slider, Priority.ALWAYS);
+    parameterControl.getStyleClass().add("parameter-control");
 
     // Add listener to the slider
-    speedSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-      speedChangeCallback(newValue.doubleValue());
+    slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+      callback.accept(newValue.doubleValue());
     });
 
-    return speedControl;
+    return parameterControl;
   }
 
   private VBox createControls() {
@@ -274,9 +295,12 @@ public class SimulationScene {
   private Label createInfoLabel() {
     infoLabel = new Label("Information");
     infoLabel.getStyleClass().add("info-label");
+    infoLabel.setWrapText(true);
     infoLabel.setMaxWidth(Double.MAX_VALUE);
+
     return infoLabel;
   }
+
 
   /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
 
@@ -305,14 +329,15 @@ public class SimulationScene {
   }
 
   private void resetCallback() {
-    // Reset the simulation
-    controller.resetModel();
-
     // Force to pause
     toggleStartPauseButton(true);
 
-    // Update the Speed
-    speedSlider.setValue(controller.getConfigSpeed());
+    // Clear the parameter box except for the speed
+    parameterBox.getChildren().clear();
+    setParameter("Speed", MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), SPEED_TOOLTIP, this::speedChangeCallback);
+
+    // Reset the simulation
+    controller.resetModel();
 
     // Center the grid
     centerGrid();
@@ -326,10 +351,13 @@ public class SimulationScene {
 
       // Load the config file
       controller.loadConfig(filename);
-      controller.resetModel();
 
-      // Update the Speed
-      speedSlider.setValue(controller.getConfigSpeed());
+      // Clear the parameter box except for the speed
+      parameterBox.getChildren().clear();
+      setParameter("Speed", MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), SPEED_TOOLTIP, this::speedChangeCallback);
+
+      // Reset the simulation
+      controller.resetModel();
 
       // Update the UI Text
       titleLabel.setText(controller.getConfigTitle());
@@ -372,14 +400,37 @@ public class SimulationScene {
 
   /* PUBLIC UI SETS METHOD */
 
+  /**
+   * Set the grid with the given number of rows and columns
+   * @param numOfRows the number of rows in the grid
+   * @param numOfCols the number of columns in the grid
+   */
   public void setGrid(int numOfRows, int numOfCols) {
     SceneRenderer.drawGrid(grid, numOfRows, numOfCols);
   }
 
+  /**
+   * Set the cell at the given row and column with the given state
+   * @param row the row of the cell
+   * @param col the column of the cell
+   * @param state the state of the cell
+   */
   public void setCell(int row, int col, Enum<?> state) {
     SceneRenderer.drawCell(grid, row, col, state);
   }
 
+  /**
+   * Set the parameter with the given label, min, max, default value, tooltip, and callback
+   * @param label the label of the parameter
+   * @param min the minimum value of the parameter
+   * @param max the maximum value of the parameter
+   * @param defaultValue the default value of the parameter
+   * @param tooltip the tooltip of the parameter
+   * @param callback the callback function of the parameter
+   */
+  public void setParameter(String label, double min, double max, double defaultValue, String tooltip, Consumer<Double> callback) {
+    parameterBox.getChildren().add(createParameter(min, max, defaultValue, label, tooltip, callback));
+  }
 
   /* PRIVATE UI HELPER METHODS */
 
