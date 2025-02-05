@@ -23,7 +23,7 @@ public class ConfigInfo {
   private Map<String, Double> myParameters;
 
   public enum SimulationType {
-    GAMEOFLIFE, GAMEOFLIFEGLIDER, PERCOLATION, SPREADINGOFFIRE
+    GAMEOFLIFE, PERCOLATION, SPREADINGOFFIRE, SEGREGATION
   }
 
   private ConfigInfo() {
