@@ -8,10 +8,12 @@ import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.states.FireState;
 import cellsociety.model.data.states.LifeState;
 import cellsociety.model.data.states.PercolationState;
+import cellsociety.model.data.states.SegregationState;
 import cellsociety.model.logic.FireLogic;
 import cellsociety.model.logic.LifeLogic;
 import cellsociety.model.logic.Logic;
 import cellsociety.model.logic.PercolationLogic;
+import cellsociety.model.logic.SegregationLogic;
 import cellsociety.view.scene.SimulationScene;
 import java.util.List;
 
@@ -174,7 +176,12 @@ public class SceneController {
             ((FireLogic) gameLogic)::setProbCatch
         );
       }
-      // TODO: Add more cases for other simulation types
+      case SEGREGATION -> {
+        CellFactory<SegregationState> segregationFactory = new CellFactory<>(SegregationState.class);
+        Grid<SegregationState> segregationStateGrid = new Grid<>(configInfo.getGrid(), segregationFactory);
+        gameLogic = new SegregationLogic(segregationStateGrid);
+        grid = segregationStateGrid;
+      }
 
       default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
     }
