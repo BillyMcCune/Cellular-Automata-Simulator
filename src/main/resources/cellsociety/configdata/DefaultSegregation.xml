@@ -4,6 +4,7 @@
   <author>Billy</author>
   <description>A default version of the segregation simulation.</description>
   <parameters>
+    <satisfiedThreshold>0.5</satisfiedThreshold>
   </parameters>
   <width>10</width>
   <height>5</height>

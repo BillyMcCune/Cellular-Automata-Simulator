@@ -192,14 +192,14 @@ public class SceneController {
         grid = fireGrid;
 
         // Set the probability of catching fire
-        ((FireLogic) gameLogic).setProbCatch(configInfo.getParameters().get("probCatch"));
+        FireLogic.setProbCatch(configInfo.getParameters().get("probCatch"));
         simulationScene.setParameter(
             "Flame Spread Probability",
             0,
             1,
             (configInfo.getParameters().get("probCatch")),
             "The probability that a tree will catch fire from a burning neighbor.",
-            ((FireLogic) gameLogic)::setProbCatch
+            FireLogic::setProbCatch
         );
       }
       case SEGREGATION -> {
@@ -207,6 +207,17 @@ public class SceneController {
         Grid<SegregationState> segregationStateGrid = new Grid<>(configInfo.getGrid(), segregationFactory);
         gameLogic = new SegregationLogic(segregationStateGrid);
         grid = segregationStateGrid;
+
+        // Set the satisfied threshold
+        SegregationLogic.setSatisfiedThreshold(configInfo.getParameters().get("satisfiedThreshold"));
+        simulationScene.setParameter(
+            "Satisfied Threshold",
+            0,
+            1,
+            (configInfo.getParameters().get("satisfiedThreshold")),
+            "The proportion of similar neighbors needed to be satisfied.",
+            SegregationLogic::setSatisfiedThreshold
+        );
       }
 
       default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
