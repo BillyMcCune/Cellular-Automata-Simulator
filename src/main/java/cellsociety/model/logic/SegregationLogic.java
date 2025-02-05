@@ -4,12 +4,11 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SegregationState;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class SegregationLogic extends Logic<SegregationState> {
 
-  private ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
-  private ArrayList<Cell<SegregationState>> occupied = new ArrayList<>();
+  private final ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
+  private static double satisfiedThreshold;
 
   public SegregationLogic(Grid<SegregationState> grid) {
     super(grid);
@@ -23,24 +22,43 @@ public class SegregationLogic extends Logic<SegregationState> {
         if (cell.getCurrentState() == SegregationState.OPEN) {
           empty.add(cell);
         }
-        else {
-          occupied.add(cell);
-        }
       }
     }
   }
 
+  public static void setSatisfiedThreshold(double satisfiedThreshold) {
+    SegregationLogic.satisfiedThreshold = satisfiedThreshold;
+  }
+
   @Override
   protected void updateSingleCell(Cell<SegregationState> cell) {
-    if (cell.getCurrentState() != SegregationState.OPEN) {
-      int randomEmptyIndex = new Random().nextInt(empty.size());
+    if ((cell.getCurrentState() != SegregationState.OPEN) && (getProportionSimilarNeighbors(cell) < satisfiedThreshold)) {
+      int randomEmptyIndex = (int) (Math.random() * empty.size());
       Cell<SegregationState> selectedCell = empty.get(randomEmptyIndex);
 
       selectedCell.setNextState(cell.getCurrentState());
       cell.setNextState(SegregationState.OPEN);
 
-      empty.remove(randomEmptyIndex);
-      occupied.remove(selectedCell);
+      empty.remove(selectedCell);
+      empty.add(cell);
     }
+  }
+
+  private double getProportionSimilarNeighbors(Cell<SegregationState> cell) {
+    double similarNeighbors = 0;
+    double totalNeighbors = 0;
+    SegregationState state = cell.getCurrentState();
+    for (Cell<SegregationState> neighbor : cell.getNeighbors()) {
+      if (neighbor.getCurrentState() != SegregationState.OPEN) {
+        if (neighbor.getCurrentState() == state) {
+          similarNeighbors++;
+        }
+        totalNeighbors++;
+      }
+    }
+    if (totalNeighbors == 0) {
+      return 0;
+    }
+    return (similarNeighbors/totalNeighbors);
   }
 }
