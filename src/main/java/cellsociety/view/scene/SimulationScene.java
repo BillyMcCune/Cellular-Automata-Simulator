@@ -380,7 +380,13 @@ public class SimulationScene {
   }
 
   private void saveCallback(String path) {
-    // TODO: Save the current simulation
+    if (path != null && !path.isEmpty()) {
+      // Force to pause
+      toggleStartPauseButton(true);
+
+      // Save the current configuration
+      controller.saveConfig(path);
+    }
   }
 
   private void centerGrid() {

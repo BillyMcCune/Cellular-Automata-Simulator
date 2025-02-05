@@ -3,6 +3,7 @@ package cellsociety.view.controller;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigReader;
+import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.states.FireState;
@@ -16,6 +17,7 @@ import cellsociety.model.logic.PercolationLogic;
 import cellsociety.model.logic.SegregationLogic;
 import cellsociety.view.scene.SimulationScene;
 import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * The SceneController class is responsible for controlling the flow of the application and managing the different scenes.
@@ -27,6 +29,7 @@ public class SceneController {
 
   // ConfigIO
   private final ConfigReader configReader;
+  private final ConfigWriter configWriter;
   private ConfigInfo configInfo;
 
   // Scene
@@ -48,6 +51,7 @@ public class SceneController {
   public SceneController(SimulationScene scene) {
     // Initialize
     this.configReader = new ConfigReader();
+    this.configWriter = new ConfigWriter();
     this.simulationScene = scene;
     this.isPaused = true;
   }
@@ -75,8 +79,25 @@ public class SceneController {
    */
   public void loadConfig(String filename) {
     configInfo = configReader.readConfig(filename);
+    configWriter.setConfigInfo(configInfo);
     if (configInfo != null) {
       isLoaded = true;
+    }
+  }
+
+  /**
+   * Write the current configuration to a file with the given filename.
+   * @param path The path to save the configuration file
+   */
+  public void saveConfig(String path) {
+    if (configInfo == null) {
+      return;
+    }
+
+    try {
+      configWriter.saveCurrentConfig(path);
+    } catch (ParserConfigurationException e) {
+      e.printStackTrace();
     }
   }
 
@@ -138,14 +159,19 @@ public class SceneController {
     // NOTES: Maybe we can redesign a map to take in a SimulationType,
     //        so that we can get rid of the annoying switch statement.
     //        This is just a temporary solution.
+    //  HINT: Now adding a new simulation type requires FOUR steps:
+    //        1. Create the corresponding State, Logic, and Factory
+    //        2. Add the new SimulationType to the ConfigInfo
+    //        3. Add the color maps in the SimulationScene
+    //        4. Add the resetModel logic here in the new switch statement
     //    BY: Hsuan-Kai Liao
 
     if (configInfo == null) {
       return;
     }
 
+    // Create the grid and logic based on the simulation type
     SimulationType type = configInfo.getType();
-
     switch (type) {
       case GAMEOFLIFE -> {
         CellFactory<LifeState> lifeFactory = new CellFactory<>(LifeState.class);
