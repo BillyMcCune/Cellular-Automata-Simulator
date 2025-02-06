@@ -196,7 +196,6 @@ public class SceneController {
         grid = fireGrid;
 
         // Set the probability of catching fire
-        FireLogic.setProbCatch(configInfo.getParameters().get("probCatch"));
         simulationScene.setParameter(
             "Flame Spread Probability",
             0,
@@ -213,7 +212,6 @@ public class SceneController {
         grid = segregationStateGrid;
 
         // Set the satisfied threshold
-        SegregationLogic.setSatisfiedThreshold(configInfo.getParameters().get("satisfiedThreshold"));
         simulationScene.setParameter(
             "Satisfied Threshold",
             0,
