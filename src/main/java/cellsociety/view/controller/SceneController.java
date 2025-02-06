@@ -51,7 +51,7 @@ public class SceneController {
   public SceneController(SimulationScene scene) {
     // Initialize
     this.configReader = new ConfigReader();
-    this.configWriter = new ConfigWriter();
+    this.configWriter = new ConfigWriter(configInfo);
     this.simulationScene = scene;
     this.isPaused = true;
   }
@@ -95,7 +95,7 @@ public class SceneController {
     }
 
     try {
-      configWriter.saveCurrentConfig(path);
+      configWriter.saveCurrentConfig();
     } catch (ParserConfigurationException e) {
       e.printStackTrace();
     }

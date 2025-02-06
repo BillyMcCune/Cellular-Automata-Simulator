@@ -138,4 +138,7 @@ public class ConfigWriter {
     }
   }
 
+  public void setConfigInfo(ConfigInfo configInfo) {
+    myConfigInfo = configInfo;
+  }
 }

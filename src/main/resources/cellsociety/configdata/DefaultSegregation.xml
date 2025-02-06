@@ -10,9 +10,9 @@
   <height>5</height>
   <defaultSpeed>2</defaultSpeed>
   <initialStates>
-    <row>0 1 1 0 0 0 0 2 0 0</row>
+    <row>0 1 1 0 0 1 0 2 0 0</row>
     <row>0 0 2 2 1 2 1 1 1 0</row>
-    <row>0 0 1 0 0 0 0 1 2 1</row>
+    <row>0 0 1 0 1 1 1 1 2 1</row>
     <row>0 0 2 0 1 0 1 0 0 0</row>
     <row>2 0 0 0 2 0 0 1 0 0</row>
   </initialStates>
