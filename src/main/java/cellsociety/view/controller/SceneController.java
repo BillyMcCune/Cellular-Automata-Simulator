@@ -51,7 +51,7 @@ public class SceneController {
   public SceneController(SimulationScene scene) {
     // Initialize
     this.configReader = new ConfigReader();
-    this.configWriter = new ConfigWriter(configInfo);
+    this.configWriter = new ConfigWriter(configInfo); // TODO: REQUIRE CONSTRUCTOR WITH NO ARGUMENTS
     this.simulationScene = scene;
     this.isPaused = true;
   }
@@ -97,7 +97,7 @@ public class SceneController {
     try {
       configWriter.saveCurrentConfig();
     } catch (ParserConfigurationException e) {
-      e.printStackTrace();
+      System.out.println("Error saving the configuration file: " + e);
     }
   }
 
@@ -170,6 +170,10 @@ public class SceneController {
       return;
     }
 
+    // TODO: SET UNIQUE MIN AND MAX VALUES FOR PARAMETERS
+    double MIN = 0;
+    double MAX = 100;
+
     // Create the grid and logic based on the simulation type
     SimulationType type = configInfo.getType();
     switch (type) {
@@ -219,6 +223,7 @@ public class SceneController {
             SegregationLogic::setSatisfiedThreshold
         );
       }
+      // TODO: Add more simulation types here
 
       default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
     }

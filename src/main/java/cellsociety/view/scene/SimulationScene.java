@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
@@ -181,6 +182,7 @@ public class SimulationScene {
     // Add speed parameter
     setParameter("Speed", MIN_SPEED, MAX_SPEED, (MAX_SPEED + MIN_SPEED) / 2, SPEED_TOOLTIP, this::speedChangeCallback);
 
+    // Create the parameter container
     VBox parameterContainer = new VBox(10, parametersLabel, parameterBox);
     parameterContainer.setAlignment(Pos.CENTER);
     parameterContainer.getStyleClass().add("parameter-container");
@@ -190,25 +192,67 @@ public class SimulationScene {
   }
 
   private HBox createParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
+    // Create the slider
     Slider slider = new Slider(min, max, defaultValue);
     slider.setMaxWidth(Double.MAX_VALUE);
 
+    // Create the label with tooltip
     Label speedLabel = new Label(label + ": ");
     speedLabel.getStyleClass().add("parameter-label");
     speedLabel.setTooltip(new Tooltip(tooltip));
 
-    // Add tooltips for hover information
+    // Create the text input
+    TextField textField = new TextField(String.format("%.2f", defaultValue));
+    textField.getStyleClass().add("parameter-text-field");
+    textField.setAlignment(Pos.CENTER);
+
+    // Create min and max labels
     Label minLabel = new Label(min + " ");
     Label maxLabel = new Label(" " + max);
 
-    // Set slider
-    HBox parameterControl = new HBox(5, speedLabel, minLabel, slider, maxLabel);
+    // Create an HBox control
+    HBox parameterControl = new HBox(5, speedLabel, textField, minLabel, slider, maxLabel);
+    parameterControl.setAlignment(Pos.CENTER);
     HBox.setHgrow(slider, Priority.ALWAYS);
     parameterControl.getStyleClass().add("parameter-control");
 
-    // Add listener to the slider
+    // Add slider listener
     slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-      callback.accept(newValue.doubleValue());
+      // Sync the text field value with the slider value
+      textField.setText(String.format("%.2f", newValue.doubleValue()));
+
+      // Trigger callback
+      callback.accept((double) newValue);
+    });
+
+    // Add text listener
+    textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode().toString().equals("ENTER")) {
+        String newValueText = textField.getText();
+        try {
+
+          double newValue = Double.parseDouble(newValueText);
+
+          // Clamp the value to the min and max
+          if (newValue < min) {
+            newValue = min;
+          } else if (newValue > max) {
+            newValue = max;
+          }
+
+          // Sync the slider value with the text field value
+          slider.setValue(newValue);
+
+          // Trigger callback
+          callback.accept(newValue);
+
+          // Update the text field to reflect the new value
+          textField.setText(String.format("%.2f", newValue));
+        } catch (NumberFormatException e) {
+          // If the value cannot be parsed, reset the text field to the slider value
+          textField.setText(String.format("%.2f", slider.getValue()));
+        }
+      }
     });
 
     return parameterControl;

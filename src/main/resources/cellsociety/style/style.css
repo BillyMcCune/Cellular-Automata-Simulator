@@ -29,14 +29,22 @@
   -fx-font-weight: bold;
 }
 
+.parameter-text-field {
+  -fx-pref-width: 50px;
+  -fx-background-color: #f3f3f3;
+  -fx-border-color: #838383;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
 .parameter-container {
-  -fx-padding: 10px;
+  -fx-padding: 10px, 5px;
   -fx-background-color: #e3e3e3;
   -fx-border-color: #afafaf;
 }
 
 .parameter-control {
-  -fx-padding: 10px;
+  -fx-padding: 5px;
   -fx-background-color: #f3f3f3;
   -fx-border-color: #838383;
 }
