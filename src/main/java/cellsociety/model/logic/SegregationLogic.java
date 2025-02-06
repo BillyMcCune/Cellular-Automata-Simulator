@@ -64,7 +64,7 @@ public class SegregationLogic extends Logic<SegregationState> {
       return 1;
     }
 
-    double satisfaction = totalNeighbors / similarNeighbors;
+    double satisfaction = similarNeighbors / totalNeighbors;
     if (Double.isNaN(satisfaction)) {
       return 0;
     } else {
