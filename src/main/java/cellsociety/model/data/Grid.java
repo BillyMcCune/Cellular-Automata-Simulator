@@ -2,7 +2,9 @@ package cellsociety.model.data;
 
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.states.FireState;
 import cellsociety.model.data.states.State;
+import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +18,13 @@ public class Grid<T extends Enum<T> & State> {
   /**
    * Represents all directions
    */
-  protected static final int[][] DIRECTIONS = {
+  private static final int[][] ORTHOGONAL_DIAGONAL_DIRECTIONS = {
       {-1, -1}, {-1,  0}, {-1,  1}, { 0, -1}, { 0,  1}, { 1, -1}, { 1,  0}, { 1,  1}
   };
+  private static final int[][] ORTHOGONAL_NEIGHBORS = {
+      {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+  };
+  private Class<?> simulationType;
 
   /**
    * The two-dimensional grid of {@link Cell} objects.
@@ -47,37 +53,54 @@ public class Grid<T extends Enum<T> & State> {
       List<Cell<T>> newRow = new ArrayList<>();
       for (Integer state : rowStates) {
         Cell<T> cell = factory.createCell(state);
+        if (simulationType == null) {
+          simulationType = cell.getCurrentState().getClass();
+        }
         newRow.add(cell);
       }
       grid.add(newRow);
     }
   }
 
-  /**
-   * Assigns each {@link Cell<T>} all neighboring {@link Cell<T>} objects surrounding the cell.
-   */
   private void assignNeighbors() {
     if (grid.isEmpty()) {
       return;
     }
-    int numRows = getNumRows();
-    int numCols = getNumCols();
-
-    for (int row = 0; row < numRows; row++) {
-      for (int col = 0; col < numCols; col++) {
-        List<Cell<T>> neighbors = new ArrayList<>();
-        for (int[] direction : DIRECTIONS) {
-          int neighborRow = row + direction[0];
-          int neighborCol = col + direction[1];
-          if (neighborRow >= 0 && neighborRow < numRows &&
-              neighborCol >= 0 && neighborCol < numCols) {
-            // Fix: Add the neighbor cell, not the cell itself.
-            neighbors.add(getCell(neighborRow, neighborCol));
-          }
+    for (int row = 0; row < getNumRows(); row++) {
+      for (int col = 0; col < getNumCols(); col++) {
+        if (simulationType == WatorState.class) {
+          getCell(row, col).setNeighbors(getOrthogonalTorusNeighbors(row, col));
         }
-        getCell(row, col).setNeighbors(neighbors);
+        else {
+          getCell(row, col).setNeighbors(getOrthogonalDiagonalNeighbors(row, col));
+        }
       }
     }
+  }
+
+  // All simulations other than Wa-Tor, with 8 neighbors and hard boundaries
+  private List<Cell<T>> getOrthogonalDiagonalNeighbors(int row, int col) {
+    List<Cell<T>> neighbors = new ArrayList<>();
+    for (int[] direction : ORTHOGONAL_DIAGONAL_DIRECTIONS) {
+      int neighborRow = row + direction[0];
+      int neighborCol = col + direction[1];
+      if (neighborRow >= 0 && neighborRow < getNumRows() &&
+          neighborCol >= 0 && neighborCol < getNumCols()) {
+        neighbors.add(getCell(neighborRow, neighborCol));
+      }
+    }
+    return neighbors;
+  }
+
+  // Specifically for Wa-Tor world, with only orthogonal neighbors in a torus grid
+  private List<Cell<T>> getOrthogonalTorusNeighbors(int row, int col) {
+    List<Cell<T>> neighbors = new ArrayList<>();
+    for (int[] direction : ORTHOGONAL_NEIGHBORS) {
+      int neighborRow = (row + direction[0]) % getNumRows();
+      int neighborCol = (col + direction[1]) % getNumCols();
+      neighbors.add(getCell(neighborRow, neighborCol));
+    }
+    return neighbors;
   }
 
   /**

@@ -44,6 +44,15 @@ public class Cell<T extends Enum<T> & State> {
   }
 
   /**
+   * Retrieves the next state of the cell
+   *
+   * @return the next state
+   */
+  public T getNextState() {
+    return nextState;
+  }
+
+  /**
    * Sets the neighbors of the cell
    */
   public void setNeighbors(List<Cell<T>> neighbors) {
