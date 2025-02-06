@@ -29,6 +29,7 @@ public class FireLogic extends Logic<FireState> {
           neighbor.setNextState(FireState.BURNING);
         }
       }
+      cell.setNextState(FireState.EMPTY);
     }
   }
 

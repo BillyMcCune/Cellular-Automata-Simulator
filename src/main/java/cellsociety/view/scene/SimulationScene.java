@@ -255,6 +255,9 @@ public class SimulationScene {
       }
     });
 
+    // Call the callback with the default value
+    callback.accept(defaultValue);
+
     return parameterControl;
   }
 
