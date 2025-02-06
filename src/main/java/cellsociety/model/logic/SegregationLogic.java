@@ -32,6 +32,10 @@ public class SegregationLogic extends Logic<SegregationState> {
 
   @Override
   protected void updateSingleCell(Cell<SegregationState> cell) {
+    if (empty.isEmpty()) {
+      // NO EMPTY SPOTS, the entire grid is gridlocked
+      return;
+    }
     if ((cell.getCurrentState() != SegregationState.OPEN) && (getProportionSimilarNeighbors(cell) < satisfiedThreshold)) {
       int randomEmptyIndex = (int) (Math.random() * empty.size());
       Cell<SegregationState> selectedCell = empty.get(randomEmptyIndex);
@@ -56,9 +60,15 @@ public class SegregationLogic extends Logic<SegregationState> {
         totalNeighbors++;
       }
     }
-    if (totalNeighbors == 0) {
-      return 0;
+    if (cell.getNeighbors().isEmpty()) {
+      return 1;
     }
-    return (similarNeighbors/totalNeighbors);
+
+    double satisfaction = totalNeighbors / similarNeighbors;
+    if (Double.isNaN(satisfaction)) {
+      return 0;
+    } else {
+      return (satisfaction);
+    }
   }
 }
