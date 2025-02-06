@@ -1,0 +1,27 @@
+<simulation>
+  <type>WATOR</type>
+  <title>Simple Wa-Tor Simulation</title>
+  <author>Jacob You</author>
+  <description>A small Wa-Tor simulation with sharks and fish moving and reproducing.</description>
+  <parameters>
+    <baseSharkEnergy>5</baseSharkEnergy>
+    <fishEnergyGain>2</fishEnergyGain>
+    <sharkBreedingTime>3</sharkBreedingTime>
+    <fishBreedingTime>2</fishBreedingTime>
+  </parameters>
+  <width>10</width>
+  <height>10</height>
+  <defaultSpeed>5</defaultSpeed>
+  <initialStates>
+    <row>0 0 1 0 2 0 1 0 2 0</row>
+    <row>1 0 0 2 0 1 0 0 0 1</row>
+    <row>0 2 0 0 1 0 2 0 1 0</row>
+    <row>0 0 1 0 0 2 0 1 0 2</row>
+    <row>1 0 0 2 0 1 0 0 0 1</row>
+    <row>0 2 0 0 1 0 2 0 1 0</row>
+    <row>0 0 1 0 0 2 0 1 0 2</row>
+    <row>1 0 0 2 0 1 0 0 0 1</row>
+    <row>0 2 0 0 1 0 2 0 1 0</row>
+    <row>0 0 1 0 0 2 0 1 0 2</row>
+  </initialStates>
+</simulation>

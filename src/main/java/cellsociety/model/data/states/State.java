@@ -23,7 +23,8 @@ public interface State {
       }
     }
     T defaultConstant = enumClass.getEnumConstants()[0];
-    System.err.println("Warning: Invalid " + enumClass.getSimpleName() + " value: " + value + ". Defaulting to " + defaultConstant);
+    System.err.printf("Warning: Invalid %s value: %d. Defaulting to %s%n",
+        enumClass.getSimpleName(), value, defaultConstant);
     return defaultConstant;
   }
 }

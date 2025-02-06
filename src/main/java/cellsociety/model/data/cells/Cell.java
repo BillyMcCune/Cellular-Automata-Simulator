@@ -2,7 +2,9 @@ package cellsociety.model.data.cells;
 
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Abstract generic base class representing a cell in a grid.
@@ -16,6 +18,7 @@ public class Cell<T extends Enum<T> & State> {
   protected List<Cell<T>> neighbors = new ArrayList<>();
   protected T currState;
   protected T nextState;
+  protected HashMap<String, Object> properties;
 
   /**
    * Constructs a Cell with specified row, column, and initial state.
@@ -74,5 +77,36 @@ public class Cell<T extends Enum<T> & State> {
    */
   public void update() {
     this.currState = this.nextState;
+  }
+
+  public void setProperty(String property, Object value) {
+    if (properties == null) {
+      properties = new HashMap<>();
+    }
+    properties.put(property, value);
+  }
+
+  public Object getProperty(String property) {
+    if (!properties.isEmpty()) {
+      return properties.get(property);
+    }
+    System.err.println("Property not found");
+    return null;
+  }
+
+  public void setAllProperties(HashMap<String, Object> props) {
+    properties = props;
+  }
+
+  public HashMap<String, Object> getAllProperties() {
+    return properties;
+  }
+
+  public void copyAllPropertiesTo(Cell<T> other) {
+    other.setAllProperties(this.getAllProperties());
+  }
+
+  public void clearAllProperties() {
+    properties = null;
   }
 }
