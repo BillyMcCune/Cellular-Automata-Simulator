@@ -7,41 +7,74 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Implements the Wa-Tor world simulation logic, updating sharks and fish based on energy,
+ * breeding times, and moves. This class uses nextState checks to avoid collisions.
+ */
 public class WatorLogic extends Logic<WatorState> {
 
   private final HashMap<Cell<WatorState>, Integer> sharkEnergy = new HashMap<>();
   private final HashMap<Cell<WatorState>, Integer> time = new HashMap<>();
+
   private static int baseSharkEnergy;
   private static int fishEnergyGain;
   private static int sharkBreedingTime;
   private static int fishBreedingTime;
 
+  /**
+   * Constructs a WatorLogic instance for the given grid.
+   *
+   * @param grid The grid on which to run the Wa-Tor simulation.
+   */
   public WatorLogic(Grid<WatorState> grid) {
     super(grid);
-
-
   }
 
+  /**
+   * Sets the base energy that each shark starts with or resets to upon breeding.
+   *
+   * @param energy the initial or reset energy value for sharks
+   */
   public static void setBaseSharkEnergy(int energy) {
     baseSharkEnergy = energy;
   }
 
+  /**
+   * Sets the amount of energy sharks gain upon eating a fish.
+   *
+   * @param energy how much energy a shark gains for each fish consumed
+   */
   public static void setFishEnergyGain(int energy) {
     fishEnergyGain = energy;
   }
 
+  /**
+   * Sets the number of cycles after which a shark reproduces (resets its chronon).
+   *
+   * @param time how many updates it takes for a shark to breed
+   */
   public static void setSharkBreedingTime(int time) {
     sharkBreedingTime = time;
   }
 
+  /**
+   * Sets the number of cycles after which a fish reproduces (resets its chronon).
+   *
+   * @param time how many updates it takes for a fish to breed
+   */
   public static void setFishBreedingTime(int time) {
     fishBreedingTime = time;
   }
 
+  /**
+   * Updates the grid by running shark logic first, then fish logic, to avoid partial collisions.
+   * Then, calls {@code grid.updateGrid()} to finalize nextState -> currentState for each cell.
+   */
   @Override
   public void update() {
     List<Cell<WatorState>> sharkCells = getAllCellsOfState(WatorState.SHARK);
     List<Cell<WatorState>> fishCells = getAllCellsOfState(WatorState.FISH);
+
     for (Cell<WatorState> sharkCell : sharkCells) {
       updateSingleCell(sharkCell);
     }
@@ -51,6 +84,7 @@ public class WatorLogic extends Logic<WatorState> {
         updateSingleCell(fishCell);
       }
     }
+
     grid.updateGrid();
   }
 
@@ -93,7 +127,6 @@ public class WatorLogic extends Logic<WatorState> {
   private void moveShark(Cell<WatorState> sharkCell, Cell<WatorState> nextLocation) {
     if (nextLocation.getNextState() == WatorState.FISH) {
       sharkEnergy.put(sharkCell, sharkEnergy.get(sharkCell) + fishEnergyGain);
-      fishCells.remove(nextLocation);
     }
     else {
       sharkEnergy.put(sharkCell, sharkEnergy.get(sharkCell) - 1);
@@ -114,18 +147,15 @@ public class WatorLogic extends Logic<WatorState> {
         sharkEnergy.put(sharkCell, baseSharkEnergy);
         time.put(sharkCell, 0);
         sharkCell.setNextState(WatorState.SHARK);
-        sharkCells.add(sharkCell);
       }
     }
   }
 
   private void moveSharkInLists(Cell<WatorState> sharkCell, Cell<WatorState> nextLocation) {
-    sharkCells.add(nextLocation);
     sharkEnergy.put(nextLocation, sharkEnergy.get(sharkCell));
     time.put(nextLocation, time.get(sharkCell));
     nextLocation.setNextState(WatorState.SHARK);
 
-    sharkCells.remove(sharkCell);
     sharkEnergy.remove(sharkCell);
     time.remove(sharkCell);
     sharkCell.setNextState(WatorState.OPEN);
