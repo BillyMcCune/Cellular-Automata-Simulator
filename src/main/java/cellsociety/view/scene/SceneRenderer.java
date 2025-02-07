@@ -4,6 +4,7 @@ import cellsociety.model.data.states.FireState;
 import cellsociety.model.data.states.LifeState;
 import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.data.states.SegregationState;
+import cellsociety.model.data.states.WatorState;
 import java.util.Map;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
@@ -26,20 +27,29 @@ public class SceneRenderer {
 
   /// The default colors for each cell state
   public static final Map<Enum<?>, Color> DEFAULT_CELL_COLORS = Map.ofEntries(
+      // Fire
       Map.entry(FireState.EMPTY, Color.WHITE),
       Map.entry(FireState.TREE, Color.GREEN),
       Map.entry(FireState.BURNING, Color.RED),
 
+      // Life
       Map.entry(LifeState.DEAD, Color.WHITE),
       Map.entry(LifeState.ALIVE, Color.LIGHTBLUE),
 
+      // Percolation
       Map.entry(PercolationState.BLOCKED, Color.BLACK),
       Map.entry(PercolationState.OPEN, Color.WHITE),
       Map.entry(PercolationState.PERCOLATED, Color.LIGHTBLUE),
 
+      // Segregation
       Map.entry(SegregationState.OPEN, Color.WHITE),
       Map.entry(SegregationState.RED, Color.RED),
-      Map.entry(SegregationState.BLUE, Color.BLUE)
+      Map.entry(SegregationState.BLUE, Color.BLUE),
+
+      // Wator
+      Map.entry(WatorState.OPEN, Color.WHITE),
+      Map.entry(WatorState.FISH, Color.LIGHTBLUE),
+      Map.entry(WatorState.SHARK, Color.DARKBLUE)
   );
 
   /**

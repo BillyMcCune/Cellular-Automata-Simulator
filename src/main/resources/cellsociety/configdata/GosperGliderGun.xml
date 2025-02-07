@@ -7,7 +7,7 @@
   </parameters>
   <width>40</width>
   <height>20</height>
-  <defaultSpeed>5</defaultSpeed>
+  <defaultSpeed>25</defaultSpeed>
   <initialStates>
     <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
     <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>

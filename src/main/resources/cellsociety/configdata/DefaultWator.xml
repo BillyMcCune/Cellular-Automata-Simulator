@@ -11,7 +11,7 @@
   </parameters>
   <width>10</width>
   <height>10</height>
-  <defaultSpeed>5</defaultSpeed>
+  <defaultSpeed>25</defaultSpeed>
   <initialStates>
     <row>0 0 1 0 2 0 1 0 2 0</row>
     <row>1 0 0 2 0 1 0 0 0 1</row>

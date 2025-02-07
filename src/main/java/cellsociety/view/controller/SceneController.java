@@ -10,11 +10,13 @@ import cellsociety.model.data.states.FireState;
 import cellsociety.model.data.states.LifeState;
 import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.data.states.SegregationState;
+import cellsociety.model.data.states.WatorState;
 import cellsociety.model.logic.FireLogic;
 import cellsociety.model.logic.LifeLogic;
 import cellsociety.model.logic.Logic;
 import cellsociety.model.logic.PercolationLogic;
 import cellsociety.model.logic.SegregationLogic;
+import cellsociety.model.logic.WatorLogic;
 import cellsociety.view.scene.SimulationScene;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
@@ -198,9 +200,9 @@ public class SceneController {
         // Set the probability of catching fire
         simulationScene.setParameter(
             "Flame Spread Probability",
-            0,
-            1,
-            (configInfo.getParameters().get("probCatch")),
+            MIN,
+            MAX,
+            configInfo.getParameters().get("probCatch"),
             "The probability that a tree will catch fire from a burning neighbor.",
             FireLogic::setProbCatch
         );
@@ -214,14 +216,54 @@ public class SceneController {
         // Set the satisfied threshold
         simulationScene.setParameter(
             "Satisfied Threshold",
-            0,
-            1,
-            (configInfo.getParameters().get("satisfiedThreshold")),
+            MIN,
+            MAX,
+            configInfo.getParameters().get("satisfiedThreshold"),
             "The proportion of similar neighbors needed to be satisfied.",
             SegregationLogic::setSatisfiedThreshold
         );
       }
-      // TODO: Add more simulation types here
+      case WATOR -> {
+        CellFactory<WatorState> watorFactory = new CellFactory<>(WatorState.class);
+        Grid<WatorState> watorGrid = new Grid<>(configInfo.getGrid(), watorFactory);
+        gameLogic = new WatorLogic(watorGrid);
+        grid = watorGrid;
+
+        // Set the parameters for the Wator simulation
+        simulationScene.setParameter(
+            "Fish Energy",
+            MIN,
+            MAX,
+            (configInfo.getParameters().get("baseSharkEnergy")).intValue(),
+            "The initial energy of a shark.",
+            WatorLogic::setBaseSharkEnergy
+        );
+        simulationScene.setParameter(
+            "Shark Energy",
+            MIN,
+            MAX,
+            (configInfo.getParameters().get("fishEnergyGain")).intValue(),
+            "The amount of energy a shark gains for each fish consumed.",
+            WatorLogic::setFishEnergyGain
+        );
+        simulationScene.setParameter(
+            "Base Shark Energy",
+            MIN,
+            MAX,
+            (configInfo.getParameters().get("fishReproductionTime")).intValue(),
+            "The number of time steps before a fish reproduces.",
+            WatorLogic::setFishBreedingTime
+        );
+        simulationScene.setParameter(
+            "Fish Energy Gain",
+            MIN,
+            MAX,
+            (configInfo.getParameters().get("sharkReproductionTime")).intValue(),
+            "The number of time steps before a shark reproduces.",
+            WatorLogic::setSharkBreedingTime
+        );
+
+      }
 
       default -> throw new UnsupportedOperationException("Unsupported simulation type: " + type);
     }

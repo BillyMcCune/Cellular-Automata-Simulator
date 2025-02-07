@@ -4,11 +4,11 @@
   <author>Billy</author>
   <description>A basic fire in the spreading of fire simulation.</description>
   <parameters>
-    <probCatch>0.5</probCatch>
+    <probCatch>50</probCatch>
   </parameters>
   <width>8</width>
   <height>8</height>
-  <defaultSpeed>2</defaultSpeed>
+  <defaultSpeed>10</defaultSpeed>
   <initialStates>
     <row>1 1 1 1 1 1 1 1</row>
     <row>1 1 1 1 1 1 1 1</row>

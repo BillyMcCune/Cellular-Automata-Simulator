@@ -32,8 +32,9 @@ public class SimulationScene {
   public static final double MAX_ZOOM_RATE = 5.0;
   public static final double MIN_ZOOM_RATE = 0.1;
 
-  public static final double MAX_SPEED = 20;
-  public static final double MIN_SPEED = 1;
+  public static final double MAX_SPEED = 100;
+  public static final double MIN_SPEED = 0;
+  public static final double SPEED_MULTIPLIER = 0.2;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
   // UI components
@@ -191,9 +192,9 @@ public class SimulationScene {
     return parameterContainer;
   }
 
-  private HBox createParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
+  private <T extends Number> HBox createParameter(double min, double max, T defaultValue, String label, String tooltip, Consumer<T> callback) {
     // Create the slider
-    Slider slider = new Slider(min, max, defaultValue);
+    Slider slider = new Slider(min, max, defaultValue.doubleValue());
     slider.setMaxWidth(Double.MAX_VALUE);
 
     // Create the label with tooltip
@@ -201,14 +202,28 @@ public class SimulationScene {
     speedLabel.getStyleClass().add("parameter-label");
     speedLabel.setTooltip(new Tooltip(tooltip));
 
+    // Format the default value based on the type
+    String defaultText;
+    String minText;
+    String maxText;
+    if (defaultValue instanceof Integer) {
+      defaultText = String.format("%d", defaultValue.intValue());
+      minText = String.format("%d", (int) min);
+      maxText = String.format("%d", (int) max);
+    } else {
+      defaultText = String.format("%.1f", defaultValue.doubleValue());
+      minText = String.format("%.1f", min);
+      maxText = String.format("%.1f", max);
+    }
+
     // Create the text input
-    TextField textField = new TextField(String.format("%.2f", defaultValue));
+    TextField textField = new TextField(defaultText);
     textField.getStyleClass().add("parameter-text-field");
     textField.setAlignment(Pos.CENTER);
 
     // Create min and max labels
-    Label minLabel = new Label(min + " ");
-    Label maxLabel = new Label(" " + max);
+    Label minLabel = new Label(minText + " ");
+    Label maxLabel = new Label(" " + maxText);
 
     // Create an HBox control
     HBox parameterControl = new HBox(5, speedLabel, textField, minLabel, slider, maxLabel);
@@ -218,11 +233,22 @@ public class SimulationScene {
 
     // Add slider listener
     slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-      // Sync the text field value with the slider value
-      textField.setText(String.format("%.2f", newValue.doubleValue()));
+      T typedValue;
+      if (defaultValue instanceof Integer || defaultValue instanceof Short || defaultValue instanceof Byte || defaultValue instanceof Long) {
+        typedValue = (T) Integer.valueOf(newValue.intValue());
+      } else {
+        typedValue = (T) Double.valueOf(newValue.doubleValue());
+      }
+
+      // Update the text field with the formatted value
+      textField.setText(
+          (typedValue instanceof Integer)
+              ? String.format("%d", typedValue.intValue())
+              : String.format("%.1f", typedValue.doubleValue())
+      );
 
       // Trigger callback
-      callback.accept((double) newValue);
+      callback.accept(typedValue);
     });
 
     // Add text listener
@@ -230,7 +256,6 @@ public class SimulationScene {
       if (event.getCode().toString().equals("ENTER")) {
         String newValueText = textField.getText();
         try {
-
           double newValue = Double.parseDouble(newValueText);
 
           // Clamp the value to the min and max
@@ -240,17 +265,33 @@ public class SimulationScene {
             newValue = max;
           }
 
+          T typedValue;
+          if (defaultValue instanceof Integer) {
+            typedValue = (T) Integer.valueOf((int) newValue);
+          } else {
+            typedValue = (T) Double.valueOf(newValue);
+          }
+
           // Sync the slider value with the text field value
           slider.setValue(newValue);
 
           // Trigger callback
-          callback.accept(newValue);
+          callback.accept(typedValue);
 
           // Update the text field to reflect the new value
-          textField.setText(String.format("%.2f", newValue));
+          textField.setText(
+              (typedValue instanceof Integer)
+                  ? String.format("%d", typedValue.intValue())
+                  : String.format("%.1f", typedValue.doubleValue())
+          );
         } catch (NumberFormatException e) {
-          // If the value cannot be parsed, reset the text field to the slider value
-          textField.setText(String.format("%.2f", slider.getValue()));
+          // Reset text field to slider value if invalid input
+          double sliderValue = slider.getValue();
+          textField.setText(
+              (defaultValue instanceof Integer)
+                  ? String.format("%d", (int) sliderValue)
+                  : String.format("%.1f", sliderValue)
+          );
         }
       }
     });
@@ -362,7 +403,7 @@ public class SimulationScene {
 
   private void speedChangeCallback(double speed) {
     // Change the speed of the simulation
-    updateInterval = 1.0 / speed;
+    updateInterval = SPEED_MULTIPLIER / speed;
   }
 
   private void selectDropDownCallback() {
@@ -481,7 +522,7 @@ public class SimulationScene {
    * @param tooltip the tooltip of the parameter
    * @param callback the callback function of the parameter
    */
-  public void setParameter(String label, double min, double max, double defaultValue, String tooltip, Consumer<Double> callback) {
+  public <T extends Number> void setParameter(String label, double min, double max, T defaultValue, String tooltip, Consumer<T> callback) {
     parameterBox.getChildren().add(createParameter(min, max, defaultValue, label, tooltip, callback));
   }
 
