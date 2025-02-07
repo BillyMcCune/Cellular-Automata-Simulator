@@ -46,6 +46,10 @@ public class Cell<T extends Enum<T> & State> {
     return currState;
   }
 
+  public void setCurrentState(T state) {
+    currState = state;
+  }
+
   /**
    * Retrieves the next state of the cell
    *
@@ -87,16 +91,21 @@ public class Cell<T extends Enum<T> & State> {
   }
 
   public Object getProperty(String property) {
-    if (!properties.isEmpty()) {
+    if (properties != null && properties.containsKey(property)) {
       return properties.get(property);
     }
-    System.err.println("Property not found");
+    System.err.printf("Property not found: %s \n", property);
     return null;
   }
 
   public void setAllProperties(HashMap<String, Object> props) {
-    properties = props;
+    if (props == null) {
+      properties = null;
+    } else {
+      properties = new HashMap<>(props);
+    }
   }
+
 
   public HashMap<String, Object> getAllProperties() {
     return properties;

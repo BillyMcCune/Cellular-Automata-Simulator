@@ -4,6 +4,7 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -13,10 +14,13 @@ import java.util.List;
  */
 public class WatorLogic extends Logic<WatorState> {
 
-  private static int baseSharkEnergy;
   private static int fishEnergyGain;
-  private static int sharkBreedingTime;
-  private static int fishBreedingTime;
+  private static int sharkReproductionTime;
+  private static int fishReproductionTime;
+  private final List<Cell<WatorState>> sharkCells;
+  private final List<Cell<WatorState>> fishCells;
+  private static HashMap<String, Object> baseSharkProperties;
+  private static HashMap<String, Object> baseFishProperties;
 
   /**
    * Constructs a WatorLogic instance for the given grid.
@@ -25,6 +29,22 @@ public class WatorLogic extends Logic<WatorState> {
    */
   public WatorLogic(Grid<WatorState> grid) {
     super(grid);
+    initializePropertyMaps();
+    List<List<Cell<WatorState>>> cellStates = getAllCellStates();
+    sharkCells = cellStates.get(0);
+    fishCells = cellStates.get(1);
+  }
+
+  private static void initializePropertyMaps() {
+    if (baseSharkProperties == null) {
+      baseSharkProperties = new HashMap<>();
+      baseSharkProperties.put("time", 0);
+      baseSharkProperties.put("energy", 0);
+    }
+    if (baseFishProperties == null) {
+      baseFishProperties = new HashMap<>();
+      baseFishProperties.put("time", 0);
+    }
   }
 
   /**
@@ -33,7 +53,7 @@ public class WatorLogic extends Logic<WatorState> {
    * @param energy the initial or reset energy value for sharks
    */
   public static void setBaseSharkEnergy(int energy) {
-    baseSharkEnergy = energy;
+    baseSharkProperties.put("energy", energy);
   }
 
   /**
@@ -50,8 +70,8 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param time how many updates it takes for a shark to breed
    */
-  public static void setSharkBreedingTime(int time) {
-    sharkBreedingTime = time;
+  public static void sharkReproductionTime(int time) {
+    sharkReproductionTime = time;
   }
 
   /**
@@ -59,8 +79,8 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param time how many updates it takes for a fish to breed
    */
-  public static void setFishBreedingTime(int time) {
-    fishBreedingTime = time;
+  public static void setFishReproductionTime(int time) {
+    fishReproductionTime = time;
   }
 
   /**
@@ -69,13 +89,12 @@ public class WatorLogic extends Logic<WatorState> {
    */
   @Override
   public void update() {
-    List<Cell<WatorState>> sharkCells = getAllCellsOfState(WatorState.SHARK);
-    List<Cell<WatorState>> fishCells  = getAllCellsOfState(WatorState.FISH);
-
-    for (Cell<WatorState> sharkCell : sharkCells) {
+    List<Cell<WatorState>> currentSharks = new ArrayList<>(sharkCells);
+    for (Cell<WatorState> sharkCell : currentSharks) {
       updateSingleCell(sharkCell);
     }
-    for (Cell<WatorState> fishCell : fishCells) {
+    List<Cell<WatorState>> currentFish = new ArrayList<>(fishCells);
+    for (Cell<WatorState> fishCell : currentFish) {
       if (fishCell.getNextState() == WatorState.FISH) {
         updateSingleCell(fishCell);
       }
@@ -119,46 +138,50 @@ public class WatorLogic extends Logic<WatorState> {
   }
 
   private void moveShark(Cell<WatorState> sharkCell, Cell<WatorState> nextLocation) {
-    int energy = getCellEnergy(sharkCell);
-    int chronon = getCellTime(sharkCell);
+    int energy = (int) sharkCell.getProperty("energy");
+    int time = (int) sharkCell.getProperty("time") + 1;
+    sharkCell.setProperty("time", time);
 
     if (nextLocation.getNextState() == WatorState.FISH) {
-      energy += fishEnergyGain;
+      sharkCell.setProperty("energy", energy + fishEnergyGain);
+      fishCells.remove(nextLocation);
     }
     else {
-      energy -= 1;
+      sharkCell.setProperty("energy", energy - sharkReproductionTime);
     }
-    if (energy <= 0) {
-      sharkCell.setNextState(WatorState.OPEN);
-      sharkCell.clearAllProperties();
+    if ((int) sharkCell.getProperty("energy") <= 0) {
+      removeSharkInCell(sharkCell);
       return;
     }
-    chronon += 1;
     if (nextLocation != sharkCell) {
-      moveSharkToNextCell(sharkCell, nextLocation, energy, chronon);
-      if (chronon >= sharkBreedingTime) {
+      moveSharkToNextCell(sharkCell, nextLocation);
+      if (time >= sharkReproductionTime) {
         resetSharkInOldCell(sharkCell);
+        nextLocation.setProperty("time", 0);
       }
-    }
-    else {
-      sharkCell.setProperty("energy", energy);
-      sharkCell.setProperty("time", chronon);
     }
   }
 
-  private void moveSharkToNextCell(Cell<WatorState> oldCell, Cell<WatorState> nextCell, int energy, int chronon) {
-    oldCell.setNextState(WatorState.OPEN);
-    oldCell.clearAllProperties();
-
+  private void moveSharkToNextCell(Cell<WatorState> oldCell, Cell<WatorState> nextCell) {
     nextCell.setNextState(WatorState.SHARK);
-    nextCell.setProperty("energy", energy);
-    nextCell.setProperty("time", chronon);
+    nextCell.setCurrentState(WatorState.SHARK);
+    oldCell.setNextState(WatorState.OPEN);
+    oldCell.copyAllPropertiesTo(nextCell);
+    oldCell.clearAllProperties();
+    sharkCells.add(nextCell);
+    sharkCells.remove(oldCell);
   }
 
   private void resetSharkInOldCell(Cell<WatorState> oldCell) {
     oldCell.setNextState(WatorState.SHARK);
-    oldCell.setProperty("energy", baseSharkEnergy);
-    oldCell.setProperty("time", 0);
+    oldCell.setAllProperties(new HashMap<>(baseSharkProperties));
+    sharkCells.add(oldCell);
+  }
+
+  private void removeSharkInCell(Cell<WatorState> sharkCell) {
+    sharkCell.setNextState(WatorState.OPEN);
+    sharkCell.clearAllProperties();
+    sharkCells.remove(sharkCell);
   }
 
   private Cell<WatorState> getNextFishLocation(Cell<WatorState> fishCell) {
@@ -177,61 +200,57 @@ public class WatorLogic extends Logic<WatorState> {
   }
 
   private void moveFish(Cell<WatorState> fishCell, Cell<WatorState> nextLocation) {
-    int chronon = getCellTime(fishCell);
-    chronon += 1;
+    int time = (int) fishCell.getProperty("time") + 1;
+    fishCell.setProperty("time", time);
 
     if (fishCell != nextLocation) {
-      moveFishToNextCell(fishCell, nextLocation, chronon);
-      if (chronon >= fishBreedingTime) {
+      moveFishToNextCell(fishCell, nextLocation);
+      if (time >= fishReproductionTime) {
         resetFishInOldCell(fishCell);
+        nextLocation.setProperty("time", 0);
       }
-    }
-    else {
-      fishCell.setProperty("time", chronon);
     }
   }
 
-  private void moveFishToNextCell(Cell<WatorState> oldCell, Cell<WatorState> nextCell, int newChronon) {
-    oldCell.setNextState(WatorState.OPEN);
-    oldCell.clearAllProperties();
-
+  private void moveFishToNextCell(Cell<WatorState> oldCell, Cell<WatorState> nextCell) {
     nextCell.setNextState(WatorState.FISH);
-    nextCell.setProperty("time", newChronon);
+    nextCell.setCurrentState(WatorState.FISH);
+    oldCell.setNextState(WatorState.OPEN);
+    oldCell.copyAllPropertiesTo(nextCell);
+    oldCell.clearAllProperties();
+    fishCells.add(nextCell);
+    fishCells.remove(oldCell);
   }
 
   private void resetFishInOldCell(Cell<WatorState> oldCell) {
     oldCell.setNextState(WatorState.FISH);
-    oldCell.setProperty("time", 0);
+    oldCell.setAllProperties(new HashMap<>(baseFishProperties));
+    fishCells.add(oldCell);
   }
 
-  private int getCellEnergy(Cell<WatorState> cell) {
-    Object energyVal = cell.getProperty("energy");
-    if (energyVal == null) {
-      cell.setProperty("energy", baseSharkEnergy);
-      return baseSharkEnergy;
-    }
-    return (int) energyVal;
-  }
+  private List<List<Cell<WatorState>>> getAllCellStates() {
+    List<Cell<WatorState>> shark = new ArrayList<>();
+    List<Cell<WatorState>> fish = new ArrayList<>();
 
-  private int getCellTime(Cell<WatorState> cell) {
-    Object timeVal = cell.getProperty("time");
-    if (timeVal == null) {
-      cell.setProperty("time", 0);
-      return 0;
-    }
-    return (int) timeVal;
-  }
-
-  private List<Cell<WatorState>> getAllCellsOfState(WatorState state) {
-    List<Cell<WatorState>> result = new ArrayList<>();
     for (int r = 0; r < grid.getNumRows(); r++) {
       for (int c = 0; c < grid.getNumCols(); c++) {
         Cell<WatorState> cell = grid.getCell(r, c);
-        if (cell.getCurrentState() == state) {
-          result.add(cell);
+        if (cell.getCurrentState() != WatorState.OPEN) {
+          cell.setProperty("time", 0);
+        }
+        if (cell.getCurrentState() == WatorState.SHARK) {
+          shark.add(cell);
+          cell.setAllProperties(new HashMap<>(baseSharkProperties));
+        } else if (cell.getCurrentState() == WatorState.FISH) {
+          fish.add(cell);
+          cell.setAllProperties(new HashMap<>(baseFishProperties));
         }
       }
     }
+
+    List<List<Cell<WatorState>>> result = new ArrayList<>();
+    result.add(shark);
+    result.add(fish);
     return result;
   }
 }
