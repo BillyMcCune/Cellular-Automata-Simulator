@@ -39,7 +39,16 @@ public class SceneRenderer {
 
       Map.entry(SegregationState.OPEN, Color.WHITE),
       Map.entry(SegregationState.RED, Color.RED),
+<<<<<<< HEAD
       Map.entry(SegregationState.BLUE, Color.BLUE)
+=======
+      Map.entry(SegregationState.BLUE, Color.BLUE),
+
+      // Wator
+      Map.entry(WatorState.OPEN, Color.WHITE),
+      Map.entry(WatorState.FISH, Color.LIMEGREEN),
+      Map.entry(WatorState.SHARK, Color.BLUE)
+>>>>>>> logic
   );
 
   /**

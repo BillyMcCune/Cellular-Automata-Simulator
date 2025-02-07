@@ -147,7 +147,7 @@ public class WatorLogic extends Logic<WatorState> {
       fishCells.remove(nextLocation);
     }
     else {
-      sharkCell.setProperty("energy", energy - sharkReproductionTime);
+      sharkCell.setProperty("energy", energy - 1);
     }
     if ((int) sharkCell.getProperty("energy") <= 0) {
       removeSharkInCell(sharkCell);

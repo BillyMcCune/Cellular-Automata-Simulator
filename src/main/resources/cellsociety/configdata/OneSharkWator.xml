@@ -1,0 +1,22 @@
+<simulation>
+  <type>WATOR</type>
+  <title>Single Fish Breeding Test</title>
+  <author>Jacob You</author>
+  <description>Tests whether a single fish breeds correctly after reaching its reproduction time.</description>
+  <parameters>
+    <baseSharkEnergy>5</baseSharkEnergy>
+    <fishEnergyGain>2</fishEnergyGain>
+    <sharkReproductionTime>3</sharkReproductionTime>
+    <fishReproductionTime>2</fishReproductionTime>
+  </parameters>
+  <width>5</width>
+  <height>5</height>
+  <defaultSpeed>1</defaultSpeed>
+  <initialStates>
+    <row>0 0 0 0 0</row>
+    <row>0 0 0 0 0</row>
+    <row>0 0 2 0 0</row>
+    <row>0 0 0 0 0</row>
+    <row>0 0 0 0 0</row>
+  </initialStates>
+</simulation>
