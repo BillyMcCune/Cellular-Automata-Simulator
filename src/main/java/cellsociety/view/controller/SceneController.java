@@ -231,7 +231,7 @@ public class SceneController {
 
         // Set the parameters for the Wator simulation
         simulationScene.setParameter(
-            "Fish Energy",
+            "Shark Energy",
             MIN,
             MAX,
             (configInfo.getParameters().get("baseSharkEnergy")).intValue(),
@@ -239,7 +239,7 @@ public class SceneController {
             WatorLogic::setBaseSharkEnergy
         );
         simulationScene.setParameter(
-            "Shark Energy",
+            "Fish Consumed Energy Gain",
             MIN,
             MAX,
             (configInfo.getParameters().get("fishEnergyGain")).intValue(),
@@ -247,20 +247,20 @@ public class SceneController {
             WatorLogic::setFishEnergyGain
         );
         simulationScene.setParameter(
-            "Base Shark Energy",
+            "Fish Reproduction TIme",
             MIN,
             MAX,
             (configInfo.getParameters().get("fishReproductionTime")).intValue(),
             "The number of time steps before a fish reproduces.",
-            WatorLogic::setFishBreedingTime
+            WatorLogic::setFishReproductionTime
         );
         simulationScene.setParameter(
-            "Fish Energy Gain",
+            "Shark Reproduction Time",
             MIN,
             MAX,
             (configInfo.getParameters().get("sharkReproductionTime")).intValue(),
             "The number of time steps before a shark reproduces.",
-            WatorLogic::setSharkBreedingTime
+            WatorLogic::sharkReproductionTime
         );
 
       }

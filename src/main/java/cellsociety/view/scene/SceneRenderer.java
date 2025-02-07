@@ -48,8 +48,8 @@ public class SceneRenderer {
 
       // Wator
       Map.entry(WatorState.OPEN, Color.WHITE),
-      Map.entry(WatorState.FISH, Color.LIGHTBLUE),
-      Map.entry(WatorState.SHARK, Color.DARKBLUE)
+      Map.entry(WatorState.FISH, Color.LIMEGREEN),
+      Map.entry(WatorState.SHARK, Color.BLUE)
   );
 
   /**

@@ -96,8 +96,8 @@ public class Grid<T extends Enum<T> & State> {
   private List<Cell<T>> getOrthogonalTorusNeighbors(int row, int col) {
     List<Cell<T>> neighbors = new ArrayList<>();
     for (int[] direction : ORTHOGONAL_NEIGHBORS) {
-      int neighborRow = (row + direction[0]) % getNumRows();
-      int neighborCol = (col + direction[1]) % getNumCols();
+      int neighborRow = (row + direction[0] + getNumRows()) % getNumRows();
+      int neighborCol = (col + direction[1] + getNumRows()) % getNumCols();
       neighbors.add(getCell(neighborRow, neighborCol));
     }
     return neighbors;
