@@ -1,0 +1,23 @@
+<simulation>
+  <type>PERCOLATION</type>
+  <title>Complex Percolation Simulation</title>
+  <author>Billy</author>
+  <description>A more complex and interesting Percolation.</description>
+  <parameters>
+  </parameters>
+  <width>10</width>
+  <height>10</height>
+  <defaultSpeed>1</defaultSpeed>
+  <initialStates>
+      <row>0 0 0 0 2 0 0 0 0 2</row>
+      <row>0 0 1 1 1 1 1 1 1 1</row>
+      <row>0 0 1 0 1 1 1 1 1 1</row>
+      <row>0 0 1 0 1 0 1 0 1 0</row>
+      <row>1 1 1 0 1 0 1 1 1 1</row>
+      <row>1 0 1 1 1 0 1 0 1 1</row>
+      <row>0 0 1 1 1 0 1 0 1 0</row>
+      <row>0 0 1 0 1 0 1 0 1 1</row>
+      <row>0 0 1 0 1 0 1 0 1 0</row>
+      <row>1 1 1 0 1 1 1 1 1 1</row>
+  </initialStates>
+</simulation>

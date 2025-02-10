@@ -1,0 +1,18 @@
+<simulation>
+  <type>PERCOLATION</type>
+  <title>Single Water Percolation Simulation</title>
+  <author>Billy</author>
+  <description>Testing the properties of a single water block and nothing else.</description>
+  <parameters>
+  </parameters>
+  <width>5</width>
+  <height>5</height>
+  <defaultSpeed>1</defaultSpeed>
+  <initialStates>
+    <row>1 1 2 1 1</row>
+    <row>1 1 1 1 1</row>
+    <row>1 1 1 1 1</row>
+    <row>1 1 1 1 1</row>
+    <row>1 1 1 1 1</row>
+  </initialStates>
+</simulation>
