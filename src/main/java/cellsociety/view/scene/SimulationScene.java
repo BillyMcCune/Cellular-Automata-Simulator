@@ -2,6 +2,7 @@ package cellsociety.view.scene;
 
 import cellsociety.view.controller.SceneController;
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.geometry.Insets;
@@ -11,8 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.DirectoryChooser;
+// javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * The SimulationScene class represents the main scene of the application where the simulation is displayed.
@@ -42,7 +45,7 @@ public class SimulationScene {
   private GridPane grid;
   private VBox parameterBox;
   private ComboBox<String> selectType;
-  private TextField directoryField;
+  //private TextField directoryField;
   private Label infoLabel;
 
   // Instance variables
@@ -267,12 +270,12 @@ public class SimulationScene {
     Button resetButton = new Button("Reset");
     Button loadButton = new Button("Load");
     Button saveButton = new Button("Save");
-    Button directoryButton = new Button("📂");
+   // Button directoryButton = new Button("📂");
 
-    // Create directory text field
-    directoryField = new TextField();
-    directoryField.setPromptText("No directory selected");
-    directoryField.setEditable(false);
+//    // Create directory text field
+//    directoryField = new TextField();
+//    directoryField.setPromptText("No directory selected");
+//    directoryField.setEditable(false);
 
     // Set button heights and color
     double buttonHeight = 35;
@@ -280,8 +283,8 @@ public class SimulationScene {
     resetButton.setMinHeight(buttonHeight);
     loadButton.setMinHeight(buttonHeight);
     saveButton.setMinHeight(buttonHeight);
-    directoryButton.setMinHeight(buttonHeight);
-    directoryField.setMinHeight(buttonHeight);
+//    directoryButton.setMinHeight(buttonHeight);
+//    directoryField.setMinHeight(buttonHeight);
 
     // Set button widths
     double totalWidth = 500;
@@ -294,15 +297,15 @@ public class SimulationScene {
     loadButton.setMinWidth(button20);
     resetButton.setMinWidth(button40);
     saveButton.setMinWidth(button20);
-    directoryButton.setMinWidth(directoryButtonWidth);
-    directoryField.setMinWidth(directoryFieldWidth);
+//    directoryButton.setMinWidth(directoryButtonWidth);
+//    directoryField.setMinWidth(directoryFieldWidth);
 
     // Style buttons with colors
     startPauseButton.getStyleClass().add("start-button");
     resetButton.getStyleClass().add("reset-button");
     loadButton.getStyleClass().add("load-button");
     saveButton.getStyleClass().add("save-button");
-    directoryButton.getStyleClass().add("directory-button");
+   // directoryButton.getStyleClass().add("directory-button");
 
     // Set ComboBox
     selectType = new ComboBox<>();
@@ -314,20 +317,26 @@ public class SimulationScene {
     startPauseButton.setOnAction(e -> startPauseCallback());
 
     resetButton.setOnAction(e -> resetCallback());
-    loadButton.setOnAction(e -> loadCallback(selectType.getValue()));
-    saveButton.setOnAction(e -> saveCallback(directoryField.getText()));
+    loadButton.setOnAction(e -> {
+      try {
+        loadCallback(selectType.getValue());
+      } catch (ParserConfigurationException | IOException | SAXException ex) {
+        throw new RuntimeException(ex);
+      }
+    });
+    saveButton.setOnAction(e -> saveCallback());
 
     selectType.setOnMouseClicked(e -> selectDropDownCallback());
 
     // Directory selection button
-    directoryButton.setOnAction(e -> directorySelectCallback());
+   // directoryButton.setOnAction(e -> directorySelectCallback());
 
     // HBox formatting
     HBox firstRow = new HBox(10, startPauseButton, loadButton, selectType);
     firstRow.setAlignment(Pos.CENTER);  // Use Pos.CENTER for alignment
     firstRow.setPadding(new Insets(5));
 
-    HBox secondRow = new HBox(10, resetButton, saveButton, directoryField, directoryButton);
+    HBox secondRow = new HBox(10, resetButton, saveButton);
     secondRow.setAlignment(Pos.CENTER);  // Use Pos.CENTER for alignment
     secondRow.setPadding(new Insets(5));
 
@@ -390,7 +399,8 @@ public class SimulationScene {
     centerGrid();
   }
 
-  private void loadCallback(String filename) {
+  private void loadCallback(String filename)
+      throws ParserConfigurationException, IOException, SAXException {
     // Load a new simulation
     if (!"None".equals(filename) && filename != null && !filename.isEmpty()) {
       // Force to pause
@@ -415,25 +425,23 @@ public class SimulationScene {
     }
   }
 
-  private void directorySelectCallback() {
-    // Select a directory
-    DirectoryChooser directoryChooser = new DirectoryChooser();
-    directoryChooser.setTitle("Select Directory");
-    File selectedDirectory = directoryChooser.showDialog(primaryStage);
+//  private void directorySelectCallback() {
+//    // Select a directory
+//    DirectoryChooser directoryChooser = new DirectoryChooser();
+//    directoryChooser.setTitle("Select Directory");
+//    File selectedDirectory = directoryChooser.showDialog(primaryStage);
+//
+//    if (selectedDirectory != null) {
+//      directoryField.setText(selectedDirectory.getAbsolutePath());
+//    }
+//  }
 
-    if (selectedDirectory != null) {
-      directoryField.setText(selectedDirectory.getAbsolutePath());
-    }
-  }
-
-  private void saveCallback(String path) {
-    if (path != null && !path.isEmpty()) {
+  private void saveCallback() {
       // Force to pause
       toggleStartPauseButton(true);
 
       // Save the current configuration
-      controller.saveConfig(path);
-    }
+      controller.saveConfig();
   }
 
   private void centerGrid() {

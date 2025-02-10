@@ -16,8 +16,10 @@ import cellsociety.model.logic.Logic;
 import cellsociety.model.logic.PercolationLogic;
 import cellsociety.model.logic.SegregationLogic;
 import cellsociety.view.scene.SimulationScene;
+import java.io.IOException;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * The SceneController class is responsible for controlling the flow of the application and managing the different scenes.
@@ -40,7 +42,7 @@ public class SceneController {
   private CellFactory<?> cellFactory;
   private Logic<?> gameLogic;
 
-  // Instance variables
+  //instance variables
   private boolean isLoaded;
   private boolean isPaused;
 
@@ -49,9 +51,9 @@ public class SceneController {
    * @param scene The simulation scene to control
    */
   public SceneController(SimulationScene scene) {
-    // Initialize
+    //initialize
     this.configReader = new ConfigReader();
-    this.configWriter = new ConfigWriter(configInfo); // TODO: REQUIRE CONSTRUCTOR WITH NO ARGUMENTS
+    this.configWriter = new ConfigWriter(); // TODO: REQUIRE CONSTRUCTOR WITH NO ARGUMENTS -DOne
     this.simulationScene = scene;
     this.isPaused = true;
   }
@@ -77,7 +79,8 @@ public class SceneController {
    * Load the configuration file with the given filename.
    * @param filename The name of the configuration file to load
    */
-  public void loadConfig(String filename) {
+  public void loadConfig(String filename)
+      throws ParserConfigurationException, IOException, SAXException {
     configInfo = configReader.readConfig(filename);
     configWriter.setConfigInfo(configInfo);
     if (configInfo != null) {
@@ -87,15 +90,15 @@ public class SceneController {
 
   /**
    * Write the current configuration to a file with the given filename.
-   * @param path The path to save the configuration file
+   *
    */
-  public void saveConfig(String path) {
+  public void saveConfig() {
     if (configInfo == null) {
       return;
     }
 
     try {
-      configWriter.saveCurrentConfig();
+      configWriter.saveCurrentConfig(configInfo);
     } catch (ParserConfigurationException e) {
       System.out.println("Error saving the configuration file: " + e);
     }
