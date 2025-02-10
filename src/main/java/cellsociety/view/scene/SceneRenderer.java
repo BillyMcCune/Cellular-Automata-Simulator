@@ -1,11 +1,10 @@
 package cellsociety.view.scene;
 
-import cellsociety.model.data.states.FireState;
-import cellsociety.model.data.states.LifeState;
-import cellsociety.model.data.states.PercolationState;
-import cellsociety.model.data.states.SegregationState;
-import cellsociety.model.data.states.WatorState;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -25,28 +24,9 @@ public class SceneRenderer {
   public static final int DEFAULT_CELL_SIZE = 20;
   public static final int DEFAULT_BORDER_SIZE = 1;
 
-  /// The default colors for each cell state
-  public static final Map<Enum<?>, Color> DEFAULT_CELL_COLORS = Map.ofEntries(
-      Map.entry(FireState.EMPTY, Color.WHITE),
-      Map.entry(FireState.TREE, Color.GREEN),
-      Map.entry(FireState.BURNING, Color.RED),
-
-      Map.entry(LifeState.DEAD, Color.WHITE),
-      Map.entry(LifeState.ALIVE, Color.LIGHTBLUE),
-
-      Map.entry(PercolationState.BLOCKED, Color.BLACK),
-      Map.entry(PercolationState.OPEN, Color.WHITE),
-      Map.entry(PercolationState.PERCOLATED, Color.LIGHTBLUE),
-
-      Map.entry(SegregationState.OPEN, Color.WHITE),
-      Map.entry(SegregationState.RED, Color.RED),
-      Map.entry(SegregationState.BLUE, Color.BLUE),
-
-      // Wator
-      Map.entry(WatorState.OPEN, Color.WHITE),
-      Map.entry(WatorState.FISH, Color.LIMEGREEN),
-      Map.entry(WatorState.SHARK, Color.BLUE)
-  );
+  // Load cell colors from properties file
+  public static final String DEFAULT_CELL_COLORS_FILE = "cellsociety/property/CellColor.properties";
+  public static final Map<String, Color> DEFAULT_CELL_COLORS = loadCellColorProperties();
 
   /**
    * Draw a grid on the given GridPane with the given number of rows and columns.
@@ -82,11 +62,36 @@ public class SceneRenderer {
     for (Node node : grid.getChildren()) {
       if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
           GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
-        ((Rectangle) node).setFill(DEFAULT_CELL_COLORS.get(state));
+
+        String stateName = state.getClass().getSimpleName() + "." + state.name();
+        ((Rectangle) node).setFill(DEFAULT_CELL_COLORS.get(stateName));
         return;
       }
     }
   }
+
+
+  private static Map<String, Color> loadCellColorProperties() {
+    Properties properties = new Properties();
+    Map<String, Color> colorMap = new HashMap<>();
+
+    try (InputStream input = SceneRenderer.class.getClassLoader().getResourceAsStream(DEFAULT_CELL_COLORS_FILE)) {
+      properties.load(input);
+      for (String key : properties.stringPropertyNames()) {
+        String colorValue = properties.getProperty(key);
+        try {
+          colorMap.put(key, Color.valueOf(colorValue));
+        } catch (IllegalArgumentException e) {
+          colorMap.put(key, Color.web(colorValue));
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return colorMap;
+  }
+
 
 
 }
