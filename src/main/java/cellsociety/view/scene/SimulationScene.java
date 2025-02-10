@@ -4,10 +4,12 @@ import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
@@ -192,6 +194,7 @@ public class SimulationScene {
     return parameterContainer;
   }
 
+  // FIXME: The textbox unfocusing should also update the slider value
   private <T extends Number> HBox createParameter(double min, double max, T defaultValue, String label, String tooltip, Consumer<T> callback) {
     // Create the slider
     Slider slider = new Slider(min, max, defaultValue.doubleValue());
@@ -220,6 +223,17 @@ public class SimulationScene {
     TextField textField = new TextField(defaultText);
     textField.getStyleClass().add("parameter-text-field");
     textField.setAlignment(Pos.CENTER);
+
+    // Restrict input to numbers and decimal point
+    UnaryOperator<Change> filter = change -> {
+      String newText = change.getControlNewText();
+      if (newText.matches("\\d*\\.?\\d*")) {
+        return change;
+      } else {
+        return null;
+      }
+    };
+    textField.setTextFormatter(new TextFormatter<>(filter));
 
     // Create min and max labels
     Label minLabel = new Label(minText + " ");
@@ -293,6 +307,18 @@ public class SimulationScene {
                   : String.format("%.1f", sliderValue)
           );
         }
+      }
+    });
+
+    // Add text focus listener
+    textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue) { // When focus is lost
+        double sliderValue = slider.getValue();
+        textField.setText(
+            (defaultValue instanceof Integer)
+                ? String.format("%d", (int) sliderValue)
+                : String.format("%.1f", sliderValue)
+        );
       }
     });
 
