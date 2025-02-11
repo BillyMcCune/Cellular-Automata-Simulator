@@ -1,5 +1,5 @@
 <simulation>
-  <type>GAMEOFLIFE</type>
+  <type>LIFE</type>
   <title>Gosper Glider Gun</title>
   <author>John Conway</author>
   <description>A famous pattern that produces a steady stream of gliders.</description>

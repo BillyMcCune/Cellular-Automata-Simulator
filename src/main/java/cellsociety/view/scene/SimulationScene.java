@@ -36,7 +36,7 @@ public class SimulationScene {
 
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
-  public static final double SPEED_MULTIPLIER = 0.2;
+  public static final double SPEED_MULTIPLIER = 2.0;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
   // UI components

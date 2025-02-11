@@ -70,7 +70,7 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param time how many updates it takes for a shark to breed
    */
-  public static void sharkReproductionTime(int time) {
+  public static void setSharkReproductionTime(int time) {
     sharkReproductionTime = time;
   }
 
