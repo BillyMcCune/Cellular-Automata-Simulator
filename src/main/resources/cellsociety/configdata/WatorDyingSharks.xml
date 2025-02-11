@@ -1,0 +1,38 @@
+<simulation>
+  <type>WATOR</type>
+  <title>Shark Extinction</title>
+  <author>Billy McCune</author>
+  <description> A Wa-Tor Simulation with just sharks.</description>
+  <parameters>
+    <baseSharkEnergy>5</baseSharkEnergy>
+    <fishEnergyGain>2</fishEnergyGain>
+    <sharkReproductionTime>3</sharkReproductionTime>
+    <fishReproductionTime>2</fishReproductionTime>
+  </parameters>
+  <width>20</width>
+  <height>20</height>
+  <defaultSpeed>1</defaultSpeed>
+  <initialStates>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
+  </initialStates>
+</simulation>
