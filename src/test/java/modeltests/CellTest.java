@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import cellsociety.model.data.cells.Cell;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import cellsociety.model.data.states.State;
 
@@ -49,9 +51,9 @@ public class CellTest {
     Cell<TestState> cell = new Cell<>(TestState.ZERO);
     Cell<TestState> neighbor1 = new Cell<>(TestState.ONE);
     Cell<TestState> neighbor2 = new Cell<>(TestState.ZERO);
-    List<Cell<TestState>> neighbors = new ArrayList<>();
-    neighbors.add(neighbor1);
-    neighbors.add(neighbor2);
+    Map<String, Cell<TestState>> neighbors = new HashMap();
+    neighbors.put("0, 1", neighbor1);
+    neighbors.put("0, -1", neighbor2);
     cell.setNeighbors(neighbors);
     assertEquals(neighbors, cell.getNeighbors(), "Expected neighbors list to match set list");
   }
@@ -70,7 +72,7 @@ public class CellTest {
     Cell<TestState> cell = new Cell<>(TestState.ZERO);
     cell.setNeighbors(null);
     assertThrows(NullPointerException.class, () -> {
-      for (Cell<TestState> neighbor : cell.getNeighbors()) {
+      for (Cell<TestState> neighbor : cell.getNeighbors().values()) {
       }
     }, "Iterating over null neighbors list should throw NullPointerException");
   }

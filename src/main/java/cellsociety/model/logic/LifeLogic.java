@@ -48,7 +48,7 @@ public class LifeLogic extends Logic<LifeState> {
 
   private int countLiveNeighbors(Cell<LifeState> cell) {
     int liveCount = 0;
-    for (Cell<LifeState> neighbor : cell.getNeighbors()) {
+    for (Cell<LifeState> neighbor : cell.getNeighbors().values()) {
       if (neighbor.getCurrentState() == LifeState.ALIVE) {
         liveCount++;
       }

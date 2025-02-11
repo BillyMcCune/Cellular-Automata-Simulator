@@ -2,11 +2,12 @@ package cellsociety.model.data;
 
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.states.FireState;
 import cellsociety.model.data.states.State;
 import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a grid of cells for cellular automata models.
@@ -69,36 +70,35 @@ public class Grid<T extends Enum<T> & State> {
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
         if (simulationType == WatorState.class) {
-          getCell(row, col).setNeighbors(getOrthogonalTorusNeighbors(row, col));
+          getCell(row, col).setNeighbors(getWatorNeighbors(row, col));
         }
         else {
-          getCell(row, col).setNeighbors(getOrthogonalDiagonalNeighbors(row, col));
+          getCell(row, col).setNeighbors(getNeighbors(row, col));
         }
       }
     }
   }
 
-  // All simulations other than Wa-Tor, with 8 neighbors and hard boundaries
-  private List<Cell<T>> getOrthogonalDiagonalNeighbors(int row, int col) {
-    List<Cell<T>> neighbors = new ArrayList<>();
+  private Map<String, Cell<T>> getNeighbors(int row, int col) {
+    Map<String, Cell<T>> neighbors = new HashMap<>();
     for (int[] direction : ORTHOGONAL_DIAGONAL_DIRECTIONS) {
       int neighborRow = row + direction[0];
       int neighborCol = col + direction[1];
       if (neighborRow >= 0 && neighborRow < getNumRows() &&
           neighborCol >= 0 && neighborCol < getNumCols()) {
-        neighbors.add(getCell(neighborRow, neighborCol));
+        neighbors.put(String.format("%d, %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
       }
     }
     return neighbors;
   }
 
-  // Specifically for Wa-Tor world, with only orthogonal neighbors in a torus grid
-  private List<Cell<T>> getOrthogonalTorusNeighbors(int row, int col) {
-    List<Cell<T>> neighbors = new ArrayList<>();
+  // These neighbors loop through
+  private Map<String, Cell<T>> getWatorNeighbors(int row, int col) {
+    Map<String, Cell<T>> neighbors = new HashMap<>();
     for (int[] direction : ORTHOGONAL_NEIGHBORS) {
       int neighborRow = (row + direction[0] + getNumRows()) % getNumRows();
       int neighborCol = (col + direction[1] + getNumRows()) % getNumCols();
-      neighbors.add(getCell(neighborRow, neighborCol));
+      neighbors.put(String.format("%d, %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
     }
     return neighbors;
   }

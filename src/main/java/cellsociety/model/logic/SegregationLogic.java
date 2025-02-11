@@ -52,7 +52,7 @@ public class SegregationLogic extends Logic<SegregationState> {
     double similarNeighbors = 0;
     double totalNeighbors = 0;
     SegregationState state = cell.getCurrentState();
-    for (Cell<SegregationState> neighbor : cell.getNeighbors()) {
+    for (Cell<SegregationState> neighbor : cell.getNeighbors().values()) {
       if (neighbor.getCurrentState() != SegregationState.OPEN) {
         if (neighbor.getCurrentState() == state) {
           similarNeighbors++;

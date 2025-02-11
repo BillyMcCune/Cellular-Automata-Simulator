@@ -4,6 +4,7 @@ import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -15,10 +16,10 @@ import java.util.Objects;
 
 public class Cell<T extends Enum<T> & State> {
 
-  protected List<Cell<T>> neighbors = new ArrayList<>();
+  protected Map<String, Cell<T>> neighbors = new HashMap<String, Cell<T>>();
   protected T currState;
   protected T nextState;
-  protected HashMap<String, Object> properties;
+  protected Map<String, Object> properties;
 
   /**
    * Constructs a Cell with specified row, column, and initial state.
@@ -33,7 +34,7 @@ public class Cell<T extends Enum<T> & State> {
   /**
    * Retrieves the neighbors of the cell
    */
-  public List<Cell<T>> getNeighbors() {
+  public Map<String, Cell<T>> getNeighbors() {
     return neighbors;
   }
 
@@ -62,7 +63,7 @@ public class Cell<T extends Enum<T> & State> {
   /**
    * Sets the neighbors of the cell
    */
-  public void setNeighbors(List<Cell<T>> neighbors) {
+  public void setNeighbors(Map<String, Cell<T>> neighbors) {
     this.neighbors = neighbors;
   }
 
@@ -98,7 +99,7 @@ public class Cell<T extends Enum<T> & State> {
     return null;
   }
 
-  public void setAllProperties(HashMap<String, Object> props) {
+  public void setAllProperties(Map<String, Object> props) {
     if (props == null) {
       properties = null;
     } else {
@@ -107,7 +108,7 @@ public class Cell<T extends Enum<T> & State> {
   }
 
 
-  public HashMap<String, Object> getAllProperties() {
+  public Map<String, Object> getAllProperties() {
     return properties;
   }
 
