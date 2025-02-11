@@ -3,11 +3,16 @@ package cellsociety.model.logic;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.states.LifeState;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Concrete implementation of {@link Logic} for Conway's Game of Life.
  */
 public class LifeLogic extends Logic<LifeState> {
+  private List<Integer> birthRequirement;
+  private List<Integer> survivalRequirement;
 
   /**
    * Constructs a {@code LifeLogic} instance with the specified grid.
@@ -16,6 +21,13 @@ public class LifeLogic extends Logic<LifeState> {
    */
   public LifeLogic(Grid<LifeState> grid) {
     super(grid);
+    birthRequirement = List.of(3);
+    survivalRequirement = List.of(2,3);
+  }
+
+  public void setRulestring(List<Integer> birth, List<Integer> survival) {
+    birthRequirement = birth;
+    survivalRequirement = survival;
   }
 
   @Override
@@ -24,11 +36,11 @@ public class LifeLogic extends Logic<LifeState> {
     int liveNeighbors = countLiveNeighbors(cell);
 
     if (currentState == LifeState.ALIVE) {
-      if (liveNeighbors < 2 || liveNeighbors > 3) {
+      if (!survivalRequirement.contains(liveNeighbors)) {
         cell.setNextState(LifeState.DEAD);
       }
     } else {
-      if (liveNeighbors == 3) {
+      if (birthRequirement.contains(liveNeighbors)) {
         cell.setNextState(LifeState.ALIVE);
       }
     }
