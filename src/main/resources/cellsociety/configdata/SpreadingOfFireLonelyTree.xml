@@ -1,0 +1,22 @@
+<simulation>
+  <type>SPREADINGOFFIRE</type>
+  <title>Lonely Tree</title>
+  <author>Billy</author>
+  <description>Just a lonely tree.</description>
+  <parameters>
+    <probCatch>50</probCatch>
+  </parameters>
+  <width>8</width>
+  <height>8</height>
+  <defaultSpeed>10</defaultSpeed>
+  <initialStates>
+    <row>0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0</row>
+  </initialStates>
+</simulation>
