@@ -16,4 +16,7 @@
     <row>1 1 2 2 1 1 2 2 1 1</row>
     <row>2 2 1 1 2 2 1 1 2 2</row>
   </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
 </simulation>

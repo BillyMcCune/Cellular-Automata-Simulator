@@ -35,4 +35,7 @@
     <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
     <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
   </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
 </simulation>

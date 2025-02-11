@@ -15,4 +15,7 @@
   <initialStates>
     <row> 1 </row>
   </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
 </simulation>

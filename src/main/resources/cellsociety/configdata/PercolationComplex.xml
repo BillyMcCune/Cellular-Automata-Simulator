@@ -20,4 +20,7 @@
       <row>0 0 1 0 1 0 1 0 1 0</row>
       <row>1 1 1 0 1 1 1 1 1 1</row>
   </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
 </simulation>
