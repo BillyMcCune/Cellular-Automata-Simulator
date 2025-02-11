@@ -14,8 +14,8 @@ public class FireLogic extends Logic<FireState> {
     super(grid);
   }
 
-  public static void setProbCatch(double probCatch) {
-    FireLogic.probCatch = probCatch;
+  public static void setProbCatch(double percentCatch) {
+    FireLogic.probCatch = percentCatch/100;
   }
 
   @Override

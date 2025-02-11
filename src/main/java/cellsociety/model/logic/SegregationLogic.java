@@ -26,8 +26,8 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
   }
 
-  public static void setSatisfiedThreshold(double satisfiedThreshold) {
-    SegregationLogic.satisfiedThreshold = satisfiedThreshold;
+  public static void setSatisfiedThreshold(double percSatisfiedThreshold) {
+    SegregationLogic.satisfiedThreshold = percSatisfiedThreshold/100;
   }
 
   @Override
