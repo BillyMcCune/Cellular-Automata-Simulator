@@ -86,7 +86,7 @@ public class Grid<T extends Enum<T> & State> {
       int neighborCol = col + direction[1];
       if (neighborRow >= 0 && neighborRow < getNumRows() &&
           neighborCol >= 0 && neighborCol < getNumCols()) {
-        neighbors.put(String.format("%d, %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
+        neighbors.put(String.format("%d %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
       }
     }
     return neighbors;
