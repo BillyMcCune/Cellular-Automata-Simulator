@@ -3,6 +3,7 @@ package cellsociety;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -64,6 +65,8 @@ public class Docker {
       for (Stage floatingStage : floatingWindows) {
         floatingStage.close();
       }
+
+      Platform.exit();
     });
 
     createDockIndicator();
