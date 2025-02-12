@@ -1,5 +1,5 @@
 <simulation>
-  <type>SPREADINGOFFIRE</type>
+  <type>FIRE</type>
   <title>Trees</title>
   <author>Billy</author>
   <description>Just a lot of trees.</description>

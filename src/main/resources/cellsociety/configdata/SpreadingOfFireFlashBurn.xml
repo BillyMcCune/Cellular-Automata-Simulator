@@ -1,5 +1,5 @@
 <simulation>
-  <type>SPREADINGOFFIRE</type>
+  <type>FIRE</type>
   <title>Flash Burn</title>
   <author>Billy</author>
   <description>A Fast Burning Simulation</description>
