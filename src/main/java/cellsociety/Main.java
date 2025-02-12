@@ -14,13 +14,14 @@ public class Main extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-    // Create the main scene
-    SimulationScene mainScene = new SimulationScene(primaryStage);
-
-    // Set up the primary stage
+    // Set up the title of the primary stage
     primaryStage.setTitle("Game of Life Simulation");
-    primaryStage.setResizable(true);
-    primaryStage.show();
+
+    // Create Docker
+    Docker dock = new Docker(primaryStage, 600, 800);
+
+    // Create the main scene
+    SimulationScene mainScene = new SimulationScene(dock);
 
     // Set up the game loop
     Timeline timeline = new Timeline();

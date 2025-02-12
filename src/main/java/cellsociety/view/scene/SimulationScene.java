@@ -1,5 +1,6 @@
 package cellsociety.view.scene;
 
+import cellsociety.Docker;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Objects;
@@ -56,10 +57,10 @@ public class SimulationScene {
 
   /**
    * Constructor for the SimulationScene class
-   * @param primaryStage the primary stage of the application to display the scene
+   * @param docker the docker object that contains the primary stage
    */
-  public SimulationScene(Stage primaryStage) {
-    this.primaryStage = primaryStage;
+  public SimulationScene(Docker docker) {
+    this.primaryStage = docker.getMainStage();
     this.controller = new SceneController(this);
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
@@ -73,22 +74,15 @@ public class SimulationScene {
 
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
-    VBox rootContent = new VBox(10,
-        titleLabel,
-        gridParent,
-        parameterPanel,
-        controls,
-        infoLabel
-    );
-    rootContent.setPadding(new Insets(10));
-    rootContent.getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
+    // Create a floating window for each component
+    docker.createFloatingWindow("Grid", gridParent);
+    docker.createFloatingWindow("Title", titleLabel);
+    docker.createFloatingWindow("Controls", controls);
+    docker.createFloatingWindow("Info", infoLabel);
+    docker.createFloatingWindow("Parameters", parameterPanel);
 
-    ScrollPane scrollPane = new ScrollPane(rootContent);
-    scrollPane.setFitToWidth(true);
-    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
-    primaryStage.setScene(new Scene(scrollPane, DEFAULT_WIDTH, DEFAULT_HEIGHT));
   }
+
 
 
   /**
