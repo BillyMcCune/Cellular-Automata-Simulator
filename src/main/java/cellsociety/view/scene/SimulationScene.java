@@ -1,7 +1,7 @@
 package cellsociety.view.scene;
 
-import cellsociety.Docker;
-import cellsociety.Docker.DockPosition;
+import cellsociety.view.controller.Docker;
+import cellsociety.view.controller.Docker.DockPosition;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Objects;
@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.input.KeyEvent;

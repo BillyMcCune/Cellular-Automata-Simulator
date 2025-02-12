@@ -1,4 +1,4 @@
-package cellsociety;
+package cellsociety.view.controller;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
