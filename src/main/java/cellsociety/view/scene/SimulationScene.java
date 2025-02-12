@@ -37,6 +37,9 @@ public class SimulationScene {
   public static final double SPEED_MULTIPLIER = 2.0;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
+  public static final double BUTTON_HEIGHT = 35;
+  public static final double MAX_BUTTON_WIDTH = 100;
+
   // UI components
   private Button startPauseButton;
   private GridPane grid;
@@ -63,7 +66,7 @@ public class SimulationScene {
 
     // Create the UI components
     Pane gridParent = createGrid();
-    Pane controls = createControls();
+    ScrollPane controls = createControls();
     ScrollPane infoLabel = createInfoLabel();
     ScrollPane parameterPanel = createParameterPanel();
 
@@ -310,7 +313,7 @@ public class SimulationScene {
     return parameterControl;
   }
 
-  private VBox createControls() {
+  private ScrollPane createControls() {
     // Create buttons
     startPauseButton = new Button("Start");
     Button resetButton = new Button("Reset");
@@ -318,33 +321,32 @@ public class SimulationScene {
     Button saveButton = new Button("Save");
     Button directoryButton = new Button("📂");
 
+    // Link the width of the buttons
+    resetButton.setMaxWidth(MAX_BUTTON_WIDTH);
+    startPauseButton.prefWidthProperty().bind(resetButton.widthProperty());
+    loadButton.prefWidthProperty().bind(resetButton.widthProperty());
+    saveButton.prefWidthProperty().bind(resetButton.widthProperty());
+    directoryButton.prefWidthProperty().bind(resetButton.widthProperty());
+
+    // Set ComboBox
+    selectType = new ComboBox<>();
+    selectType.getItems().addAll("None");
+    selectType.setMinHeight(BUTTON_HEIGHT);
+    selectType.setMaxWidth(MAX_BUTTON_WIDTH);
+
     // Create directory text field
     directoryField = new TextField();
     directoryField.setPromptText("No directory selected");
     directoryField.setEditable(false);
+    directoryField.prefWidthProperty().bind(selectType.widthProperty());
 
-    // Set button heights and color
-    double buttonHeight = 35;
-    startPauseButton.setMinHeight(buttonHeight);
-    resetButton.setMinHeight(buttonHeight);
-    loadButton.setMinHeight(buttonHeight);
-    saveButton.setMinHeight(buttonHeight);
-    directoryButton.setMinHeight(buttonHeight);
-    directoryField.setMinHeight(buttonHeight);
-
-    // Set button widths
-    double totalWidth = 500;
-    double button40 = totalWidth * 0.4; // 40%
-    double button20 = totalWidth * 0.2; // 20%
-    double directoryButtonWidth = totalWidth * 0.05; // 5%
-    double directoryFieldWidth = totalWidth * 0.25; // 15%
-
-    startPauseButton.setMinWidth(button40);
-    loadButton.setMinWidth(button20);
-    resetButton.setMinWidth(button40);
-    saveButton.setMinWidth(button20);
-    directoryButton.setMinWidth(directoryButtonWidth);
-    directoryField.setMinWidth(directoryFieldWidth);
+    // Set button heights
+    startPauseButton.setMinHeight(BUTTON_HEIGHT);
+    resetButton.setMinHeight(BUTTON_HEIGHT);
+    loadButton.setMinHeight(BUTTON_HEIGHT);
+    saveButton.setMinHeight(BUTTON_HEIGHT);
+    directoryButton.setMinHeight(BUTTON_HEIGHT);
+    directoryField.setMinHeight(BUTTON_HEIGHT);
 
     // Style buttons with colors
     startPauseButton.getStyleClass().add("start-button");
@@ -352,12 +354,6 @@ public class SimulationScene {
     loadButton.getStyleClass().add("load-button");
     saveButton.getStyleClass().add("save-button");
     directoryButton.getStyleClass().add("directory-button");
-
-    // Set ComboBox
-    selectType = new ComboBox<>();
-    selectType.getItems().addAll("None");
-    selectType.setMinHeight(buttonHeight);
-    selectType.setMinWidth(button40); // 40%
 
     // Button callbacks
     startPauseButton.setOnAction(e -> startPauseCallback());
@@ -373,19 +369,23 @@ public class SimulationScene {
 
     // HBox formatting
     HBox firstRow = new HBox(10, startPauseButton, loadButton, selectType);
-    firstRow.setAlignment(Pos.CENTER);  // Use Pos.CENTER for alignment
+    firstRow.setAlignment(Pos.CENTER_LEFT);
     firstRow.setPadding(new Insets(5));
 
     HBox secondRow = new HBox(10, resetButton, saveButton, directoryField, directoryButton);
-    secondRow.setAlignment(Pos.CENTER);  // Use Pos.CENTER for alignment
+    secondRow.setAlignment(Pos.CENTER_LEFT);
     secondRow.setPadding(new Insets(5));
 
     // VBox formatting
     VBox controls = new VBox(10, firstRow, secondRow);
     controls.setPadding(new Insets(10));
-    controls.setAlignment(Pos.CENTER);  // Use Pos.CENTER for alignment
+    controls.setAlignment(Pos.CENTER);
 
-    return controls;
+    ScrollPane scrollPane = new ScrollPane(controls);
+    scrollPane.setFitToWidth(true);
+    scrollPane.setFitToHeight(true);
+
+    return scrollPane;
   }
 
   private ScrollPane createInfoLabel() {
@@ -405,7 +405,6 @@ public class SimulationScene {
 
     return scrollPane;
   }
-
 
 
   /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
