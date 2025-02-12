@@ -1,0 +1,22 @@
+<simulation>
+  <type>SEGREGATION</type>
+  <title>Simple Move Segregation Simulation</title>
+  <author>Billy</author>
+  <description>A version of the segregation simulation where only one block differs from the others in a group and can make one move to be satisfied.</description>
+  <parameters>
+    <satisfiedThreshold>25</satisfiedThreshold>
+  </parameters>
+  <width>10</width>
+  <height>5</height>
+  <defaultSpeed>10</defaultSpeed>
+  <initialStates>
+    <row>0 0 0 0 0 0 1 1 1 1</row>
+    <row>0 0 0 0 0 0 1 1 1 1</row>
+    <row>0 0 0 0 0 0 1 1 1 1</row>
+    <row>0 2 2 0 0 0 0 0 0 0</row>
+    <row>0 2 2 0 0 0 0 0 0 0</row>
+  </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+</simulation>

@@ -1,10 +1,10 @@
 <simulation>
-  <type>FIRE</type>
-  <title>Basic Fire</title>
+  <type>SPREADINGOFFIRE</type>
+  <title>Flash Burn</title>
   <author>Billy</author>
-  <description>A basic fire in the spreading of fire simulation.</description>
+  <description>A Fast Burning Simulation</description>
   <parameters>
-    <probCatch>50</probCatch>
+    <probCatch>100</probCatch>
   </parameters>
   <width>8</width>
   <height>8</height>
@@ -12,10 +12,10 @@
   <initialStates>
     <row>1 1 1 1 1 1 1 1</row>
     <row>1 1 1 1 1 1 1 1</row>
-    <row>1 1 2 1 1 1 1 1</row>
-    <row>1 2 0 0 0 1 1 1</row>
-    <row>1 1 2 0 1 1 1 1</row>
-    <row>1 1 1 2 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 2 2 1 1 1</row>
+    <row>1 1 1 2 2 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1</row>
     <row>1 1 1 1 1 1 1 1</row>
     <row>1 1 1 1 1 1 1 1</row>
   </initialStates>

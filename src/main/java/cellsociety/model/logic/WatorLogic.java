@@ -117,7 +117,7 @@ public class WatorLogic extends Logic<WatorState> {
   private Cell<WatorState> getNextSharkLocation(Cell<WatorState> sharkCell) {
     List<Cell<WatorState>> fishNeighbors = new ArrayList<>();
     List<Cell<WatorState>> openNeighbors = new ArrayList<>();
-    for (Cell<WatorState> neighbor : sharkCell.getNeighbors()) {
+    for (Cell<WatorState> neighbor : sharkCell.getNeighbors().values()) {
       if (neighbor.getNextState() == WatorState.FISH) {
         fishNeighbors.add(neighbor);
       }
@@ -186,7 +186,7 @@ public class WatorLogic extends Logic<WatorState> {
 
   private Cell<WatorState> getNextFishLocation(Cell<WatorState> fishCell) {
     List<Cell<WatorState>> openNeighbors = new ArrayList<>();
-    for (Cell<WatorState> neighbor : fishCell.getNeighbors()) {
+    for (Cell<WatorState> neighbor : fishCell.getNeighbors().values()) {
       if (neighbor.getNextState() == WatorState.OPEN) {
         openNeighbors.add(neighbor);
       }

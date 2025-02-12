@@ -26,8 +26,8 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
   }
 
-  public static void setSatisfiedThreshold(double satisfiedThreshold) {
-    SegregationLogic.satisfiedThreshold = satisfiedThreshold;
+  public static void setSatisfiedThreshold(double percSatisfiedThreshold) {
+    SegregationLogic.satisfiedThreshold = percSatisfiedThreshold/100;
   }
 
   @Override
@@ -52,7 +52,7 @@ public class SegregationLogic extends Logic<SegregationState> {
     double similarNeighbors = 0;
     double totalNeighbors = 0;
     SegregationState state = cell.getCurrentState();
-    for (Cell<SegregationState> neighbor : cell.getNeighbors()) {
+    for (Cell<SegregationState> neighbor : cell.getNeighbors().values()) {
       if (neighbor.getCurrentState() != SegregationState.OPEN) {
         if (neighbor.getCurrentState() == state) {
           similarNeighbors++;

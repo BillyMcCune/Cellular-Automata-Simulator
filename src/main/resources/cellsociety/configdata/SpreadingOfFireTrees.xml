@@ -1,0 +1,25 @@
+<simulation>
+  <type>SPREADINGOFFIRE</type>
+  <title>Trees</title>
+  <author>Billy</author>
+  <description>Just a lot of trees.</description>
+  <parameters>
+    <probCatch>50</probCatch>
+  </parameters>
+  <width>24</width>
+  <height>8</height>
+  <defaultSpeed>10</defaultSpeed>
+  <initialStates>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+  </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+</simulation>

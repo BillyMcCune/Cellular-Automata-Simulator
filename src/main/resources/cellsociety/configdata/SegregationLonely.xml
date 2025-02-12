@@ -1,0 +1,22 @@
+<simulation>
+  <type>SEGREGATION</type>
+  <title>Lonely Segregation Simulation</title>
+  <author>Billy</author>
+  <description>A version of the segregation simulation where there are just two blocks of differing opinions. This causes them to move forever.</description>
+  <parameters>
+    <satisfiedThreshold>50</satisfiedThreshold>
+  </parameters>
+  <width>10</width>
+  <height>5</height>
+  <defaultSpeed>1</defaultSpeed>
+  <initialStates>
+    <row>0 0 0 0 1 2 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0</row>
+  </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+</simulation>

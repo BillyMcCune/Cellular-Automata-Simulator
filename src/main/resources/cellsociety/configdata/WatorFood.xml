@@ -1,0 +1,41 @@
+<simulation>
+  <type>WATOR</type>
+  <title>Food for Shark</title>
+  <author>Billy McCune</author>
+  <description>A Wa-Tor Simulation with one Shark and a lot of grub.</description>
+  <parameters>
+    <baseSharkEnergy>5</baseSharkEnergy>
+    <fishEnergyGain>2</fishEnergyGain>
+    <sharkReproductionTime>3</sharkReproductionTime>
+    <fishReproductionTime>2</fishReproductionTime>
+  </parameters>
+  <width>20</width>
+  <height>20</height>
+  <defaultSpeed>1</defaultSpeed>
+  <initialStates>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
+    <row>0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0</row>
+  </initialStates>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+</simulation>

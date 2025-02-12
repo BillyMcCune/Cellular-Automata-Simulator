@@ -14,8 +14,8 @@ public class FireLogic extends Logic<FireState> {
     super(grid);
   }
 
-  public static void setProbCatch(double probCatch) {
-    FireLogic.probCatch = probCatch;
+  public static void setProbCatch(double percentCatch) {
+    FireLogic.probCatch = percentCatch/100;
   }
 
   @Override
@@ -34,10 +34,9 @@ public class FireLogic extends Logic<FireState> {
   }
 
   private List<Cell<FireState>> getTreeNeighbors(Cell<FireState> cell) {
-    List<Cell<FireState>> neighbors = cell.getNeighbors();
     List<Cell<FireState>> openNeighbors = new ArrayList<>();
 
-    for (Cell<FireState> neighbor : neighbors) {
+    for (Cell<FireState> neighbor : cell.getNeighbors().values()) {
       FireState neighborState = neighbor.getCurrentState();
       if (neighborState == FireState.TREE) {
         openNeighbors.add(neighbor);

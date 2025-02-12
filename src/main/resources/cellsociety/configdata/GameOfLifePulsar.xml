@@ -1,0 +1,36 @@
+<simulation>
+  <type>GAMEOFLIFE</type>
+  <title>Pulsar</title>
+  <author>Billy McCune</author>
+  <description>A classic oscillator pattern in the Game of Life called Pulsar.</description>
+  <parameters>
+  </parameters>
+  <width>20</width>
+  <height>20</height>
+  <defaultSpeed>10</defaultSpeed>
+  <initialStates>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 1 1 1 0 0 0 1 1 1 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 0 0 1 1 1 0 0 0 1 1 1 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 1 1 1 0 0 0 1 1 1 0 0 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 1 1 1 0 0 0 1 1 1 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+    <row>0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</row>
+  </initialStates>
+  <acceptedStates>
+    0 1
+  </acceptedStates>
+</simulation>
