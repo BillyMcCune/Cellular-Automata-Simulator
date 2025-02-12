@@ -177,7 +177,6 @@ public class SimulationScene {
     return scrollPane;
   }
 
-  // FIXME: The textbox unfocusing should also update the slider value
   private <T extends Number> HBox createParameter(double min, double max, T defaultValue, String label, String tooltip, Consumer<T> callback) {
     // Create the slider
     Slider slider = new Slider(min, max, defaultValue.doubleValue());
@@ -394,16 +393,15 @@ public class SimulationScene {
     infoLabel.getStyleClass().add("info-label");
     infoLabel.setWrapText(true);
     infoLabel.setMaxWidth(Double.MAX_VALUE);
-    infoLabel.setMaxHeight(Double.MAX_VALUE); // 允许高度扩展
+    infoLabel.setMaxHeight(Double.MAX_VALUE);
 
-    // 让 Label 自动换行，并确保它不会限制高度
-    infoLabel.setPrefWidth(300); // 可调整宽度
-    infoLabel.setPrefHeight(Region.USE_COMPUTED_SIZE); // 允许高度计算
+    infoLabel.setPrefWidth(300);
+    infoLabel.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
     ScrollPane scrollPane = new ScrollPane(infoLabel);
     scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(false); // 允许垂直滚动
-    scrollPane.setStyle("-fx-background-color: transparent;"); // 设置透明背景
+    scrollPane.setFitToHeight(false);
+    scrollPane.setStyle("-fx-background-color: transparent;");
 
     return scrollPane;
   }
@@ -440,12 +438,8 @@ public class SimulationScene {
     // Force to pause
     toggleStartPauseButton(true);
 
-    // Clear the parameter box except for the speed
-    parameterBox.getChildren().clear();
-    setParameter("Speed", MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), SPEED_TOOLTIP, this::speedChangeCallback);
-
     // Reset the simulation
-    controller.resetModel();
+    controller.resetGrid();
 
     // Center the grid
     centerGrid();
