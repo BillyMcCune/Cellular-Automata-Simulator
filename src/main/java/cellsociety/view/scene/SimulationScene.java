@@ -70,10 +70,10 @@ public class SimulationScene {
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
-    Stage controlWindow = docker.createFloatingWindow("Controls", controls, DockPosition.LEFT);
-    Stage parameterWindow = docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.LEFT);
-    Stage infoWindow = docker.createFloatingWindow("Info", infoLabel, DockPosition.LEFT);
-    Stage gridWindow = docker.createFloatingWindow("Grid", gridParent, DockPosition.TOP);
+    docker.createFloatingWindow("Controls", controls, DockPosition.LEFT);
+    docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.LEFT);
+    docker.createFloatingWindow("Info", infoLabel, DockPosition.LEFT);
+    docker.createFloatingWindow("Grid", gridParent, DockPosition.TOP);
 
     // Set the scene style
     primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
@@ -394,13 +394,20 @@ public class SimulationScene {
     infoLabel.getStyleClass().add("info-label");
     infoLabel.setWrapText(true);
     infoLabel.setMaxWidth(Double.MAX_VALUE);
+    infoLabel.setMaxHeight(Double.MAX_VALUE); // 允许高度扩展
+
+    // 让 Label 自动换行，并确保它不会限制高度
+    infoLabel.setPrefWidth(300); // 可调整宽度
+    infoLabel.setPrefHeight(Region.USE_COMPUTED_SIZE); // 允许高度计算
 
     ScrollPane scrollPane = new ScrollPane(infoLabel);
     scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(true);
+    scrollPane.setFitToHeight(false); // 允许垂直滚动
+    scrollPane.setStyle("-fx-background-color: transparent;"); // 设置透明背景
 
     return scrollPane;
   }
+
 
 
   /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */

@@ -16,7 +16,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +32,9 @@ public class Docker {
   private static final double DEFAULT_FLOATING_HEIGHT = 150;
 
   private Stage dockIndicator;
-  private Stage mainStage;
+  private final Stage mainStage;
   private final List<Stage> floatingWindows = new ArrayList<>();
   private final List<SplitPane> splitPanes = new ArrayList<>();
-  private Map<TabPane, Point2D[]> tabPanePointsMap = new HashMap<>();
 
   private double xOffset = 0;
   private double yOffset = 0;
@@ -49,6 +47,16 @@ public class Docker {
     LEFT, RIGHT, TOP, BOTTOM
   }
 
+  /* APIS BELOW */
+
+  /**
+   * Creates a new Docker with the specified main stage and dimensions.
+   * After creating a Docker, users should NOT modify the scene of the main stage.
+   *
+   * @param mainStage the main stage of the docking system
+   * @param width the width of the main stage
+   * @param height the height of the main stage
+   */
   public Docker(Stage mainStage, double width, double height) {
     this.mainStage = mainStage;
 
@@ -74,10 +82,23 @@ public class Docker {
     mainStage.show();
   }
 
+  /**
+   * Returns the main stage of the docking system.
+   *
+   * @return the main stage
+   */
   public Stage getMainStage() {
     return mainStage;
   }
 
+  /**
+   * Creates a floating window with the specified title and content.
+   *
+   * @param title the title of the floating window
+   * @param content the content of the floating window
+   * @param dockPosition the default dock position of the floating window
+   * @return the floating window
+   */
   public Stage createFloatingWindow(String title, Node content, DockPosition dockPosition) {
     Stage floatingStage = new Stage();
     floatingStage.initStyle(StageStyle.UTILITY);
@@ -160,7 +181,7 @@ public class Docker {
         nearestSide = DockPosition.BOTTOM;
       }
 
-      extractAndDockContent(floatingStage, null, nearestSide);
+      dockTab(floatingStage, null, nearestSide);
 
       // Prevent the window from closing
       event.consume();
@@ -174,9 +195,9 @@ public class Docker {
         TabPane targetTabPane = findTabPaneUnderMouse(mouseX, mouseY);
 
         if (targetTabPane != null) {
-          extractAndDockContent(floatingStage, targetTabPane, this.dockPosition);
+          dockTab(floatingStage, targetTabPane, this.dockPosition);
         } else if (!isMouseInsideMainStage(mouseX, mouseY)) {
-          extractAndDockContent(floatingStage, null, this.dockPosition);
+          dockTab(floatingStage, null, this.dockPosition);
         }
       }
 
@@ -184,14 +205,14 @@ public class Docker {
       dockIndicator.hide();
     });
 
-    floatingStage.show();
     floatingWindows.add(floatingStage);
 
-    extractAndDockContent(floatingStage, null, dockPosition);
+    dockTab(floatingStage, null, dockPosition);
 
     return floatingStage;
   }
 
+  /* INDICATOR IMPLEMENTATIONS */
   private void createDockIndicator() {
     dockIndicator = new Stage();
     dockIndicator.initStyle(StageStyle.UNDECORATED);
@@ -321,139 +342,7 @@ public class Docker {
     dockIndicator.setY(newY - dockIndicator.getHeight() / 2);
   }
 
-  private boolean isMouseInsideIndicator(double mouseX, double mouseY) {
-    double indicatorX = dockIndicator.getX();
-    double indicatorY = dockIndicator.getY();
-    double indicatorWidth = dockIndicator.getWidth();
-    double indicatorHeight = dockIndicator.getHeight();
-
-    return mouseX >= indicatorX && mouseX <= indicatorX + indicatorWidth &&
-        mouseY >= indicatorY && mouseY <= indicatorY + indicatorHeight;
-  }
-
-  private boolean isMouseInsideMainStage(double mouseX, double mouseY) {
-    double stageX = mainStage.getScene().getWindow().getX();
-    double stageY = mainStage.getScene().getWindow().getY();
-    double stageWidth = mainStage.getWidth();
-    double stageHeight = mainStage.getHeight();
-
-    return mouseX >= stageX + DOCK_OUTSIDE_OFFSET && mouseX <= stageX - DOCK_OUTSIDE_OFFSET + stageWidth &&
-        mouseY >= stageY + DOCK_OUTSIDE_OFFSET && mouseY <= stageY - DOCK_OUTSIDE_OFFSET + stageHeight;
-  }
-
-  private TabPane findTabPaneUnderMouse(double mouseX, double mouseY) {
-    for (SplitPane splitPane : splitPanes) {
-      for (Node node : splitPane.getItems()) {
-        if (node instanceof TabPane tabPane) {
-          Bounds screenBounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
-          if (screenBounds != null && screenBounds.contains(mouseX, mouseY)) {
-            return tabPane;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  private Point2D[] getTabPaneEdgeMidpoints(TabPane tabPane) {
-    Bounds bounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
-
-    double leftX = bounds.getMinX();
-    double rightX = bounds.getMaxX();
-    double topY = bounds.getMinY();
-    double bottomY = bounds.getMaxY();
-
-    double centerX = (leftX + rightX) / 2;
-    double centerY = (topY + bottomY) / 2;
-
-    return new Point2D[]{
-        new Point2D(leftX, centerY),   // Left center
-        new Point2D(rightX, centerY),  // Right center
-        new Point2D(centerX, topY),    // Top center
-        new Point2D(centerX, bottomY)  // Bottom center
-    };
-  }
-
-  private Point2D[] getStageEdgeMidpoints(Stage stage) {
-    double stageX = stage.getScene().getWindow().getX();
-    double stageY = stage.getScene().getWindow().getY();
-    double stageWidth = stage.getWidth();
-    double stageHeight = stage.getHeight();
-
-    // Calculate the midpoints of the stage edges
-    double topMidX = stageX + stageWidth / 2;  // X-coordinate of top edge midpoint
-    double bottomMidX = stageX + stageWidth / 2; // X-coordinate of bottom edge midpoint
-    double leftMidY = stageY + stageHeight / 2;  // Y-coordinate of left edge midpoint
-    double rightMidY = stageY + stageHeight / 2; // Y-coordinate of right edge midpoint
-
-    return new Point2D[]{
-        new Point2D(topMidX, stageY),   // Top edge midpoint
-        new Point2D(bottomMidX, stageY + stageHeight), // Bottom edge midpoint
-        new Point2D(stageX, leftMidY),   // Left edge midpoint
-        new Point2D(stageX + stageWidth, rightMidY) // Right edge midpoint
-    };
-  }
-
-  private Map.Entry<DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY) {
-    Map<DockPosition, Point2D> edges = new HashMap<>();
-    edges.put(DockPosition.LEFT, midpoints[0]);   // Left center
-    edges.put(DockPosition.RIGHT, midpoints[1]);  // Right center
-    edges.put(DockPosition.TOP, midpoints[2]);    // Top center
-    edges.put(DockPosition.BOTTOM, midpoints[3]); // Bottom center
-
-    DockPosition closestEdge = null;
-    Point2D closestPoint = null;
-    double minDistance = Double.MAX_VALUE;
-
-    for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
-      double distance = entry.getValue().distance(mouseX, mouseY);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestEdge = entry.getKey();
-        closestPoint = entry.getValue();
-      }
-    }
-
-    return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
-  }
-
-  private Map.Entry<DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY, Stage stage) {
-    // Get the stage's position on screen (screen-based coordinates)
-    double stageX = stage.getScene().getWindow().getX();
-    double stageY = stage.getScene().getWindow().getY();
-
-    // Adjust the edge midpoints from stage coordinates to screen coordinates
-    Point2D[] screenMidpoints = new Point2D[]{
-        new Point2D(midpoints[0].getX() + stageX, midpoints[0].getY() + stageY),   // Top
-        new Point2D(midpoints[1].getX() + stageX, midpoints[1].getY() + stageY),   // Bottom
-        new Point2D(midpoints[2].getX() + stageX, midpoints[2].getY() + stageY),   // Left
-        new Point2D(midpoints[3].getX() + stageX, midpoints[3].getY() + stageY)    // Right
-    };
-
-    Map<DockPosition, Point2D> edges = new HashMap<>();
-    edges.put(DockPosition.TOP, screenMidpoints[0]);
-    edges.put(DockPosition.BOTTOM, screenMidpoints[1]);
-    edges.put(DockPosition.LEFT, screenMidpoints[2]);
-    edges.put(DockPosition.RIGHT, screenMidpoints[3]);
-
-    DockPosition closestEdge = null;
-    Point2D closestPoint = null;
-    double minDistance = Double.MAX_VALUE;
-
-    // Find the closest edge
-    for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
-      double distance = entry.getValue().distance(mouseX, mouseY); // Calculate screen distance
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestEdge = entry.getKey();
-        closestPoint = entry.getValue();
-      }
-    }
-
-    return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
-  }
-
-  private void extractAndDockContent(Stage floatingStage, TabPane targetTabPane, DockPosition dockPosition) {
+  private void dockTab(Stage floatingStage, TabPane targetTabPane, DockPosition dockPosition) {
     Scene floatingScene = floatingStage.getScene();
     TabPane floatingTabPane = (TabPane) floatingScene.getRoot();
 
@@ -598,14 +487,43 @@ public class Docker {
   }
 
   private void undockTab(TabPane floatingTabPane, Stage floatingStage) {
+    double height = floatingTabPane.getHeight();
+    double width = floatingTabPane.getWidth();
+
     SplitPane mainSplitPane = (SplitPane) floatingTabPane.getScene().getRoot();
     removeTabFromSplitPane(floatingTabPane, mainSplitPane);
 
     Scene newScene = new Scene(floatingTabPane);
+    newScene.getStylesheets().setAll(mainStage.getScene().getStylesheets());
     floatingStage.setScene(newScene);
+    floatingStage.setWidth(width);
+    floatingStage.setHeight(height);
     floatingStage.setX(mainStage.getX() + mainStage.getWidth() / 2 - floatingStage.getWidth() / 2);
     floatingStage.setY(mainStage.getY() + mainStage.getHeight() / 2 - floatingStage.getHeight() / 2);
+
     floatingStage.show();
+  }
+
+  /* HELPER METHODS */
+
+  private boolean isMouseInsideIndicator(double mouseX, double mouseY) {
+    double indicatorX = dockIndicator.getX();
+    double indicatorY = dockIndicator.getY();
+    double indicatorWidth = dockIndicator.getWidth();
+    double indicatorHeight = dockIndicator.getHeight();
+
+    return mouseX >= indicatorX && mouseX <= indicatorX + indicatorWidth &&
+        mouseY >= indicatorY && mouseY <= indicatorY + indicatorHeight;
+  }
+
+  private boolean isMouseInsideMainStage(double mouseX, double mouseY) {
+    double stageX = mainStage.getScene().getWindow().getX();
+    double stageY = mainStage.getScene().getWindow().getY();
+    double stageWidth = mainStage.getWidth();
+    double stageHeight = mainStage.getHeight();
+
+    return mouseX >= stageX + DOCK_OUTSIDE_OFFSET && mouseX <= stageX - DOCK_OUTSIDE_OFFSET + stageWidth &&
+        mouseY >= stageY + DOCK_OUTSIDE_OFFSET && mouseY <= stageY - DOCK_OUTSIDE_OFFSET + stageHeight;
   }
 
   private boolean isDocked(TabPane tabPane) {
@@ -638,4 +556,117 @@ public class Docker {
     }
     splitPane.getItems().removeAll(emptySplitPanes);
   }
+
+  private TabPane findTabPaneUnderMouse(double mouseX, double mouseY) {
+    for (SplitPane splitPane : splitPanes) {
+      for (Node node : splitPane.getItems()) {
+        if (node instanceof TabPane tabPane) {
+          Bounds screenBounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
+          if (screenBounds != null && screenBounds.contains(mouseX, mouseY)) {
+            return tabPane;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private Point2D[] getTabPaneEdgeMidpoints(TabPane tabPane) {
+    Bounds bounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
+
+    double leftX = bounds.getMinX();
+    double rightX = bounds.getMaxX();
+    double topY = bounds.getMinY();
+    double bottomY = bounds.getMaxY();
+
+    double centerX = (leftX + rightX) / 2;
+    double centerY = (topY + bottomY) / 2;
+
+    return new Point2D[]{
+        new Point2D(leftX, centerY),   // Left center
+        new Point2D(rightX, centerY),  // Right center
+        new Point2D(centerX, topY),    // Top center
+        new Point2D(centerX, bottomY)  // Bottom center
+    };
+  }
+
+  private Point2D[] getStageEdgeMidpoints(Stage stage) {
+    double stageX = stage.getScene().getWindow().getX();
+    double stageY = stage.getScene().getWindow().getY();
+    double stageWidth = stage.getWidth();
+    double stageHeight = stage.getHeight();
+
+    // Calculate the midpoints of the stage edges
+    double topMidX = stageX + stageWidth / 2;  // X-coordinate of top edge midpoint
+    double bottomMidX = stageX + stageWidth / 2; // X-coordinate of bottom edge midpoint
+    double leftMidY = stageY + stageHeight / 2;  // Y-coordinate of left edge midpoint
+    double rightMidY = stageY + stageHeight / 2; // Y-coordinate of right edge midpoint
+
+    return new Point2D[]{
+        new Point2D(topMidX, stageY),   // Top edge midpoint
+        new Point2D(bottomMidX, stageY + stageHeight), // Bottom edge midpoint
+        new Point2D(stageX, leftMidY),   // Left edge midpoint
+        new Point2D(stageX + stageWidth, rightMidY) // Right edge midpoint
+    };
+  }
+
+  private Map.Entry<DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY) {
+    Map<DockPosition, Point2D> edges = new HashMap<>();
+    edges.put(DockPosition.LEFT, midpoints[0]);   // Left center
+    edges.put(DockPosition.RIGHT, midpoints[1]);  // Right center
+    edges.put(DockPosition.TOP, midpoints[2]);    // Top center
+    edges.put(DockPosition.BOTTOM, midpoints[3]); // Bottom center
+
+    DockPosition closestEdge = null;
+    Point2D closestPoint = null;
+    double minDistance = Double.MAX_VALUE;
+
+    for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
+      double distance = entry.getValue().distance(mouseX, mouseY);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestEdge = entry.getKey();
+        closestPoint = entry.getValue();
+      }
+    }
+
+    return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
+  }
+
+  private Map.Entry<DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY, Stage stage) {
+    // Get the stage's position on screen (screen-based coordinates)
+    double stageX = stage.getScene().getWindow().getX();
+    double stageY = stage.getScene().getWindow().getY();
+
+    // Adjust the edge midpoints from stage coordinates to screen coordinates
+    Point2D[] screenMidpoints = new Point2D[]{
+        new Point2D(midpoints[0].getX() + stageX, midpoints[0].getY() + stageY),   // Top
+        new Point2D(midpoints[1].getX() + stageX, midpoints[1].getY() + stageY),   // Bottom
+        new Point2D(midpoints[2].getX() + stageX, midpoints[2].getY() + stageY),   // Left
+        new Point2D(midpoints[3].getX() + stageX, midpoints[3].getY() + stageY)    // Right
+    };
+
+    Map<DockPosition, Point2D> edges = new HashMap<>();
+    edges.put(DockPosition.TOP, screenMidpoints[0]);
+    edges.put(DockPosition.BOTTOM, screenMidpoints[1]);
+    edges.put(DockPosition.LEFT, screenMidpoints[2]);
+    edges.put(DockPosition.RIGHT, screenMidpoints[3]);
+
+    DockPosition closestEdge = null;
+    Point2D closestPoint = null;
+    double minDistance = Double.MAX_VALUE;
+
+    // Find the closest edge
+    for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
+      double distance = entry.getValue().distance(mouseX, mouseY); // Calculate screen distance
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestEdge = entry.getKey();
+        closestPoint = entry.getValue();
+      }
+    }
+
+    return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
+  }
+
 }
