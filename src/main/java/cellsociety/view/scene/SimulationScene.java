@@ -1,6 +1,7 @@
 package cellsociety.view.scene;
 
 import cellsociety.Docker;
+import cellsociety.Docker.DockPosition;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Objects;
@@ -27,9 +28,6 @@ public class SimulationScene {
   // Constants
   public static final String STYLE_PATH = "/cellsociety/style/style.css";
 
-  public static final double DEFAULT_WIDTH = 600;
-  public static final double DEFAULT_HEIGHT = 600;
-
   public static final double DEFAULT_GRID_WIDTH = 300;
   public static final double DEFAULT_GRID_HEIGHT = 300;
   public static final double MAX_ZOOM_RATE = 5.0;
@@ -42,7 +40,6 @@ public class SimulationScene {
 
   // UI components
   private Button startPauseButton;
-  private Label titleLabel;
   private GridPane grid;
   private VBox parameterBox;
   private ComboBox<String> selectType;
@@ -67,23 +64,21 @@ public class SimulationScene {
 
     // Create the UI components
     Pane gridParent = createGrid();
-    HBox titleLabel = createTitleLabel();
     Pane controls = createControls();
-    Label infoLabel = createInfoLabel();
-    Pane parameterPanel = createParameterPanel();
+    ScrollPane infoLabel = createInfoLabel();
+    ScrollPane parameterPanel = createParameterPanel();
 
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
-    docker.createFloatingWindow("Grid", gridParent);
-    docker.createFloatingWindow("Title", titleLabel);
-    docker.createFloatingWindow("Controls", controls);
-    docker.createFloatingWindow("Info", infoLabel);
-    docker.createFloatingWindow("Parameters", parameterPanel);
+    Stage controlWindow = docker.createFloatingWindow("Controls", controls, DockPosition.LEFT);
+    Stage parameterWindow = docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.LEFT);
+    Stage infoWindow = docker.createFloatingWindow("Info", infoLabel, DockPosition.LEFT);
+    Stage gridWindow = docker.createFloatingWindow("Grid", gridParent, DockPosition.TOP);
 
+    // Set the scene style
+    primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
   }
-
-
 
   /**
    * Method to update the grid with the new state of the simulation
@@ -98,16 +93,6 @@ public class SimulationScene {
   }
 
   /* PRIVATE UI SETUP METHODS */
-
-  private HBox createTitleLabel() {
-    titleLabel = new Label("Simulation Title");
-    titleLabel.getStyleClass().add("title-label");
-
-    HBox titleContainer = new HBox(titleLabel);
-    titleContainer.setAlignment(javafx.geometry.Pos.CENTER);
-
-    return titleContainer;
-  }
 
   private Pane createGrid() {
     this.grid = new GridPane();
@@ -169,7 +154,7 @@ public class SimulationScene {
     return pane;
   }
 
-  private VBox createParameterPanel() {
+  private ScrollPane createParameterPanel() {
     parameterBox = new VBox(5);
     parameterBox.setAlignment(Pos.CENTER);
 
@@ -185,7 +170,12 @@ public class SimulationScene {
     parameterContainer.getStyleClass().add("parameter-container");
     parameterContainer.setPadding(new Insets(10));
 
-    return parameterContainer;
+    // Wrap the parameter container in a ScrollPane
+    ScrollPane scrollPane = new ScrollPane(parameterContainer);
+    scrollPane.setFitToWidth(true);
+    scrollPane.setFitToHeight(true);
+
+    return scrollPane;
   }
 
   // FIXME: The textbox unfocusing should also update the slider value
@@ -400,13 +390,17 @@ public class SimulationScene {
     return controls;
   }
 
-  private Label createInfoLabel() {
+  private ScrollPane createInfoLabel() {
     infoLabel = new Label("Information");
     infoLabel.getStyleClass().add("info-label");
     infoLabel.setWrapText(true);
     infoLabel.setMaxWidth(Double.MAX_VALUE);
 
-    return infoLabel;
+    ScrollPane scrollPane = new ScrollPane(infoLabel);
+    scrollPane.setFitToWidth(true);
+    scrollPane.setFitToHeight(true);
+
+    return scrollPane;
   }
 
 
@@ -468,7 +462,7 @@ public class SimulationScene {
       controller.resetModel();
 
       // Update the UI Text
-      titleLabel.setText(controller.getConfigTitle());
+      primaryStage.setTitle(controller.getConfigTitle());
       infoLabel.setText(controller.getConfigInformation());
 
       // Center the grid

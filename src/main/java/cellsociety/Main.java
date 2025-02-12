@@ -10,6 +10,8 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+  public static final double DEFAULT_WIDTH = 800;
+  public static final double DEFAULT_HEIGHT = 800;
   public static final int FRAMES_PER_SECOND = 60;
 
   @Override
@@ -18,7 +20,7 @@ public class Main extends Application {
     primaryStage.setTitle("Game of Life Simulation");
 
     // Create Docker
-    Docker dock = new Docker(primaryStage, 600, 800);
+    Docker dock = new Docker(primaryStage, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
     // Create the main scene
     SimulationScene mainScene = new SimulationScene(dock);
