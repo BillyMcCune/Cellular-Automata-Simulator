@@ -83,10 +83,10 @@ public class SimulationScene {
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
-    docker.createFloatingWindow("Controls", controls, DockPosition.LEFT);
-    docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.LEFT);
-    docker.createFloatingWindow("Info", infoLabel, DockPosition.LEFT);
-    docker.createFloatingWindow("Grid", gridParent, DockPosition.TOP);
+    docker.createFloatingWindow("Controls", controls, DockPosition.TOP);
+    docker.createFloatingWindow("Info", infoLabel, DockPosition.TOP);
+    docker.createFloatingWindow("Grid", gridParent, DockPosition.RIGHT);
+    docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.RIGHT);
 
     // Set the scene style
     primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
