@@ -9,6 +9,8 @@ import java.util.List;
 public class FireLogic extends Logic<FireState> {
 
   private static double probCatch;
+  private static double probIgnite;
+  private static double probTree;
 
   public FireLogic(Grid<FireState> grid) {
     super(grid);
@@ -16,6 +18,14 @@ public class FireLogic extends Logic<FireState> {
 
   public static void setProbCatch(double percentCatch) {
     FireLogic.probCatch = percentCatch/100;
+  }
+
+  public static void setProbIgnite(double percentIgnite) {
+    FireLogic.probIgnite = percentIgnite/100;
+  }
+
+  public static void setProbGrowTree(double percentGrowTree) {
+    FireLogic.probTree = percentGrowTree/100;
   }
 
   @Override
@@ -30,6 +40,16 @@ public class FireLogic extends Logic<FireState> {
         }
       }
       cell.setNextState(FireState.EMPTY);
+    }
+    else if (currentState == FireState.TREE) {
+      if (Math.random() < probIgnite) {
+        cell.setNextState(FireState.BURNING);
+      }
+    }
+    else if (currentState == FireState.EMPTY) {
+      if (Math.random() < probTree) {
+        cell.setNextState(FireState.TREE);
+      }
     }
   }
 
