@@ -6,7 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 /**
- * The entry point of the program, which sets up the main scene and game loop.
+ * Thew entry point of the program, which sets up the main scene and game loop.
  */
 public class Main extends Application {
   public static final int FRAMES_PER_SECOND = 60;

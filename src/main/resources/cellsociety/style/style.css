@@ -1,6 +1,6 @@
 .root {
-  -fx-padding: 20px;
-  -fx-background-color: #d4d4d9;
+  -fx-padding: 1px;
+  -fx-background-color: #b8b8b8;
 }
 
 /* Title */
@@ -37,6 +37,12 @@
   -fx-background-radius: 5px;
 }
 
+.parameter-box {
+  -fx-border-color: #cccccc;
+  -fx-padding: 5px;
+  -fx-background-color: #d3d3d3;
+}
+
 .parameter-container {
   -fx-padding: 10px, 5px;
   -fx-background-color: #e3e3e3;
@@ -49,7 +55,18 @@
   -fx-border-color: #838383;
 }
 
-/* Base Button */
+/* Control Button */
+
+.controls-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.controls-box {
+  -fx-border-color: #cccccc;
+  -fx-padding: 5px;
+  -fx-background-color: #d3d3d3;
+}
 
 .button {
   -fx-text-fill: #ffffff;
@@ -129,11 +146,26 @@
   -fx-background-color: derive(#9E9E9E, -15%);
 }
 
-.info-label {
+/* Information */
+
+.info-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.info-box {
   -fx-border-color: #cccccc;
-  -fx-padding: 10px;
-  -fx-background-color: #e3e3e3;
+  -fx-padding: 5px;
+  -fx-background-color: #d3d3d3;
+}
+
+.info-text {
   -fx-alignment: CENTER_LEFT;
   -fx-font-size: 16px;
-  -fx-font-weight: bold;
+}
+
+.info-container {
+  -fx-padding: 10px, 5px;
+  -fx-background-color: #e3e3e3;
+  -fx-border-color: #afafaf;
 }
