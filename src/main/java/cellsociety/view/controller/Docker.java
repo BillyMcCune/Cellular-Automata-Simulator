@@ -32,6 +32,7 @@ public class Docker {
   private static final int DOCK_OUTSIDE_OFFSET = 10;
   private static final int DOCK_INDICATOR_WIDTH = 40;
   private static final int DOCK_INDICATOR_HEIGHT = 40;
+  private static final int UNDOCK_MINIMUM_DISTANCE = 20;
   private static final int UNDOCK_FOLLOW_FRAME_RATE = 60;
   private static final double DEFAULT_FLOATING_WIDTH = 200;
   private static final double DEFAULT_FLOATING_HEIGHT = 150;
@@ -43,6 +44,7 @@ public class Docker {
 
   private double xOffset = 0;
   private double yOffset = 0;
+  private Point2D dragStartPoint = null;
   private DockPosition dockPosition = DockPosition.NONE;
 
   private final Timeline undockStageFollowUpdate = new Timeline();
@@ -146,6 +148,7 @@ public class Docker {
       tabHeaderArea.setOnMousePressed(event -> {
         xOffset = event.getSceneX();
         yOffset = event.getSceneY();
+        dragStartPoint = new Point2D(event.getScreenX(), event.getScreenY());
       });
 
       tabHeaderArea.setOnMouseDragged(event -> {
@@ -153,9 +156,14 @@ public class Docker {
         double newY = event.getScreenY() - yOffset;
 
         if (isDocked(floatingTabPane)) {
-          xOffset = event.getScreenX() - floatingTabPane.localToScreen(0, 0).getX();
-          yOffset = event.getScreenY() - floatingTabPane.localToScreen(0, 0).getY();
-          undockTab(floatingTabPane, floatingStage);
+          if (dragStartPoint == null) return;
+          double dragDistance = Math.sqrt(Math.pow(event.getScreenX() - dragStartPoint.getX(), 2) + Math.pow(event.getScreenY() - dragStartPoint.getY(), 2));
+
+          if (dragDistance > UNDOCK_MINIMUM_DISTANCE) {
+            xOffset = event.getScreenX() - floatingTabPane.localToScreen(0, 0).getX();
+            yOffset = event.getScreenY() - floatingTabPane.localToScreen(0, 0).getY();
+            undockTab(floatingTabPane, floatingStage);
+          }
         } else {
           floatingStage.setX(newX);
           floatingStage.setY(newY - getDecorationBarHeight(floatingStage));
