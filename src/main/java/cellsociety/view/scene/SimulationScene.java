@@ -37,8 +37,9 @@ public class SimulationScene {
   public static final double SPEED_MULTIPLIER = 2.0;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
+  public static final double BUTTON_WIDTH = 80;
   public static final double BUTTON_HEIGHT = 35;
-  public static final double MAX_BUTTON_WIDTH = 100;
+  public static final double MAX_BUTTON_WIDTH = 200;
 
   // UI components
   private Button startPauseButton;
@@ -168,7 +169,7 @@ public class SimulationScene {
 
     // Create the parameter container
     VBox parameterContainer = new VBox(10, parametersLabel, parameterBox);
-    parameterContainer.setAlignment(Pos.CENTER);
+    parameterContainer.setAlignment(Pos.TOP_CENTER);
     parameterContainer.getStyleClass().add("parameter-container");
     parameterContainer.setPadding(new Insets(10));
 
@@ -321,24 +322,29 @@ public class SimulationScene {
     Button saveButton = new Button("Save");
     Button directoryButton = new Button("📂");
 
+    // FIXME: IMPLEMENT SAVE
+    saveButton.setDisable(true);
+
     // Link the width of the buttons
+    resetButton.setPrefWidth(BUTTON_WIDTH);
     resetButton.setMaxWidth(MAX_BUTTON_WIDTH);
     startPauseButton.prefWidthProperty().bind(resetButton.widthProperty());
     loadButton.prefWidthProperty().bind(resetButton.widthProperty());
     saveButton.prefWidthProperty().bind(resetButton.widthProperty());
-    directoryButton.prefWidthProperty().bind(resetButton.widthProperty());
+    directoryButton.setPrefWidth(BUTTON_WIDTH * 0.5);
 
     // Set ComboBox
     selectType = new ComboBox<>();
     selectType.getItems().addAll("None");
+    selectType.setPrefWidth(BUTTON_WIDTH * 1.5);
     selectType.setMinHeight(BUTTON_HEIGHT);
     selectType.setMaxWidth(MAX_BUTTON_WIDTH);
 
     // Create directory text field
     directoryField = new TextField();
-    directoryField.setPromptText("No directory selected");
+    directoryField.setPromptText("None");
     directoryField.setEditable(false);
-    directoryField.prefWidthProperty().bind(selectType.widthProperty());
+    directoryField.setPrefWidth((BUTTON_WIDTH - 10));
 
     // Set button heights
     startPauseButton.setMinHeight(BUTTON_HEIGHT);

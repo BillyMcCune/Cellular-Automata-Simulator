@@ -1,9 +1,14 @@
 package cellsociety.view.controller;
 
+import java.awt.MouseInfo;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -13,11 +18,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A docking system that allows users to dock and undock floating windows to the main stage.
@@ -28,6 +32,7 @@ public class Docker {
   private static final int DOCK_OUTSIDE_OFFSET = 10;
   private static final int DOCK_INDICATOR_WIDTH = 40;
   private static final int DOCK_INDICATOR_HEIGHT = 40;
+  private static final int UNDOCK_FOLLOW_FRAME_RATE = 60;
   private static final double DEFAULT_FLOATING_WIDTH = 200;
   private static final double DEFAULT_FLOATING_HEIGHT = 150;
 
@@ -38,13 +43,16 @@ public class Docker {
 
   private double xOffset = 0;
   private double yOffset = 0;
-  private DockPosition dockPosition = null;
+  private DockPosition dockPosition = DockPosition.NONE;
+
+  private final Timeline undockStageFollowUpdate = new Timeline();
+  private Stage undockNewStage = null;
 
   /**
    * The position of the dock indicator.
    */
   public enum DockPosition {
-    LEFT, RIGHT, TOP, BOTTOM
+    NONE, LEFT, RIGHT, TOP, BOTTOM
   }
 
   /* APIS BELOW */
@@ -63,21 +71,35 @@ public class Docker {
     SplitPane splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
     splitPane.setStyle("-fx-background-color: gray;");
-
     splitPanes.add(splitPane);
 
     Scene mainScene = new Scene(splitPane, width, height);
     mainStage.setScene(mainScene);
-
     mainStage.setOnCloseRequest(event -> {
       for (Stage floatingStage : floatingWindows) {
         floatingStage.close();
       }
-
       Platform.exit();
     });
 
     createDockIndicator();
+
+    // Set up the undock stage follow update
+    undockStageFollowUpdate.setCycleCount(Timeline.INDEFINITE);
+    undockStageFollowUpdate.getKeyFrames().add(new javafx.animation.KeyFrame(
+        javafx.util.Duration.seconds(1.0 / UNDOCK_FOLLOW_FRAME_RATE),
+        event -> {
+          double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
+          double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
+
+          undockNewStage.setX(mouseX - xOffset);
+          undockNewStage.setY(mouseY - xOffset);
+
+          if (!undockNewStage.isShowing()) {
+            undockNewStage.show();
+          }
+        }
+    ));
 
     mainStage.show();
   }
@@ -131,10 +153,12 @@ public class Docker {
         double newY = event.getScreenY() - yOffset;
 
         if (isDocked(floatingTabPane)) {
+          xOffset = event.getScreenX() - floatingTabPane.localToScreen(0, 0).getX();
+          yOffset = event.getScreenY() - floatingTabPane.localToScreen(0, 0).getY();
           undockTab(floatingTabPane, floatingStage);
         } else {
           floatingStage.setX(newX);
-          floatingStage.setY(newY);
+          floatingStage.setY(newY - getDecorationBarHeight(floatingStage));
           showDockIndicator(event.getScreenX(), event.getScreenY());
         }
       });
@@ -364,6 +388,8 @@ public class Docker {
     newSplitPane.setStyle("-fx-background-color: gray;");
 
     switch (dockPosition) {
+      case DockPosition.NONE:
+        return;
       case DockPosition.LEFT:
         if (index == -1) {
           index = 0;
@@ -498,10 +524,23 @@ public class Docker {
     floatingStage.setScene(newScene);
     floatingStage.setWidth(width);
     floatingStage.setHeight(height);
-    floatingStage.setX(mainStage.getX() + mainStage.getWidth() / 2 - floatingStage.getWidth() / 2);
-    floatingStage.setY(mainStage.getY() + mainStage.getHeight() / 2 - floatingStage.getHeight() / 2);
 
-    floatingStage.show();
+    // Set up the undock stage follow update
+    undockNewStage = floatingStage;
+    undockStageFollowUpdate.play();
+
+    // Only execute the undock for pseudo release check
+    EventHandler<MouseEvent> releaseHandler = new EventHandler<>() {
+      @Override
+      public void handle(MouseEvent event) {
+        undockStageFollowUpdate.stop();
+        if (undockNewStage != null && undockNewStage.getScene() != null) {
+          undockNewStage.getScene().removeEventFilter(MouseEvent.MOUSE_MOVED, this);
+          undockNewStage = null;
+        }
+      }
+    };
+    floatingStage.getScene().addEventFilter(MouseEvent.MOUSE_MOVED, releaseHandler);
   }
 
   /* HELPER METHODS */
@@ -667,6 +706,10 @@ public class Docker {
     }
 
     return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
+  }
+
+  private double getDecorationBarHeight(Stage stage) {
+    return stage.getHeight() - stage.getScene().getHeight();
   }
 
 }

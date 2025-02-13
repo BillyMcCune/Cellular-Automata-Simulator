@@ -11,7 +11,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-  public static final double DEFAULT_WIDTH = 1100;
+  public static final double DEFAULT_WIDTH = 1200;
   public static final double DEFAULT_HEIGHT = 700;
   public static final int FRAMES_PER_SECOND = 60;
 
