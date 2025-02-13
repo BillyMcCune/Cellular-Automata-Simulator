@@ -1,6 +1,5 @@
 package cellsociety;
 
-import cellsociety.view.controller.Docker;
 import cellsociety.view.scene.SimulationScene;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -10,9 +9,6 @@ import javafx.stage.Stage;
  * The entry point of the program, which sets up the main scene and game loop.
  */
 public class Main extends Application {
-
-  public static final double DEFAULT_WIDTH = 1200;
-  public static final double DEFAULT_HEIGHT = 700;
   public static final int FRAMES_PER_SECOND = 60;
 
   @Override
@@ -20,11 +16,8 @@ public class Main extends Application {
     // Set up the title of the primary stage
     primaryStage.setTitle("Game of Life Simulation");
 
-    // Create Docker
-    Docker dock = new Docker(primaryStage, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
     // Create the main scene
-    SimulationScene mainScene = new SimulationScene(dock);
+    SimulationScene mainScene = new SimulationScene(primaryStage);
 
     // Set up the game loop
     Timeline timeline = new Timeline();

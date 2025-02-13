@@ -1,14 +1,11 @@
 package cellsociety.view.controller;
 
-import java.awt.MouseInfo;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -22,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 /**
  * A docking system that allows users to dock and undock floating windows to the main stage.
@@ -33,9 +31,10 @@ public class Docker {
   private static final int DOCK_INDICATOR_WIDTH = 40;
   private static final int DOCK_INDICATOR_HEIGHT = 40;
   private static final int UNDOCK_MINIMUM_DISTANCE = 20;
-  private static final int UNDOCK_FOLLOW_FRAME_RATE = 60;
   private static final double DEFAULT_FLOATING_WIDTH = 200;
   private static final double DEFAULT_FLOATING_HEIGHT = 150;
+  private static final double INDICATOR_INNER_SHIFT_OFFSET = 20;
+  private static final double INDICATOR_OUTER_SHIFT_OFFSET = 10;
 
   private Stage dockIndicator;
   private final Stage mainStage;
@@ -46,15 +45,111 @@ public class Docker {
   private double yOffset = 0;
   private Point2D dragStartPoint = null;
   private DockPosition dockPosition = DockPosition.NONE;
-
-  private final Timeline undockStageFollowUpdate = new Timeline();
   private Stage undockNewStage = null;
 
   /**
-   * The position of the dock indicator.
+   * The position of the docking.
    */
   public enum DockPosition {
     NONE, LEFT, RIGHT, TOP, BOTTOM
+  }
+
+  /**
+   * The floating window of the docking system.
+   * Users can modify the floating window's size, position, and content.
+   * The UI style of the floating window is corresponding to the default style of the docker's mainStage.
+   *
+   * @author Hsuan-Kai Liao
+   */
+  public static class DWindow {
+    private final Stage floatingStage;
+    private final TabPane floatingTabPane;
+
+    private DWindow(Stage floatingStage, TabPane floatingTabPane) {
+      this.floatingStage = floatingStage;
+      this.floatingTabPane = floatingTabPane;
+    }
+
+    /**
+     * Returns the width of the floating window.
+     * @return the width of the floating window
+     */
+    public double getWidth() {
+      return floatingStage.getWidth();
+    }
+
+    /**
+     * Returns the height of the floating window.
+     * @return the height of the floating window
+     */
+    public double getHeight() {
+      return floatingStage.getHeight();
+    }
+
+    /**
+     * Sets the width of the floating window.
+     * @param width the width of the floating window
+     */
+    public void setWidth(double width) {
+      floatingStage.setWidth(width);
+    }
+
+    /**
+     * Sets the height of the floating window.
+     * @param height the height of the floating window
+     */
+    public void setHeight(double height) {
+      floatingStage.setHeight(height);
+    }
+
+    /**
+     * Returns the x-coordinate of the floating window.
+     * @return the x-coordinate of the floating window
+     */
+    public double getX() {
+      return floatingStage.getX();
+    }
+
+    /**
+     * Returns the y-coordinate of the floating window.
+     * @return the y-coordinate of the floating window
+     */
+    public double getY() {
+      return floatingStage.getY();
+    }
+
+    /**
+     * Sets the x-coordinate of the floating window.
+     * @param x the x-coordinate of the floating window
+     */
+    public void setX(double x) {
+      floatingStage.setX(x);
+    }
+
+    /**
+     * Sets the y-coordinate of the floating window.
+     * @param y the y-coordinate of the floating window
+     */
+
+    public void setY(double y) {
+      floatingStage.setY(y);
+    }
+
+    /**
+     * Returns the content of the floating window.
+     * @return the content Node of the floating window
+     */
+    public Node getContent() {
+      return floatingTabPane.getTabs().getFirst().getContent();
+    }
+
+    /**
+     * Sets the content of the floating window.
+     * @param content the new content Node of the floating window
+     */
+    public void setContent(Node content) {
+      floatingTabPane.getTabs().getFirst().setContent(content);
+    }
   }
 
   /* APIS BELOW */
@@ -64,51 +159,36 @@ public class Docker {
    * After creating a Docker, users should NOT modify the scene of the main stage.
    *
    * @param mainStage the main stage of the docking system
-   * @param width the width of the main stage
-   * @param height the height of the main stage
    */
-  public Docker(Stage mainStage, double width, double height) {
+  public Docker(Stage mainStage) {
     this.mainStage = mainStage;
-    mainStage.show();
 
     SplitPane splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
     splitPane.setStyle("-fx-background-color: gray;");
     splitPanes.add(splitPane);
 
-    Scene mainScene = new Scene(splitPane, width, height);
+    // Set the main stage's scene
+    Scene mainScene = new Scene(splitPane, mainStage.getWidth(), mainStage.getHeight());
     mainStage.setScene(mainScene);
-    mainStage.setOnCloseRequest(event -> {
-      for (Stage floatingStage : floatingWindows) {
-        floatingStage.close();
-      }
-      Platform.exit();
+
+    // Set the main stage's event listeners
+    mainStage.setOnCloseRequest(event -> onMainClose());
+    mainStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> onTagUndockedDragged(event, undockNewStage));
+    mainStage.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+      onTagDropped(event, undockNewStage);
+      undockNewStage = null;
     });
 
     createDockIndicator();
 
-    // Set up the undock stage follow update
-    undockStageFollowUpdate.setCycleCount(Timeline.INDEFINITE);
-    undockStageFollowUpdate.getKeyFrames().add(new javafx.animation.KeyFrame(
-        javafx.util.Duration.seconds(1.0 / UNDOCK_FOLLOW_FRAME_RATE),
-        event -> {
-          double mouseX = MouseInfo.getPointerInfo().getLocation().getX();
-          double mouseY = MouseInfo.getPointerInfo().getLocation().getY();
-
-          undockNewStage.setX(mouseX - xOffset);
-          undockNewStage.setY(mouseY - xOffset);
-
-          if (!undockNewStage.isShowing()) {
-            undockNewStage.show();
-          }
-        }
-    ));
+    mainStage.show();
   }
 
   /**
-   * Returns the main stage of the docking system.
+   * Returns the main docker stage of the docking system.
    *
-   * @return the main stage
+   * @return the main docker stage
    */
   public Stage getMainStage() {
     return mainStage;
@@ -122,10 +202,11 @@ public class Docker {
    * @param dockPosition the default dock position of the floating window
    * @return the floating window
    */
-  public Stage createFloatingWindow(String title, Node content, DockPosition dockPosition) {
+  public DWindow createFloatingWindow(String title, Node content, DockPosition dockPosition) {
     Stage floatingStage = new Stage();
     floatingStage.initStyle(StageStyle.UTILITY);
 
+    // Create a TabPane to hold the content
     TabPane floatingTabPane = new TabPane();
     Tab tab = new Tab(title);
     tab.setClosable(false);
@@ -138,109 +219,38 @@ public class Docker {
     floatingStage.setWidth(contentWidth > 0 ? contentWidth : DEFAULT_FLOATING_WIDTH);
     floatingStage.setHeight(contentHeight > 0 ? contentHeight : DEFAULT_FLOATING_HEIGHT);
 
+    // Set the initial scene of the floating window
     Scene floatingScene = new Scene(floatingTabPane, DEFAULT_FLOATING_WIDTH, DEFAULT_FLOATING_HEIGHT);
     floatingStage.setScene(floatingScene);
     floatingScene.getRoot().applyCss();
 
-    Node tabHeaderArea = floatingTabPane.lookup(".tab-header-area");
+    // Add event listeners for tabs for dragging and docking
+    Node tabHeaderArea = floatingTabPane.lookup(".tab");
     if (tabHeaderArea != null) {
-      tabHeaderArea.setOnMousePressed(event -> {
-        xOffset = event.getSceneX();
-        yOffset = event.getSceneY();
-        dragStartPoint = new Point2D(event.getScreenX(), event.getScreenY());
-      });
-
+      tabHeaderArea.setOnMousePressed(this::onTagPressed);
       tabHeaderArea.setOnMouseDragged(event -> {
-        double newX = event.getScreenX() - xOffset;
-        double newY = event.getScreenY() - yOffset;
-
         if (isDocked(floatingTabPane)) {
-          double dragDistance = Math.sqrt(Math.pow(event.getScreenX() - dragStartPoint.getX(), 2) + Math.pow(event.getScreenY() - dragStartPoint.getY(), 2));
-
-          if (dragDistance > UNDOCK_MINIMUM_DISTANCE) {
-            xOffset = event.getScreenX() - floatingTabPane.localToScreen(0, 0).getX();
-            yOffset = event.getScreenY() - floatingTabPane.localToScreen(0, 0).getY();
-            undockTab(floatingTabPane, floatingStage);
-          }
+          onTagDockedDragged(event, floatingStage, floatingTabPane);
         } else {
-          floatingStage.setX(newX);
-          floatingStage.setY(newY - getDecorationBarHeight(floatingStage));
-          showDockIndicator(event.getScreenX(), event.getScreenY());
+          onTagUndockedDragged(event, floatingStage);
         }
       });
     }
 
-    floatingStage.setOnCloseRequest(event -> {
-      double floatingX = floatingStage.getX();
-      double floatingY = floatingStage.getY();
-      double floatingWidth = floatingStage.getWidth();
-      double floatingHeight = floatingStage.getHeight();
+    // When closed, dock to the nearest side of the main window
+    floatingStage.setOnCloseRequest(event -> onFloatingClose(event, floatingStage));
+    floatingTabPane.setOnMouseReleased(event -> onTagDropped(event, floatingStage));
 
-      double mainX = mainStage.getX();
-      double mainY = mainStage.getY();
-      double mainWidth = mainStage.getWidth();
-      double mainHeight = mainStage.getHeight();
+    // Initial dock check
+    if (dockPosition == DockPosition.NONE) {
+      floatingStage.show();
+    } else {
+      floatingStage.setOpacity(0);
+      dockTab(floatingStage, null, dockPosition);
+    }
 
-      // Calculate the center of the floating window
-      double floatingCenterX = floatingX + floatingWidth / 2;
-      double floatingCenterY = floatingY + floatingHeight / 2;
-
-      // Calculate the distances to each side of the main window
-      double distanceToLeft = floatingCenterX - mainX;
-      double distanceToRight = mainX + mainWidth - floatingCenterX;
-      double distanceToTop = floatingCenterY - mainY;
-      double distanceToBottom = mainY + mainHeight - floatingCenterY;
-
-      // Determine the nearest side
-      DockPosition nearestSide = null; // Default if no side is closest
-      double minDistance = Double.MAX_VALUE;
-
-      if (distanceToLeft < minDistance) {
-        minDistance = distanceToLeft;
-        nearestSide = DockPosition.LEFT;
-      }
-      if (distanceToRight < minDistance) {
-        minDistance = distanceToRight;
-        nearestSide = DockPosition.RIGHT;
-      }
-      if (distanceToTop < minDistance) {
-        minDistance = distanceToTop;
-        nearestSide = DockPosition.TOP;
-      }
-      if (distanceToBottom < minDistance) {
-        nearestSide = DockPosition.BOTTOM;
-      }
-
-      dockTab(floatingStage, null, nearestSide);
-
-      // Prevent the window from closing
-      event.consume();
-    });
-
-    floatingTabPane.setOnMouseReleased(event -> {
-      double mouseX = event.getScreenX();
-      double mouseY = event.getScreenY();
-
-      if (isMouseInsideIndicator(mouseX, mouseY)) {
-        TabPane targetTabPane = findTabPaneUnderMouse(mouseX, mouseY);
-
-        if (targetTabPane != null) {
-          dockTab(floatingStage, targetTabPane, this.dockPosition);
-        } else if (!isMouseInsideMainStage(mouseX, mouseY)) {
-          dockTab(floatingStage, null, this.dockPosition);
-        }
-      }
-
-      dockIndicator.setOpacity(0);
-      dockIndicator.hide();
-    });
-
-    floatingStage.setOpacity(0);
     floatingWindows.add(floatingStage);
-    floatingStage.show();
-    dockTab(floatingStage, null, dockPosition);
-
-    return floatingStage;
+    return new DWindow(floatingStage, floatingTabPane);
   }
 
   /* INDICATOR IMPLEMENTATIONS */
@@ -264,39 +274,31 @@ public class Docker {
     TabPane tp = findTabPaneUnderMouse(mouseX, mouseY);
     if (tp == null) {
       // Check if the mouse is outside the bounds of the mainStage
-      if (!isMouseInsideMainStage(mouseX, mouseY)) {
-        // Get the midpoints of the edges of the mainStage
-        Point2D[] edgeMidpoints = getStageEdgeMidpoints(mainStage);
-        Map.Entry<DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY, mainStage);
-        updateIndicatorPosition(nearestEdgeMidpoint.getValue(), mainStage, (double) DOCK_INDICATOR_WIDTH / 4, dockPosition);
-        dockPosition = nearestEdgeMidpoint.getKey();
-
-        // Set the style of the dock indicator
-        dockIndicator.setOpacity(1);
-        if (isMouseInsideIndicator(mouseX, mouseY)) {
-          dockIndicator.getScene().getRoot().setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 2;");
-        } else {
-          dockIndicator.getScene().getRoot().setStyle("-fx-background-color: rgba(0, 0, 255, 0.5); -fx-border-color: black; -fx-border-width: 2;");
-        }
-      } else {
+      if (isMouseInsideMainScene(mouseX, mouseY)) {
         dockIndicator.setOpacity(0);
         dockIndicator.hide();
         return;
+      } else {
+        // Get the midpoints of the edges of the mainStage
+        Point2D[] edgeMidpoints = getStageEdgeMidpoints(mainStage);
+        Map.Entry<DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
+        dockPosition = nearestEdgeMidpoint.getKey();
+        updateIndicatorPosition(nearestEdgeMidpoint.getValue(), dockPosition, false);
+
+        // Set the style of the dock indicator
+        dockIndicator.setOpacity(1);
+        setIndicatorHighlight(isMouseInsideIndicator(mouseX, mouseY));
       }
     } else {
       // Get the midpoints of the edges of the TabPane
       Point2D[] edgeMidpoints = getTabPaneEdgeMidpoints(tp);
       Map.Entry<DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
-      updateIndicatorPosition(nearestEdgeMidpoint.getValue(), tp, (double) DOCK_INDICATOR_WIDTH / 2);
       dockPosition = nearestEdgeMidpoint.getKey();
+      updateIndicatorPosition(nearestEdgeMidpoint.getValue(), dockPosition, true);
 
       // Set the style of the dock indicator
       dockIndicator.setOpacity(1);
-      if (isMouseInsideIndicator(mouseX, mouseY)) {
-        dockIndicator.getScene().getRoot().setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 2;");
-      } else {
-        dockIndicator.getScene().getRoot().setStyle("-fx-background-color: rgba(0, 0, 255, 0.5); -fx-border-color: black; -fx-border-width: 2;");
-      }
+      setIndicatorHighlight(isMouseInsideIndicator(mouseX, mouseY));
     }
 
     // Show the dock indicator
@@ -305,27 +307,30 @@ public class Docker {
     }
   }
 
-  private void updateIndicatorPosition(Point2D nearestEdgeMidpoint, TabPane tabPane, double shiftAmount) {
+  private void updateIndicatorPosition(Point2D nearestEdgeMidpoint, DockPosition dockPosition, boolean inOrOutShift) {
     if (nearestEdgeMidpoint == null) return;
-
-    Bounds bounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
-
-    double leftX = bounds.getMinX();
-    double rightX = bounds.getMaxX();
-    double topY = bounds.getMinY();
-    double bottomY = bounds.getMaxY();
 
     double newX = nearestEdgeMidpoint.getX();
     double newY = nearestEdgeMidpoint.getY();
 
-    if (nearestEdgeMidpoint.getX() == leftX) {
-      newX += shiftAmount;  // Left → Right Shift
-    } else if (nearestEdgeMidpoint.getX() == rightX) {
-      newX -= shiftAmount;  // Right → Left Shift
-    } else if (nearestEdgeMidpoint.getY() == topY) {
-      newY += shiftAmount;  // Top → Down Shift
-    } else if (nearestEdgeMidpoint.getY() == bottomY) {
-      newY -= shiftAmount;  // Bottom → Up Shift
+    double shift = inOrOutShift ? INDICATOR_INNER_SHIFT_OFFSET : -INDICATOR_OUTER_SHIFT_OFFSET;
+
+    switch (dockPosition) {
+      case LEFT:
+        newX += shift;
+        break;
+      case RIGHT:
+        newX -= shift;
+        break;
+      case TOP:
+        newY += shift;
+        if (!inOrOutShift) {
+          newY += getDecorationBarHeight(mainStage);
+        }
+        break;
+      case BOTTOM:
+        newY -= shift;
+        break;
     }
 
     // Update the position of the dock indicator
@@ -333,45 +338,15 @@ public class Docker {
     dockIndicator.setY(newY - dockIndicator.getHeight() / 2);
   }
 
-  private void updateIndicatorPosition(Point2D edgeMidpoint, Stage stage, double shiftAmount, DockPosition dockPosition) {
-    // Get the stage's position on screen
-    double stageX = stage.getScene().getWindow().getX();
-    double stageY = stage.getScene().getWindow().getY();
-
-    // Initialize final indicator position
-    double indicatorX = edgeMidpoint.getX();
-    double indicatorY = edgeMidpoint.getY();
-
-    // Apply shift based on the dock position
-    switch (dockPosition) {
-      case TOP:
-        // For the top edge, shift upwards (positive Y direction)
-        indicatorY -= shiftAmount;
-        break;
-      case BOTTOM:
-        // For the bottom edge, shift downwards (negative Y direction)
-        indicatorY += shiftAmount;
-        break;
-      case LEFT:
-        // For the left edge, shift to the left (negative X direction)
-        indicatorX -= shiftAmount;
-        break;
-      case RIGHT:
-        // For the right edge, shift to the right (positive X direction)
-        indicatorX += shiftAmount;
-        break;
-      default:
-        break;
+  private void setIndicatorHighlight(boolean isHighlighted) {
+    if (isHighlighted) {
+      dockIndicator.getScene().getRoot().setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 2;");
+    } else {
+      dockIndicator.getScene().getRoot().setStyle("-fx-background-color: rgba(0, 0, 255, 0.5); -fx-border-color: black; -fx-border-width: 2;");
     }
-
-    // Adjust the position to account for the stage's position on screen
-    double newX = indicatorX - stageX;
-    double newY = indicatorY - stageY;
-
-    // Set the dock indicator's position, adjusting for its width/height to center it
-    dockIndicator.setX(newX - dockIndicator.getWidth() / 2);
-    dockIndicator.setY(newY - dockIndicator.getHeight() / 2);
   }
+
+  /* DOCKING CORE */
 
   private void dockTab(Stage floatingStage, TabPane targetTabPane, DockPosition dockPosition) {
     Scene floatingScene = floatingStage.getScene();
@@ -533,26 +508,135 @@ public class Docker {
     floatingStage.setWidth(width);
     floatingStage.setHeight(height);
     floatingStage.setOpacity(1);
+    floatingStage.show();
 
-    // Set up the undock stage follow update
     undockNewStage = floatingStage;
-    undockStageFollowUpdate.play();
+  }
 
-    // Only execute the undock for pseudo release check
-    EventHandler<MouseEvent> releaseHandler = new EventHandler<>() {
-      @Override
-      public void handle(MouseEvent event) {
-        undockStageFollowUpdate.stop();
-        if (undockNewStage != null && undockNewStage.getScene() != null) {
-          undockNewStage.getScene().removeEventFilter(MouseEvent.MOUSE_MOVED, this);
-          undockNewStage = null;
+  /* CALLBACKS */
+
+  private void onMainClose() {
+    for (Stage floatingStage : floatingWindows) {
+      floatingStage.close();
+    }
+    Platform.exit();
+  }
+
+  private void onFloatingClose(WindowEvent event, Stage floatingWindow) {
+    double floatingX = floatingWindow.getX();
+    double floatingY = floatingWindow.getY();
+    double floatingWidth = floatingWindow.getWidth();
+    double floatingHeight = floatingWindow.getHeight();
+
+    double mainX = mainStage.getX();
+    double mainY = mainStage.getY();
+    double mainWidth = mainStage.getWidth();
+    double mainHeight = mainStage.getHeight();
+
+    // Calculate the center of the floating window
+    double floatingCenterX = floatingX + floatingWidth / 2;
+    double floatingCenterY = floatingY + floatingHeight / 2;
+
+    // Calculate the distances to each side of the main window
+    double distanceToLeft = floatingCenterX - mainX;
+    double distanceToRight = mainX + mainWidth - floatingCenterX;
+    double distanceToTop = floatingCenterY - mainY;
+    double distanceToBottom = mainY + mainHeight - floatingCenterY;
+
+    // Determine the nearest side
+    DockPosition nearestSide = null; // Default if no side is closest
+    double minDistance = Double.MAX_VALUE;
+
+    if (distanceToLeft < minDistance) {
+      minDistance = distanceToLeft;
+      nearestSide = DockPosition.LEFT;
+    }
+    if (distanceToRight < minDistance) {
+      minDistance = distanceToRight;
+      nearestSide = DockPosition.RIGHT;
+    }
+    if (distanceToTop < minDistance) {
+      minDistance = distanceToTop;
+      nearestSide = DockPosition.TOP;
+    }
+    if (distanceToBottom < minDistance) {
+      nearestSide = DockPosition.BOTTOM;
+    }
+
+    dockTab(floatingWindow, null, nearestSide);
+
+    // Prevent the window from closing
+    event.consume();
+  }
+
+  private void onTagUndockedDragged(MouseEvent event, Stage floatingWindow) {
+    double mouseX = event.getScreenX();
+    double mouseY = event.getScreenY();
+
+    if (floatingWindow != null) {
+      floatingWindow.setX(mouseX - xOffset);
+      floatingWindow.setY(mouseY - yOffset - getDecorationBarHeight(floatingWindow));
+
+      showDockIndicator(mouseX, mouseY);
+    }
+  }
+
+  private void onTagDockedDragged(MouseEvent event, Stage floatingWindow, TabPane floatingTabPane) {
+    double mouseX = event.getScreenX();
+    double mouseY = event.getScreenY();
+
+    double dragOffsetX = mouseX - dragStartPoint.getX();
+    double dragOffsetY = mouseY - dragStartPoint.getY();
+    double dragDistance = Math.sqrt(dragOffsetX * dragOffsetX + dragOffsetY * dragOffsetY);
+
+    Bounds bounds = floatingTabPane.localToScreen(floatingTabPane.getBoundsInLocal());
+    xOffset = mouseX - bounds.getMinX() - dragOffsetX;
+    yOffset = mouseY - bounds.getMinY() - dragOffsetY;
+
+    floatingWindow.setX(mouseX - xOffset);
+    floatingWindow.setY(mouseY - yOffset);
+
+    if (dragDistance > UNDOCK_MINIMUM_DISTANCE) {
+      undockTab(floatingTabPane, floatingWindow);
+    }
+  }
+
+  private void onTagDropped(MouseEvent event, Stage floatingWindow) {
+    if (floatingWindow != null) {
+      double mouseX = event.getScreenX();
+      double mouseY = event.getScreenY();
+
+      if (isMouseInsideIndicator(mouseX, mouseY)) {
+        TabPane targetTabPane = findTabPaneUnderMouse(mouseX, mouseY);
+
+        if (targetTabPane != null) {
+          dockTab(floatingWindow, targetTabPane, this.dockPosition);
+        } else if (!isMouseInsideMainScene(mouseX, mouseY)) {
+          dockTab(floatingWindow, null, this.dockPosition);
         }
       }
-    };
-    floatingStage.getScene().addEventFilter(MouseEvent.MOUSE_MOVED, releaseHandler);
+
+      dockIndicator.setOpacity(0);
+      dockIndicator.hide();
+    }
+  }
+
+  private void onTagPressed(MouseEvent event) {
+    xOffset = event.getSceneX();
+    yOffset = event.getSceneY();
+    dragStartPoint = new Point2D(event.getScreenX(), event.getScreenY());
   }
 
   /* HELPER METHODS */
+
+  private boolean isDocked(TabPane tabPane) {
+    for (SplitPane pane : splitPanes) {
+      if (pane.getItems().contains(tabPane)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   private boolean isMouseInsideIndicator(double mouseX, double mouseY) {
     double indicatorX = dockIndicator.getX();
@@ -564,26 +648,33 @@ public class Docker {
         mouseY >= indicatorY && mouseY <= indicatorY + indicatorHeight;
   }
 
-  private boolean isMouseInsideMainStage(double mouseX, double mouseY) {
-    double stageX = mainStage.getScene().getWindow().getX();
-    double stageY = mainStage.getScene().getWindow().getY();
-    double stageWidth = mainStage.getWidth();
-    double stageHeight = mainStage.getHeight();
+  private boolean isMouseInsideMainScene(double mouseX, double mouseY) {
+    double sceneX = mainStage.getScene().getWindow().getX();
+    double sceneY = mainStage.getScene().getWindow().getY();
+    double sceneWidth = mainStage.getScene().getWidth();
+    double sceneHeight = mainStage.getScene().getHeight();
+    double decorationBarHeight = getDecorationBarHeight(mainStage);
 
-    return mouseX >= stageX + DOCK_OUTSIDE_OFFSET && mouseX <= stageX - DOCK_OUTSIDE_OFFSET + stageWidth &&
-        mouseY >= stageY + DOCK_OUTSIDE_OFFSET && mouseY <= stageY - DOCK_OUTSIDE_OFFSET + stageHeight;
+    return mouseX >= sceneX + DOCK_OUTSIDE_OFFSET && mouseX <= sceneX - DOCK_OUTSIDE_OFFSET + sceneWidth &&
+        mouseY >= sceneY + DOCK_OUTSIDE_OFFSET + decorationBarHeight && mouseY <= sceneY - DOCK_OUTSIDE_OFFSET + sceneHeight;
   }
 
-  private boolean isDocked(TabPane tabPane) {
-    for (SplitPane pane : splitPanes) {
-      if (pane.getItems().contains(tabPane)) {
-        return true;
+  private TabPane findTabPaneUnderMouse(double mouseX, double mouseY) {
+    for (SplitPane splitPane : splitPanes) {
+      for (Node node : splitPane.getItems()) {
+        if (node instanceof TabPane tabPane) {
+          Bounds screenBounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
+          if (screenBounds != null && screenBounds.contains(mouseX, mouseY)) {
+            return tabPane;
+          }
+        }
       }
     }
-    return false;
+    return null;
   }
 
   private void removeTabFromSplitPane(TabPane tabPane, SplitPane splitPane) {
+    // Recursively search for the tab pane in the split pane
     for (Node node : splitPane.getItems()) {
       if (node instanceof TabPane && node == tabPane) {
         splitPane.getItems().remove(node);
@@ -603,20 +694,6 @@ public class Docker {
       }
     }
     splitPane.getItems().removeAll(emptySplitPanes);
-  }
-
-  private TabPane findTabPaneUnderMouse(double mouseX, double mouseY) {
-    for (SplitPane splitPane : splitPanes) {
-      for (Node node : splitPane.getItems()) {
-        if (node instanceof TabPane tabPane) {
-          Bounds screenBounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
-          if (screenBounds != null && screenBounds.contains(mouseX, mouseY)) {
-            return tabPane;
-          }
-        }
-      }
-    }
-    return null;
   }
 
   private Point2D[] getTabPaneEdgeMidpoints(TabPane tabPane) {
@@ -645,16 +722,16 @@ public class Docker {
     double stageHeight = stage.getHeight();
 
     // Calculate the midpoints of the stage edges
-    double topMidX = stageX + stageWidth / 2;  // X-coordinate of top edge midpoint
-    double bottomMidX = stageX + stageWidth / 2; // X-coordinate of bottom edge midpoint
     double leftMidY = stageY + stageHeight / 2;  // Y-coordinate of left edge midpoint
     double rightMidY = stageY + stageHeight / 2; // Y-coordinate of right edge midpoint
+    double topMidX = stageX + stageWidth / 2;  // X-coordinate of top edge midpoint
+    double bottomMidX = stageX + stageWidth / 2; // X-coordinate of bottom edge midpoint
 
     return new Point2D[]{
-        new Point2D(topMidX, stageY),   // Top edge midpoint
-        new Point2D(bottomMidX, stageY + stageHeight), // Bottom edge midpoint
         new Point2D(stageX, leftMidY),   // Left edge midpoint
-        new Point2D(stageX + stageWidth, rightMidY) // Right edge midpoint
+        new Point2D(stageX + stageWidth, rightMidY), // Right edge midpoint
+        new Point2D(topMidX, stageY),   // Top edge midpoint
+        new Point2D(bottomMidX, stageY + stageHeight) // Bottom edge midpoint
     };
   }
 
@@ -671,42 +748,6 @@ public class Docker {
 
     for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
       double distance = entry.getValue().distance(mouseX, mouseY);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestEdge = entry.getKey();
-        closestPoint = entry.getValue();
-      }
-    }
-
-    return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
-  }
-
-  private Map.Entry<DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY, Stage stage) {
-    // Get the stage's position on screen (screen-based coordinates)
-    double stageX = stage.getScene().getWindow().getX();
-    double stageY = stage.getScene().getWindow().getY();
-
-    // Adjust the edge midpoints from stage coordinates to screen coordinates
-    Point2D[] screenMidpoints = new Point2D[]{
-        new Point2D(midpoints[0].getX() + stageX, midpoints[0].getY() + stageY),   // Top
-        new Point2D(midpoints[1].getX() + stageX, midpoints[1].getY() + stageY),   // Bottom
-        new Point2D(midpoints[2].getX() + stageX, midpoints[2].getY() + stageY),   // Left
-        new Point2D(midpoints[3].getX() + stageX, midpoints[3].getY() + stageY)    // Right
-    };
-
-    Map<DockPosition, Point2D> edges = new HashMap<>();
-    edges.put(DockPosition.TOP, screenMidpoints[0]);
-    edges.put(DockPosition.BOTTOM, screenMidpoints[1]);
-    edges.put(DockPosition.LEFT, screenMidpoints[2]);
-    edges.put(DockPosition.RIGHT, screenMidpoints[3]);
-
-    DockPosition closestEdge = null;
-    Point2D closestPoint = null;
-    double minDistance = Double.MAX_VALUE;
-
-    // Find the closest edge
-    for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
-      double distance = entry.getValue().distance(mouseX, mouseY); // Calculate screen distance
       if (distance < minDistance) {
         minDistance = distance;
         closestEdge = entry.getKey();

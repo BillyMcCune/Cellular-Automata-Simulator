@@ -25,6 +25,9 @@ import javafx.stage.Stage;
  */
 public class SimulationScene {
   // Constants
+  public static final double DEFAULT_WIDTH = 1200;
+  public static final double DEFAULT_HEIGHT = 700;
+
   public static final String STYLE_PATH = "/cellsociety/style/style.css";
 
   public static final double DEFAULT_GRID_WIDTH = 300;
@@ -51,16 +54,21 @@ public class SimulationScene {
 
   // Instance variables
   private final Stage primaryStage;
+  private final Docker docker;
   private final SceneController controller;
   private double updateInterval;
   private double timeSinceLastUpdate;
 
   /**
    * Constructor for the SimulationScene class
-   * @param docker the docker object that contains the primary stage
+   * @param primaryStage the primary stage of the application
    */
-  public SimulationScene(Docker docker) {
-    this.primaryStage = docker.getMainStage();
+  public SimulationScene(Stage primaryStage) {
+    primaryStage.setWidth(DEFAULT_WIDTH);
+    primaryStage.setHeight(DEFAULT_HEIGHT);
+
+    this.primaryStage = primaryStage;
+    this.docker = new Docker(primaryStage);
     this.controller = new SceneController(this);
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
