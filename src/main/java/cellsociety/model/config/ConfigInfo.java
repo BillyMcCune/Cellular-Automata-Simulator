@@ -21,13 +21,13 @@ public class ConfigInfo {
   private List<List<Integer>> myGrid;
   private static ConfigInfo instance;
   private Map<String, Double> myParameters;
+  private String myFileName;
 
   public enum SimulationType {
     LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR
   }
 
   private ConfigInfo() {
-
   }
 
   public static ConfigInfo createInstance() {
@@ -85,6 +85,12 @@ public class ConfigInfo {
     return myDescription;
   }
 
+  public void setMyFileName(String fileName) {
+    myFileName = fileName;
+  }
+
+
+  //TODO create a list of strings to pass in - try to reduce the number of getters and setters
   // Returns the parameters passed in
   public ArrayList<Object> getAllConfigInfo() {
     ArrayList<Object> configInfo = new ArrayList<>();
