@@ -69,6 +69,7 @@ public class Docker {
    */
   public Docker(Stage mainStage, double width, double height) {
     this.mainStage = mainStage;
+    mainStage.show();
 
     SplitPane splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
@@ -102,8 +103,6 @@ public class Docker {
           }
         }
     ));
-
-    mainStage.show();
   }
 
   /**
@@ -156,7 +155,6 @@ public class Docker {
         double newY = event.getScreenY() - yOffset;
 
         if (isDocked(floatingTabPane)) {
-          if (dragStartPoint == null) return;
           double dragDistance = Math.sqrt(Math.pow(event.getScreenX() - dragStartPoint.getX(), 2) + Math.pow(event.getScreenY() - dragStartPoint.getY(), 2));
 
           if (dragDistance > UNDOCK_MINIMUM_DISTANCE) {
@@ -237,8 +235,9 @@ public class Docker {
       dockIndicator.hide();
     });
 
+    floatingStage.setOpacity(0);
     floatingWindows.add(floatingStage);
-
+    floatingStage.show();
     dockTab(floatingStage, null, dockPosition);
 
     return floatingStage;
@@ -516,8 +515,9 @@ public class Docker {
     }
 
     // Hide the floating stage
-    floatingStage.hide();
     floatingStage.setScene(null);
+    floatingStage.setOpacity(0);
+    floatingStage.hide();
   }
 
   private void undockTab(TabPane floatingTabPane, Stage floatingStage) {
@@ -532,6 +532,7 @@ public class Docker {
     floatingStage.setScene(newScene);
     floatingStage.setWidth(width);
     floatingStage.setHeight(height);
+    floatingStage.setOpacity(1);
 
     // Set up the undock stage follow update
     undockNewStage = floatingStage;
