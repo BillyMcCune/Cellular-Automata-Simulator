@@ -3,7 +3,6 @@ package cellsociety.model.data;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.states.State;
-import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ public class Grid<T extends Enum<T> & State> {
       {-1, 0}, {1, 0}, {0, -1}, {0, 1}
   };
   private Class<?> simulationType;
+  private NeighborsStrategy<T> neighborsStrategy;
 
   /**
    * The two-dimensional grid of {@link Cell} objects.
@@ -39,7 +39,7 @@ public class Grid<T extends Enum<T> & State> {
    * @param rawGrid a two-dimensional list of integer states representing the initial states of the cells
    * @param factory the factory to create cells
    */
-  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory, NeighborsStrategy<T> strategy) {
     setGrid(rawGrid, factory);
   }
 
@@ -64,17 +64,11 @@ public class Grid<T extends Enum<T> & State> {
   }
 
   private void assignNeighbors() {
-    if (grid.isEmpty()) {
-      return;
-    }
+    if (grid.isEmpty()) return;
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
-        if (simulationType == WatorState.class) {
-          getCell(row, col).setNeighbors(getWatorNeighbors(row, col));
-        }
-        else {
-          getCell(row, col).setNeighbors(getNeighbors(row, col));
-        }
+        Cell<T> cell = getCell(row, col);
+        cell.setNeighbors(neighborsStrategy.getNeighbors(this, row, col));
       }
     }
   }
@@ -92,13 +86,13 @@ public class Grid<T extends Enum<T> & State> {
     return neighbors;
   }
 
-  // These neighbors loop through
+  // These neighbors loop through boundaries
   private Map<String, Cell<T>> getWatorNeighbors(int row, int col) {
     Map<String, Cell<T>> neighbors = new HashMap<>();
     for (int[] direction : ORTHOGONAL_NEIGHBORS) {
       int neighborRow = (row + direction[0] + getNumRows()) % getNumRows();
       int neighborCol = (col + direction[1] + getNumRows()) % getNumCols();
-      neighbors.put(String.format("%d, %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
+      neighbors.put(String.format("%d %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
     }
     return neighbors;
   }
