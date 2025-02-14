@@ -2,6 +2,7 @@ package cellsociety.model.data;
 
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.neighbors.Coord;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import cellsociety.model.data.states.WatorState;
@@ -73,7 +74,8 @@ public class Grid<T extends Enum<T> & State> {
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
         Cell<T> cell = getCell(row, col);
-        cell.setNeighbors(neighborCalculator.getNeighbors(this, row, col));
+        Map<Coord, Cell<T>> neighbors = neighborCalculator.getNeighbors(this, row, col);
+        cell.setNeighbors(neighbors);
       }
     }
   }
