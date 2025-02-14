@@ -87,6 +87,7 @@ public class SimulationScene {
     docker.createFloatingWindow("Info", infoLabel, DockPosition.TOP);
     docker.createFloatingWindow("Grid", gridParent, DockPosition.RIGHT);
     docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.RIGHT);
+    docker.reFormat();
 
     // Set the scene style
     primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());

@@ -61,7 +61,7 @@ public class SceneController {
   public SceneController(SimulationScene scene) {
     // Initialize
     this.configReader = new ConfigReader();
-    this.configWriter = new ConfigWriter(configInfo); // TODO: REQUIRE CONSTRUCTOR WITH NO ARGUMENTS
+    this.configWriter = new ConfigWriter();
     this.simulationScene = scene;
     this.isPaused = true;
   }
@@ -88,10 +88,14 @@ public class SceneController {
    * @param filename The name of the configuration file to load
    */
   public void loadConfig(String filename) {
-    configInfo = configReader.readConfig(filename);
-    configWriter.setConfigInfo(configInfo);
-    if (configInfo != null) {
-      isLoaded = true;
+    try {
+      configInfo = configReader.readConfig(filename);
+      configWriter.setConfigInfo(configInfo);
+      if (configInfo != null) {
+        isLoaded = true;
+      }
+    } catch (Exception e) {
+      // TODO: Handle this exception
     }
   }
 
@@ -105,9 +109,9 @@ public class SceneController {
     }
 
     try {
-      configWriter.saveCurrentConfig();
+      configWriter.saveCurrentConfig(configInfo);
     } catch (ParserConfigurationException e) {
-      System.out.println("Error saving the configuration file: " + e);
+      // TODO: Handle this exception
     }
   }
 
