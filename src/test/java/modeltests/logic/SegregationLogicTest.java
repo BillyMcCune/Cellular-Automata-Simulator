@@ -40,7 +40,7 @@ public class SegregationLogicTest {
   public void SegregationLogic_OneRedNoNeighbors_StaysPut() {
     List<List<Integer>> raw = createRawGrid(1, 1, 1);
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(0.8);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -51,7 +51,7 @@ public class SegregationLogicTest {
   public void SegregationLogic_OneBlueNoNeighbors_StaysPut() {
     List<List<Integer>> raw = createRawGrid(1, 1, 2);
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(0.8);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -63,7 +63,7 @@ public class SegregationLogicTest {
     List<List<Integer>> raw = new ArrayList<>();
     raw.add(List.of(1, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -76,7 +76,7 @@ public class SegregationLogicTest {
     List<List<Integer>> raw = new ArrayList<>();
     raw.add(List.of(2, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -90,7 +90,7 @@ public class SegregationLogicTest {
     raw.add(List.of(1, 2));
     raw.add(List.of(1, 2));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -104,7 +104,7 @@ public class SegregationLogicTest {
     raw.add(List.of(1, 0));
     raw.add(List.of(0, 2));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(0.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -118,7 +118,7 @@ public class SegregationLogicTest {
     List<List<Integer>> raw = new ArrayList<>();
     raw.add(List.of(1, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(2.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
@@ -132,7 +132,7 @@ public class SegregationLogicTest {
     raw.add(List.of(1, 2));
     raw.add(List.of(0, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
-    Grid<SegregationState> grid = new Grid<>(raw, factory);
+    Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
     SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();

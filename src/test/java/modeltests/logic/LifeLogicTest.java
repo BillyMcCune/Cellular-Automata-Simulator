@@ -26,7 +26,7 @@ public class LifeLogicTest {
 
   private Grid<LifeState> createGridFromData(List<List<Integer>> data) {
     CellFactory<LifeState> factory = new CellFactory<>(LifeState.class);
-    return new Grid<>(data, factory);
+    return new Grid<>(data, factory, neighborCalculator);
   }
 
   @Test

@@ -26,7 +26,7 @@ public class FireLogicTest {
 
   private Grid<FireState> createGrid(List<List<Integer>> rawGrid) {
     CellFactory<FireState> factory = new CellFactory<>(FireState.class);
-    return new Grid<>(rawGrid, factory);
+    return new Grid<>(rawGrid, factory, neighborCalculator);
   }
 
   @Test
