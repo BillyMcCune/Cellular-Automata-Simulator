@@ -2,6 +2,7 @@ package cellsociety.model.data;
 
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Grid<T extends Enum<T> & State> {
       {-1, 0}, {1, 0}, {0, -1}, {0, 1}
   };
   private Class<?> simulationType;
+  private NeighborCalculator<T> neighborCalculator;
 
   /**
    * The two-dimensional grid of {@link Cell} objects.
@@ -33,13 +35,16 @@ public class Grid<T extends Enum<T> & State> {
   private final List<List<Cell<T>>> grid = new ArrayList<>();
 
   /**
-   * Constructs a {@code Grid} from a two-dimensional list of states and a cell factory.
-   * Each state in the list represents the initial state of a corresponding {@link Cell}.
+   * Constructs a {@code Grid} from a two-dimensional list of states and a cell factory. Each state
+   * in the list represents the initial state of a corresponding {@link Cell}.
    *
-   * @param rawGrid a two-dimensional list of integer states representing the initial states of the cells
-   * @param factory the factory to create cells
+   * @param rawGrid            a two-dimensional list of integer states representing the initial
+   *                           states of the cells
+   * @param factory            the factory to create cells
+   * @param neighborCalculator the calculator method to assign neighbors
    */
-  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory, NeighborCalculator<?> neighborCalculator) {
+    this.neighborCalculator = (NeighborCalculator<T>) neighborCalculator;
     setGrid(rawGrid, factory);
   }
 
@@ -64,43 +69,13 @@ public class Grid<T extends Enum<T> & State> {
   }
 
   private void assignNeighbors() {
-    if (grid.isEmpty()) {
-      return;
-    }
+    if (grid.isEmpty()) return;
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
-        if (simulationType == WatorState.class) {
-          getCell(row, col).setNeighbors(getWatorNeighbors(row, col));
-        }
-        else {
-          getCell(row, col).setNeighbors(getNeighbors(row, col));
-        }
+        Cell<T> cell = getCell(row, col);
+        cell.setNeighbors(neighborCalculator.getNeighbors(this, row, col));
       }
     }
-  }
-
-  private Map<String, Cell<T>> getNeighbors(int row, int col) {
-    Map<String, Cell<T>> neighbors = new HashMap<>();
-    for (int[] direction : ORTHOGONAL_DIAGONAL_DIRECTIONS) {
-      int neighborRow = row + direction[0];
-      int neighborCol = col + direction[1];
-      if (neighborRow >= 0 && neighborRow < getNumRows() &&
-          neighborCol >= 0 && neighborCol < getNumCols()) {
-        neighbors.put(String.format("%d %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
-      }
-    }
-    return neighbors;
-  }
-
-  // These neighbors loop through
-  private Map<String, Cell<T>> getWatorNeighbors(int row, int col) {
-    Map<String, Cell<T>> neighbors = new HashMap<>();
-    for (int[] direction : ORTHOGONAL_NEIGHBORS) {
-      int neighborRow = (row + direction[0] + getNumRows()) % getNumRows();
-      int neighborCol = (col + direction[1] + getNumRows()) % getNumCols();
-      neighbors.put(String.format("%d, %d", neighborRow, neighborCol), getCell(neighborRow, neighborCol));
-    }
-    return neighbors;
   }
 
   /**

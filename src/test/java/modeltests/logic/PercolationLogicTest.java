@@ -26,7 +26,7 @@ public class PercolationLogicTest {
 
   private Grid<PercolationState> createGrid(List<List<Integer>> rawGrid) {
     CellFactory<PercolationState> factory = new CellFactory<>(PercolationState.class);
-    return new Grid<>(rawGrid, factory);
+    return new Grid<>(rawGrid, factory, neighborCalculator);
   }
 
   @Test

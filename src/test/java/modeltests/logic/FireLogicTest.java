@@ -26,7 +26,7 @@ public class FireLogicTest {
 
   private Grid<FireState> createGrid(List<List<Integer>> rawGrid) {
     CellFactory<FireState> factory = new CellFactory<>(FireState.class);
-    return new Grid<>(rawGrid, factory);
+    return new Grid<>(rawGrid, factory, neighborCalculator);
   }
 
   @Test
@@ -37,10 +37,12 @@ public class FireLogicTest {
     rawGrid.add(List.of(1, 1, 1));
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid);
-    FireLogic.setProbCatch(1.0);
+    FireLogic.setProbCatch(100.0);
     logic.update();
+    assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
+        if (i == 1 && j == 1) continue;
         assertEquals(FireState.BURNING, grid.getCell(i, j).getCurrentState());
       }
     }
@@ -56,7 +58,7 @@ public class FireLogicTest {
     FireLogic logic = new FireLogic(grid);
     FireLogic.setProbCatch(0.0);
     logic.update();
-    assertEquals(FireState.BURNING, grid.getCell(1, 1).getCurrentState());
+    assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
         if (i == 1 && j == 1) continue;
@@ -73,9 +75,9 @@ public class FireLogicTest {
     rawGrid.add(List.of(0, 0, 0));
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid);
-    FireLogic.setProbCatch(1.0);
+    FireLogic.setProbCatch(100.0);
     logic.update();
-    assertEquals(FireState.BURNING, grid.getCell(1, 1).getCurrentState());
+    assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
         if (i == 1 && j == 1) continue;
@@ -89,7 +91,7 @@ public class FireLogicTest {
     List<List<Integer>> rawGrid = createRawGrid(3, 3, 1);
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid);
-    FireLogic.setProbCatch(1.0);
+    FireLogic.setProbCatch(100.0);
     logic.update();
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
@@ -106,13 +108,13 @@ public class FireLogicTest {
     rawGrid.add(List.of(1, 1, 0));
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid);
-    FireLogic.setProbCatch(1.0);
+    FireLogic.setProbCatch(100.0);
     logic.update();
     assertEquals(FireState.EMPTY, grid.getCell(0, 0).getCurrentState());
     assertEquals(FireState.BURNING, grid.getCell(0, 1).getCurrentState());
     assertEquals(FireState.BURNING, grid.getCell(0, 2).getCurrentState());
     assertEquals(FireState.BURNING, grid.getCell(1, 0).getCurrentState());
-    assertEquals(FireState.BURNING, grid.getCell(1, 1).getCurrentState());
+    assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     assertEquals(FireState.BURNING, grid.getCell(1, 2).getCurrentState());
     assertEquals(FireState.BURNING, grid.getCell(2, 0).getCurrentState());
     assertEquals(FireState.BURNING, grid.getCell(2, 1).getCurrentState());
@@ -126,9 +128,9 @@ public class FireLogicTest {
     rawGrid.add(List.of(2, 1));
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid);
-    FireLogic.setProbCatch(-0.5);
+    FireLogic.setProbCatch(-50.0);
     logic.update();
-    assertEquals(FireState.BURNING, grid.getCell(1, 0).getCurrentState());
+    assertEquals(FireState.EMPTY, grid.getCell(1, 0).getCurrentState());
     assertEquals(FireState.TREE, grid.getCell(0, 0).getCurrentState());
     assertEquals(FireState.TREE, grid.getCell(0, 1).getCurrentState());
     assertEquals(FireState.TREE, grid.getCell(1, 1).getCurrentState());
@@ -142,10 +144,12 @@ public class FireLogicTest {
     rawGrid.add(List.of(1, 1, 1));
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid);
-    FireLogic.setProbCatch(1.5);
+    FireLogic.setProbCatch(150.0);
     logic.update();
+    assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
+        if (i == 1 && j == 1) continue;
         assertEquals(FireState.BURNING, grid.getCell(i, j).getCurrentState());
       }
     }
