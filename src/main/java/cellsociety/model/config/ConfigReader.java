@@ -58,9 +58,9 @@ public class ConfigReader {
     int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
 
     // Parse the grid of initial cells (using cellRecord.Cell).
-    List<List<cellRecord.CellPropertyRecord>> initialCells = parseInitialCells(root);
+    List<List<CellRecord>> initialCells = parseInitialCells(root);
     // Parse parameters using the new parameterRecord.
-    parameterRecord.parameters parameters = parseForParameters(root);
+    ParameterRecord parameters = parseForParameters(root);
     // Parse accepted states (assumed to be provided as a space‐separated list in one element).
     Set<Integer> acceptedStates = parseForAcceptedStates(root);
 
@@ -127,7 +127,7 @@ public class ConfigReader {
    * Parses the grid defined in the XML file from the new <initialCells> format.
    * Each row contains multiple <cell> elements, which are converted to cellRecord.Cell.
    */
-  private List<List<cellRecord.CellPropertyRecord>> parseInitialCells(Element root) {
+  private List<List<CellRecord>> parseInitialCells(Element root) {
     Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
     if (initialCellsElement == null) {
       throw new IllegalArgumentException("Missing 'initialCells' element.");
@@ -137,14 +137,14 @@ public class ConfigReader {
       throw new IllegalArgumentException("No 'row' elements found inside 'initialCells'.");
     }
 
-    List<List<cellRecord.CellPropertyRecord>> grid = new ArrayList<>();
+    List<List<CellRecord>> grid = new ArrayList<>();
     for (int i = 0; i < rows.getLength(); i++) {
       Node rowNode = rows.item(i);
       if (rowNode.getNodeType() != Node.ELEMENT_NODE) continue; // Skip non-element nodes.
       Element rowElement = (Element) rowNode;
       // Get all <cell> elements in this row.
       NodeList cellNodes = rowElement.getElementsByTagName("cell");
-      List<cellRecord.CellPropertyRecord> rowCells = new ArrayList<>();
+      List<CellRecord> rowCells = new ArrayList<>();
       for (int j = 0; j < cellNodes.getLength(); j++) {
         Node cellNode = cellNodes.item(j);
         if (cellNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -174,7 +174,7 @@ public class ConfigReader {
               }
             }
           }
-          rowCells.add(new cellRecord.CellPropertyRecord(state, properties));
+          rowCells.add(new CellRecord(state, properties));
         }
       }
       if (rowCells.isEmpty()) {
@@ -193,11 +193,11 @@ public class ConfigReader {
    *   <stringParameter name="param2">value</stringParameter>
    * </parameters>
    */
-  private parameterRecord.parameters parseForParameters(Element root) {
+  private ParameterRecord parseForParameters(Element root) {
     Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
     // If no parameters element exists, return empty maps.
     if (parametersElement == null) {
-      return new parameterRecord.parameters(new HashMap<>(), new HashMap<>());
+      return new ParameterRecord(new HashMap<>(), new HashMap<>());
     }
     Map<String, Double> doubleParams = new HashMap<>();
     Map<String, String> stringParams = new HashMap<>();
@@ -226,7 +226,7 @@ public class ConfigReader {
         }
       }
     }
-    return new parameterRecord.parameters(doubleParams, stringParams);
+    return new ParameterRecord(doubleParams, stringParams);
   }
 
   /**
@@ -256,18 +256,18 @@ public class ConfigReader {
   /**
    * Checks grid bounds and validates that every cell has an accepted state.
    */
-  private void checkForInvalidInformation(int gridWidth, int gridHeight, Set<Integer> acceptedStates, List<List<cellRecord.CellPropertyRecord>> grid) {
+  private void checkForInvalidInformation(int gridWidth, int gridHeight, Set<Integer> acceptedStates, List<List<CellRecord>> grid) {
     checkGridBounds(gridWidth, gridHeight, grid);
     checkInvalidStates(acceptedStates, grid);
   }
 
-  private void checkGridBounds(int width, int height, List<List<cellRecord.CellPropertyRecord>> grid) {
+  private void checkGridBounds(int width, int height, List<List<CellRecord>> grid) {
     if (grid.size() != height) {
       throw new IllegalArgumentException(
           "Grid in file has wrong number of rows. Expected " + height + " but found " + grid.size()
       );
     }
-    for (List<cellRecord.CellPropertyRecord> row : grid) {
+    for (List<CellRecord> row : grid) {
       if (row.size() != width) {
         throw new IllegalArgumentException(
             "Grid in file has wrong number of columns. Expected " + width + " but found " + row.size()
@@ -276,9 +276,9 @@ public class ConfigReader {
     }
   }
 
-  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<cellRecord.CellPropertyRecord>> grid) {
-    for (List<cellRecord.CellPropertyRecord> row : grid) {
-      for (cellRecord.CellPropertyRecord cell : row) {
+  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<CellRecord>> grid) {
+    for (List<CellRecord> row : grid) {
+      for (CellRecord cell : row) {
         if (!acceptedStates.contains(cell.state())) {
           throw new IllegalArgumentException(
               "Grid in file contains an invalid state: " + cell.state()
