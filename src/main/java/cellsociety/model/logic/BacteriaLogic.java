@@ -26,18 +26,12 @@ public class BacteriaLogic extends Logic<BacteriaState> {
 
   @Override
   protected void updateSingleCell(Cell<BacteriaState> cell) {
-    Object stored = cell.getProperty("id");
-    if (stored == null) {
-      cell.setProperty("id", 0);
-      cell.setNextState(BacteriaState.DUMMY);
-      return;
-    }
-    int id = (int) stored;
+    int id = cell.getProperty("id");
     int beatingId = (id + 1) % numStates;
 
-    int numBeating = getNumBeating(cell, beatingId);
+    double numBeating = getNumBeating(cell, beatingId);
     int numNeighbors = cell.getNeighbors().size();
-    if (numNeighbors != 0 && (double) numBeating/numNeighbors >= beatingThreshold) {
+    if (numNeighbors != 0 && numBeating/numNeighbors >= beatingThreshold) {
       nextStates.put(cell, beatingId);
     }
   }
@@ -50,10 +44,10 @@ public class BacteriaLogic extends Logic<BacteriaState> {
     grid.updateGrid();
   }
 
-  private int getNumBeating(Cell<BacteriaState> cell, int beatingId) {
+  private int getNumBeating(Cell<BacteriaState> cell, double beatingId) {
     int numBeating = 0;
     for (Cell<BacteriaState> neighbor : cell.getNeighbors().values()) {
-      if (neighbor.getProperty("id").equals(beatingId)) {
+      if (neighbor.getProperty("id") == beatingId) {
         numBeating++;
       }
     }

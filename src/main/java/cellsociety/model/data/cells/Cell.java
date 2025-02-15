@@ -20,7 +20,7 @@ public class Cell<T extends Enum<T> & State> {
   protected Map<Coord, Cell<T>> neighbors = new HashMap<Coord, Cell<T>>();
   protected T currState;
   protected T nextState;
-  protected Map<String, Object> properties;
+  protected Map<String, Integer> properties;
 
   /**
    * Constructs a Cell with specified row, column, and initial state.
@@ -85,14 +85,14 @@ public class Cell<T extends Enum<T> & State> {
     this.currState = this.nextState;
   }
 
-  public void setProperty(String property, Object value) {
+  public void setProperty(String property, Integer value) {
     if (properties == null) {
       properties = new HashMap<>();
     }
     properties.put(property, value);
   }
 
-  public Object getProperty(String property) {
+  public Integer getProperty(String property) {
     if (properties != null && properties.containsKey(property)) {
       return properties.get(property);
     }
@@ -100,7 +100,7 @@ public class Cell<T extends Enum<T> & State> {
     return null;
   }
 
-  public void setAllProperties(Map<String, Object> props) {
+  public void setAllProperties(Map<String, Integer> props) {
     if (props == null) {
       properties = null;
     } else {
@@ -109,7 +109,7 @@ public class Cell<T extends Enum<T> & State> {
   }
 
 
-  public Map<String, Object> getAllProperties() {
+  public Map<String, Integer> getAllProperties() {
     return properties;
   }
 

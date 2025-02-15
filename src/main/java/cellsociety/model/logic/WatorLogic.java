@@ -19,8 +19,8 @@ public class WatorLogic extends Logic<WatorState> {
   private static int fishReproductionTime;
   private final List<Cell<WatorState>> sharkCells;
   private final List<Cell<WatorState>> fishCells;
-  private static HashMap<String, Object> baseSharkProperties;
-  private static HashMap<String, Object> baseFishProperties;
+  private static HashMap<String, Integer> baseSharkProperties;
+  private static HashMap<String, Integer> baseFishProperties;
 
   /**
    * Constructs a WatorLogic instance for the given grid.

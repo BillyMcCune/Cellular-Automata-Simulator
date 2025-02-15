@@ -41,8 +41,8 @@ public class SegregationLogicTest {
     List<List<Integer>> raw = createRawGrid(1, 1, 1);
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(0.8);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(0.8);
     logic.update();
     assertEquals(1, countState(grid, SegregationState.RED));
   }
@@ -52,8 +52,8 @@ public class SegregationLogicTest {
     List<List<Integer>> raw = createRawGrid(1, 1, 2);
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(0.8);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(0.8);
     logic.update();
     assertEquals(1, countState(grid, SegregationState.BLUE));
   }
@@ -64,8 +64,8 @@ public class SegregationLogicTest {
     raw.add(List.of(1, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(1.0);
     logic.update();
     assertEquals(1, countState(grid, SegregationState.RED));
     assertEquals(SegregationState.OPEN, grid.getCell(0, 0).getCurrentState());
@@ -77,8 +77,8 @@ public class SegregationLogicTest {
     raw.add(List.of(2, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(1.0);
     logic.update();
     assertEquals(1, countState(grid, SegregationState.BLUE));
     assertEquals(SegregationState.OPEN, grid.getCell(0, 0).getCurrentState());
@@ -91,7 +91,6 @@ public class SegregationLogicTest {
     raw.add(List.of(1, 2));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
     logic.update();
     assertEquals(2, countState(grid, SegregationState.RED));
@@ -105,8 +104,8 @@ public class SegregationLogicTest {
     raw.add(List.of(0, 2));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(0.0);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(0.0);
     logic.update();
     assertEquals(1, countState(grid, SegregationState.RED));
     assertEquals(1, countState(grid, SegregationState.BLUE));
@@ -119,8 +118,8 @@ public class SegregationLogicTest {
     raw.add(List.of(1, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(2.0);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(2.0);
     logic.update();
     assertEquals(1, countState(grid, SegregationState.RED));
     assertEquals(SegregationState.OPEN, grid.getCell(0, 0).getCurrentState());
@@ -133,8 +132,8 @@ public class SegregationLogicTest {
     raw.add(List.of(0, 0));
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     Grid<SegregationState> grid = new Grid<>(raw, factory, neighborCalculator);
-    SegregationLogic.setSatisfiedThreshold(1.0);
     SegregationLogic logic = new SegregationLogic(grid);
+    logic.setSatisfiedThreshold(1.0);
     logic.update();
     assertTrue(countState(grid, SegregationState.RED) == 1 && countState(grid, SegregationState.BLUE) == 1);
     assertEquals(2, countState(grid, SegregationState.OPEN));
