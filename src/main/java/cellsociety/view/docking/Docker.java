@@ -3,7 +3,6 @@ package cellsociety.view.docking;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -26,6 +25,7 @@ public class Docker {
 
   // Instance variables
   private final List<SplitPane> splitPanes = new ArrayList<>();
+  private final List<DWindow> floatingWindows = new ArrayList<>();
   private DWindow undockNewWindow = null;
 
   // Docker attributes
@@ -59,8 +59,17 @@ public class Docker {
     Scene mainScene = new Scene(splitPane, mainStage.getWidth(), mainStage.getHeight());
     mainStage.setScene(mainScene);
 
+    // Create the dock indicator
+    this.dockIndicator = new DIndicator(this);
+
     // Set the main stage's event listeners
-    mainStage.setOnCloseRequest(event -> Platform.exit());
+    mainStage.setOnCloseRequest(event -> {
+      for (DWindow floatingWindow : floatingWindows) {
+        floatingWindow.floatingStage.close();
+      }
+      dockIndicator.indicatorStage.close();
+      floatingWindows.clear();
+    });
     mainStage.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
       if (undockNewWindow != null) {
         undockNewWindow.onTabUndockedDragged(event);
@@ -72,10 +81,6 @@ public class Docker {
         undockNewWindow = null;
       }
     });
-
-    this.dockIndicator = new DIndicator(this);
-
-    mainStage.show();
   }
 
   /**
@@ -154,6 +159,7 @@ public class Docker {
 
     // Create a DWindow object
     DWindow dWindow = new DWindow(floatingStage, floatingTabPane, this);
+    floatingWindows.add(dWindow);
 
     // Initial dock check
     if (dockPosition == DockPosition.NONE) {

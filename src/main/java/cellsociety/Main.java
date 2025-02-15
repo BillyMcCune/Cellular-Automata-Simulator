@@ -1,7 +1,6 @@
 package cellsociety;
 
 import cellsociety.view.scene.SimulationScene;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -18,15 +17,7 @@ public class Main extends Application {
 
     // Create the main scene
     SimulationScene mainScene = new SimulationScene(primaryStage);
-
-    // Set up the game loop
-    Timeline timeline = new Timeline();
-    timeline.setCycleCount(Timeline.INDEFINITE);
-    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
-        javafx.util.Duration.seconds(1.0 / FRAMES_PER_SECOND),
-        event -> mainScene.step(1.0 / FRAMES_PER_SECOND)
-    ));
-    timeline.play();
+    mainScene.start(FRAMES_PER_SECOND);
   }
 
   /**

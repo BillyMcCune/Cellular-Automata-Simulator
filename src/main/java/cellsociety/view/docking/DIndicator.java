@@ -25,11 +25,9 @@ public class DIndicator {
   private static final double INDICATOR_INNER_SHIFT_OFFSET = 20;
   private static final double INDICATOR_OUTER_SHIFT_OFFSET = 10;
 
-  // Instance variables
-  private final Docker docker;
-  private final Stage indicatorStage;
-
   // Indicator attributes
+  final Docker docker;
+  final Stage indicatorStage;
   DockPosition indicatorPosition;
 
   /**
@@ -95,7 +93,8 @@ public class DIndicator {
 
   void hideDockIndicator() {
     indicatorStage.setOpacity(0);
-    indicatorStage.hide();
+    indicatorStage.setX(-DOCK_INDICATOR_WIDTH);
+    indicatorStage.setY(-DOCK_INDICATOR_HEIGHT);
   }
 
   void updateIndicatorPosition(Point2D nearestEdgeMidpoint, DockPosition dockPosition, boolean inOrOutShift) {

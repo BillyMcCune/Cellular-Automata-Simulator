@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -78,7 +79,6 @@ public class SimulationScene {
     ScrollPane controls = createControls();
     ScrollPane infoLabel = createInfoLabel();
     ScrollPane parameterPanel = createParameterPanel();
-
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
@@ -93,15 +93,21 @@ public class SimulationScene {
   }
 
   /**
-   * Method to update the grid with the new state of the simulation
-   * @param elapsedTime the time elapsed since the last update
+   * Method to start the game loop with the given frames per second
+   * @param framesPerSecond the number of frames per second
    */
-  public void step(double elapsedTime) {
-    timeSinceLastUpdate += elapsedTime;
-    if (timeSinceLastUpdate >= updateInterval) {
-      controller.update();
-      timeSinceLastUpdate = 0.0;
-    }
+  public void start(int framesPerSecond) {
+    // Set up the game loop
+    Timeline timeline = new Timeline();
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
+        javafx.util.Duration.seconds(1.0 / framesPerSecond),
+        event -> step(1.0 / framesPerSecond)
+    ));
+    timeline.play();
+
+    // Show the primary stage
+    primaryStage.show();
   }
 
   /* PRIVATE UI SETUP METHODS */
@@ -561,7 +567,15 @@ public class SimulationScene {
     parameterBox.getChildren().add(createParameter(min, max, defaultValue, label, tooltip, callback));
   }
 
-  /* PRIVATE UI HELPER METHODS */
+  /* PRIVATE METHODS */
+
+  private void step(double elapsedTime) {
+    timeSinceLastUpdate += elapsedTime;
+    if (timeSinceLastUpdate >= updateInterval) {
+      controller.update();
+      timeSinceLastUpdate = 0.0;
+    }
+  }
 
   private void toggleStartPauseButton(boolean isPause) {
     if (isPause) {
