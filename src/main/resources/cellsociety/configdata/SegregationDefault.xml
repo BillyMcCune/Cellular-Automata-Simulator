@@ -15,9 +15,8 @@
   
   
   <parameters>
-    
-    
-    <satisfiedThreshold>50</satisfiedThreshold>
+
+    <doubleParameter name="satisfiedThreshold">50</doubleParameter>
     
   
   </parameters>

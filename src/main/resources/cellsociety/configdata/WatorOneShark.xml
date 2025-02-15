@@ -13,21 +13,13 @@
   
   <description>Tests whether a single fish breeds correctly after reaching its reproduction time.</description>
   
-  
+
   <parameters>
-    
-    
-    <baseSharkEnergy>5</baseSharkEnergy>
-    
-    
-    <fishEnergyGain>2</fishEnergyGain>
-    
-    
-    <sharkReproductionTime>3</sharkReproductionTime>
-    
-    
-    <fishReproductionTime>2</fishReproductionTime>
-    
+
+    <doubleParameter name="baseSharkEnergy">5</doubleParameter>
+    <doubleParameter name="fishEnergyGain">2</doubleParameter>
+    <doubleParameter name="sharkReproductionTime">3</doubleParameter>
+    <doubleParameter name="fishReproductionTime">2</doubleParameter>
   
   </parameters>
   

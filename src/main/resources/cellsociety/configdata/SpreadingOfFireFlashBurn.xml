@@ -15,9 +15,9 @@
   
   
   <parameters>
-    
-    
-    <probCatch>100</probCatch>
+
+
+    <doubleParameter name="probCatch">100</doubleParameter>
     
   
   </parameters>

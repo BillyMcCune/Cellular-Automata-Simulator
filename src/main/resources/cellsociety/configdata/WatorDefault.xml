@@ -15,19 +15,11 @@
   
   
   <parameters>
-    
-    
-    <baseSharkEnergy>5</baseSharkEnergy>
-    
-    
-    <fishEnergyGain>3</fishEnergyGain>
-    
-    
-    <sharkReproductionTime>20</sharkReproductionTime>
-    
-    
-    <fishReproductionTime>1</fishReproductionTime>
-    
+
+    <doubleParameter name="baseSharkEnergy">5</doubleParameter>
+    <doubleParameter name="fishEnergyGain">3</doubleParameter>
+    <doubleParameter name="sharkReproductionTime">20</doubleParameter>
+    <doubleParameter name="fishReproductionTime">1</doubleParameter>
   
   </parameters>
   
