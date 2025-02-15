@@ -31,10 +31,10 @@ public class ConfigWriter {
   public ConfigWriter() {
   }
 
-  public void saveCurrentConfig(ConfigInfo myNewConfigInfo)throws ParserConfigurationException {
+  public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path) throws ParserConfigurationException {
     myConfigInfo = myNewConfigInfo;
     Document xmlDocument = createXMLDocument();
-    File outputFile = createOutputFile();
+    File outputFile = createOutputFile(path);
     assert xmlDocument != null;
     populateXMLDocument(xmlDocument);
     writeXMLDocument(xmlDocument, outputFile);
@@ -99,28 +99,33 @@ public class ConfigWriter {
     }
   }
 
-  private File createOutputFile() {
-    String baseFilename = myConfigInfo.myTitle().replaceAll(" ","") + "Save";
-    String fileExtension = ".xml";
+  private File createOutputFile(String path) throws ParserConfigurationException {
+    try {
+      String baseFilename = myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
+      String fileExtension = ".xml";
 
-    File configDirectory = new File(DEFAULT_CONFIG_FOLDER);
+      File configDirectory = new File(path);
 
-    // Create directory if it does not exist
-    if (!configDirectory.exists()) {
-      if (!configDirectory.mkdirs()) {
-        System.err.println("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
-        return null;  // Return null to indicate failure
+      // Create directory if it does not exist
+      if (!configDirectory.exists()) {
+        if (!configDirectory.mkdirs()) {
+          System.err.println("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
+          return null;  // Return null to indicate failure
+        }
       }
-    }
 
-    File outputFile = new File(configDirectory, baseFilename + fileExtension);
-    int duplicateNumber = 1;
-    while (outputFile.exists()) {
-      outputFile = new File(configDirectory, baseFilename + "_" + duplicateNumber + fileExtension);
-      duplicateNumber++;
-    }
+      File outputFile = new File(configDirectory, baseFilename + fileExtension);
+      int duplicateNumber = 1;
+      while (outputFile.exists()) {
+        outputFile = new File(configDirectory,
+            baseFilename + "_" + duplicateNumber + fileExtension);
+        duplicateNumber++;
+      }
 
-    return outputFile;
+      return outputFile;
+    } catch (NullPointerException e) {
+      throw new ParserConfigurationException("Could not create output file");
+    }
   }
 
   private void writeXMLDocument(Document xmlDocument, File outputFile) {
@@ -155,8 +160,4 @@ public class ConfigWriter {
     }
   }
 
-
-  public void setConfigInfo(ConfigInfo configInfo) {
-    myConfigInfo = configInfo;
-  }
 }
