@@ -5,9 +5,7 @@ import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.Coord;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
-import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,15 +16,6 @@ import java.util.Map;
  */
 public class Grid<T extends Enum<T> & State> {
 
-  /**
-   * Represents all directions
-   */
-  private static final int[][] ORTHOGONAL_DIAGONAL_DIRECTIONS = {
-      {-1, -1}, {-1,  0}, {-1,  1}, { 0, -1}, { 0,  1}, { 1, -1}, { 1,  0}, { 1,  1}
-  };
-  private static final int[][] ORTHOGONAL_NEIGHBORS = {
-      {-1, 0}, {1, 0}, {0, -1}, {0, 1}
-  };
   private Class<?> simulationType;
   private NeighborCalculator<T> neighborCalculator;
 
