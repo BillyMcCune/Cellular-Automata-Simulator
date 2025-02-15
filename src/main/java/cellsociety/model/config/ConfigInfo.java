@@ -1,8 +1,8 @@
 package cellsociety.model.config;
 
+import cellsociety.model.config.cellRecord.CellPropertyRecord;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,8 +19,8 @@ public record ConfigInfo(
     int myGridWidth,
     int myGridHeight,
     int myTickSpeed,
-    List<List<Integer>> myGrid,
-    Map<String, Double> myParameters,
+    List<List<CellPropertyRecord>> myGrid,
+    parameterRecord.parameters myParameters,
     Set<Integer> acceptedStates,
     String myFileName
 ) {
