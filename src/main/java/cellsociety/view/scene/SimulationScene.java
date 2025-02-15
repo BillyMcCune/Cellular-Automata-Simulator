@@ -1,13 +1,12 @@
 package cellsociety.view.scene;
 
-import cellsociety.view.controller.Docker;
-import cellsociety.view.controller.Docker.DockPosition;
+import cellsociety.view.docking.Docker;
+import cellsociety.view.docking.Docker.DockPosition;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -38,7 +37,7 @@ public class SimulationScene {
 
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
-  public static final double SPEED_MULTIPLIER = 2.0;
+  public static final double SPEED_MULTIPLIER = 3;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
   public static final double BUTTON_WIDTH = 80;
@@ -83,10 +82,11 @@ public class SimulationScene {
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
-    docker.createFloatingWindow("Controls", controls, DockPosition.TOP);
-    docker.createFloatingWindow("Info", infoLabel, DockPosition.TOP);
-    docker.createFloatingWindow("Grid", gridParent, DockPosition.RIGHT);
-    docker.createFloatingWindow("Parameters", parameterPanel, DockPosition.RIGHT);
+    docker.createDWindow("Controls", controls, DockPosition.TOP);
+    docker.createDWindow("Info", infoLabel, DockPosition.TOP);
+    docker.createDWindow("Grid", gridParent, DockPosition.RIGHT);
+    docker.createDWindow("Parameters", parameterPanel, DockPosition.RIGHT);
+    docker.reformat();
 
     // Set the scene style
     primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
@@ -457,7 +457,7 @@ public class SimulationScene {
 
   private void speedChangeCallback(double speed) {
     // Change the speed of the simulation
-    updateInterval = SPEED_MULTIPLIER / speed;
+    updateInterval = 10 / (speed * SPEED_MULTIPLIER);
   }
 
   private void selectDropDownCallback() {

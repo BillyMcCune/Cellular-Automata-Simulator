@@ -6,18 +6,8 @@ import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.states.FireState;
-import cellsociety.model.data.states.LifeState;
-import cellsociety.model.data.states.PercolationState;
-import cellsociety.model.data.states.SegregationState;
-import cellsociety.model.data.states.State;
-import cellsociety.model.data.states.WatorState;
-import cellsociety.model.logic.FireLogic;
-import cellsociety.model.logic.LifeLogic;
+import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
-import cellsociety.model.logic.PercolationLogic;
-import cellsociety.model.logic.SegregationLogic;
-import cellsociety.model.logic.WatorLogic;
 import cellsociety.view.scene.SimulationScene;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -36,6 +26,7 @@ public class SceneController {
   // Constant Package Paths
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
   private static final String STATE_PACKAGE = "cellsociety.model.data.states";
+  private static final String NEIGHBOR_PACKAGE = "cellsociety.model.data.neighbors";
 
   // ConfigIO
   private final ConfigReader configReader;
@@ -49,6 +40,7 @@ public class SceneController {
   private Grid<?> grid;
   private CellFactory<?> cellFactory;
   private Logic<?> gameLogic;
+  private NeighborCalculator<?> neighborCalculator;
 
   // Instance variables
   private boolean isLoaded;
@@ -61,7 +53,7 @@ public class SceneController {
   public SceneController(SimulationScene scene) {
     // Initialize
     this.configReader = new ConfigReader();
-    this.configWriter = new ConfigWriter(configInfo); // TODO: REQUIRE CONSTRUCTOR WITH NO ARGUMENTS
+    this.configWriter = new ConfigWriter();
     this.simulationScene = scene;
     this.isPaused = true;
   }
@@ -88,10 +80,14 @@ public class SceneController {
    * @param filename The name of the configuration file to load
    */
   public void loadConfig(String filename) {
-    configInfo = configReader.readConfig(filename);
-    configWriter.setConfigInfo(configInfo);
-    if (configInfo != null) {
-      isLoaded = true;
+    try {
+      configInfo = configReader.readConfig(filename);
+      configWriter.setConfigInfo(configInfo);
+      if (configInfo != null) {
+        isLoaded = true;
+      }
+    } catch (Exception e) {
+      // TODO: Handle this exception
     }
   }
 
@@ -105,9 +101,9 @@ public class SceneController {
     }
 
     try {
-      configWriter.saveCurrentConfig();
+      configWriter.saveCurrentConfig(configInfo);
     } catch (ParserConfigurationException e) {
-      System.out.println("Error saving the configuration file: " + e);
+      // TODO: Handle this exception
     }
   }
 
@@ -177,11 +173,16 @@ public class SceneController {
       // Dynamically load the Logic and State classes
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
       Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
+      Class<?> neighborClass = Class.forName(NEIGHBOR_PACKAGE + "." + name + "NeighborCalculator");
 
       // Dynamically create cell factory, grid, and logic
       Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
-      grid = new Grid<>(configInfo.getGrid(), cellFactory);
+
+      Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
+      neighborCalculator = (NeighborCalculator<?>) neighborObject;
+
+      grid = new Grid<>(configInfo.getGrid(), cellFactory, neighborCalculator);
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class).newInstance(grid);
 
       // Set the parameters for the simulation
@@ -216,7 +217,7 @@ public class SceneController {
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
 
       // Dynamically create cell grid, and logic
-      grid = new Grid<>(configInfo.getGrid(), cellFactory);
+      grid = new Grid<>(configInfo.getGrid(), cellFactory, neighborCalculator);
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class).newInstance(grid);
 
       // Set the grid to the scene

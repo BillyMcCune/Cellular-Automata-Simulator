@@ -6,7 +6,7 @@ import cellsociety.model.data.states.State;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WatorNeigbhors<T extends Enum<T> & State> extends Neighbors<T> {
+public class WatorNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
   private static final int[][] DIRECTIONS = {
       {-1, 0}, {1, 0}, {0, -1}, {0, 1}

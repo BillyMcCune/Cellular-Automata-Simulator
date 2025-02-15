@@ -6,7 +6,7 @@ import cellsociety.model.data.states.State;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Neighbors<T extends Enum<T> & State> {
+public abstract class NeighborCalculator<T extends Enum<T> & State> {
   protected abstract int[][] getDirections();
 
   public Map<String, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {

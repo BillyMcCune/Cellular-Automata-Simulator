@@ -20,6 +20,8 @@ import org.w3c.dom.Node;
  * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
  * Other Details:
  * TODO GET RID OF JAVAFX STUFF
+ * TODO Shorten
+ * TODO pass in the valid states
  */
 public class ConfigReader {
 
@@ -36,17 +38,16 @@ public class ConfigReader {
    * the array of objects is empty then an alert is mode return value: ArrayList<Object> which
    * contains the data from the configuration file
    */
-  public ConfigInfo readConfig(String fileName) {
+  public ConfigInfo readConfig(String fileName)
+      throws ParserConfigurationException, IOException, SAXException {
     if (!fileMap.containsKey(fileName)) {
       createListOfConfigFiles();
     }
     File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     ConfigInfo configInformation = getConfigInformation(dataFile);
+    configInformation.setMyFileName(fileName);
     System.out.println(configInformation.getParameters());
-    if (!configInformation.isValid()) {
-      System.err.println("Configuration file not found or is empty");
-    }
     return configInformation;
   }
 
@@ -54,65 +55,57 @@ public class ConfigReader {
    * Purpose: Returns number of blocks needed to cover the width and height given in the data file.
    * Assumptions: Parameters: Exceptions: return value:
    */
-  public ConfigInfo getConfigInformation(File xmlFile) {
+  public ConfigInfo getConfigInformation(File xmlFile)
+      throws ParserConfigurationException, SAXException, IOException {
     ConfigInfo configInformation = ConfigInfo.createInstance();
-    try {
-      Document xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-          .parse(xmlFile);
-      Element root = xmlDocument.getDocumentElement();
-      String type = getTextValue(root, "type");
-      String title = getTextValue(root, "title");
-      String author = getTextValue(root, "author");
-      String description = getTextValue(root, "description");
-      int width = Integer.parseInt(getTextValue(root, "width"));
-      int height = Integer.parseInt(getTextValue(root, "height"));
-      int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
-      List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
-      Map<String,Double> parameters = parseForParameters(root);
+    Document xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
+    Element root = xmlDocument.getDocumentElement();
 
+    // Each of these calls will throw an exception if the data is missing or invalid.
+    String type = getTextValue(root, "type");
+    String title = getTextValue(root, "title");
+    String author = getTextValue(root, "author");
+    String description = getTextValue(root, "description");
+    int width = Integer.parseInt(getTextValue(root, "width"));
+    int height = Integer.parseInt(getTextValue(root, "height"));
+    int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
+    List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
+    Map<String, Double> parameters = parseForParameters(root);
 
-      configInformation.setConfig(new ArrayList<>(List.of(
-          type,
-          title,
-          author,
-          description,
-          width,
-          height,
-          defaultSpeed,
-          initialStatesForGrid,
-          parameters
-      )));
-
-      System.out.println("Configuration file:" + xmlFile.getName());
-      System.out.println("Configuration info:" + configInformation.getAllConfigInfo());
-      return configInformation;
-    } catch (NumberFormatException e) {
-      System.err.println("Invalid number given in data");
-      return configInformation;
-    } catch (ParserConfigurationException e) {
-      System.err.println("Invalid XML Configuration");
-      return configInformation;
-    } catch (SAXException | IOException e) {
-      System.err.println("Invalid XML Data");
-      return configInformation;
-    }
+    configInformation.setConfig(new ArrayList<>(List.of(
+        type,
+        title,
+        author,
+        description,
+        width,
+        height,
+        defaultSpeed,
+        initialStatesForGrid,
+        parameters
+    )));
+    return configInformation;
   }
 
 
 
-  public void createListOfConfigFiles() {
-    File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
+  // TODO throw try catch and remove if statements
+  public void createListOfConfigFiles() throws IllegalArgumentException, NullPointerException {
+    try {
+      File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
 
-    if (folder.exists() && folder.isDirectory()) {
       File[] fileList = folder.listFiles();
 
-      if (fileList != null) {
         for (File file : fileList) {
           if (file.isFile()) {
             fileMap.put(file.getName(), file);
           }
-        }
       }
+    }
+    catch (IllegalStateException e) {
+      throw new IllegalStateException("Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+    }
+    catch (NullPointerException e) {
+      throw  new NullPointerException("Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     }
   }
 
@@ -154,30 +147,35 @@ public class ConfigReader {
    * return value: List<List<Integer>> which contains the data from each of the cells defined in the configuration file
    */
   private List<List<Integer>> parseInitialGrid(Element root) {
-    List<List<Integer>> initialStatesForGrid = new ArrayList<>();
-
     Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
-
     if (initialStatesElement == null) {
-      System.err.println("Missing <initialStates> section in XML");
-      return initialStatesForGrid;
+      throw new IllegalArgumentException("Missing 'initialStates' element.");
     }
-
     NodeList rows = initialStatesElement.getElementsByTagName("row");
-
-    for (int i = 0; i < rows.getLength(); i++) {
-      String initialState = rows.item(i).getTextContent().trim();
-      String[] values = initialState.split("\\s+");
-      List<Integer> row = new ArrayList<>();
-
-      for (String value : values) {
-        row.add(Integer.parseInt(value));
-      }
-
-      initialStatesForGrid.add(row);
+    if (rows == null || rows.getLength() == 0) {
+      throw new IllegalArgumentException("No 'row' elements found inside 'initialStates'.");
     }
-    return initialStatesForGrid;
+
+    List<List<Integer>> grid = new ArrayList<>();
+    for (int i = 0; i < rows.getLength(); i++) {
+      String rowText = rows.item(i).getTextContent().trim();
+      if (rowText.isEmpty()) {
+        throw new IllegalArgumentException("Empty row encountered in 'initialStates' at index " + i);
+      }
+      String[] values = rowText.split("\\s+");
+      List<Integer> row = new ArrayList<>();
+      for (String value : values) {
+        try {
+          row.add(Integer.parseInt(value));
+        } catch (NumberFormatException ex) {
+          throw new IllegalArgumentException("Invalid integer value in row " + i + ": " + value, ex);
+        }
+      }
+      grid.add(row);
+    }
+    return grid;
   }
+
 
   /**
    * Purpose: A method to test getting internal resources.
@@ -187,32 +185,30 @@ public class ConfigReader {
    * return value:
    */
   private Map<String, Double> parseForParameters(Element root) {
-    Map<String, Double> parametersMap = new HashMap<>();
-    Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
-    if (parametersElement == null) {
-      return parametersMap;
-    }
+    try {
+      Map<String, Double> parametersMap = new HashMap<>();
+      Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
+      NodeList params = parametersElement.getChildNodes();
+      for (int i = 0; i < params.getLength(); i++) {
+        Node child = params.item(i);
 
-    NodeList params = parametersElement.getChildNodes();
-    for (int i = 0; i < params.getLength(); i++) {
-      Node child = params.item(i);
-
-      if (child.getNodeType() == Node.ELEMENT_NODE) {
-        Element paramElement = (Element) child;
-        String paramName = paramElement.getNodeName();
-        String paramValueStr = paramElement.getTextContent().trim();
-
-        if (!paramValueStr.isEmpty()) {
-          try {
-            double paramValue = Double.parseDouble(paramValueStr);
-            parametersMap.put(paramName, paramValue);
-          } catch (NumberFormatException e) {
-            System.err.println("Could not parse parameter '" + paramName
-                + "' with value: '" + paramValueStr + "'");
-          }
+        if (child.getNodeType() == Node.ELEMENT_NODE) {
+          Element paramElement = (Element) child;
+          String paramName = paramElement.getNodeName();
+          String paramValueStr = paramElement.getTextContent().trim();
+            try {
+              double paramValue = Double.parseDouble(paramValueStr);
+              parametersMap.put(paramName, paramValue);
+            } catch (NumberFormatException e) {
+              System.err.println("Could not parse parameter '" + paramName
+                  + "' with value: '" + paramValueStr + "'");
+            }
         }
       }
+      return parametersMap;
     }
-    return parametersMap;
+    catch (Exception e) {
+      throw new AssertionError();
+    }
   }
 }

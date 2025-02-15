@@ -27,14 +27,14 @@ public class ConfigWriter {
   private ConfigInfo myConfigInfo;
   private Document myCurrentxmlDocument;
 
-  public ConfigWriter(ConfigInfo configInfo) {
-    myConfigInfo = configInfo;
+  public ConfigWriter() {
+    myConfigInfo = ConfigInfo.createInstance();
   }
 
-
-  public void saveCurrentConfig() throws ParserConfigurationException {
-    File outputFile = createOutputFile();
+  public void saveCurrentConfig(ConfigInfo myNewConfigInfo)throws ParserConfigurationException {
+    myConfigInfo = myNewConfigInfo;
     Document xmlDocument = createXMLDocument();
+    File outputFile = createOutputFile();
     assert xmlDocument != null;
     populateXMLDocument(xmlDocument);
     writeXMLDocument(xmlDocument, outputFile);
@@ -49,15 +49,15 @@ public class ConfigWriter {
       xmlDocument = docBuilder.newDocument();
     } catch (ParserConfigurationException e) {
       // handle the exception more robustly in real code
-      e.printStackTrace();
-      System.err.println("Error creating XML Document For Configuration Save");
-      return null;
+      throw new ParserConfigurationException();
     }
     return xmlDocument;
   }
 
   private void populateXMLDocument(Document xmlDocument) {
     Element rootElement = xmlDocument.createElement("simulation");
+    xmlDocument.appendChild(rootElement);  // Ensure the root element is added
+
     Element descriptionElement = xmlDocument.createElement("description");
     Element titleElement = xmlDocument.createElement("title");
     Element authorElement = xmlDocument.createElement("author");
@@ -66,19 +66,13 @@ public class ConfigWriter {
     Element defaultSpeedElement = xmlDocument.createElement("defaultSpeed");
     Element initialStatesElement = xmlDocument.createElement("initialStates");
 
-    addInitialGridElements(initialStatesElement, myConfigInfo.getGrid(), xmlDocument);
-
     titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getTitle()));
     authorElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getAuthor()));
     descriptionElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getDescription()));
-    gridHeightElement.appendChild(
-        xmlDocument.createTextNode(String.valueOf(myConfigInfo.getWidth())));
-    gridWidthElement.appendChild(
-        xmlDocument.createTextNode(String.valueOf(myConfigInfo.getHeight())));
-    defaultSpeedElement.appendChild(
-        xmlDocument.createTextNode(String.valueOf(myConfigInfo.getSpeed())));
+    gridHeightElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getWidth())));
+    gridWidthElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getHeight())));
+    defaultSpeedElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getSpeed())));
 
-    xmlDocument.appendChild(rootElement);
     rootElement.appendChild(titleElement);
     rootElement.appendChild(authorElement);
     rootElement.appendChild(descriptionElement);
@@ -86,43 +80,64 @@ public class ConfigWriter {
     rootElement.appendChild(gridHeightElement);
     rootElement.appendChild(defaultSpeedElement);
     rootElement.appendChild(initialStatesElement);
+    addInitialGridElements(initialStatesElement,myConfigInfo.getGrid(),xmlDocument);
   }
 
   private void addInitialGridElements(Element initialStatesElement, List<List<Integer>> grid,
       Document xmlDocument) {
-    StringBuilder rowString = new StringBuilder();
+    StringBuilder rowString;
     for (List<Integer> row : grid) {
       Element rowElement = null;
+      rowString = new StringBuilder();
       for (Integer i : row) {
         rowString.append(i).append(" ");
       }
-      rowElement = xmlDocument.createElement(rowString.toString().trim());
+      System.out.println(rowString);
+      rowElement = xmlDocument.createElement("row");
+      rowElement.appendChild(xmlDocument.createTextNode(rowString.toString().toString().trim()));
       initialStatesElement.appendChild(rowElement);
     }
   }
 
   private File createOutputFile() {
-    String baseFilename = myConfigInfo.getTitle() + "Save";
+    String baseFilename = myConfigInfo.getTitle().replaceAll(" ","") + "Save";
     String fileExtension = ".xml";
 
-    // 2) Decide which folder to save into
     File configDirectory = new File(DEFAULT_CONFIG_FOLDER);
+
+    // Create directory if it does not exist
     if (!configDirectory.exists()) {
-      System.err.println("Config directory does not exist");
+      if (!configDirectory.mkdirs()) {
+        System.err.println("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
+        return null;  // Return null to indicate failure
+      }
     }
 
-    // 3) Check for duplicates and add a numeric suffix if needed
     File outputFile = new File(configDirectory, baseFilename + fileExtension);
     int duplicateNumber = 1;
     while (outputFile.exists()) {
       outputFile = new File(configDirectory, baseFilename + "_" + duplicateNumber + fileExtension);
       duplicateNumber++;
     }
+
     return outputFile;
   }
 
   private void writeXMLDocument(Document xmlDocument, File outputFile) {
+    if (outputFile == null) {
+      System.err.println("Output file is null. Cannot save XML.");
+      return;
+    }
+
     try {
+      // Ensure the file is created before writing
+      if (!outputFile.exists()) {
+        if (!outputFile.createNewFile()) {
+          System.err.println("Failed to create new XML file: " + outputFile.getAbsolutePath());
+          return;
+        }
+      }
+
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
       Transformer transformer = transformerFactory.newTransformer();
       DOMSource source = new DOMSource(xmlDocument);
@@ -133,10 +148,13 @@ public class ConfigWriter {
         System.out.println("Config saved to file: " + outputFile.getAbsolutePath());
       }
 
+    } catch (IOException e) {
+      System.err.println("IOException while creating the file: " + e.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
+
 
   public void setConfigInfo(ConfigInfo configInfo) {
     myConfigInfo = configInfo;

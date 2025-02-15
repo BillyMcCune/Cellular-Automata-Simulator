@@ -48,7 +48,7 @@ public class GridTest {
   public void Grid_Constructor_ValidRawGrid_InitializesCorrectRowsAndColumns() {
     List<List<Integer>> rawGrid = createRawGrid(3, 4, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     assertEquals(3, grid.getNumRows(), "Expected grid to have 3 rows");
     assertEquals(4, grid.getNumCols(), "Expected grid to have 4 columns");
   }
@@ -57,7 +57,7 @@ public class GridTest {
   public void Grid_AssignNeighbors_CornerCellHasThreeNeighbors() {
     List<List<Integer>> rawGrid = createRawGrid(3, 3, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     Cell<TestState> cornerCell = grid.getCell(0, 0);
     assertEquals(3, cornerCell.getNeighbors().size(), "Corner cell should have 3 neighbors");
   }
@@ -66,7 +66,7 @@ public class GridTest {
   public void Grid_AssignNeighbors_EdgeCellHasFiveNeighbors() {
     List<List<Integer>> rawGrid = createRawGrid(3, 3, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     Cell<TestState> edgeCell = grid.getCell(0, 1);
     assertEquals(5, edgeCell.getNeighbors().size(), "Edge cell should have 5 neighbors");
   }
@@ -75,7 +75,7 @@ public class GridTest {
   public void Grid_AssignNeighbors_CenterCellHasEightNeighbors() {
     List<List<Integer>> rawGrid = createRawGrid(3, 3, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     Cell<TestState> centerCell = grid.getCell(1, 1);
     assertEquals(8, centerCell.getNeighbors().size(), "Center cell should have 8 neighbors");
   }
@@ -84,7 +84,7 @@ public class GridTest {
   public void Grid_UpdateGrid_CellsCurrentStateUpdatesToNextState() {
     List<List<Integer>> rawGrid = createRawGrid(2, 2, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
         grid.getCell(i, j).setNextState(TestState.ONE);
@@ -103,7 +103,7 @@ public class GridTest {
   public void Grid_SetGrid_NewRawGrid_ReinitializesGridCorrectly() {
     List<List<Integer>> initialRawGrid = createRawGrid(2, 2, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(initialRawGrid, factory);
+    Grid<TestState> grid = new Grid<>(initialRawGrid, factory, neighborCalculator);
     assertEquals(2, grid.getNumRows(), "Initially, grid should have 2 rows");
     List<List<Integer>> newRawGrid = createRawGrid(3, 3, 1);
     grid.setGrid(newRawGrid, factory);
@@ -120,7 +120,7 @@ public class GridTest {
   @Test
   public void Grid_Constructor_NullRawGrid_ReturnsZeroDimensionGrid() {
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(null, factory);
+    Grid<TestState> grid = new Grid<>(null, factory, neighborCalculator);
     assertEquals(0, grid.getNumRows());
     assertEquals(0, grid.getNumCols());
   }
@@ -129,7 +129,7 @@ public class GridTest {
   public void Grid_Constructor_EmptyRawGrid_ReturnsZeroDimensionGrid() {
     DummyCellFactory factory = new DummyCellFactory();
     List<List<Integer>> rawGrid = new ArrayList<>();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     assertEquals(0, grid.getNumRows());
     assertEquals(0, grid.getNumCols());
   }
@@ -138,7 +138,7 @@ public class GridTest {
   public void Grid_SetGrid_NullRawGrid_ReturnsZeroDimensionGrid() {
     List<List<Integer>> rawGrid = createRawGrid(2, 2, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     grid.setGrid(null, factory);
     assertEquals(0, grid.getNumRows());
     assertEquals(0, grid.getNumCols());
@@ -150,7 +150,7 @@ public class GridTest {
   public void Grid_GetCell_InvalidRowIndex_ThrowsIndexOutOfBoundsException() {
     List<List<Integer>> rawGrid = createRawGrid(2, 2, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     assertThrows(IndexOutOfBoundsException.class, () -> grid.getCell(2, 0));
   }
 
@@ -158,7 +158,7 @@ public class GridTest {
   public void Grid_GetCell_InvalidColumnIndex_ThrowsIndexOutOfBoundsException() {
     List<List<Integer>> rawGrid = createRawGrid(2, 2, 0);
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(rawGrid, factory);
+    Grid<TestState> grid = new Grid<>(rawGrid, factory, neighborCalculator);
     assertThrows(IndexOutOfBoundsException.class, () -> grid.getCell(0, 2));
   }
 }
