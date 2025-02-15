@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 /**
  * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
  * Other Details:
+ * TODO add accepted states, and grid
  */
 public class ConfigWriter {
 

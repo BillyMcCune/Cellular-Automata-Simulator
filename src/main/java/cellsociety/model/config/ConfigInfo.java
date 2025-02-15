@@ -3,6 +3,7 @@ package cellsociety.model.config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Record version of ConfigInfo.
@@ -20,7 +21,7 @@ public record ConfigInfo(
     int myTickSpeed,
     List<List<Integer>> myGrid,
     Map<String, Double> myParameters,
-    List<Integer> acceptedStates,
+    Set<Integer> acceptedStates,
     String myFileName
 ) {
 

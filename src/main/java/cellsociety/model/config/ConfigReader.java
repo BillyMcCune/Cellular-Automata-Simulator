@@ -7,8 +7,10 @@ import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -67,6 +69,7 @@ public class ConfigReader {
     int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
     List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
     Map<String, Double> parameters = parseForParameters(root);
+    Set<Integer> acceptedStates = parseForAcceptedStates(root);
 
 
     return new ConfigInfo(
@@ -79,14 +82,14 @@ public class ConfigReader {
         defaultSpeed,
         initialStatesForGrid,
         parameters,
+        acceptedStates,
         fileName
     );
   }
 
 
-
   /**
-   * Creates a mapping from file names to configuration files found in the designated folder.
+   * creates a mapping from file names to configuration files found in the designated folder.
    */
   public void createListOfConfigFiles() {
     try {
@@ -120,7 +123,7 @@ public class ConfigReader {
     return Double.parseDouble(resources.getString("Version"));
   }
 
-  // get value of Element's text
+  //get value of Element's text
   private String getTextValue(Element e, String tagName) {
     NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
@@ -191,15 +194,66 @@ public class ConfigReader {
               double paramValue = Double.parseDouble(paramValueStr);
               parametersMap.put(paramName, paramValue);
             } catch (NumberFormatException e) {
-              System.err.println("Could not parse parameter '" + paramName
-                  + "' with value: '" + paramValueStr + "'");
+             throw new IllegalArgumentException("Invalid integer value in parameter " + i + ": " + paramValueStr, e);
             }
         }
       }
       return parametersMap;
     }
     catch (Exception e) {
-      throw new AssertionError();
+      throw new AssertionError("Could not parse parameters: " + e.getMessage());
     }
   }
+
+  private Set<Integer> parseForAcceptedStates(Element root) {
+    try{
+      Set<Integer> acceptedStates = new HashSet<>();
+      NodeList acceptedStatesElement = root.getElementsByTagName("acceptedStates");
+      for (int i = 0; i < acceptedStatesElement.getLength(); i++) {
+        Node child = acceptedStatesElement.item(i);
+        if (child.getNodeType() == Node.ELEMENT_NODE) {
+          Element acceptedStateElement = (Element) child;
+          acceptedStates.add(Integer.parseInt(acceptedStateElement.getTextContent()));
+        }
+      }
+      return acceptedStates;
+    }
+    catch (Exception e) {
+      throw new AssertionError("Could not parse acceptedStates in 'acceptedStates'.");
+    }
+  }
+
+  private void checkForInvalidInformation(int myGridWidth, int myGridHeight, Set<Integer> acceptedStates, List<List<Integer>> grid) {
+    checkGridBounds(myGridWidth, myGridHeight, grid);
+    checkInvalidStates(acceptedStates, grid);
+  }
+
+  private void checkGridBounds(int width,int height,List<List<Integer>> grid) {
+      if (grid.size() != height) {
+        throw new IllegalArgumentException(
+            "Grid in file has wrong number of rows. Expected " + height + " but found " + grid.size()
+        );
+      }
+    for (List<Integer> integers : grid) {
+      if (integers.size() != width) {
+        throw new IllegalArgumentException(
+            "Grid in File has wrong number of columns. Expected " + width + " but found "
+                + integers.size()
+        );
+      }
+    }
+  }
+
+  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<Integer>> grid) {
+    for (List<Integer> integers : grid) {
+      for (Integer integer : integers) {
+        if (!acceptedStates.contains(integer)) {
+          throw new IllegalArgumentException(
+              "Grid in File contains an invalid state:" + integer
+          );
+        }
+      }
+    }
+  }
+
 }
