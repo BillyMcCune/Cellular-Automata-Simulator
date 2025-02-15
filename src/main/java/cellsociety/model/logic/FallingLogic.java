@@ -2,15 +2,13 @@ package cellsociety.model.logic;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.neighbors.Coord;
 import cellsociety.model.data.states.FallingState;
 import cellsociety.model.data.states.PercolationState;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FallingLogic extends Logic<FallingState>{
-  public static final String[] WATER_NEIGHBORS = {
-      "1 -1", "1 0", "1 1"
-  };
 
   public FallingLogic(Grid<FallingState> grid) {
     super(grid);
@@ -27,7 +25,7 @@ public class FallingLogic extends Logic<FallingState>{
   @Override
   protected void updateSingleCell(Cell<FallingState> cell) {
     if (cell.getCurrentState() == FallingState.SAND) {
-      Cell<FallingState> neighbor = cell.getNeighbors().get("1 0");
+      Cell<FallingState> neighbor = cell.getNeighbors().get(new Coord(1, 0));
       if (neighbor != null) {
         if (neighbor.getCurrentState() == FallingState.EMPTY) {
           neighbor.setNextState(FallingState.SAND);
@@ -36,7 +34,7 @@ public class FallingLogic extends Logic<FallingState>{
       }
     }
     if (cell.getCurrentState() == FallingState.WATER) {
-      List<Cell<FallingState>> neighbors = getWaterNeighbors(cell);
+      List<Cell<FallingState>> neighbors = getEmptyNeighbors(cell);
       if (!neighbors.isEmpty()) {
         int index = (int) (Math.random() * neighbors.size());
         neighbors.get(index).setNextState(FallingState.WATER);
@@ -45,11 +43,10 @@ public class FallingLogic extends Logic<FallingState>{
     }
   }
 
-  private List<Cell<FallingState>> getWaterNeighbors(Cell<FallingState> cell) {
+  private List<Cell<FallingState>> getEmptyNeighbors(Cell<FallingState> cell) {
     List<Cell<FallingState>> neighbors = new ArrayList<>();
-    for (String direction : WATER_NEIGHBORS) {
-      Cell<FallingState> neighbor = cell.getNeighbors().get(direction);
-      if (neighbor != null) {
+    for (Cell<FallingState> neighbor : cell.getNeighbors().values()) {
+      if (neighbor.getCurrentState() == FallingState.EMPTY) {
         neighbors.add(neighbor);
       }
     }
