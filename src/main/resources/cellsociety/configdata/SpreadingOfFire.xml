@@ -15,9 +15,9 @@
   
   
   <parameters>
-
     <doubleParameter name="probCatch">50</doubleParameter>
-    
+    <doubleParameter name="progIgnite">5</doubleParameter>
+    <doubleParameter name="probTree">10</doubleParameter>
   </parameters>
   
   

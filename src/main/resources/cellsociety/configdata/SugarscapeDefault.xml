@@ -1,0 +1,3 @@
+states: 0, 1;
+properties: maxSugar, SugarGrowth;
+Params: Agent Sight, BaseAgentEnergy;

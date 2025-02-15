@@ -18,6 +18,8 @@
 
 
     <doubleParameter name="probCatch">100</doubleParameter>
+    <doubleParameter name="progIgnite">5</doubleParameter>
+    <doubleParameter name="probTree">10</doubleParameter>
     
   
   </parameters>
