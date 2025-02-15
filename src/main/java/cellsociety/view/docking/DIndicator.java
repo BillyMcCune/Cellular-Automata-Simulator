@@ -13,6 +13,11 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+/**
+ * Represents a dock indicator that shows where a docked window will be placed.
+ *
+ * @author Hsuan-Kai Liao
+ */
 public class DIndicator {
   // Constants
   private static final int DOCK_INDICATOR_WIDTH = 40;
