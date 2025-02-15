@@ -126,10 +126,10 @@ public class SceneController {
 
     return String.format(
         "Author: %s\nTitle: %s\nType: %s\nDescription: %s",
-        configInfo.getAuthor(),
-        configInfo.getTitle(),
-        configInfo.getType(),
-        configInfo.getDescription()
+        configInfo.myAuthor(),
+        configInfo.myTitle(),
+        configInfo.myType(),
+        configInfo.myDescription()
     );
   }
 
@@ -142,7 +142,7 @@ public class SceneController {
       return "";
     }
 
-    return configInfo.getTitle();
+    return configInfo.myTitle();
   }
 
   /**
@@ -154,7 +154,7 @@ public class SceneController {
       return 0;
     }
 
-    return configInfo.getSpeed();
+    return configInfo.myTickSpeed();
   }
 
   // Model APIs
@@ -167,7 +167,7 @@ public class SceneController {
     }
 
     try {
-      SimulationType type = configInfo.getType();
+      SimulationType type = configInfo.myType();
       String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
 
       // Dynamically load the Logic and State classes
@@ -182,7 +182,7 @@ public class SceneController {
       Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
       neighborCalculator = (NeighborCalculator<?>) neighborObject;
 
-      grid = new Grid<>(configInfo.getGrid(), cellFactory, neighborCalculator);
+      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class).newInstance(grid);
 
       // Set the parameters for the simulation
@@ -210,14 +210,14 @@ public class SceneController {
     }
 
     try {
-      SimulationType type = configInfo.getType();
+      SimulationType type = configInfo.myType();
       String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
 
       // Dynamically load the Logic class
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
 
       // Dynamically create cell grid, and logic
-      grid = new Grid<>(configInfo.getGrid(), cellFactory, neighborCalculator);
+      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class).newInstance(grid);
 
       // Set the grid to the scene
@@ -240,7 +240,7 @@ public class SceneController {
    * @param <T> The type of the logic class
    */
   public <T extends Logic<?>>void resetParameters(Class<T> logicClass) {
-    Map<String, Double> parameters = configInfo.getParameters();
+    Map<String, Double> parameters = configInfo.myParameters();
 
     // TODO: SET UNIQUE MIN AND MAX VALUES FOR PARAMETERS
     double MIN = 0;

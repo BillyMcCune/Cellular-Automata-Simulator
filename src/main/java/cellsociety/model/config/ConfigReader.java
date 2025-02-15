@@ -4,39 +4,31 @@ import cellsociety.model.config.ConfigInfo.SimulationType;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import java.util.Map;
-import org.w3c.dom.Node;
 
-/**
- * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
- * Other Details:
- * TODO GET RID OF JAVAFX STUFF
- * TODO Shorten
- * TODO pass in the valid states
- */
 public class ConfigReader {
 
-  // kind of data files to look for
+  // File configuration constants.
   private static final String DATA_FILE_EXTENSION = "*.xml";
-  // starts in the resources folder
   private static final String DATA_FILE_FOLDER = "/src/main/resources/cellsociety/configdata";
   private static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
-  private final Map<String,File> fileMap = new HashMap<>();
+  private final Map<String, File> fileMap = new HashMap<>();
 
   /**
-   * Purpose: Loads and parses config file data Assumptions: The DATA_FILE_FOLDER is where our
-   * desired configurations are Parameters: None Exceptions: if after reading the configuration file
-   * the array of objects is empty then an alert is mode return value: ArrayList<Object> which
-   * contains the data from the configuration file
+   * Loads and parses the configuration file data.
    */
   public ConfigInfo readConfig(String fileName)
       throws ParserConfigurationException, IOException, SAXException {
@@ -45,23 +37,18 @@ public class ConfigReader {
     }
     File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
-    ConfigInfo configInformation = getConfigInformation(dataFile);
-    configInformation.setMyFileName(fileName);
-    System.out.println(configInformation.getParameters());
-    return configInformation;
+    return getConfigInformation(dataFile, fileName);
   }
 
   /**
-   * Purpose: Returns number of blocks needed to cover the width and height given in the data file.
-   * Assumptions: Parameters: Exceptions: return value:
+   * Parses the XML file and creates a new ConfigInfo record.
    */
-  public ConfigInfo getConfigInformation(File xmlFile)
+  public ConfigInfo getConfigInformation(File xmlFile, String fileName)
       throws ParserConfigurationException, SAXException, IOException {
-    ConfigInfo configInformation = ConfigInfo.createInstance();
-    Document xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
+    Document xmlDocument =
+        DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
     Element root = xmlDocument.getDocumentElement();
 
-    // Each of these calls will throw an exception if the data is missing or invalid.
     String type = getTextValue(root, "type");
     String title = getTextValue(root, "title");
     String author = getTextValue(root, "author");
@@ -69,43 +56,45 @@ public class ConfigReader {
     int width = Integer.parseInt(getTextValue(root, "width"));
     int height = Integer.parseInt(getTextValue(root, "height"));
     int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
-    List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
-    Map<String, Double> parameters = parseForParameters(root);
 
-    configInformation.setConfig(new ArrayList<>(List.of(
-        type,
+    // Parse the grid of initial cells (using cellRecord.Cell).
+    List<List<cellRecord.CellPropertyRecord>> initialCells = parseInitialCells(root);
+    // Parse parameters using the new parameterRecord.
+    parameterRecord.parameters parameters = parseForParameters(root);
+    // Parse accepted states (assumed to be provided as a space‐separated list in one element).
+    Set<Integer> acceptedStates = parseForAcceptedStates(root);
+
+    // Validate grid bounds and cell states.
+    checkForInvalidInformation(width, height, acceptedStates, initialCells);
+
+    return new ConfigInfo(
+        SimulationType.valueOf(type.toUpperCase()), // Convert type string to enum.
         title,
         author,
         description,
         width,
         height,
         defaultSpeed,
-        initialStatesForGrid,
-        parameters
-    )));
-    return configInformation;
+        initialCells,
+        parameters,
+        acceptedStates,
+        fileName
+    );
   }
 
-
-
-  // TODO throw try catch and remove if statements
-  public void createListOfConfigFiles() throws IllegalArgumentException, NullPointerException {
+  /**
+   * Creates a mapping from file names to configuration files found in the designated folder.
+   */
+  public void createListOfConfigFiles() {
     try {
       File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
-
       File[] fileList = folder.listFiles();
-
-        for (File file : fileList) {
-          if (file.isFile()) {
-            fileMap.put(file.getName(), file);
-          }
-      }
-    }
-    catch (IllegalStateException e) {
-      throw new IllegalStateException("Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
-    }
-    catch (NullPointerException e) {
-      throw  new NullPointerException("Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+      Arrays.stream(fileList)
+          .filter(File::isFile)
+          .forEach(file -> fileMap.put(file.getName(), file));
+    } catch (NullPointerException e) {
+      throw new IllegalStateException(
+          "Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     }
   }
 
@@ -117,98 +106,185 @@ public class ConfigReader {
   }
 
   /**
-   * Purpose: A method to test getting internal resources.
-   * Assumptions:
-   * Parameters:
-   * Exceptions:
-   * return value:
+   * Retrieves the version from internal resources.
    */
   public double getVersion() {
     ResourceBundle resources = ResourceBundle.getBundle(INTERNAL_CONFIGURATION);
     return Double.parseDouble(resources.getString("Version"));
   }
 
-  // get value of Element's text
+  // Helper method: gets the text value of the given tag.
   private String getTextValue(Element e, String tagName) {
     NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();
     } else {
-      // FIXME: empty string or exception? In some cases it may be an error to not find any text
       return "";
     }
   }
 
   /**
-   * Purpose: A method for parsing the grid in the xml configuration file
-   * Assumptions: The initial state node is in the xml configuration and the data for the grid is contained in row nodes
-   * Parameters: the root node of the xml file
-   * Exceptions: the rows of the grid must be children of the initials States node in the xml file
-   * return value: List<List<Integer>> which contains the data from each of the cells defined in the configuration file
+   * Parses the grid defined in the XML file from the new <initialCells> format.
+   * Each row contains multiple <cell> elements, which are converted to cellRecord.Cell.
    */
-  private List<List<Integer>> parseInitialGrid(Element root) {
-    Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
-    if (initialStatesElement == null) {
-      throw new IllegalArgumentException("Missing 'initialStates' element.");
+  private List<List<cellRecord.CellPropertyRecord>> parseInitialCells(Element root) {
+    Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
+    if (initialCellsElement == null) {
+      throw new IllegalArgumentException("Missing 'initialCells' element.");
     }
-    NodeList rows = initialStatesElement.getElementsByTagName("row");
+    NodeList rows = initialCellsElement.getElementsByTagName("row");
     if (rows == null || rows.getLength() == 0) {
-      throw new IllegalArgumentException("No 'row' elements found inside 'initialStates'.");
+      throw new IllegalArgumentException("No 'row' elements found inside 'initialCells'.");
     }
 
-    List<List<Integer>> grid = new ArrayList<>();
+    List<List<cellRecord.CellPropertyRecord>> grid = new ArrayList<>();
     for (int i = 0; i < rows.getLength(); i++) {
-      String rowText = rows.item(i).getTextContent().trim();
-      if (rowText.isEmpty()) {
-        throw new IllegalArgumentException("Empty row encountered in 'initialStates' at index " + i);
-      }
-      String[] values = rowText.split("\\s+");
-      List<Integer> row = new ArrayList<>();
-      for (String value : values) {
-        try {
-          row.add(Integer.parseInt(value));
-        } catch (NumberFormatException ex) {
-          throw new IllegalArgumentException("Invalid integer value in row " + i + ": " + value, ex);
+      Node rowNode = rows.item(i);
+      if (rowNode.getNodeType() != Node.ELEMENT_NODE) continue; // Skip non-element nodes.
+      Element rowElement = (Element) rowNode;
+      // Get all <cell> elements in this row.
+      NodeList cellNodes = rowElement.getElementsByTagName("cell");
+      List<cellRecord.CellPropertyRecord> rowCells = new ArrayList<>();
+      for (int j = 0; j < cellNodes.getLength(); j++) {
+        Node cellNode = cellNodes.item(j);
+        if (cellNode.getNodeType() == Node.ELEMENT_NODE) {
+          Element cellElement = (Element) cellNode;
+          String stateStr = cellElement.getAttribute("state");
+          if (stateStr == null || stateStr.isEmpty()) {
+            throw new IllegalArgumentException("Cell missing 'state' attribute at row " + i + ", column " + j);
+          }
+          int state;
+          try {
+            state = Integer.parseInt(stateStr);
+          } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Invalid cell state at row " + i + ", column " + j + ": " + stateStr, ex);
+          }
+          // Parse additional attributes as properties (excluding "state").
+          Map<String, Double> properties = new HashMap<>();
+          for (int k = 0; k < cellElement.getAttributes().getLength(); k++) {
+            Node attr = cellElement.getAttributes().item(k);
+            String attrName = attr.getNodeName();
+            if (!attrName.equals("state")) {
+              String attrValue = attr.getNodeValue();
+              try {
+                double value = Double.parseDouble(attrValue);
+                properties.put(attrName, value);
+              } catch (NumberFormatException e) {
+                // If not a double, ignore the property.
+              }
+            }
+          }
+          rowCells.add(new cellRecord.CellPropertyRecord(state, properties));
         }
       }
-      grid.add(row);
+      if (rowCells.isEmpty()) {
+        throw new IllegalArgumentException("Empty row encountered in 'initialCells' at index " + i);
+      }
+      grid.add(rowCells);
     }
     return grid;
   }
 
-
   /**
-   * Purpose: A method to test getting internal resources.
-   * Assumptions:
-   * Parameters:
-   * Exceptions:
-   * return value:
+   * Parses the parameters from the XML file.
+   * Expected XML format:
+   * <parameters>
+   *   <doubleParameter name="param1">1.23</doubleParameter>
+   *   <stringParameter name="param2">value</stringParameter>
+   * </parameters>
    */
-  private Map<String, Double> parseForParameters(Element root) {
-    try {
-      Map<String, Double> parametersMap = new HashMap<>();
-      Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
-      NodeList params = parametersElement.getChildNodes();
-      for (int i = 0; i < params.getLength(); i++) {
-        Node child = params.item(i);
-
-        if (child.getNodeType() == Node.ELEMENT_NODE) {
-          Element paramElement = (Element) child;
-          String paramName = paramElement.getNodeName();
-          String paramValueStr = paramElement.getTextContent().trim();
-            try {
-              double paramValue = Double.parseDouble(paramValueStr);
-              parametersMap.put(paramName, paramValue);
-            } catch (NumberFormatException e) {
-              System.err.println("Could not parse parameter '" + paramName
-                  + "' with value: '" + paramValueStr + "'");
-            }
+  private parameterRecord.parameters parseForParameters(Element root) {
+    Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
+    // If no parameters element exists, return empty maps.
+    if (parametersElement == null) {
+      return new parameterRecord.parameters(new HashMap<>(), new HashMap<>());
+    }
+    Map<String, Double> doubleParams = new HashMap<>();
+    Map<String, String> stringParams = new HashMap<>();
+    NodeList paramNodes = parametersElement.getChildNodes();
+    for (int i = 0; i < paramNodes.getLength(); i++) {
+      Node node = paramNodes.item(i);
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
+        Element paramElement = (Element) node;
+        String tagName = paramElement.getTagName();
+        String name = paramElement.getAttribute("name");
+        if (name == null || name.isEmpty()) {
+          throw new IllegalArgumentException("Parameter element missing 'name' attribute.");
+        }
+        String textContent = paramElement.getTextContent().trim();
+        if (tagName.equals("doubleParameter")) {
+          try {
+            double value = Double.parseDouble(textContent);
+            doubleParams.put(name, value);
+          } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid double value for parameter " + name + ": " + textContent, e);
+          }
+        } else if (tagName.equals("stringParameter")) {
+          stringParams.put(name, textContent);
+        } else {
+          // Optionally ignore or handle unknown parameter types.
         }
       }
-      return parametersMap;
     }
-    catch (Exception e) {
-      throw new AssertionError();
+    return new parameterRecord.parameters(doubleParams, stringParams);
+  }
+
+  /**
+   * Parses accepted states from a single <acceptedStates> element containing a space‐separated list.
+   */
+  private Set<Integer> parseForAcceptedStates(Element root) {
+    Element acceptedStatesElement = (Element) root.getElementsByTagName("acceptedStates").item(0);
+    if (acceptedStatesElement == null) {
+      throw new IllegalArgumentException("Missing 'acceptedStates' element.");
+    }
+    String statesText = acceptedStatesElement.getTextContent().trim();
+    if (statesText.isEmpty()) {
+      throw new IllegalArgumentException("'acceptedStates' element is empty.");
+    }
+    Set<Integer> acceptedStates = new HashSet<>();
+    String[] tokens = statesText.split("\\s+");
+    for (String token : tokens) {
+      try {
+        acceptedStates.add(Integer.parseInt(token));
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Invalid accepted state value: " + token, e);
+      }
+    }
+    return acceptedStates;
+  }
+
+  /**
+   * Checks grid bounds and validates that every cell has an accepted state.
+   */
+  private void checkForInvalidInformation(int gridWidth, int gridHeight, Set<Integer> acceptedStates, List<List<cellRecord.CellPropertyRecord>> grid) {
+    checkGridBounds(gridWidth, gridHeight, grid);
+    checkInvalidStates(acceptedStates, grid);
+  }
+
+  private void checkGridBounds(int width, int height, List<List<cellRecord.CellPropertyRecord>> grid) {
+    if (grid.size() != height) {
+      throw new IllegalArgumentException(
+          "Grid in file has wrong number of rows. Expected " + height + " but found " + grid.size()
+      );
+    }
+    for (List<cellRecord.CellPropertyRecord> row : grid) {
+      if (row.size() != width) {
+        throw new IllegalArgumentException(
+            "Grid in file has wrong number of columns. Expected " + width + " but found " + row.size()
+        );
+      }
+    }
+  }
+
+  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<cellRecord.CellPropertyRecord>> grid) {
+    for (List<cellRecord.CellPropertyRecord> row : grid) {
+      for (cellRecord.CellPropertyRecord cell : row) {
+        if (!acceptedStates.contains(cell.state())) {
+          throw new IllegalArgumentException(
+              "Grid in file contains an invalid state: " + cell.state()
+          );
+        }
+      }
     }
   }
 }
