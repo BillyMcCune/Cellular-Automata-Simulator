@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 /**
  * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
  * Other Details:
+ * TODO add accepted states, and grid
  */
 public class ConfigWriter {
 
@@ -28,7 +29,6 @@ public class ConfigWriter {
   private Document myCurrentxmlDocument;
 
   public ConfigWriter() {
-    myConfigInfo = ConfigInfo.createInstance();
   }
 
   public void saveCurrentConfig(ConfigInfo myNewConfigInfo)throws ParserConfigurationException {
@@ -66,12 +66,12 @@ public class ConfigWriter {
     Element defaultSpeedElement = xmlDocument.createElement("defaultSpeed");
     Element initialStatesElement = xmlDocument.createElement("initialStates");
 
-    titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getTitle()));
-    authorElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getAuthor()));
-    descriptionElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getDescription()));
-    gridHeightElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getWidth())));
-    gridWidthElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getHeight())));
-    defaultSpeedElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getSpeed())));
+    titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myTitle()));
+    authorElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myAuthor()));
+    descriptionElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myDescription()));
+    gridHeightElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridWidth())));
+    gridWidthElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridHeight())));
+    defaultSpeedElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myTickSpeed())));
 
     rootElement.appendChild(titleElement);
     rootElement.appendChild(authorElement);
@@ -80,7 +80,7 @@ public class ConfigWriter {
     rootElement.appendChild(gridHeightElement);
     rootElement.appendChild(defaultSpeedElement);
     rootElement.appendChild(initialStatesElement);
-    addInitialGridElements(initialStatesElement,myConfigInfo.getGrid(),xmlDocument);
+    addInitialGridElements(initialStatesElement,myConfigInfo.myGrid(),xmlDocument);
   }
 
   private void addInitialGridElements(Element initialStatesElement, List<List<Integer>> grid,
@@ -100,7 +100,7 @@ public class ConfigWriter {
   }
 
   private File createOutputFile() {
-    String baseFilename = myConfigInfo.getTitle().replaceAll(" ","") + "Save";
+    String baseFilename = myConfigInfo.myTitle().replaceAll(" ","") + "Save";
     String fileExtension = ".xml";
 
     File configDirectory = new File(DEFAULT_CONFIG_FOLDER);
