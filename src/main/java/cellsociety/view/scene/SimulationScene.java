@@ -37,7 +37,7 @@ public class SimulationScene {
 
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
-  public static final double SPEED_MULTIPLIER = 2.0;
+  public static final double SPEED_MULTIPLIER = 3;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
   public static final double BUTTON_WIDTH = 80;
@@ -457,7 +457,7 @@ public class SimulationScene {
 
   private void speedChangeCallback(double speed) {
     // Change the speed of the simulation
-    updateInterval = SPEED_MULTIPLIER / speed;
+    updateInterval = 10 / (speed * SPEED_MULTIPLIER);
   }
 
   private void selectDropDownCallback() {
