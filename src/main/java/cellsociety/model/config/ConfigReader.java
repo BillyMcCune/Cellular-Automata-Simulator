@@ -3,7 +3,9 @@ package cellsociety.model.config;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -19,7 +21,6 @@ import org.w3c.dom.Node;
 /**
  * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
  * Other Details:
- * TODO GET RID OF JAVAFX STUFF
  * TODO Shorten
  * TODO pass in the valid states
  */
@@ -45,23 +46,18 @@ public class ConfigReader {
     }
     File dataFile = fileMap.get(fileName);
     System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
-    ConfigInfo configInformation = getConfigInformation(dataFile);
-    configInformation.setMyFileName(fileName);
-    System.out.println(configInformation.getParameters());
-    return configInformation;
+    return getConfigInformation(dataFile, fileName);
   }
 
   /**
-   * Purpose: Returns number of blocks needed to cover the width and height given in the data file.
-   * Assumptions: Parameters: Exceptions: return value:
+   * Parses the XML file and creates a new ConfigInfo record.
    */
-  public ConfigInfo getConfigInformation(File xmlFile)
+  public ConfigInfo getConfigInformation(File xmlFile, String fileName)
       throws ParserConfigurationException, SAXException, IOException {
-    ConfigInfo configInformation = ConfigInfo.createInstance();
-    Document xmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
+    Document xmlDocument =
+        DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
     Element root = xmlDocument.getDocumentElement();
 
-    // Each of these calls will throw an exception if the data is missing or invalid.
     String type = getTextValue(root, "type");
     String title = getTextValue(root, "title");
     String author = getTextValue(root, "author");
@@ -72,8 +68,9 @@ public class ConfigReader {
     List<List<Integer>> initialStatesForGrid = parseInitialGrid(root);
     Map<String, Double> parameters = parseForParameters(root);
 
-    configInformation.setConfig(new ArrayList<>(List.of(
-        type,
+
+    return new ConfigInfo(
+        SimulationType.valueOf(type.toUpperCase()), // Convert type string to enum.
         title,
         author,
         description,
@@ -81,31 +78,26 @@ public class ConfigReader {
         height,
         defaultSpeed,
         initialStatesForGrid,
-        parameters
-    )));
-    return configInformation;
+        parameters,
+        fileName
+    );
   }
 
 
 
-  // TODO throw try catch and remove if statements
-  public void createListOfConfigFiles() throws IllegalArgumentException, NullPointerException {
+  /**
+   * Creates a mapping from file names to configuration files found in the designated folder.
+   */
+  public void createListOfConfigFiles() {
     try {
-      File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
-
-      File[] fileList = folder.listFiles();
-
-        for (File file : fileList) {
-          if (file.isFile()) {
-            fileMap.put(file.getName(), file);
-          }
-      }
-    }
-    catch (IllegalStateException e) {
-      throw new IllegalStateException("Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
-    }
-    catch (NullPointerException e) {
-      throw  new NullPointerException("Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+    File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
+    File[] fileList = folder.listFiles();
+      Arrays.stream(fileList)
+          .filter(File::isFile)
+          .forEach(file -> fileMap.put(file.getName(), file));
+    } catch (NullPointerException e) {
+      throw new IllegalStateException(
+          "Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     }
   }
 
@@ -134,7 +126,6 @@ public class ConfigReader {
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();
     } else {
-      // FIXME: empty string or exception? In some cases it may be an error to not find any text
       return "";
     }
   }

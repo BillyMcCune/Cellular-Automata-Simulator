@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConfigInfoTest {
   String GameOfLifeGliderTitle = "GameOfLifeGlider";
   ConfigReader configReader = new ConfigReader();
-  ConfigInfo configInfo = ConfigInfo.createInstance();
+  ConfigInfo configInfo;
   List<String> files = configReader.getFileNames();
   Map<String,Double> Emptymap = new HashMap<>();
 
@@ -29,15 +29,15 @@ public class ConfigInfoTest {
   void getTitle_ConfigIsGameOfLifeGlider_isCorrect()
       throws ParserConfigurationException, IOException, SAXException {
     configReader.readConfig(files.getFirst());
-    assertNotNull(configInfo.getTitle());
+    assertNotNull(configInfo.myTitle());
   }
 
   @Test
   void getParameters_ConfigIsGameOfLifeGlider_isCorrect()
       throws ParserConfigurationException, IOException, SAXException {
     configReader.readConfig(files.getFirst());
-    assertEquals(Emptymap, configInfo.getParameters());
-    System.out.println(configInfo.getParameters());
+    assertEquals(Emptymap, configInfo.myParameters());
+    System.out.println(configInfo.myParameters());
   }
 
 
