@@ -9,6 +9,7 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
+import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -87,7 +88,7 @@ public class SceneController {
         isLoaded = true;
       }
     } catch (Exception e) {
-      // TODO: Handle this exception
+      SceneUIWidget.createErrorDialog("Load Config Error", "Failed to load configuration file: " + filename, e);
     }
   }
 
@@ -103,7 +104,7 @@ public class SceneController {
     try {
       configWriter.saveCurrentConfig(configInfo, path);
     } catch (Exception e) {
-      // TODO: Handle this exception
+      SceneUIWidget.createErrorDialog("Save Config Error", "Failed to save configuration file: " + path, e);
     }
   }
 
@@ -190,15 +191,9 @@ public class SceneController {
       resetParameters(gameLogic.getClass());
 
       // Set the grid to the scene
-      simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
-      for (int i = 0; i < grid.getNumRows(); i++) {
-        for (int j = 0; j < grid.getNumCols(); j++) {
-          simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
-        }
-      }
+      initGrid();
     } catch (Exception e) {
-      // TODO: Handle this exception
-      throw new UnsupportedOperationException(e);
+      SceneUIWidget.createErrorDialog("Reset Model Error", "Failed to reset the model with reflection.", e);
     }
   }
 
@@ -223,15 +218,9 @@ public class SceneController {
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class).newInstance(grid, configInfo.myParameters());
 
       // Set the grid to the scene
-      simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
-      for (int i = 0; i < grid.getNumRows(); i++) {
-        for (int j = 0; j < grid.getNumCols(); j++) {
-          simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
-        }
-      }
+      initGrid();
     } catch (Exception e) {
-      // TODO: Handle this exception
-      throw new UnsupportedOperationException(e);
+      SceneUIWidget.createErrorDialog("Reset Grid Error", "Failed to reset the grid with reflection.", e);
     }
   }
 
@@ -242,8 +231,6 @@ public class SceneController {
    * @param <T> The type of the logic class
    */
   public <T extends Logic<?>> void resetParameters(Class<T> logicClass) {
-    ParameterRecord parameters = configInfo.myParameters();
-
     // Iterate over all methods in the class
     for (Method setterMethod : logicClass.getDeclaredMethods()) {
       String methodName = setterMethod.getName();
@@ -268,7 +255,7 @@ public class SceneController {
         minMethod = logicClass.getMethod("get" + paramName + "Min");
         maxMethod = logicClass.getMethod("get" + paramName + "Max");
       } catch (NoSuchMethodException e) {
-        // TODO: Handle this exception
+        SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter getter methods for: " + paramName, e);
       }
 
       // TODO: SET THE PARAMETER TOOL TIPS
@@ -280,11 +267,13 @@ public class SceneController {
           double max = 0;
           double defaultValue = 0;
           try {
+            assert minMethod != null;
             min = (double) minMethod.invoke(gameLogic);
+            assert maxMethod != null;
             max = (double) maxMethod.invoke(gameLogic);
             defaultValue = (double) getterMethod.invoke(gameLogic);
           } catch (Exception ex) {
-            // TODO: Handle this exception
+            SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter values for: " + paramName, ex);
           }
 
           // Create a consumer for UI updates
@@ -292,8 +281,7 @@ public class SceneController {
             try {
               setterMethod.invoke(gameLogic, v);
             } catch (Exception ex) {
-              // TODO: Handle this exception
-              ex.printStackTrace();
+              SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, ex);
             }
           };
 
@@ -303,9 +291,10 @@ public class SceneController {
           // Get the default value
           String defaultValue = "";
           try {
+            assert getterMethod != null;
             defaultValue = (String) getterMethod.invoke(gameLogic);
           } catch (Exception ex) {
-            // TODO: Handle this exception
+            SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter values for: " + paramName, ex);
           }
 
           // Create a consumer for UI updates
@@ -313,8 +302,7 @@ public class SceneController {
             try {
               setterMethod.invoke(gameLogic, v);
             } catch (Exception ex) {
-              // TODO: Handle this exception
-              ex.printStackTrace();
+              SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, ex);
             }
           };
 
@@ -322,8 +310,7 @@ public class SceneController {
           simulationScene.setParameter(defaultValue, paramName, "", consumer);
         }
       } catch (Exception e) {
-        // TODO: Handle this exception
-        throw new UnsupportedOperationException("Failed to set parameter: " + paramName, e);
+        SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, e);
       }
     }
   }
@@ -354,4 +341,14 @@ public class SceneController {
     return isPaused;
   }
 
+  /* PRIVATE HELPER METHODS */
+
+  private void initGrid() {
+    simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
+    for (int i = 0; i < grid.getNumRows(); i++) {
+      for (int j = 0; j < grid.getNumCols(); j++) {
+        simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
+      }
+    }
+  }
 }

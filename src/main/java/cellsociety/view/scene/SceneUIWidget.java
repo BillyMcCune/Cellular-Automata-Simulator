@@ -1,25 +1,26 @@
 package cellsociety.view.scene;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -34,6 +35,10 @@ public class SceneUIWidget {
   // UI constants
   public static final double MAX_ZOOM_RATE = 8.0;
   public static final double MIN_ZOOM_RATE = 0.2;
+
+  // CSS style sheet
+  public static final String WIDGET_STYLE_PATH = "/cellsociety/style/dark/widgetUI.css";
+  public static final String WIDGET_STYLE_SHEET = Objects.requireNonNull(SceneUIWidget.class.getResource(WIDGET_STYLE_PATH)).toExternalForm();
 
   /* UI WIDGETS */
 
@@ -83,7 +88,9 @@ public class SceneUIWidget {
 
     // Create min and max labels
     Label minLabel = new Label(minText + " ");
+    minLabel.getStyleClass().add("range-minmax");
     Label maxLabel = new Label(" " + maxText);
+    maxLabel.getStyleClass().add("range-minmax");
 
     // Create an HBox control
     HBox rangeControl = new HBox(5, speedLabel, textField, minLabel, slider, maxLabel);
@@ -161,13 +168,14 @@ public class SceneUIWidget {
 
     // Create the text input
     TextField textField = new TextField(defaultValue);
-    textField.getStyleClass().add("range-text-field");
+    textField.getStyleClass().add("range-text");
     textField.setAlignment(Pos.CENTER);
 
     // Restrict input to numbers, decimal point, and optional leading negative sign
     UnaryOperator<Change> filter = change -> {
       String newText = change.getControlNewText();
-      if (newText.matches("-?\\d*\\.?\\d*")) {
+      // Allow letters, digits, and special characters, but not Unicode characters (like Chinese)
+      if (newText.matches("[a-zA-Z0-9!\\\"#$%&'()*+,-./:;<=>?@[\\\\]^_`{|}~]*")) {
         return change;
       } else {
         return null;
@@ -296,11 +304,12 @@ public class SceneUIWidget {
   }
 
   /**
-   * Create a modal error dialog with a title and message.
-   * @param title the title of the error dialog
+   * Create a modal error dialog with a title, message, and exception details.
+   * @param title   the title of the error dialog
    * @param message the message to display in the dialog
+   * @param e       the exception to display (optional, can be null)
    */
-  public static void createErrorDialog(String title, String message) {
+  public static void createErrorDialog(String title, String message, Exception e) {
     Stage errorStage = new Stage();
     errorStage.setTitle(title);
     errorStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
@@ -313,20 +322,31 @@ public class SceneUIWidget {
     Label messageLabel = new Label(message);
     messageLabel.getStyleClass().add("error-message");
 
-    // Close button
-    Button closeButton = new Button("Close");
-    closeButton.setOnAction(e -> errorStage.close());
+    // Exception details (if available)
+    TextArea exceptionArea = new TextArea();
+    exceptionArea.setEditable(false);
+    exceptionArea.setWrapText(true);
+    exceptionArea.setPrefHeight(100);
+    if (e != null) {
+      // Convert stack trace to string
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      exceptionArea.setText(sw.toString());
+    } else {
+      exceptionArea.setText("No additional details available.");
+    }
 
     // Layout
-    VBox layout = new VBox(15, titleLabel, messageLabel, closeButton);
-    layout.setAlignment(Pos.CENTER);
+    VBox layout = new VBox(15, titleLabel, messageLabel, exceptionArea);
+    layout.setAlignment(Pos.TOP_CENTER);
     layout.setPadding(new Insets(20));
     layout.getStyleClass().add("error-container");
+    VBox.setVgrow(exceptionArea, Priority.ALWAYS);
 
     // Create scene
-    Scene scene = new Scene(layout, 300, 150);
-    scene.getStylesheets().add("styles.css"); // Optional: Load custom styles
-
+    Scene scene = new Scene(layout, 400, 300);
+    scene.getStylesheets().add(WIDGET_STYLE_SHEET);
     errorStage.setScene(scene);
 
     // Show the dialog and wait for the user to close it

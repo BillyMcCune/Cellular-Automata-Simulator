@@ -28,6 +28,8 @@ public class SceneRenderer {
   public static final String DEFAULT_CELL_COLORS_FILE = "cellsociety/property/CellColor.properties";
   public static final Map<String, Color> DEFAULT_CELL_COLORS = loadCellColorProperties();
 
+  /* PUBLIC METHODS */
+
   /**
    * Draw a grid on the given GridPane with the given number of rows and columns.
    * @param grid The grid to draw on
@@ -70,6 +72,7 @@ public class SceneRenderer {
     }
   }
 
+  /* PRIVATE HELPER METHODS */
 
   private static Map<String, Color> loadCellColorProperties() {
     Properties properties = new Properties();
@@ -86,12 +89,9 @@ public class SceneRenderer {
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      SceneUIWidget.createErrorDialog("Cell Color Error", "Failed to load cell color properties file:" + DEFAULT_CELL_COLORS_FILE, e);
     }
 
     return colorMap;
   }
-
-
-
 }
