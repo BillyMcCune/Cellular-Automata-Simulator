@@ -28,18 +28,4 @@ public record ConfigInfo(
     LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR
   }
 
-  /**
-   * Helper method to create a deep copy of a grid.
-   *
-   * @param inputGrid The original grid.
-   * @return A new grid with copies of each row.
-   */
-  private List<List<Integer>> createGridFromConfig(List<List<Integer>> inputGrid) {
-    List<List<Integer>> newGrid = new ArrayList<>();
-    for (List<Integer> row : inputGrid) {
-      newGrid.add(new ArrayList<>(row));
-    }
-    return newGrid;
-  }
-
 }
