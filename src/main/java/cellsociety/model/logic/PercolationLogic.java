@@ -18,7 +18,7 @@ public class PercolationLogic extends Logic<PercolationState> {
    * @param grid the grid representing the current state of the grid
    */
   public PercolationLogic(Grid<PercolationState> grid) {
-    super(grid);
+    super(grid, );
   }
 
   /**

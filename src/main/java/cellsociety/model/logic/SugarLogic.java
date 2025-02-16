@@ -10,7 +10,7 @@ public class SugarLogic extends Logic<SugarState> {
   private static List<Cell<SugarState>> agentCells;
 
   public SugarLogic(Grid<SugarState> grid) {
-    super(grid);
+    super(grid, );
   }
 
   @Override

@@ -11,7 +11,7 @@ public class SegregationLogic extends Logic<SegregationState> {
   private double satisfiedThreshold;
 
   public SegregationLogic(Grid<SegregationState> grid) {
-    super(grid);
+    super(grid, );
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();

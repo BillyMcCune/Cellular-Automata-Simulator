@@ -13,7 +13,7 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
   public BacteriaLogic(Grid<BacteriaState> grid) {
-    super(grid);
+    super(grid, );
   }
 
   public void setPercBeatingThreshold(double beatingThreshold) {

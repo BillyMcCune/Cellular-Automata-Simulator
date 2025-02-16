@@ -28,7 +28,7 @@ public class WatorLogic extends Logic<WatorState> {
    * @param grid The grid on which to run the Wa-Tor simulation.
    */
   public WatorLogic(Grid<WatorState> grid) {
-    super(grid);
+    super(grid, );
     initializePropertyMaps();
     List<List<Cell<WatorState>>> cellStates = getAllCellStates();
     sharkCells = cellStates.get(0);

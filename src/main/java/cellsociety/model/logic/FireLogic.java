@@ -13,7 +13,7 @@ public class FireLogic extends Logic<FireState> {
   private double probTree;
 
   public FireLogic(Grid<FireState> grid) {
-    super(grid);
+    super(grid, );
   }
 
   public void setProbCatch(double percentCatch) {
