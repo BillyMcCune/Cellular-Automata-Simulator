@@ -1,0 +1,30 @@
+/* Docker */
+.docker {
+  -fx-background-color: #2c2c2c; /* Dark background */
+  -fx-border-color: #444444; /* Lighter dark border */
+  -fx-border-width: 1;
+  -fx-border-radius: 5;
+  -fx-padding: 10;
+}
+
+/* Dock-able Window */
+.dock-window {
+  -fx-background-color: #333333; /* Darker background */
+  -fx-border-color: #555555; /* Lighter dark border */
+  -fx-border-width: 1;
+}
+
+/* Dock Indicator */
+.dock-indicator {
+  -fx-background-color: rgba(0, 0, 255, 0.5); /* Semi-transparent blue */
+  -fx-border-color: #888888; /* Lighter border */
+  -fx-border-width: 2;
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #ffffff; /* White text for contrast */
+}
+
+.dock-indicator:hover {
+  -fx-background-color: rgba(255, 255, 0, 0.5); /* Semi-transparent yellow */
+  -fx-text-fill: #000000; /* Black text on hover */
+}

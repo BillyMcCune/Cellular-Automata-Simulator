@@ -1,0 +1,117 @@
+/* Root */
+.root {
+  -fx-padding: 1px;
+  -fx-background-color: #2e2e2e; /* Dark background for the root */
+}
+
+/* Control Button */
+.controls-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #ffffff; /* White text for better contrast */
+}
+
+.controls-box {
+  -fx-border-color: #444444; /* Darker border */
+  -fx-padding: 5px;
+  -fx-background-color: #333333; /* Dark background for the control box */
+}
+
+.button {
+  -fx-text-fill: #ffffff; /* White text */
+  -fx-alignment: center;
+  -fx-font-weight: bold;
+  -fx-background-insets: 0,1,2;
+  -fx-background-radius: 3,2,1;
+}
+
+/* Start Button */
+.start-button {
+  -fx-background-color: #388E3C; /* Darker green for start button */
+}
+.start-button:hover {
+  -fx-background-color: derive(#388E3C, 15%);
+}
+.start-button:pressed {
+  -fx-background-color: derive(#388E3C, -15%);
+}
+
+/* Pause Button */
+.pause-button {
+  -fx-background-color: #FFC107; /* Keep yellow for pause button */
+}
+.pause-button:hover {
+  -fx-background-color: derive(#FFC107, 15%);
+}
+.pause-button:pressed {
+  -fx-background-color: derive(#FFC107, -15%);
+}
+
+/* Reset Button */
+.reset-button {
+  -fx-background-color: #F44336; /* Keep red for reset button */
+}
+.reset-button:hover {
+  -fx-background-color: derive(#F44336, 15%);
+}
+.reset-button:pressed {
+  -fx-background-color: derive(#F44336, -15%);
+}
+
+/* Load Button */
+.load-button {
+  -fx-background-color: #2196F3; /* Keep blue for load button */
+}
+.load-button:hover {
+  -fx-background-color: derive(#2196F3, 15%);
+}
+.load-button:pressed {
+  -fx-background-color: derive(#2196F3, -15%);
+}
+
+/* Save Button */
+.save-button {
+  -fx-background-color: #FF9800; /* Keep orange for save button */
+}
+.save-button:hover {
+  -fx-background-color: derive(#FF9800, 15%);
+}
+.save-button:pressed {
+  -fx-background-color: derive(#FF9800, -15%);
+}
+
+/* Directory Button */
+.directory-button {
+  -fx-background-color: #9E9E9E; /* Keep gray for directory button */
+}
+.directory-button:hover {
+  -fx-background-color: derive(#9E9E9E, 15%);
+}
+.directory-button:pressed {
+  -fx-background-color: derive(#9E9E9E, -15%);
+}
+
+/* Information */
+.info-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #ffffff; /* White text */
+}
+
+.info-box {
+  -fx-border-color: #444444; /* Darker border for info box */
+  -fx-padding: 5px;
+  -fx-background-color: #333333; /* Dark background for info box */
+}
+
+.info-text {
+  -fx-alignment: CENTER_LEFT;
+  -fx-font-size: 16px;
+  -fx-text-fill: #ffffff; /* White text for info text */
+}
+
+.info-container {
+  -fx-padding: 10px, 5px;
+  -fx-background-color: #424242; /* Darker background */
+  -fx-border-color: #555555; /* Darker border */
+}

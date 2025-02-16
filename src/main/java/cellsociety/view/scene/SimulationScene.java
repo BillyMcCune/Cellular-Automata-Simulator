@@ -6,16 +6,12 @@ import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.TextFormatter.Change;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -30,7 +26,9 @@ public class SimulationScene {
   public static final double DEFAULT_WIDTH = 1200;
   public static final double DEFAULT_HEIGHT = 700;
 
-  public static final String STYLE_PATH = "/cellsociety/style/style.css";
+  // CSS style path
+  public static final String SCENE_STYLE_PATH = "/cellsociety/style/dark/scene.css";
+  public static final String SCENE_STYLE_SHEET = Objects.requireNonNull(SimulationScene.class.getResource(SCENE_STYLE_PATH)).toExternalForm();
 
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
@@ -74,7 +72,7 @@ public class SimulationScene {
     // Create the UI components
     Pane gridParent = createGrid();
     ScrollPane controls = createControls();
-    ScrollPane infoLabel = createInfoLabel();
+    ScrollPane infoLabel = createInfoPanel();
     ScrollPane parameterPanel = createParameterPanel();
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
@@ -86,7 +84,8 @@ public class SimulationScene {
     docker.reformat();
 
     // Set the scene style
-    primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
+    primaryStage.getScene().getStylesheets().add(SCENE_STYLE_SHEET);
+    primaryStage.getScene().getStylesheets().add(SceneUIWidget.WIDGET_STYLE_SHEET);
   }
 
   public void start(int framesPerSecond) {
@@ -200,7 +199,7 @@ public class SimulationScene {
     return SceneUIWidget.createContainerUI(controlsBox, "Controls");
   }
 
-  private ScrollPane createInfoLabel() {
+  private ScrollPane createInfoPanel() {
     infoText = new Label();
     infoText.getStyleClass().add("info-text");
     infoText.setWrapText(true);  // Prevent text from wrapping

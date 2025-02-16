@@ -2,7 +2,9 @@ package cellsociety.view.docking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -22,6 +24,9 @@ import javafx.stage.StageStyle;
 public class Docker {
   // Constants
   private static final int DOCK_OUTSIDE_OFFSET = 10;
+
+  private static final String DOCKING_STYLE_PATH = "/cellsociety/style/dark/docking.css";
+  private static final String DOCKING_STYLE_SHEET = Objects.requireNonNull(Docker.class.getResource(DOCKING_STYLE_PATH)).toExternalForm();
 
   // Instance variables
   private final List<SplitPane> splitPanes = new ArrayList<>();
@@ -52,15 +57,16 @@ public class Docker {
 
     SplitPane splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
-    splitPane.setStyle("-fx-background-color: gray;");
     splitPanes.add(splitPane);
 
     // Set the main stage's scene
     Scene mainScene = new Scene(splitPane, mainStage.getWidth(), mainStage.getHeight());
     mainStage.setScene(mainScene);
+    mainScene.getStylesheets().add(DOCKING_STYLE_SHEET);
 
     // Create the dock indicator
     this.dockIndicator = new DIndicator(this);
+    dockIndicator.indicatorStage.getScene().getStylesheets().add(DOCKING_STYLE_SHEET);
 
     // Set the main stage's event listeners
     mainStage.setOnCloseRequest(event -> {

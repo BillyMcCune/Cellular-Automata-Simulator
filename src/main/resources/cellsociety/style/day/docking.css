@@ -1,0 +1,29 @@
+
+/* Docker */
+.docker {
+  -fx-background-color: #f0f0f0;
+  -fx-border-color: #d0d0d0;
+  -fx-border-width: 1;
+  -fx-border-radius: 5;
+  -fx-padding: 10;
+}
+
+/* Dock-able Window */
+.dock-window {
+  -fx-background-color: #f0f0f0;
+  -fx-border-color: #d0d0d0;
+  -fx-border-width: 1;
+}
+
+/* Dock Indicator */
+.dock-indicator {
+  -fx-background-color: rgba(0, 0, 255, 0.5);
+  -fx-border-color: black;
+  -fx-border-width: 2;
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+}
+
+.dock-indicator:hover {
+  -fx-background-color: yellow;
+}

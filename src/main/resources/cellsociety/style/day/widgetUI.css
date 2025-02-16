@@ -1,0 +1,67 @@
+
+/* Range Slider */
+.range-label {
+  -fx-font-weight: bold;
+}
+
+.range-minmax {
+  -fx-font-size: 12px;
+}
+
+.range-text-field {
+  -fx-pref-width: 55px;
+  -fx-background-color: #f3f3f3;
+  -fx-border-color: #838383;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.range-text {
+  -fx-background-color: #f3f3f3;
+  -fx-border-color: #838383;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.range-control {
+  -fx-padding: 5px;
+  -fx-background-color: #f3f3f3;
+  -fx-border-color: #838383;
+}
+
+/* Drag and Zoom Pane */
+
+.content-pane {
+  -fx-background-color: #AEAEAE;
+  -fx-border-color: black;
+}
+
+/* Container */
+
+.container-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.container-container {
+  -fx-padding: 10px, 5px;
+  -fx-background-color: #e3e3e3;
+  -fx-border-color: #afafaf;
+}
+
+/* Error */
+
+.error-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.error-message {
+  -fx-font-weight: bold;
+}
+
+.error-container {
+  -fx-padding: 10px, 5px;
+  -fx-background-color: #e3e3e3;
+  -fx-border-color: #afafaf;
+}

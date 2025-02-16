@@ -41,10 +41,8 @@ public class DIndicator {
     indicatorStage = new Stage();
     indicatorStage.initStyle(StageStyle.UNDECORATED);
     indicatorStage.setAlwaysOnTop(true);
-    StackPane dockRoot = new StackPane(new Label("⚓") {{
-      setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-    }});
-    dockRoot.setStyle("-fx-background-color: rgba(0, 0, 255, 0.5); -fx-border-color: black; -fx-border-width: 2;");
+    StackPane dockRoot = new StackPane(new Label("⚓"));
+    dockRoot.getStyleClass().add("dock-indicator");
     Scene dockScene = new Scene(dockRoot, DOCK_INDICATOR_WIDTH, DOCK_INDICATOR_HEIGHT);
     indicatorStage.setScene(dockScene);
     indicatorStage.setOpacity(0);
@@ -71,7 +69,6 @@ public class DIndicator {
 
         // Set the style of the dock indicator
         indicatorStage.setOpacity(1);
-        setIndicatorHighlight(isMouseInsideIndicator(mouseX, mouseY));
       }
     } else {
       // Get the midpoints of the edges of the TabPane
@@ -82,7 +79,6 @@ public class DIndicator {
 
       // Set the style of the dock indicator
       indicatorStage.setOpacity(1);
-      setIndicatorHighlight(isMouseInsideIndicator(mouseX, mouseY));
     }
 
     // Show the dock indicator
@@ -126,14 +122,6 @@ public class DIndicator {
     // Update the position of the dock indicator
     indicatorStage.setX(newX - indicatorStage.getWidth() / 2);
     indicatorStage.setY(newY - indicatorStage.getHeight() / 2);
-  }
-
-  void setIndicatorHighlight(boolean isHighlighted) {
-    if (isHighlighted) {
-      indicatorStage.getScene().getRoot().setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 2;");
-    } else {
-      indicatorStage.getScene().getRoot().setStyle("-fx-background-color: rgba(0, 0, 255, 0.5); -fx-border-color: black; -fx-border-width: 2;");
-    }
   }
 
   boolean isMouseInsideIndicator(double mouseX, double mouseY) {

@@ -3,58 +3,6 @@
   -fx-background-color: #b8b8b8;
 }
 
-/* Title */
-
-.title-label {
-  -fx-font-size: 20px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #333333;
-}
-
-/* Grid */
-
-.grid-pane {
-  -fx-background-color: #AEAEAE;
-  -fx-border-color: black;
-}
-
-/* Parameter */
-
-.parameter-title {
-  -fx-font-size: 18px;
-  -fx-font-weight: bold;
-}
-
-.parameter-label {
-  -fx-font-weight: bold;
-}
-
-.parameter-text-field {
-  -fx-pref-width: 55px;
-  -fx-background-color: #f3f3f3;
-  -fx-border-color: #838383;
-  -fx-border-radius: 5px;
-  -fx-background-radius: 5px;
-}
-
-.parameter-box {
-  -fx-border-color: #cccccc;
-  -fx-padding: 5px;
-  -fx-background-color: #d3d3d3;
-}
-
-.parameter-container {
-  -fx-padding: 10px, 5px;
-  -fx-background-color: #e3e3e3;
-  -fx-border-color: #afafaf;
-}
-
-.parameter-control {
-  -fx-padding: 5px;
-  -fx-background-color: #f3f3f3;
-  -fx-border-color: #838383;
-}
-
 /* Control Button */
 
 .controls-title {
@@ -148,11 +96,6 @@
 
 /* Information */
 
-.info-title {
-  -fx-font-size: 18px;
-  -fx-font-weight: bold;
-}
-
 .info-box {
   -fx-border-color: #cccccc;
   -fx-padding: 5px;
@@ -162,10 +105,4 @@
 .info-text {
   -fx-alignment: CENTER_LEFT;
   -fx-font-size: 16px;
-}
-
-.info-container {
-  -fx-padding: 10px, 5px;
-  -fx-background-color: #e3e3e3;
-  -fx-border-color: #afafaf;
 }
