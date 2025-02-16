@@ -1,41 +1,507 @@
+<?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>WATOR</type>
+  
+  
   <title>Shark Extinction</title>
+  
+  
   <author>Billy McCune</author>
+  
+  
   <description> A Wa-Tor Simulation with just sharks.</description>
+  
+  
   <parameters>
-    <baseSharkEnergy>5</baseSharkEnergy>
-    <fishEnergyGain>2</fishEnergyGain>
-    <sharkReproductionTime>3</sharkReproductionTime>
-    <fishReproductionTime>2</fishReproductionTime>
+
+
+    <doubleParameter name="baseSharkEnergy">5</doubleParameter>
+    <doubleParameter name="fishEnergyGain">2</doubleParameter>
+    <doubleParameter name="sharkReproductionTime">3</doubleParameter>
+    <doubleParameter name="fishReproductionTime">2</doubleParameter>
+    
+  
   </parameters>
+  
+  
   <width>20</width>
+  
+  
   <height>20</height>
+  
+  
   <defaultSpeed>1</defaultSpeed>
-  <initialStates>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-    <row>2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</row>
-  </initialStates>
+  
+  
+  <initialCells>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="2"/>
+    </row>
+  </initialCells>
   <acceptedStates>
     0 1 2
   </acceptedStates>
+  
+
 </simulation>

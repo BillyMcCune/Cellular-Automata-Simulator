@@ -6,20 +6,27 @@ import cellsociety.model.data.states.State;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Abstract base class that calculates the neighbors for a (row, col) in a Grid.
+ */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
+
   protected abstract int[][] getDirections();
 
-  public Map<String, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    Map<String, Cell<T>> neighbors = new HashMap<>();
+  /**
+   * Returns a map from a Coord record (row,col) to the neighbor Cell<T>.
+   */
+  public Map<Coord, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
+    Map<Coord, Cell<T>> neighbors = new HashMap<>();
     for (int[] dir : getDirections()) {
-      int numRow = row + dir[0];
-      int numCol = col + dir[1];
-      if (numRow >= 0 && numRow < grid.getNumRows()
-          && numCol >= 0 && numCol < grid.getNumCols()) {
-        neighbors.put(numRow + " " + numCol, grid.getCell(numRow, numCol));
+      int nr = row + dir[0];
+      int nc = col + dir[1];
+      if (nr >= 0 && nr < grid.getNumRows()
+          && nc >= 0 && nc < grid.getNumCols()) {
+        Coord coord = new Coord(nr, nc);
+        neighbors.put(coord, grid.getCell(nr, nc));
       }
     }
     return neighbors;
   }
 }
-

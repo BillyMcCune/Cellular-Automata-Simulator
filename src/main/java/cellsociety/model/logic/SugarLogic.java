@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SugarState;
@@ -9,8 +10,8 @@ public class SugarLogic extends Logic<SugarState> {
   private static List<Cell<SugarState>> sugarCells;
   private static List<Cell<SugarState>> agentCells;
 
-  public SugarLogic(Grid<SugarState> grid) {
-    super(grid);
+  public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
   }
 
   @Override

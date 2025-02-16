@@ -1,25 +1,250 @@
+<?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>FIRE</type>
+  
+  
   <title>Trees</title>
+  
+  
   <author>Billy</author>
+  
+  
   <description>Just a lot of trees.</description>
+  
+  
   <parameters>
-    <probCatch>50</probCatch>
+
+    <doubleParameter name="probCatch">50</doubleParameter>
+    <doubleParameter name="progIgnite">5</doubleParameter>
+    <doubleParameter name="probTree">10</doubleParameter>
+
   </parameters>
+  
+  
   <width>24</width>
+  
+  
   <height>8</height>
+  
+  
   <defaultSpeed>10</defaultSpeed>
-  <initialStates>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-    <row>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</row>
-  </initialStates>
+  
+  
+  <initialCells>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+  </initialCells>
   <acceptedStates>
     0 1 2
   </acceptedStates>
+  
+
 </simulation>

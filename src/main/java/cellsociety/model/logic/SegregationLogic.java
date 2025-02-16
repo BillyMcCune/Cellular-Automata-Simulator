@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SegregationState;
@@ -8,10 +9,10 @@ import java.util.ArrayList;
 public class SegregationLogic extends Logic<SegregationState> {
 
   private final ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
-  private static double satisfiedThreshold;
+  private double satisfiedThreshold;
 
-  public SegregationLogic(Grid<SegregationState> grid) {
-    super(grid);
+  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
@@ -26,8 +27,12 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
   }
 
-  public static void setSatisfiedThreshold(double percSatisfiedThreshold) {
-    SegregationLogic.satisfiedThreshold = percSatisfiedThreshold/100;
+  public void setSatisfiedThreshold(double percSatisfiedThreshold) {
+    satisfiedThreshold = percSatisfiedThreshold/100;
+  }
+
+  public double getSatisfiedThreshold() {
+    return satisfiedThreshold;
   }
 
   @Override

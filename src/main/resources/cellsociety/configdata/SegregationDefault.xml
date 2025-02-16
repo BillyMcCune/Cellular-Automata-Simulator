@@ -1,22 +1,101 @@
+<?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>SEGREGATION</type>
+  
+  
   <title>Default Segregation Simulation</title>
+  
+  
   <author>Billy</author>
+  
+  
   <description>A default version of the segregation simulation.</description>
+  
+  
   <parameters>
-    <satisfiedThreshold>50</satisfiedThreshold>
+
+    <doubleParameter name="satisfiedThreshold">50</doubleParameter>
+    
+  
   </parameters>
+  
+  
   <width>10</width>
+  
+  
   <height>5</height>
+  
+  
   <defaultSpeed>1</defaultSpeed>
-  <initialStates>
-    <row>0 1 1 0 0 1 0 2 0 0</row>
-    <row>0 0 2 2 1 2 1 1 1 0</row>
-    <row>0 0 1 0 1 1 1 1 2 1</row>
-    <row>0 0 2 0 1 0 1 0 0 0</row>
-    <row>2 0 0 0 2 0 0 1 0 0</row>
-  </initialStates>
+  
+  
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="1"/>
+      <cell state="2"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="2"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
   <acceptedStates>
     0 1 2
   </acceptedStates>
+  
+
 </simulation>

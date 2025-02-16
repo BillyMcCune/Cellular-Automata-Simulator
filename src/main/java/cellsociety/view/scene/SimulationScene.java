@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -79,6 +78,7 @@ public class SimulationScene {
     ScrollPane controls = createControls();
     ScrollPane infoLabel = createInfoLabel();
     ScrollPane parameterPanel = createParameterPanel();
+
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
@@ -93,21 +93,15 @@ public class SimulationScene {
   }
 
   /**
-   * Method to start the game loop with the given frames per second
-   * @param framesPerSecond the number of frames per second
+   * Method to update the grid with the new state of the simulation
+   * @param elapsedTime the time elapsed since the last update
    */
-  public void start(int framesPerSecond) {
-    // Set up the game loop
-    Timeline timeline = new Timeline();
-    timeline.setCycleCount(Timeline.INDEFINITE);
-    timeline.getKeyFrames().add(new javafx.animation.KeyFrame(
-        javafx.util.Duration.seconds(1.0 / framesPerSecond),
-        event -> step(1.0 / framesPerSecond)
-    ));
-    timeline.play();
-
-    // Show the primary stage
-    primaryStage.show();
+  public void step(double elapsedTime) {
+    timeSinceLastUpdate += elapsedTime;
+    if (timeSinceLastUpdate >= updateInterval) {
+      controller.update();
+      timeSinceLastUpdate = 0.0;
+    }
   }
 
   /* PRIVATE UI SETUP METHODS */
@@ -196,9 +190,9 @@ public class SimulationScene {
     return scrollPane;
   }
 
-  private <T extends Number> HBox createParameter(double min, double max, T defaultValue, String label, String tooltip, Consumer<T> callback) {
+  private HBox createParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
     // Create the slider
-    Slider slider = new Slider(min, max, defaultValue.doubleValue());
+    Slider slider = new Slider(min, max, defaultValue);
     slider.setMaxWidth(Double.MAX_VALUE);
 
     // Create the label with tooltip
@@ -210,15 +204,9 @@ public class SimulationScene {
     String defaultText;
     String minText;
     String maxText;
-    if (defaultValue instanceof Integer) {
-      defaultText = String.format("%d", defaultValue.intValue());
-      minText = String.format("%d", (int) min);
-      maxText = String.format("%d", (int) max);
-    } else {
-      defaultText = String.format("%.1f", defaultValue.doubleValue());
-      minText = String.format("%.1f", min);
-      maxText = String.format("%.1f", max);
-    }
+    defaultText = String.format("%.1f", defaultValue);
+    minText = String.format("%.1f", min);
+    maxText = String.format("%.1f", max);
 
     // Create the text input
     TextField textField = new TextField(defaultText);
@@ -248,22 +236,11 @@ public class SimulationScene {
 
     // Add slider listener
     slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-      T typedValue;
-      if (defaultValue instanceof Integer || defaultValue instanceof Short || defaultValue instanceof Byte || defaultValue instanceof Long) {
-        typedValue = (T) Integer.valueOf(newValue.intValue());
-      } else {
-        typedValue = (T) Double.valueOf(newValue.doubleValue());
-      }
-
       // Update the text field with the formatted value
-      textField.setText(
-          (typedValue instanceof Integer)
-              ? String.format("%d", typedValue.intValue())
-              : String.format("%.1f", typedValue.doubleValue())
-      );
+      textField.setText(String.format("%.1f", newValue.doubleValue()));
 
       // Trigger callback
-      callback.accept(typedValue);
+      callback.accept(newValue.doubleValue());
     });
 
     // Add text listener
@@ -280,33 +257,19 @@ public class SimulationScene {
             newValue = max;
           }
 
-          T typedValue;
-          if (defaultValue instanceof Integer) {
-            typedValue = (T) Integer.valueOf((int) newValue);
-          } else {
-            typedValue = (T) Double.valueOf(newValue);
-          }
-
           // Sync the slider value with the text field value
           slider.setValue(newValue);
 
           // Trigger callback
-          callback.accept(typedValue);
+          callback.accept(newValue);
 
           // Update the text field to reflect the new value
-          textField.setText(
-              (typedValue instanceof Integer)
-                  ? String.format("%d", typedValue.intValue())
-                  : String.format("%.1f", typedValue.doubleValue())
+          textField.setText(String.format("%.1f", newValue)
           );
         } catch (NumberFormatException e) {
           // Reset text field to slider value if invalid input
           double sliderValue = slider.getValue();
-          textField.setText(
-              (defaultValue instanceof Integer)
-                  ? String.format("%d", (int) sliderValue)
-                  : String.format("%.1f", sliderValue)
-          );
+          textField.setText(String.format("%.1f", sliderValue));
         }
       }
     });
@@ -315,11 +278,45 @@ public class SimulationScene {
     textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) { // When focus is lost
         double sliderValue = slider.getValue();
-        textField.setText(
-            (defaultValue instanceof Integer)
-                ? String.format("%d", (int) sliderValue)
-                : String.format("%.1f", sliderValue)
-        );
+        textField.setText(String.format("%.1f", sliderValue));
+      }
+    });
+
+    // Call the callback with the default value
+    callback.accept(defaultValue);
+
+    return parameterControl;
+  }
+
+  private HBox createParameter(String defaultValue, String label, String tooltip, Consumer<String> callback) {
+    // Create the label with tooltip
+    Label labelComponent = new Label(label + ": ");
+    labelComponent.getStyleClass().add("parameter-label");
+    labelComponent.setTooltip(new Tooltip(tooltip));
+
+    // Create the text input
+    TextField textField = new TextField(defaultValue);
+    textField.getStyleClass().add("parameter-text-field");
+    textField.setAlignment(Pos.CENTER);
+
+    // Create an HBox control
+    HBox parameterControl = new HBox(5, labelComponent, textField);
+    parameterControl.setAlignment(Pos.CENTER);
+    parameterControl.getStyleClass().add("parameter-control");
+
+    // Add text listener
+    textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode().toString().equals("ENTER")) {
+        String newValue = textField.getText();
+        callback.accept(newValue);
+      }
+    });
+
+    // Add text focus listener
+    textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue) { // When focus is lost
+        String textValue = textField.getText();
+        callback.accept(textValue);
       }
     });
 
@@ -471,7 +468,7 @@ public class SimulationScene {
     controller.getAllConfigFileNames();
 
     // Set all the config file names to the dropdown
-    String[] items = (controller.getAllConfigFileNames().toArray(new String[0]));
+    String[] items = controller.getAllConfigFileNames().stream().sorted().toArray(String[]::new);
     selectType.getItems().clear();
     selectType.getItems().addAll(items);
   }
@@ -563,19 +560,23 @@ public class SimulationScene {
    * @param tooltip the tooltip of the parameter
    * @param callback the callback function of the parameter
    */
-  public <T extends Number> void setParameter(String label, double min, double max, T defaultValue, String tooltip, Consumer<T> callback) {
+  public void setParameter(String label, double min, double max, double defaultValue, String tooltip, Consumer<Double> callback) {
     parameterBox.getChildren().add(createParameter(min, max, defaultValue, label, tooltip, callback));
   }
 
-  /* PRIVATE METHODS */
-
-  private void step(double elapsedTime) {
-    timeSinceLastUpdate += elapsedTime;
-    if (timeSinceLastUpdate >= updateInterval) {
-      controller.update();
-      timeSinceLastUpdate = 0.0;
-    }
+  /**
+   * Set the parameter with the given default value, label, tooltip, and callback
+   * @param defaultValue the default value of the parameter
+   * @param label the label of the parameter
+   * @param tooltip the tooltip of the parameter
+   * @param callback the callback function of the parameter
+   */
+  public void setParameter(String defaultValue, String label, String tooltip, Consumer<String> callback) {
+    parameterBox.getChildren().add(createParameter(defaultValue, label, tooltip, callback));
   }
+
+
+  /* PRIVATE UI HELPER METHODS */
 
   private void toggleStartPauseButton(boolean isPause) {
     if (isPause) {

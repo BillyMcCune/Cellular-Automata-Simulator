@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,131 +15,195 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
- * @author Billy McCune Purpose: Assumptions: Dependecies (classes or packages): How to Use: Any
- * Other Details:
+ * Updated ConfigWriter that outputs the new XML format.
+ * <p>
+ * The format includes:
+ * <ul>
+ *   <li><code>&lt;simulation&gt;</code> as the root element</li>
+ *   <li><code>&lt;type&gt;</code>, <code>&lt;title&gt;</code>, <code>&lt;author&gt;</code>, and <code>&lt;description&gt;</code></li>
+ *   <li><code>&lt;parameters&gt;</code> with nested <code>&lt;doubleParameter&gt;</code> and <code>&lt;stringParameter&gt;</code> elements</li>
+ *   <li><code>&lt;width&gt;</code> and <code>&lt;height&gt;</code> for grid dimensions</li>
+ *   <li><code>&lt;defaultSpeed&gt;</code></li>
+ *   <li><code>&lt;initialCells&gt;</code> containing rows of <code>&lt;cell&gt;</code> elements with attributes</li>
+ *   <li><code>&lt;acceptedStates&gt;</code> as a space–separated list</li>
+ * </ul>
  */
 public class ConfigWriter {
 
-  private static final String DEFAULT_CONFIG_FOLDER = System.getProperty("user.dir") +
-      "/src/main/resources/cellsociety/SimulationConfigurationData";
+  private static final String DEFAULT_CONFIG_FOLDER = System.getProperty("user.dir")
+      + "/src/main/resources/cellsociety/SimulationConfigurationData";
   private ConfigInfo myConfigInfo;
-  private Document myCurrentxmlDocument;
+  private Document myCurrentXmlDocument;
 
   public ConfigWriter() {
-    myConfigInfo = ConfigInfo.createInstance();
   }
 
-  public void saveCurrentConfig(ConfigInfo myNewConfigInfo)throws ParserConfigurationException {
+  /**
+   * Saves the current configuration to an XML file at the given path.
+   *
+   * @param myNewConfigInfo the configuration info to save
+   * @param path the directory where the XML file will be saved
+   * @throws ParserConfigurationException if an error occurs during document creation
+   */
+  public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
+      throws Exception {
     myConfigInfo = myNewConfigInfo;
     Document xmlDocument = createXMLDocument();
-    File outputFile = createOutputFile();
-    assert xmlDocument != null;
+    File outputFile = createOutputFile(path);
     populateXMLDocument(xmlDocument);
     writeXMLDocument(xmlDocument, outputFile);
   }
 
-
   private Document createXMLDocument() throws ParserConfigurationException {
-    Document xmlDocument;
     try {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-      xmlDocument = docBuilder.newDocument();
+      return docBuilder.newDocument();
     } catch (ParserConfigurationException e) {
-      // handle the exception more robustly in real code
-      throw new ParserConfigurationException();
+      throw new ParserConfigurationException("Error creating XML document: " + e.getMessage());
     }
-    return xmlDocument;
   }
 
+  /**
+   * Populates the XML document with the configuration data.
+   */
   private void populateXMLDocument(Document xmlDocument) {
     Element rootElement = xmlDocument.createElement("simulation");
-    xmlDocument.appendChild(rootElement);  // Ensure the root element is added
+    xmlDocument.appendChild(rootElement);
+
+    Element typeElement = xmlDocument.createElement("type");
+    typeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myType().toString()));
+    rootElement.appendChild(typeElement);
+
+    Element titleElement = xmlDocument.createElement("title");
+    titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myTitle()));
+    rootElement.appendChild(titleElement);
+
+    Element authorElement = xmlDocument.createElement("author");
+    authorElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myAuthor()));
+    rootElement.appendChild(authorElement);
 
     Element descriptionElement = xmlDocument.createElement("description");
-    Element titleElement = xmlDocument.createElement("title");
-    Element authorElement = xmlDocument.createElement("author");
-    Element gridWidthElement = xmlDocument.createElement("gridWidth");
-    Element gridHeightElement = xmlDocument.createElement("gridHeight");
-    Element defaultSpeedElement = xmlDocument.createElement("defaultSpeed");
-    Element initialStatesElement = xmlDocument.createElement("initialStates");
-
-    titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getTitle()));
-    authorElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getAuthor()));
-    descriptionElement.appendChild(xmlDocument.createTextNode(myConfigInfo.getDescription()));
-    gridHeightElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getWidth())));
-    gridWidthElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getHeight())));
-    defaultSpeedElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.getSpeed())));
-
-    rootElement.appendChild(titleElement);
-    rootElement.appendChild(authorElement);
+    descriptionElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myDescription()));
     rootElement.appendChild(descriptionElement);
-    rootElement.appendChild(gridWidthElement);
-    rootElement.appendChild(gridHeightElement);
+
+    Element parametersElement = xmlDocument.createElement("parameters");
+    addParametersElements(parametersElement, myConfigInfo.myParameters(), xmlDocument);
+    rootElement.appendChild(parametersElement);
+
+    Element widthElement = xmlDocument.createElement("width");
+    widthElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridWidth())));
+    rootElement.appendChild(widthElement);
+
+    Element heightElement = xmlDocument.createElement("height");
+    heightElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridHeight())));
+    rootElement.appendChild(heightElement);
+
+    Element defaultSpeedElement = xmlDocument.createElement("defaultSpeed");
+    defaultSpeedElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myTickSpeed())));
     rootElement.appendChild(defaultSpeedElement);
-    rootElement.appendChild(initialStatesElement);
-    addInitialGridElements(initialStatesElement,myConfigInfo.getGrid(),xmlDocument);
+
+    Element initialCellsElement = xmlDocument.createElement("initialCells");
+    addInitialCellsElements(initialCellsElement, myConfigInfo.myGrid(), xmlDocument);
+    rootElement.appendChild(initialCellsElement);
+
+    Element acceptedStatesElement = xmlDocument.createElement("acceptedStates");
+    String acceptedStatesText = myConfigInfo.acceptedStates().stream()
+        .map(String::valueOf)
+        .collect(Collectors.joining(" "));
+    acceptedStatesElement.appendChild(xmlDocument.createTextNode(acceptedStatesText));
+    rootElement.appendChild(acceptedStatesElement);
   }
 
-  private void addInitialGridElements(Element initialStatesElement, List<List<Integer>> grid,
-      Document xmlDocument) {
-    StringBuilder rowString;
-    for (List<Integer> row : grid) {
-      Element rowElement = null;
-      rowString = new StringBuilder();
-      for (Integer i : row) {
-        rowString.append(i).append(" ");
-      }
-      System.out.println(rowString);
-      rowElement = xmlDocument.createElement("row");
-      rowElement.appendChild(xmlDocument.createTextNode(rowString.toString().toString().trim()));
-      initialStatesElement.appendChild(rowElement);
+  /**
+   * Adds parameter elements as children of the given parametersElement.
+   * For each double parameter, creates a <doubleParameter name="...">value</doubleParameter> element,
+   * and for each string parameter, creates a <stringParameter name="...">value</stringParameter> element.
+   *
+   * @param parametersElement the XML element to which parameter elements are added
+   * @param params the ParameterRecord holding the parameters
+   * @param xmlDocument the XML document being built
+   */
+  private void addParametersElements(Element parametersElement,
+      ParameterRecord params, Document xmlDocument) {
+    Map<String, Double> doubleParams = params.myDoubleParameters();
+    Map<String, String> stringParams = params.myStringParameters();
+
+    for (Map.Entry<String, Double> entry : doubleParams.entrySet()) {
+      Element doubleParamElement = xmlDocument.createElement("doubleParameter");
+      doubleParamElement.setAttribute("name", entry.getKey());
+      doubleParamElement.appendChild(xmlDocument.createTextNode(String.valueOf(entry.getValue())));
+      parametersElement.appendChild(doubleParamElement);
+    }
+    for (Map.Entry<String, String> entry : stringParams.entrySet()) {
+      Element stringParamElement = xmlDocument.createElement("stringParameter");
+      stringParamElement.setAttribute("name", entry.getKey());
+      stringParamElement.appendChild(xmlDocument.createTextNode(entry.getValue()));
+      parametersElement.appendChild(stringParamElement);
     }
   }
 
-  private File createOutputFile() {
-    String baseFilename = myConfigInfo.getTitle().replaceAll(" ","") + "Save";
-    String fileExtension = ".xml";
+  /**
+   * Adds the grid (initial cells) to the document.
+   * Each row in the grid becomes a <row> element containing one or more <cell> elements.
+   * Each <cell> element has a required "state" attribute and additional properties if available.
+   *
+   * @param initialCellsElement the XML element to which rows are added
+   * @param grid the grid of cells (List of List of CellRecord)
+   * @param xmlDocument the XML document being built
+   */
+  private void addInitialCellsElements(Element initialCellsElement,
+      List<List<CellRecord>> grid, Document xmlDocument) {
+    for (List<CellRecord> row : grid) {
+      Element rowElement = xmlDocument.createElement("row");
+      for (CellRecord cell : row) {
+        Element cellElement = xmlDocument.createElement("cell");
+        cellElement.setAttribute("state", String.valueOf(cell.state()));
 
-    File configDirectory = new File(DEFAULT_CONFIG_FOLDER);
+        for (Map.Entry<String, Double> property : cell.properties().entrySet()) {
+          cellElement.setAttribute(property.getKey(), String.valueOf(property.getValue()));
+        }
+        rowElement.appendChild(cellElement);
+      }
+      initialCellsElement.appendChild(rowElement);
+    }
+  }
 
-    // Create directory if it does not exist
-    if (!configDirectory.exists()) {
-      if (!configDirectory.mkdirs()) {
+  private File createOutputFile(String path) throws ParserConfigurationException {
+    try {
+      String baseFilename = myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
+      String fileExtension = ".xml";
+      File configDirectory = new File(path);
+
+      if (!configDirectory.exists() && !configDirectory.mkdirs()) {
         System.err.println("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
-        return null;  // Return null to indicate failure
+        return null;
       }
-    }
 
-    File outputFile = new File(configDirectory, baseFilename + fileExtension);
-    int duplicateNumber = 1;
-    while (outputFile.exists()) {
-      outputFile = new File(configDirectory, baseFilename + "_" + duplicateNumber + fileExtension);
-      duplicateNumber++;
+      File outputFile = new File(configDirectory, baseFilename + fileExtension);
+      int duplicateNumber = 1;
+      while (outputFile.exists()) {
+        outputFile = new File(configDirectory, baseFilename + "_" + duplicateNumber + fileExtension);
+        duplicateNumber++;
+      }
+      return outputFile;
+    } catch (NullPointerException e) {
+      throw new ParserConfigurationException("Could not create output file");
     }
-
-    return outputFile;
   }
 
-  private void writeXMLDocument(Document xmlDocument, File outputFile) {
+  private void writeXMLDocument(Document xmlDocument, File outputFile) throws Exception {
     if (outputFile == null) {
       System.err.println("Output file is null. Cannot save XML.");
       return;
     }
-
     try {
-      // Ensure the file is created before writing
-      if (!outputFile.exists()) {
-        if (!outputFile.createNewFile()) {
-          System.err.println("Failed to create new XML file: " + outputFile.getAbsolutePath());
-          return;
-        }
+      if (!outputFile.exists() && !outputFile.createNewFile()) {
+        System.err.println("Failed to create new XML file: " + outputFile.getAbsolutePath());
+        return;
       }
-
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
       Transformer transformer = transformerFactory.newTransformer();
       DOMSource source = new DOMSource(xmlDocument);
@@ -147,16 +213,11 @@ public class ConfigWriter {
         transformer.transform(source, result);
         System.out.println("Config saved to file: " + outputFile.getAbsolutePath());
       }
-
     } catch (IOException e) {
-      System.err.println("IOException while creating the file: " + e.getMessage());
+      throw new IOException(" ");
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new Exception(" ");
     }
   }
-
-
-  public void setConfigInfo(ConfigInfo configInfo) {
-    myConfigInfo = configInfo;
-  }
 }
+

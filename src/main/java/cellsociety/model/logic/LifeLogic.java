@@ -1,10 +1,9 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.states.LifeState;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,21 +12,25 @@ import java.util.List;
 public class LifeLogic extends Logic<LifeState> {
   private List<Integer> birthRequirement;
   private List<Integer> survivalRequirement;
+  private String rulestring;
 
   /**
    * Constructs a {@code LifeLogic} instance with the specified grid.
    *
    * @param grid the grid representing the current state of grid
    */
-  public LifeLogic(Grid<LifeState> grid) {
-    super(grid);
+  public LifeLogic(Grid<LifeState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
     birthRequirement = List.of(3);
     survivalRequirement = List.of(2,3);
   }
 
-  public void setRulestring(List<Integer> birth, List<Integer> survival) {
-    birthRequirement = birth;
-    survivalRequirement = survival;
+  public void setRulestring(String rulestring) {
+    rulestring = rulestring;
+  }
+
+  public String getRulestring() {
+    return rulestring;
   }
 
   @Override

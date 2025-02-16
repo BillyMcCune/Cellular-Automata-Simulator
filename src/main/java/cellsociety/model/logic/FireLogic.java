@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.FireState;
@@ -8,24 +9,36 @@ import java.util.List;
 
 public class FireLogic extends Logic<FireState> {
 
-  private static double probCatch;
-  private static double probIgnite;
-  private static double probTree;
+  private double probCatch;
+  private double probIgnite;
+  private double probTree;
 
-  public FireLogic(Grid<FireState> grid) {
-    super(grid);
+  public FireLogic(Grid<FireState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
   }
 
-  public static void setProbCatch(double percentCatch) {
-    FireLogic.probCatch = percentCatch/100;
+  public void setProbCatch(double percentCatch) {
+    probCatch = percentCatch/100;
   }
 
-  public static void setProbIgnite(double percentIgnite) {
-    FireLogic.probIgnite = percentIgnite/100;
+  public void setProbIgnite(double percentIgnite) {
+    probIgnite = percentIgnite/100;
   }
 
-  public static void setProbGrowTree(double percentGrowTree) {
-    FireLogic.probTree = percentGrowTree/100;
+  public void setProbGrowTree(double percentGrowTree) {
+    probTree = percentGrowTree/100;
+  }
+
+  public double getProbCatch() {
+    return probCatch;
+  }
+
+  public double getProbIgnite() {
+    return probIgnite;
+  }
+
+  public double getProbTree() {
+    return probTree;
   }
 
   @Override

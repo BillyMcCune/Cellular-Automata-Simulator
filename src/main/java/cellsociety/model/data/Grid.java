@@ -1,12 +1,12 @@
 package cellsociety.model.data;
 
+import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.neighbors.Coord;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
-import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,15 +17,6 @@ import java.util.Map;
  */
 public class Grid<T extends Enum<T> & State> {
 
-  /**
-   * Represents all directions
-   */
-  private static final int[][] ORTHOGONAL_DIAGONAL_DIRECTIONS = {
-      {-1, -1}, {-1,  0}, {-1,  1}, { 0, -1}, { 0,  1}, { 1, -1}, { 1,  0}, { 1,  1}
-  };
-  private static final int[][] ORTHOGONAL_NEIGHBORS = {
-      {-1, 0}, {1, 0}, {0, -1}, {0, 1}
-  };
   private Class<?> simulationType;
   private NeighborCalculator<T> neighborCalculator;
 
@@ -43,7 +34,7 @@ public class Grid<T extends Enum<T> & State> {
    * @param factory            the factory to create cells
    * @param neighborCalculator the calculator method to assign neighbors
    */
-  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory, NeighborCalculator<?> neighborCalculator) {
+  public Grid(List<List<CellRecord>> rawGrid, CellFactory<T> factory, NeighborCalculator<?> neighborCalculator) {
     this.neighborCalculator = (NeighborCalculator<T>) neighborCalculator;
     setGrid(rawGrid, factory);
   }
@@ -54,11 +45,12 @@ public class Grid<T extends Enum<T> & State> {
    * @param rawGrid a two-dimensional list of states
    * @param factory the factory to create cells
    */
-  private void initializeGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
-    for (List<Integer> rowStates : rawGrid) {
+  private void initializeGrid(List<List<CellRecord>> rawGrid, CellFactory<T> factory) {
+    for (List<CellRecord> rowStates : rawGrid) {
       List<Cell<T>> newRow = new ArrayList<>();
-      for (Integer state : rowStates) {
-        Cell<T> cell = factory.createCell(state);
+      for (CellRecord record : rowStates) {
+        Cell<T> cell = factory.createCell(record.state());
+        cell.setAllProperties(record.properties());
         if (simulationType == null) {
           simulationType = cell.getCurrentState().getClass();
         }
@@ -73,7 +65,8 @@ public class Grid<T extends Enum<T> & State> {
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
         Cell<T> cell = getCell(row, col);
-        cell.setNeighbors(neighborCalculator.getNeighbors(this, row, col));
+        Map<Coord, Cell<T>> neighbors = neighborCalculator.getNeighbors(this, row, col);
+        cell.setNeighbors(neighbors);
       }
     }
   }
@@ -84,7 +77,7 @@ public class Grid<T extends Enum<T> & State> {
    * @param rawGrid a two-dimensional list of integer states representing the new states of the cells
    * @param factory the factory to create cells
    */
-  public void setGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+  public void setGrid(List<List<CellRecord>> rawGrid, CellFactory<T> factory) {
     grid.clear();
     if (rawGrid != null && !rawGrid.isEmpty()) {
       initializeGrid(rawGrid, factory);

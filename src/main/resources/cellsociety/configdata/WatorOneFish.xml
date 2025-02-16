@@ -1,25 +1,79 @@
+<?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>WATOR</type>
+  
+  
   <title>Single Fish Breeding Test</title>
+  
+  
   <author>Jacob You</author>
+  
+  
   <description>Tests whether a single fish breeds correctly after reaching its reproduction time.</description>
+  
+  
   <parameters>
-    <baseSharkEnergy>5</baseSharkEnergy>
-    <fishEnergyGain>2</fishEnergyGain>
-    <sharkReproductionTime>3</sharkReproductionTime>
-    <fishReproductionTime>2</fishReproductionTime>
+
+    <doubleParameter name="baseSharkEnergy">5</doubleParameter>
+    <doubleParameter name="fishEnergyGain">2</doubleParameter>
+    <doubleParameter name="sharkReproductionTime">3</doubleParameter>
+    <doubleParameter name="fishReproductionTime">2</doubleParameter>
+    
+  
   </parameters>
+  
+  
   <width>5</width>
+  
+  
   <height>5</height>
+  
+  
   <defaultSpeed>1</defaultSpeed>
-  <initialStates>
-    <row>0 0 0 0 0</row>
-    <row>0 0 0 0 0</row>
-    <row>0 0 1 0 0</row>
-    <row>0 0 0 0 0</row>
-    <row>0 0 0 0 0</row>
-  </initialStates>
+  
+  
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
   <acceptedStates>
     0 1 2
   </acceptedStates>
+  
+
 </simulation>

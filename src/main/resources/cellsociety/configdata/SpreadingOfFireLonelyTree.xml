@@ -1,25 +1,124 @@
+<?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>FIRE</type>
+  
+  
   <title>Lonely Tree</title>
+  
+  
   <author>Billy</author>
+  
+  
   <description>Just a lonely tree.</description>
+  
+  
   <parameters>
-    <probCatch>50</probCatch>
+    
+    
+    <doubleParameter name="probCatch">50</doubleParameter>
+    <doubleParameter name="progIgnite">5</doubleParameter>
+    <doubleParameter name="probTree">10</doubleParameter>
+    
+  
   </parameters>
+  
+  
   <width>8</width>
+  
+  
   <height>8</height>
+  
+  
   <defaultSpeed>10</defaultSpeed>
-  <initialStates>
-    <row>0 0 0 0 0 0 0 0</row>
-    <row>0 0 0 0 0 0 0 0</row>
-    <row>0 0 0 0 0 0 0 0</row>
-    <row>0 0 0 1 0 0 0 0</row>
-    <row>0 0 0 0 0 0 0 0</row>
-    <row>0 0 0 0 0 0 0 0</row>
-    <row>0 0 0 0 0 0 0 0</row>
-    <row>0 0 0 0 0 0 0 0</row>
-  </initialStates>
+  
+  
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
   <acceptedStates>
     0 1 2
   </acceptedStates>
+  
+
 </simulation>

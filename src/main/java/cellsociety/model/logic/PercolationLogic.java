@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.PercolationState;
@@ -17,8 +18,8 @@ public class PercolationLogic extends Logic<PercolationState> {
    *
    * @param grid the grid representing the current state of the grid
    */
-  public PercolationLogic(Grid<PercolationState> grid) {
-    super(grid);
+  public PercolationLogic(Grid<PercolationState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
   }
 
   /**
