@@ -4,6 +4,7 @@ import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
@@ -82,7 +83,6 @@ public class SceneController {
   public void loadConfig(String filename) {
     try {
       configInfo = configReader.readConfig(filename);
-      configWriter.setConfigInfo(configInfo);
       if (configInfo != null) {
         isLoaded = true;
       }
@@ -101,8 +101,8 @@ public class SceneController {
     }
 
     try {
-      configWriter.saveCurrentConfig(configInfo);
-    } catch (ParserConfigurationException e) {
+      configWriter.saveCurrentConfig(configInfo, path);
+    } catch (Exception e) {
       // TODO: Handle this exception
     }
   }
@@ -183,7 +183,7 @@ public class SceneController {
       neighborCalculator = (NeighborCalculator<?>) neighborObject;
 
       grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
-      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class).newInstance(grid);
+      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class).newInstance(grid, configInfo.myParameters());
 
       // Set the parameters for the simulation
       resetParameters(gameLogic.getClass());
@@ -209,6 +209,7 @@ public class SceneController {
       return;
     }
 
+
     try {
       SimulationType type = configInfo.myType();
       String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
@@ -218,7 +219,7 @@ public class SceneController {
 
       // Dynamically create cell grid, and logic
       grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
-      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class).newInstance(grid);
+      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class).newInstance(grid, configInfo.myParameters());
 
       // Set the grid to the scene
       simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
@@ -239,79 +240,60 @@ public class SceneController {
    * @param logicClass The logic class to reset the parameters for
    * @param <T> The type of the logic class
    */
-  public <T extends Logic<?>>void resetParameters(Class<T> logicClass) {
-    Map<String, Double> parameters = configInfo.myParameters();
+  public <T extends Logic<?>> void resetParameters(Class<T> logicClass) {
+    ParameterRecord parameters = configInfo.myParameters();
 
-    // TODO: SET UNIQUE MIN AND MAX VALUES FOR PARAMETERS
+    // Min and Max values for double parameters
     double MIN = 0;
     double MAX = 100;
 
-    // Set the parameter in the logic class through reflection
-    for (Map.Entry<String, Double> entry : parameters.entrySet()) {
+    // Iterate over all methods in the class
+    for (Method method : logicClass.getDeclaredMethods()) {
+      String methodName = method.getName();
+
+      // TODO: GET THE GETTER METHOD FOR THE PARAMETER INITIALIZATION
+      // Check if the method starts with "set" and has exactly one parameter
+      if (!methodName.startsWith("set") || method.getParameterCount() != 1) {
+        continue;
+      }
+
+      // Get the parameter type
+      Class<?> paramType = method.getParameterTypes()[0];
+
+      // Convert method name to parameter name (e.g., setSpeed → speed)
+      String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
+
+      // TODO: GET THE GETTER METHOD FOR THE PARAMETER INITIALIZATION
       try {
-        // Get the method name
-        String paramName = entry.getKey();
-        String setMethodName = "set" + paramName.substring(0, 1).toUpperCase() + paramName.substring(1);
+        if (paramType == double.class) {
+          // Create a consumer for UI updates
+          Consumer<Double> consumer = v -> {
+            try {
+              method.invoke(gameLogic, v);
+            } catch (Exception ex) {
+              // TODO: Handle this exception
+              ex.printStackTrace();
+            }
+          };
 
-        // Get the method argument type (double or int)
-        Method setMethod;
-        try {
-          setMethod = logicClass.getDeclaredMethod(setMethodName, double.class);
-        } catch (NoSuchMethodException e) {
-          try {
-            setMethod = logicClass.getDeclaredMethod(setMethodName, int.class);
-          } catch (NoSuchMethodException ex) {
-            // TODO: Handle this exception
-            throw new UnsupportedOperationException(ex);
-          }
-        }
+          // Register parameter in simulation UI
+          simulationScene.setParameter(paramName, MIN, MAX, 0, "", consumer);
+        } else if (paramType == String.class) {
+          // Create a consumer for UI updates
+          Consumer<String> consumer = v -> {
+            try {
+              method.invoke(gameLogic, v);
+            } catch (Exception ex) {
+              // TODO: Handle this exception
+              ex.printStackTrace();
+            }
+          };
 
-        // Set the parameter in the simulation scene
-        Class<?> paramType = setMethod.getParameterTypes()[0];
-        Method finalSetMethod = setMethod;
-        switch (paramType.getName()) {
-          case "int" -> {
-            int finalParamValueInt = entry.getValue().intValue();
-            Consumer<Integer> consumer = value -> {
-              try {
-                finalSetMethod.invoke(gameLogic, value);
-              } catch (Exception ex) {
-                // TODO: Handle this exception
-              }
-            };
-
-            simulationScene.setParameter(
-                paramName,
-                MIN,
-                MAX,
-                finalParamValueInt,
-                "",
-                consumer
-            );
-          }
-          case "double" -> {
-            double finalParamValueDouble = entry.getValue();
-            Consumer<Double> consumer = value -> {
-              try {
-                finalSetMethod.invoke(gameLogic, value);
-              } catch (Exception ex) {
-                // TODO: Handle this exception
-              }
-            };
-
-            simulationScene.setParameter(
-                paramName,
-                MIN,
-                MAX,
-                finalParamValueDouble,
-                "",
-                consumer
-            );
-          }
+          // Register parameter in simulation UI
+          simulationScene.setParameter("", paramName, "", consumer);
         }
       } catch (Exception e) {
-        // TODO: Handle this exception
-        throw new UnsupportedOperationException(e);
+        throw new UnsupportedOperationException("Failed to set parameter: " + paramName, e);
       }
     }
   }
