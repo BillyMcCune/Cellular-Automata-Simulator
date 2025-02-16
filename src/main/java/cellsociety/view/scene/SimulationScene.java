@@ -32,11 +32,6 @@ public class SimulationScene {
 
   public static final String STYLE_PATH = "/cellsociety/style/style.css";
 
-  public static final double DEFAULT_GRID_WIDTH = 300;
-  public static final double DEFAULT_GRID_HEIGHT = 300;
-  public static final double MAX_ZOOM_RATE = 8.0;
-  public static final double MIN_ZOOM_RATE = 0.2;
-
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
   public static final double SPEED_MULTIPLIER = 3;
@@ -81,7 +76,6 @@ public class SimulationScene {
     ScrollPane controls = createControls();
     ScrollPane infoLabel = createInfoLabel();
     ScrollPane parameterPanel = createParameterPanel();
-
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
@@ -99,71 +93,17 @@ public class SimulationScene {
     primaryStage.show();
 
     // Set up the game loop
-    new Timeline(new KeyFrame(javafx.util.Duration.millis((double) 1000 / framesPerSecond), e -> {
-      step(1.0 / framesPerSecond);
-    })).play();
+    Timeline gameLoop = new Timeline();
+    gameLoop.setCycleCount(Timeline.INDEFINITE);
+    gameLoop.getKeyFrames().add(new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond), e -> step(1.0 / framesPerSecond)));
+    gameLoop.play();
   }
 
   /* PRIVATE UI SETUP METHODS */
 
   private Pane createGrid() {
     this.grid = new GridPane();
-
-    Pane pane = new Pane();
-    pane.setPrefSize(DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT);
-    pane.getStyleClass().add("grid-pane");
-
-    // Clip the Pane to the desired size
-    Rectangle clip = new Rectangle(DEFAULT_GRID_WIDTH, DEFAULT_GRID_HEIGHT);
-    pane.setClip(clip);
-
-    // Update Clip and GridPane size when the Pane size changes
-    pane.widthProperty().addListener((observable, oldValue, newValue) -> {
-      clip.setWidth(newValue.doubleValue());
-      centerGrid();
-    });
-    pane.heightProperty().addListener((observable, oldValue, newValue) -> {
-      clip.setHeight(newValue.doubleValue());
-      centerGrid();
-    });
-
-    // Update GridPane position when the GridPane size changes
-    grid.widthProperty().addListener((observable, oldValue, newValue) -> {
-      centerGrid();
-    });
-    grid.heightProperty().addListener((observable, oldValue, newValue) -> {
-      centerGrid();
-    });
-
-    pane.getChildren().add(grid);
-
-    // Mouse and Scroll event handlers
-    final double[] mouseX = new double[1];
-    final double[] mouseY = new double[1];
-    pane.setOnMousePressed(event -> {
-      mouseX[0] = event.getSceneX() - grid.getLayoutX();
-      mouseY[0] = event.getSceneY() - grid.getLayoutY();
-    });
-    pane.setOnMouseDragged(event -> {
-      double offsetX = event.getSceneX() - mouseX[0];
-      double offsetY = event.getSceneY() - mouseY[0];
-      grid.relocate(offsetX, offsetY);
-    });
-
-    final double[] scale = {1.0};
-    pane.setOnZoom(event -> {
-      double zoomFactor = event.getZoomFactor();
-
-      scale[0] *= zoomFactor;
-
-      // limit the scale to reasonable values
-      scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
-
-      grid.setScaleX(scale[0]);
-      grid.setScaleY(scale[0]);
-    });
-
-    return pane;
+    return SceneUIWidget.dragZoomViewUI(grid);
   }
 
   private ScrollPane createParameterPanel() {
@@ -173,157 +113,7 @@ public class SimulationScene {
     parameterBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(parameterBox, Priority.ALWAYS);
 
-    Label parametersLabel = new Label("Parameters");
-    parametersLabel.getStyleClass().add("parameter-title");
-
-    // Create the parameter container
-    VBox parameterContainer = new VBox(10, parametersLabel, parameterBox);
-    parameterContainer.setAlignment(Pos.TOP_CENTER);
-    parameterContainer.getStyleClass().add("parameter-container");
-    parameterContainer.setPadding(new Insets(10));
-
-    // Wrap the parameter container in a ScrollPane
-    ScrollPane scrollPane = new ScrollPane(parameterContainer);
-    scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(true);
-
-    return scrollPane;
-  }
-
-  private HBox createParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
-    // Create the slider
-    Slider slider = new Slider(min, max, defaultValue);
-    slider.setMaxWidth(Double.MAX_VALUE);
-
-    // Create the label with tooltip
-    Label speedLabel = new Label(label + ": ");
-    speedLabel.getStyleClass().add("parameter-label");
-    speedLabel.setTooltip(new Tooltip(tooltip));
-
-    // Format the default value based on the type
-    String defaultText;
-    String minText;
-    String maxText;
-    defaultText = String.format("%.1f", defaultValue);
-    minText = String.format("%.1f", min);
-    maxText = String.format("%.1f", max);
-
-    // Create the text input
-    TextField textField = new TextField(defaultText);
-    textField.getStyleClass().add("parameter-text-field");
-    textField.setAlignment(Pos.CENTER);
-
-    // Restrict input to numbers and decimal point
-    UnaryOperator<Change> filter = change -> {
-      String newText = change.getControlNewText();
-      if (newText.matches("\\d*\\.?\\d*")) {
-        return change;
-      } else {
-        return null;
-      }
-    };
-    textField.setTextFormatter(new TextFormatter<>(filter));
-
-    // Create min and max labels
-    Label minLabel = new Label(minText + " ");
-    Label maxLabel = new Label(" " + maxText);
-
-    // Create an HBox control
-    HBox parameterControl = new HBox(5, speedLabel, textField, minLabel, slider, maxLabel);
-    parameterControl.setAlignment(Pos.CENTER);
-    HBox.setHgrow(slider, Priority.ALWAYS);
-    parameterControl.getStyleClass().add("parameter-control");
-
-    // Add slider listener
-    slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-      // Update the text field with the formatted value
-      textField.setText(String.format("%.1f", newValue.doubleValue()));
-
-      // Trigger callback
-      callback.accept(newValue.doubleValue());
-    });
-
-    // Add text listener
-    textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-      if (event.getCode().toString().equals("ENTER")) {
-        String newValueText = textField.getText();
-        try {
-          double newValue = Double.parseDouble(newValueText);
-
-          // Clamp the value to the min and max
-          if (newValue < min) {
-            newValue = min;
-          } else if (newValue > max) {
-            newValue = max;
-          }
-
-          // Sync the slider value with the text field value
-          slider.setValue(newValue);
-
-          // Trigger callback
-          callback.accept(newValue);
-
-          // Update the text field to reflect the new value
-          textField.setText(String.format("%.1f", newValue)
-          );
-        } catch (NumberFormatException e) {
-          // Reset text field to slider value if invalid input
-          double sliderValue = slider.getValue();
-          textField.setText(String.format("%.1f", sliderValue));
-        }
-      }
-    });
-
-    // Add text focus listener
-    textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-      if (!newValue) { // When focus is lost
-        double sliderValue = slider.getValue();
-        textField.setText(String.format("%.1f", sliderValue));
-      }
-    });
-
-    // Call the callback with the default value
-    callback.accept(defaultValue);
-
-    return parameterControl;
-  }
-
-  private HBox createParameter(String defaultValue, String label, String tooltip, Consumer<String> callback) {
-    // Create the label with tooltip
-    Label labelComponent = new Label(label + ": ");
-    labelComponent.getStyleClass().add("parameter-label");
-    labelComponent.setTooltip(new Tooltip(tooltip));
-
-    // Create the text input
-    TextField textField = new TextField(defaultValue);
-    textField.getStyleClass().add("parameter-text-field");
-    textField.setAlignment(Pos.CENTER);
-
-    // Create an HBox control
-    HBox parameterControl = new HBox(5, labelComponent, textField);
-    parameterControl.setAlignment(Pos.CENTER);
-    parameterControl.getStyleClass().add("parameter-control");
-
-    // Add text listener
-    textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-      if (event.getCode().toString().equals("ENTER")) {
-        String newValue = textField.getText();
-        callback.accept(newValue);
-      }
-    });
-
-    // Add text focus listener
-    textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-      if (!newValue) { // When focus is lost
-        String textValue = textField.getText();
-        callback.accept(textValue);
-      }
-    });
-
-    // Call the callback with the default value
-    callback.accept(defaultValue);
-
-    return parameterControl;
+    return SceneUIWidget.createContainerUI(parameterBox, "Parameters");
   }
 
   private ScrollPane createControls() {
@@ -407,23 +197,10 @@ public class SimulationScene {
     controlsBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(controlsBox, Priority.ALWAYS);
 
-    // VBox formatting with title
-    VBox controls = new VBox(10, controlsTitle, controlsBox);
-    controls.setPadding(new Insets(10));
-    controls.setAlignment(Pos.TOP_CENTER);
-
-    // ScrollPane wrapping controls
-    ScrollPane scrollPane = new ScrollPane(controls);
-    scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(true);
-
-    return scrollPane;
+    return SceneUIWidget.createContainerUI(controlsBox, "Controls");
   }
 
   private ScrollPane createInfoLabel() {
-    Label infoTitle = new Label("Information");
-    infoTitle.getStyleClass().add("info-title");
-
     infoText = new Label();
     infoText.getStyleClass().add("info-text");
     infoText.setWrapText(true);  // Prevent text from wrapping
@@ -435,16 +212,7 @@ public class SimulationScene {
     infoBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(infoBox, Priority.ALWAYS);
 
-    VBox infoContainer = new VBox(10, infoTitle, infoBox);
-    infoContainer.setAlignment(Pos.TOP_CENTER);
-    infoContainer.getStyleClass().add("info-container");
-    infoContainer.setPadding(new Insets(10));
-
-    ScrollPane scrollPane = new ScrollPane(infoContainer);
-    scrollPane.setFitToWidth(true);
-    scrollPane.setFitToHeight(true);
-
-    return scrollPane;
+    return SceneUIWidget.createContainerUI(infoBox, "Information");
   }
 
   /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
@@ -561,7 +329,7 @@ public class SimulationScene {
    * @param callback the callback function of the parameter
    */
   public void setParameter(String label, double min, double max, double defaultValue, String tooltip, Consumer<Double> callback) {
-    parameterBox.getChildren().add(createParameter(min, max, defaultValue, label, tooltip, callback));
+    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, label, tooltip, callback));
   }
 
   /**
@@ -572,9 +340,8 @@ public class SimulationScene {
    * @param callback the callback function of the parameter
    */
   public void setParameter(String defaultValue, String label, String tooltip, Consumer<String> callback) {
-    parameterBox.getChildren().add(createParameter(defaultValue, label, tooltip, callback));
+    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, label, tooltip, callback));
   }
-
 
   /* PRIVATE UI HELPER METHODS */
 

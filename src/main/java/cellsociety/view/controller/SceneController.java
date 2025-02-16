@@ -260,16 +260,15 @@ public class SceneController {
       String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
       // Get the getter method for the parameter initialization
-      Method getterMethod;
-      Method minMethod;
-      Method maxMethod;
+      Method getterMethod = null;
+      Method minMethod = null;
+      Method maxMethod = null;
       try {
         getterMethod = logicClass.getMethod("get" + paramName);
         minMethod = logicClass.getMethod("get" + paramName + "Min");
         maxMethod = logicClass.getMethod("get" + paramName + "Max");
       } catch (NoSuchMethodException e) {
         // TODO: Handle this exception
-        throw new UnsupportedOperationException(e);
       }
 
       // TODO: SET THE PARAMETER TOOL TIPS
@@ -277,9 +276,16 @@ public class SceneController {
       try {
         if (paramType == double.class) {
           // Get the default and minmax values
-          double min = (double) minMethod.invoke(gameLogic);
-          double max = (double) maxMethod.invoke(gameLogic);
-          double defaultValue = (double) getterMethod.invoke(gameLogic);
+          double min = 0;
+          double max = 0;
+          double defaultValue = 0;
+          try {
+            min = (double) minMethod.invoke(gameLogic);
+            max = (double) maxMethod.invoke(gameLogic);
+            defaultValue = (double) getterMethod.invoke(gameLogic);
+          } catch (Exception ex) {
+            // TODO: Handle this exception
+          }
 
           // Create a consumer for UI updates
           Consumer<Double> consumer = v -> {
@@ -295,7 +301,12 @@ public class SceneController {
           simulationScene.setParameter(paramName, min, max, defaultValue, "", consumer);
         } else if (paramType == String.class) {
           // Get the default value
-          String defaultValue = (String) getterMethod.invoke(gameLogic);
+          String defaultValue = "";
+          try {
+            defaultValue = (String) getterMethod.invoke(gameLogic);
+          } catch (Exception ex) {
+            // TODO: Handle this exception
+          }
 
           // Create a consumer for UI updates
           Consumer<String> consumer = v -> {
