@@ -1,14 +1,19 @@
 package cellsociety.view.scene;
 
+import cellsociety.view.controller.ThemeController;
+import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
@@ -21,6 +26,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -36,9 +42,10 @@ public class SceneUIWidget {
   public static final double MAX_ZOOM_RATE = 8.0;
   public static final double MIN_ZOOM_RATE = 0.2;
 
-  // CSS style sheet
-  public static final String WIDGET_STYLE_PATH = "/cellsociety/style/dark/widgetUI.css";
-  public static final String WIDGET_STYLE_SHEET = Objects.requireNonNull(SceneUIWidget.class.getResource(WIDGET_STYLE_PATH)).toExternalForm();
+  // Error Stage
+  private static final double DEFAULT_SPLASH_WIDTH = 400;
+  private static final double DEFAULT_SPLASH_HEIGHT = 300;
+  private static String WIDGET_STYLE_SHEET;
 
   /* UI WIDGETS */
 
@@ -175,7 +182,7 @@ public class SceneUIWidget {
     UnaryOperator<Change> filter = change -> {
       String newText = change.getControlNewText();
       // Allow letters, digits, and special characters, but not Unicode characters (like Chinese)
-      if (newText.matches("[a-zA-Z0-9!\\\"#$%&'()*+,-./:;<=>?@[\\\\]^_`{|}~]*")) {
+      if (newText.matches("[a-zA-Z0-9!\"#$%&'()*+,-./:;<=>?@\\\\^_`{|}~]*")) {
         return change;
       } else {
         return null;
@@ -345,11 +352,118 @@ public class SceneUIWidget {
     VBox.setVgrow(exceptionArea, Priority.ALWAYS);
 
     // Create scene
-    Scene scene = new Scene(layout, 400, 300);
-    scene.getStylesheets().add(WIDGET_STYLE_SHEET);
+    Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
+    if (WIDGET_STYLE_SHEET != null) {
+      scene.getStylesheets().add(WIDGET_STYLE_SHEET);
+    }
     errorStage.setScene(scene);
 
     // Show the dialog and wait for the user to close it
     errorStage.showAndWait();
+  }
+
+  /**
+   * Create a splash screen with language and theme selection.
+   * @param languageConsumer the consumer for the selected language
+   * @param themeConsumer the consumer for the selected theme
+   */
+  public static void createSplashScreen(String defaultLanguage, Theme defaultTheme, Consumer<String> languageConsumer, Consumer<Theme> themeConsumer) {
+    // Create a new stage for the splash screen
+    Stage splashStage = new Stage();
+    splashStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+    splashStage.setTitle("Cell Society");
+    splashStage.setOnCloseRequest(event -> Platform.exit());
+
+    // Create the splash screen scene
+    Scene splashScene = new Scene(new Region(), DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
+
+    // Create the splash screen content
+    VBox splashScreen = new VBox(20);
+    splashScreen.getStyleClass().add("splash-screen");
+
+    // Create the welcome label at the top
+    Label welcomeLabel = new Label("Welcome");
+    welcomeLabel.getStyleClass().add("splash-welcome");
+
+    // TODO: SET UP LANGUAGE AND THEME SELECTION
+    // Create the Language label and dropdown (ComboBox)
+    HBox languageContainer = new HBox(10);
+    languageContainer.setAlignment(Pos.CENTER);
+    Label languageLabel = new Label("Language");
+    languageLabel.getStyleClass().add("splash-label");
+    ComboBox<String> languageComboBox = new ComboBox<>();
+    HBox.setHgrow(languageComboBox, Priority.ALWAYS);
+    languageComboBox.getItems().addAll("English", "French", "Spanish");
+    languageComboBox.setValue(defaultLanguage);
+    languageComboBox.getStyleClass().add("splash-combo-box");
+
+    // Set listener for language selection and display selection
+    languageComboBox.setOnAction(event -> {
+      String selectedLanguage = languageComboBox.getValue();
+      languageConsumer.accept(selectedLanguage);
+      languageComboBox.setStyle("-fx-text-fill: #7a5cff;");
+    });
+
+    // Add the label and ComboBox into the languageContainer HBox
+    languageContainer.getChildren().addAll(languageLabel, languageComboBox);
+
+    // Create the Theme label and dropdown (ComboBox)
+    HBox themeContainer = new HBox(10);
+    themeContainer.setAlignment(Pos.CENTER);
+    Label themeLabel = new Label("Theme");
+    themeLabel.getStyleClass().add("splash-label");
+    ComboBox<String> themeComboBox = new ComboBox<>();
+    HBox.setHgrow(themeComboBox, Priority.ALWAYS);
+    themeComboBox.getItems().addAll(
+        Arrays.stream(ThemeController.Theme.values())
+            .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
+            .toList()
+    );
+    themeComboBox.setValue(defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase());
+    themeComboBox.getStyleClass().add("splash-combo-box");
+
+    // Set listener for theme selection and display selection
+    themeComboBox.setOnAction(event -> {
+      String selectedTheme = themeComboBox.getValue();
+      themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
+      splashScene.getStylesheets().clear();
+      splashScene.getStylesheets().add(WIDGET_STYLE_SHEET);
+    });
+
+    // Add the label and ComboBox into the themeContainer HBox
+    themeContainer.getChildren().addAll(themeLabel, themeComboBox);
+
+    // Add the language and theme selection to the splash screen
+    HBox splashBox = new HBox(10, languageContainer, themeContainer);
+    HBox.setHgrow(languageContainer, Priority.ALWAYS);
+    HBox.setHgrow(themeContainer, Priority.ALWAYS);
+
+    // Create the Start button
+    Button startButton = new Button("Start");
+    startButton.getStyleClass().add("splash-start-button");
+    startButton.setOnAction(event -> splashStage.close());
+
+    // Add all elements to the splash screen VBox
+    splashScreen.getChildren().addAll(welcomeLabel, splashBox, startButton);
+
+    // Set the scene with the splash screen
+    splashScene.setRoot(splashScreen);
+    if (WIDGET_STYLE_SHEET != null) {
+      splashScene.getStylesheets().add(WIDGET_STYLE_SHEET);
+    }
+    splashStage.setScene(splashScene);
+
+    // Show the splash screen and wait for it to close
+    splashStage.showAndWait();
+  }
+
+  /* STYLESHEET */
+
+  /**
+   * Set a style sheet to the widget stages.
+   * @param styleSheet the style sheet to add
+   */
+  public static void setWidgetStyleSheet(String styleSheet) {
+    SceneUIWidget.WIDGET_STYLE_SHEET = styleSheet;
   }
 }

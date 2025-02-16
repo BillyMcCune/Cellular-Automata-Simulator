@@ -1,108 +1,152 @@
+/* ==========================
+   Root Container
+   ========================== */
 .root {
-  -fx-padding: 1px;
-  -fx-background-color: #b8b8b8;
+  -fx-padding: 2px;
+  -fx-background-color: #f5f5f5;
 }
 
-/* Control Button */
-
-.controls-title {
+/* ==========================
+   Titles
+   ========================== */
+.title {
   -fx-font-size: 18px;
   -fx-font-weight: bold;
+  -fx-text-fill: #333333;
 }
 
+/* ==========================
+   Texts
+   ========================== */
+.info-text {
+  -fx-font-size: 14px;
+  -fx-text-fill: #333333;
+}
+
+/* ==========================
+   Containers (Unified Box Styling)
+   ========================== */
 .controls-box {
   -fx-border-color: #cccccc;
-  -fx-padding: 5px;
-  -fx-background-color: #d3d3d3;
+  -fx-padding: 8px;
+  -fx-background-color: #ffffff;
+  -fx-border-radius: 6px;
 }
-
-.button {
-  -fx-text-fill: #ffffff;
-  -fx-alignment: center;
-  -fx-font-weight: bold;
-  -fx-background-insets: 0,1,2;
-  -fx-background-radius: 3,2,1;
-}
-
-/* Start Button */
-.start-button {
-  -fx-background-color: #4CAF50;
-}
-.start-button:hover {
-  -fx-background-color: derive(#4CAF50, 15%);
-}
-.start-button:pressed {
-  -fx-background-color: derive(#4CAF50, -15%);
-}
-
-/* Pause Button */
-.pause-button {
-  -fx-background-color: #FFC107;
-}
-.pause-button:hover {
-  -fx-background-color: derive(#FFC107, 15%);
-}
-.pause-button:pressed {
-  -fx-background-color: derive(#FFC107, -15%);
-}
-
-/* Reset Button */
-
-.reset-button {
-  -fx-background-color: #f44336;
-}
-.reset-button:hover {
-  -fx-background-color: derive(#f44336, 15%);
-}
-.reset-button:pressed {
-  -fx-background-color: derive(#f44336, -15%);
-}
-
-/* Load Button */
-
-.load-button {
-  -fx-background-color: #2196F3;
-}
-.load-button:hover {
-  -fx-background-color: derive(#2196F3, 15%);
-}
-.load-button:pressed {
-  -fx-background-color: derive(#2196F3, -15%);
-}
-
-/* Save Button */
-
-.save-button {
-  -fx-background-color: #FF9800;
-}
-.save-button:hover {
-  -fx-background-color: derive(#FF9800, 15%);
-}
-.save-button:pressed {
-  -fx-background-color: derive(#FF9800, -15%);
-}
-
-/* Directory Button */
-
-.directory-button {
-  -fx-background-color: #9E9E9E;
-}
-.directory-button:hover {
-  -fx-background-color: derive(#9E9E9E, 15%);
-}
-.directory-button:pressed {
-  -fx-background-color: derive(#9E9E9E, -15%);
-}
-
-/* Information */
 
 .info-box {
   -fx-border-color: #cccccc;
-  -fx-padding: 5px;
-  -fx-background-color: #d3d3d3;
+  -fx-padding: 8px;
+  -fx-background-color: #f9f9f9;
+  -fx-border-radius: 6px;
 }
 
-.info-text {
-  -fx-alignment: CENTER_LEFT;
-  -fx-font-size: 16px;
+.parameter-box {
+  -fx-border-color: #cccccc;
+  -fx-padding: 8px;
+  -fx-background-color: #f9f9f9;
+  -fx-border-radius: 6px;
+}
+
+/* ==========================
+   Button Styling (Light Mode)
+   ========================== */
+.button {
+  -fx-text-fill: #333333;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-padding: 10px 15px;
+  -fx-border-color: transparent;
+  -fx-background-insets: 0, 1, 2;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+  -fx-transition: all 0.3s ease-in-out;
+}
+
+/* Start Button (Green) */
+.start-button {
+  -fx-background-color: linear-gradient(to bottom, #81c784, #388e3c);
+}
+.start-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #a5d6a7, #43a047);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+.start-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #388e3c, #1b5e20);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+
+/* Pause Button (Yellow) */
+.pause-button {
+  -fx-background-color: linear-gradient(to bottom, #ffeb3b, #fbc02d);
+}
+.pause-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #fff176, #fdd835);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+.pause-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #fbc02d, #f57f17);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+
+/* Reset Button (Red) */
+.reset-button {
+  -fx-background-color: linear-gradient(to bottom, #e57373, #d32f2f);
+}
+.reset-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #ef5350, #b71c1c);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+.reset-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #d32f2f, #7f0000);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+
+/* Load Button (Blue) */
+.load-button {
+  -fx-background-color: linear-gradient(to bottom, #64b5f6, #1976d2);
+}
+.load-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #90caf9, #1565c0);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+.load-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #1976d2, #0d47a1);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+
+/* Save Button (Orange) */
+.save-button {
+  -fx-background-color: linear-gradient(to bottom, #ffb74d, #f57c00);
+}
+.save-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #ffcc80, #e65100);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+.save-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #f57c00, #bf360c);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+
+/* Directory Button (Gray) */
+.directory-button {
+  -fx-background-color: linear-gradient(to bottom, #bdbdbd, #757575);
+}
+.directory-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #e0e0e0, #616161);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+.directory-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #9e9e9e, #424242);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
 }

@@ -1,0 +1,87 @@
+/* ==========================
+   Docker
+   ========================== */
+.docker {
+  -fx-background-color: linear-gradient(to bottom, #1f1034, #2b1a50);
+  -fx-border-color: #3e2766;
+  -fx-border-width: 1;
+  -fx-border-radius: 8;
+  -fx-padding: 12;
+}
+
+/* ==========================
+   Dock-able Window
+   ========================== */
+.dock-window {
+  -fx-background-color: linear-gradient(to bottom, #2b1a50, #3e2766);
+  -fx-border-color: #4a2d8b;
+  -fx-border-width: 1;
+  -fx-border-radius: 8;
+}
+
+.dock-tab-pane .tab-header-area .tab-header-background {
+  -fx-background-color: linear-gradient(to bottom, #3a1d6f, #301a5e);
+}
+
+.dock-tab {
+  -fx-background-color: linear-gradient(to bottom, #3b246f, #5a3ea1);
+  -fx-border-color: #6a4dff;
+  -fx-border-radius: 6;
+}
+
+.dock-tab .tab-label {
+  -fx-text-fill: #d0c1f0;
+  -fx-font: 14px "Segoe UI Semibold";
+}
+
+.dock-tab:hover {
+  -fx-background-color: rgba(104, 122, 243, 0.5);
+}
+
+/* ==========================
+   Tab Pane
+   ========================== */
+.tab-header-area {
+  -fx-background-color: linear-gradient(to bottom, #2c194d, #301a5e);
+}
+
+.tab-content-area {
+  -fx-background-color: linear-gradient(to bottom, #3b246f, #2a1a50);
+}
+
+/* ==========================
+   Dock Indicator
+   ========================== */
+.dock-indicator {
+  -fx-background-color: rgba(122, 92, 255, 0.85);
+  -fx-border-color: #7a5cff;
+  -fx-border-width: 2;
+}
+
+.dock-indicator .label {
+  -fx-font-size: 40px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #0007ac;
+}
+
+.dock-indicator:hover {
+  -fx-background-color: rgba(250, 19, 255, 0.53);
+  -fx-text-fill: #4bd8d1;
+}
+
+/* ==========================
+   Dock SplitPane
+   ========================== */
+.dock-split-pane {
+  -fx-background-color: linear-gradient(to bottom, #3b246f, #301a5e);
+}
+
+.dock-split-pane .split-pane-divider {
+  -fx-background-color: linear-gradient(to bottom, #5a3ea1, #6a4dff);
+  -fx-border-color: #6a4dff;
+  -fx-border-width: 0.5;
+}
+
+.dock-split-pane .split-pane-divider:hover {
+  -fx-background-color: rgba(104, 122, 243, 0.5);
+}
