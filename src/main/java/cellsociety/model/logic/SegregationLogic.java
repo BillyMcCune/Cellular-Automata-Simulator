@@ -30,6 +30,10 @@ public class SegregationLogic extends Logic<SegregationState> {
     satisfiedThreshold = percSatisfiedThreshold/100;
   }
 
+  public double getSatisfiedThreshold() {
+    return satisfiedThreshold;
+  }
+
   @Override
   protected void updateSingleCell(Cell<SegregationState> cell) {
     if (empty.isEmpty()) {

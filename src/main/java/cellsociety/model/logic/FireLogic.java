@@ -28,6 +28,18 @@ public class FireLogic extends Logic<FireState> {
     probTree = percentGrowTree/100;
   }
 
+  public double getProbCatch() {
+    return probCatch;
+  }
+
+  public double getProbIgnite() {
+    return probIgnite;
+  }
+
+  public double getProbTree() {
+    return probTree;
+  }
+
   @Override
   protected void updateSingleCell(Cell<FireState> cell) {
     FireState currentState = cell.getCurrentState();

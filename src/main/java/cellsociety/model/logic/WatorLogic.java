@@ -14,13 +14,13 @@ import java.util.List;
  */
 public class WatorLogic extends Logic<WatorState> {
 
-  private static int fishEnergyGain;
-  private static int sharkReproductionTime;
-  private static int fishReproductionTime;
+  private static double fishEnergyGain;
+  private static double sharkReproductionTime;
+  private static double fishReproductionTime;
   private final List<Cell<WatorState>> sharkCells;
   private final List<Cell<WatorState>> fishCells;
-  private static HashMap<String, Integer> baseSharkProperties;
-  private static HashMap<String, Integer> baseFishProperties;
+  private static HashMap<String, Double> baseSharkProperties;
+  private static HashMap<String, Double> baseFishProperties;
 
   /**
    * Constructs a WatorLogic instance for the given grid.
@@ -38,12 +38,12 @@ public class WatorLogic extends Logic<WatorState> {
   private static void initializePropertyMaps() {
     if (baseSharkProperties == null) {
       baseSharkProperties = new HashMap<>();
-      baseSharkProperties.put("time", 0);
-      baseSharkProperties.put("energy", 0);
+      baseSharkProperties.put("time", 0.0);
+      baseSharkProperties.put("energy", 0.0);
     }
     if (baseFishProperties == null) {
       baseFishProperties = new HashMap<>();
-      baseFishProperties.put("time", 0);
+      baseFishProperties.put("time", 0.0);
     }
   }
 
@@ -52,7 +52,7 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param energy the initial or reset energy value for sharks
    */
-  public static void setBaseSharkEnergy(int energy) {
+  public static void setBaseSharkEnergy(double energy) {
     baseSharkProperties.put("energy", energy);
   }
 
@@ -61,7 +61,7 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param energy how much energy a shark gains for each fish consumed
    */
-  public static void setFishEnergyGain(int energy) {
+  public static void setFishEnergyGain(double energy) {
     fishEnergyGain = energy;
   }
 
@@ -70,7 +70,7 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param time how many updates it takes for a shark to breed
    */
-  public static void setSharkReproductionTime(int time) {
+  public static void setSharkReproductionTime(double time) {
     sharkReproductionTime = time;
   }
 
@@ -79,7 +79,7 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param time how many updates it takes for a fish to breed
    */
-  public static void setFishReproductionTime(int time) {
+  public static void setFishReproductionTime(double time) {
     fishReproductionTime = time;
   }
 

@@ -10,24 +10,32 @@ public class BacteriaLogic extends Logic<BacteriaState> {
 
   private double beatingThreshold;
   private int numStates;
-  private final Map<Cell<BacteriaState>, Integer> nextStates = new HashMap<>();
+  private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
   public BacteriaLogic(Grid<BacteriaState> grid) {
     super(grid);
   }
 
-  public void setBeatingThreshold(double beatingThreshold) {
-    this.beatingThreshold = beatingThreshold;
+  public void setPercBeatingThreshold(double beatingThreshold) {
+    this.beatingThreshold = beatingThreshold/100;
   }
 
-  public void setNumStates(int numStates) {
-    this.numStates = numStates;
+  public void setNumStates(double numStates) {
+    this.numStates = (int) numStates;
+  }
+
+  public double getBeatingThreshold() {
+    return beatingThreshold;
+  }
+
+  public double getNumStates() {
+    return numStates;
   }
 
   @Override
   protected void updateSingleCell(Cell<BacteriaState> cell) {
-    int id = cell.getProperty("id");
-    int beatingId = (id + 1) % numStates;
+    double id = cell.getProperty("id");
+    double beatingId = (id + 1) % numStates;
 
     double numBeating = getNumBeating(cell, beatingId);
     int numNeighbors = cell.getNeighbors().size();

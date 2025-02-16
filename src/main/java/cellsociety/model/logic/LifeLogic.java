@@ -13,6 +13,7 @@ import java.util.List;
 public class LifeLogic extends Logic<LifeState> {
   private List<Integer> birthRequirement;
   private List<Integer> survivalRequirement;
+  private String rulestring;
 
   /**
    * Constructs a {@code LifeLogic} instance with the specified grid.
@@ -25,9 +26,12 @@ public class LifeLogic extends Logic<LifeState> {
     survivalRequirement = List.of(2,3);
   }
 
-  public void setRulestring(List<Integer> birth, List<Integer> survival) {
-    birthRequirement = birth;
-    survivalRequirement = survival;
+  public void setRulestring(String rulestring) {
+    rulestring = rulestring;
+  }
+
+  public String getRulestring() {
+    return rulestring;
   }
 
   @Override
