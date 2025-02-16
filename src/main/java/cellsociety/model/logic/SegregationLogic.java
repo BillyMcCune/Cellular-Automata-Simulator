@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SegregationState;
@@ -10,8 +11,8 @@ public class SegregationLogic extends Logic<SegregationState> {
   private final ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
   private double satisfiedThreshold;
 
-  public SegregationLogic(Grid<SegregationState> grid) {
-    super(grid, );
+  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();

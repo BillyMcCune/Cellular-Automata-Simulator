@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.neighbors.Coord;
@@ -9,8 +10,8 @@ import java.util.List;
 
 public class FallingLogic extends Logic<FallingState>{
 
-  public FallingLogic(Grid<FallingState> grid) {
-    super(grid, );
+  public FallingLogic(Grid<FallingState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
   }
 
   @Override

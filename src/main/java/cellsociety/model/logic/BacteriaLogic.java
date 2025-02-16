@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.BacteriaState;
@@ -12,8 +13,8 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   private int numStates;
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
-  public BacteriaLogic(Grid<BacteriaState> grid) {
-    super(grid, );
+  public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
   }
 
   public void setPercBeatingThreshold(double beatingThreshold) {

@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.states.LifeState;
@@ -18,8 +19,8 @@ public class LifeLogic extends Logic<LifeState> {
    *
    * @param grid the grid representing the current state of grid
    */
-  public LifeLogic(Grid<LifeState> grid) {
-    super(grid, );
+  public LifeLogic(Grid<LifeState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
     birthRequirement = List.of(3);
     survivalRequirement = List.of(2,3);
   }

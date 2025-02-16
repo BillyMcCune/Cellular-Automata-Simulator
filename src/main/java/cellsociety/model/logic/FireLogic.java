@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.FireState;
@@ -12,8 +13,8 @@ public class FireLogic extends Logic<FireState> {
   private double probIgnite;
   private double probTree;
 
-  public FireLogic(Grid<FireState> grid) {
-    super(grid, );
+  public FireLogic(Grid<FireState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
   }
 
   public void setProbCatch(double percentCatch) {
