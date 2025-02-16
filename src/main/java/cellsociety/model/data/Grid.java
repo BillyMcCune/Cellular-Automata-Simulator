@@ -1,5 +1,6 @@
 package cellsociety.model.data;
 
+import cellsociety.model.config.cellRecord.CellPropertyRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.Coord;
@@ -33,7 +34,7 @@ public class Grid<T extends Enum<T> & State> {
    * @param factory            the factory to create cells
    * @param neighborCalculator the calculator method to assign neighbors
    */
-  public Grid(List<List<Integer>> rawGrid, CellFactory<T> factory, NeighborCalculator<?> neighborCalculator) {
+  public Grid(List<List<CellPropertyRecord>> rawGrid, CellFactory<T> factory, NeighborCalculator<?> neighborCalculator) {
     this.neighborCalculator = (NeighborCalculator<T>) neighborCalculator;
     setGrid(rawGrid, factory);
   }
@@ -44,11 +45,12 @@ public class Grid<T extends Enum<T> & State> {
    * @param rawGrid a two-dimensional list of states
    * @param factory the factory to create cells
    */
-  private void initializeGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
-    for (List<Integer> rowStates : rawGrid) {
+  private void initializeGrid(List<List<CellPropertyRecord>> rawGrid, CellFactory<T> factory) {
+    for (List<CellPropertyRecord> rowStates : rawGrid) {
       List<Cell<T>> newRow = new ArrayList<>();
-      for (Integer state : rowStates) {
-        Cell<T> cell = factory.createCell(state);
+      for (CellPropertyRecord record : rowStates) {
+        Cell<T> cell = factory.createCell(record.state());
+        cell.setAllProperties(record.properties());
         if (simulationType == null) {
           simulationType = cell.getCurrentState().getClass();
         }
@@ -75,7 +77,7 @@ public class Grid<T extends Enum<T> & State> {
    * @param rawGrid a two-dimensional list of integer states representing the new states of the cells
    * @param factory the factory to create cells
    */
-  public void setGrid(List<List<Integer>> rawGrid, CellFactory<T> factory) {
+  public void setGrid(List<List<CellPropertyRecord>> rawGrid, CellFactory<T> factory) {
     grid.clear();
     if (rawGrid != null && !rawGrid.isEmpty()) {
       initializeGrid(rawGrid, factory);

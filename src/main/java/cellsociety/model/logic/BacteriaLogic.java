@@ -10,34 +10,36 @@ public class BacteriaLogic extends Logic<BacteriaState> {
 
   private double beatingThreshold;
   private int numStates;
-  private final Map<Cell<BacteriaState>, Integer> nextStates = new HashMap<>();
+  private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
   public BacteriaLogic(Grid<BacteriaState> grid) {
     super(grid);
   }
 
-  public void setBeatingThreshold(double beatingThreshold) {
-    this.beatingThreshold = beatingThreshold;
+  public void setPercBeatingThreshold(double beatingThreshold) {
+    this.beatingThreshold = beatingThreshold/100;
   }
 
-  public void setNumStates(int numStates) {
-    this.numStates = numStates;
+  public void setNumStates(double numStates) {
+    this.numStates = (int) numStates;
+  }
+
+  public double getBeatingThreshold() {
+    return beatingThreshold;
+  }
+
+  public double getNumStates() {
+    return numStates;
   }
 
   @Override
   protected void updateSingleCell(Cell<BacteriaState> cell) {
-    Object stored = cell.getProperty("id");
-    if (stored == null) {
-      cell.setProperty("id", 0);
-      cell.setNextState(BacteriaState.DUMMY);
-      return;
-    }
-    int id = (int) stored;
-    int beatingId = (id + 1) % numStates;
+    double id = cell.getProperty("id");
+    double beatingId = (id + 1) % numStates;
 
-    int numBeating = getNumBeating(cell, beatingId);
+    double numBeating = getNumBeating(cell, beatingId);
     int numNeighbors = cell.getNeighbors().size();
-    if (numNeighbors != 0 && (double) numBeating/numNeighbors >= beatingThreshold) {
+    if (numNeighbors != 0 && numBeating/numNeighbors >= beatingThreshold) {
       nextStates.put(cell, beatingId);
     }
   }
@@ -50,10 +52,10 @@ public class BacteriaLogic extends Logic<BacteriaState> {
     grid.updateGrid();
   }
 
-  private int getNumBeating(Cell<BacteriaState> cell, int beatingId) {
+  private int getNumBeating(Cell<BacteriaState> cell, double beatingId) {
     int numBeating = 0;
     for (Cell<BacteriaState> neighbor : cell.getNeighbors().values()) {
-      if (neighbor.getProperty("id").equals(beatingId)) {
+      if (neighbor.getProperty("id") == beatingId) {
         numBeating++;
       }
     }
