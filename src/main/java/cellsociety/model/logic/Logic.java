@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.PercolationState;
@@ -16,7 +17,7 @@ public abstract class Logic<T extends Enum<T> & State> {
 
   protected final Grid<T> grid;
 
-  public Logic(Grid<T> grid) {
+  public Logic(Grid<T> grid, ParameterRecord parameters) {
     this.grid = grid;
   }
 

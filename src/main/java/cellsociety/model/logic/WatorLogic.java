@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.WatorState;
@@ -27,8 +28,8 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param grid The grid on which to run the Wa-Tor simulation.
    */
-  public WatorLogic(Grid<WatorState> grid) {
-    super(grid);
+  public WatorLogic(Grid<WatorState> grid, ParameterRecord parameters) {
+    super(grid, parameters);
     initializePropertyMaps();
     List<List<Cell<WatorState>>> cellStates = getAllCellStates();
     sharkCells = cellStates.get(0);
