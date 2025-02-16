@@ -468,7 +468,7 @@ public class SimulationScene {
     controller.getAllConfigFileNames();
 
     // Set all the config file names to the dropdown
-    String[] items = (controller.getAllConfigFileNames().toArray(new String[0]));
+    String[] items = controller.getAllConfigFileNames().stream().sorted().toArray(String[]::new);
     selectType.getItems().clear();
     selectType.getItems().addAll(items);
   }
