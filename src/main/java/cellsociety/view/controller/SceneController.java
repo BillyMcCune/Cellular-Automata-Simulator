@@ -74,7 +74,7 @@ public class SceneController {
     }
   }
 
-  // ConfigIO APIs
+  /* CONFIG IO APIS */
 
   /**
    * Load the configuration file with the given filename.
@@ -157,7 +157,8 @@ public class SceneController {
     return configInfo.myTickSpeed();
   }
 
-  // Model APIs
+  /* MODEL APIS */
+
   /**
    * Reset the model with the current configuration.
    */
@@ -243,33 +244,47 @@ public class SceneController {
   public <T extends Logic<?>> void resetParameters(Class<T> logicClass) {
     ParameterRecord parameters = configInfo.myParameters();
 
-    // Min and Max values for double parameters
-    double MIN = 0;
-    double MAX = 100;
-
     // Iterate over all methods in the class
-    for (Method method : logicClass.getDeclaredMethods()) {
-      String methodName = method.getName();
+    for (Method setterMethod : logicClass.getDeclaredMethods()) {
+      String methodName = setterMethod.getName();
 
-      // TODO: GET THE GETTER METHOD FOR THE PARAMETER INITIALIZATION
       // Check if the method starts with "set" and has exactly one parameter
-      if (!methodName.startsWith("set") || method.getParameterCount() != 1) {
+      if (!methodName.startsWith("set") || setterMethod.getParameterCount() != 1) {
         continue;
       }
 
       // Get the parameter type
-      Class<?> paramType = method.getParameterTypes()[0];
+      Class<?> paramType = setterMethod.getParameterTypes()[0];
 
       // Convert method name to parameter name (e.g., setSpeed → speed)
       String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
-      // TODO: GET THE GETTER METHOD FOR THE PARAMETER INITIALIZATION
+      // Get the getter method for the parameter initialization
+      Method getterMethod;
+      Method minMethod;
+      Method maxMethod;
+      try {
+        getterMethod = logicClass.getMethod("get" + paramName);
+        minMethod = logicClass.getMethod("get" + paramName + "Min");
+        maxMethod = logicClass.getMethod("get" + paramName + "Max");
+      } catch (NoSuchMethodException e) {
+        // TODO: Handle this exception
+        throw new UnsupportedOperationException(e);
+      }
+
+      // TODO: SET THE PARAMETER TOOL TIPS
+      // Set the parameter listener
       try {
         if (paramType == double.class) {
+          // Get the default and minmax values
+          double min = (double) minMethod.invoke(gameLogic);
+          double max = (double) maxMethod.invoke(gameLogic);
+          double defaultValue = (double) getterMethod.invoke(gameLogic);
+
           // Create a consumer for UI updates
           Consumer<Double> consumer = v -> {
             try {
-              method.invoke(gameLogic, v);
+              setterMethod.invoke(gameLogic, v);
             } catch (Exception ex) {
               // TODO: Handle this exception
               ex.printStackTrace();
@@ -277,12 +292,15 @@ public class SceneController {
           };
 
           // Register parameter in simulation UI
-          simulationScene.setParameter(paramName, MIN, MAX, 0, "", consumer);
+          simulationScene.setParameter(paramName, min, max, defaultValue, "", consumer);
         } else if (paramType == String.class) {
+          // Get the default value
+          String defaultValue = (String) getterMethod.invoke(gameLogic);
+
           // Create a consumer for UI updates
           Consumer<String> consumer = v -> {
             try {
-              method.invoke(gameLogic, v);
+              setterMethod.invoke(gameLogic, v);
             } catch (Exception ex) {
               // TODO: Handle this exception
               ex.printStackTrace();
@@ -290,15 +308,17 @@ public class SceneController {
           };
 
           // Register parameter in simulation UI
-          simulationScene.setParameter("", paramName, "", consumer);
+          simulationScene.setParameter(defaultValue, paramName, "", consumer);
         }
       } catch (Exception e) {
+        // TODO: Handle this exception
         throw new UnsupportedOperationException("Failed to set parameter: " + paramName, e);
       }
     }
   }
 
-  // Controller APIs
+  /* CONTROLLER APIS */
+
   /**
    * Start or pause the simulation.
    * @param isPaused True if the simulation should be paused, false otherwise

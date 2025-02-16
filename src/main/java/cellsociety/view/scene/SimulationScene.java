@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -56,6 +58,7 @@ public class SimulationScene {
   private final Stage primaryStage;
   private final Docker docker;
   private final SceneController controller;
+
   private double updateInterval;
   private double timeSinceLastUpdate;
 
@@ -92,16 +95,13 @@ public class SimulationScene {
     primaryStage.getScene().getStylesheets().add(Objects.requireNonNull(getClass().getResource(STYLE_PATH)).toExternalForm());
   }
 
-  /**
-   * Method to update the grid with the new state of the simulation
-   * @param elapsedTime the time elapsed since the last update
-   */
-  public void step(double elapsedTime) {
-    timeSinceLastUpdate += elapsedTime;
-    if (timeSinceLastUpdate >= updateInterval) {
-      controller.update();
-      timeSinceLastUpdate = 0.0;
-    }
+  public void start(int framesPerSecond) {
+    primaryStage.show();
+
+    // Set up the game loop
+    new Timeline(new KeyFrame(javafx.util.Duration.millis((double) 1000 / framesPerSecond), e -> {
+      step(1.0 / framesPerSecond);
+    })).play();
   }
 
   /* PRIVATE UI SETUP METHODS */
@@ -577,6 +577,14 @@ public class SimulationScene {
 
 
   /* PRIVATE UI HELPER METHODS */
+
+  private void step(double elapsedTime) {
+    timeSinceLastUpdate += elapsedTime;
+    if (timeSinceLastUpdate >= updateInterval) {
+      controller.update();
+      timeSinceLastUpdate = 0.0;
+    }
+  }
 
   private void toggleStartPauseButton(boolean isPause) {
     if (isPause) {
