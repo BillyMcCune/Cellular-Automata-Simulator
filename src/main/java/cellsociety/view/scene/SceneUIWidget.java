@@ -284,6 +284,19 @@ public class SceneUIWidget {
       content.setScaleX(scale[0]);
       content.setScaleY(scale[0]);
     });
+    pane.setOnScroll(event -> {
+      double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
+
+      scale[0] *= zoomFactor;
+
+      // limit the scale to reasonable values
+      scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
+
+      content.setScaleX(scale[0]);
+      content.setScaleY(scale[0]);
+
+      event.consume();
+    });
 
     return pane;
   }
