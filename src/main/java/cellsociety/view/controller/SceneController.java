@@ -205,7 +205,6 @@ public class SceneController {
       return;
     }
 
-
     try {
       SimulationType type = configInfo.myType();
       String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();

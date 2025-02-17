@@ -1,5 +1,7 @@
 package cellsociety.model.data.states;
 
+import cellsociety.log.Log;
+
 /**
  * An interface for enums that have an associated integer state value.
  */
@@ -23,8 +25,8 @@ public interface State {
       }
     }
     T defaultConstant = enumClass.getEnumConstants()[0];
-    System.err.printf("Warning: Invalid %s value: %d. Defaulting to %s%n",
-        enumClass.getSimpleName(), value, defaultConstant);
+    Log.error("Warning: Invalid %s value: %d. Defaulting to %s%n",
+            enumClass.getSimpleName(), value, defaultConstant);
     return defaultConstant;
   }
 }

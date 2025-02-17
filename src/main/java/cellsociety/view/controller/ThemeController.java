@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * The controller that is to handle the theme changes
+ *
+ * @author Hsuan-Kai Liao
+ */
 public class ThemeController {
 
   // CSS style path

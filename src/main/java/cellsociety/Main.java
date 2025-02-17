@@ -13,7 +13,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) {
     // Set up the title of the primary stage
-    primaryStage.setTitle("Game of Life Simulation");
+    primaryStage.setTitle("Cell Society Simulation");
 
     // Create the main scene
     SimulationScene mainScene = new SimulationScene(primaryStage);

@@ -1,5 +1,6 @@
 package cellsociety.model.config;
 
+import cellsociety.log.Log;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class ConfigReader {
       createListOfConfigFiles();
     }
     File dataFile = fileMap.get(fileName);
-    System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+    Log.trace("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     return getConfigInformation(dataFile, fileName);
   }
 
