@@ -5,6 +5,9 @@ import cellsociety.model.config.ConfigReader;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import javax.xml.parsers.ParserConfigurationException;
+
+
 
 /**
  * Tests for ConfigReader class.
@@ -32,14 +35,110 @@ import static org.junit.jupiter.api.Assertions.*;
  * Use the ZOMBIES acronym to help you remember to consider these questions when coming up with useful scenarios to test the program:
  *
  */
-public  class  ConfigReaderTest{
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
+
+public class ConfigReaderTest {
+
   ConfigReader configReader = new ConfigReader();
 
-  //make sure the getFiles Names is not empty
+  // Ensures that getFileNames returns a non-empty list when config directory has files
   @Test
-  void getFileNames_isNotEmpty() {
+  void getFileNames_ConfigDirectoryHasFiles_IsNotEmpty() {
     assertFalse(configReader.getFileNames().isEmpty());
   }
-  //TODO create a second test for getFileNames
 
+  @Test
+  void readConfig_InvalidGridBounds_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorGridBounds.xml"));
+    System.out.println("[ErrorGridBounds.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_CellMissingStateAttribute_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorCellMissingStateAttribute.xml"));
+    System.out.println("[ErrorCellMissingStateAttribute.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_MissingTitleParameter_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorMissingTitleParameter.xml"));
+    System.out.println("[ErrorMissingTitleParameter.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_ProportionsExceedLimit_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorProportionsExceedLimit.xml"));
+    System.out.println("[ErrorProportionsExceedLimit.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_ParamMissingName_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorParamMissingName.xml"));
+    System.out.println("[ErrorParamMissingName.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_TooManyTotalStates_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorTooManyTotalStates.xml"));
+    System.out.println("[ErrorTooManyTotalStates.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_EmptyInitialCells_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorEmptyInitialCells.xml"));
+    System.out.println("[ErrorEmptyInitialCells.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_InvalidAcceptedStateValue_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorInvalidAcceptedStateValue.xml"));
+    System.out.println("[ErrorInvalidAcceptedStateValue.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_InvalidValue_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorInvalidValue.xml"));
+    System.out.println("[ErrorInvalidValue.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_MultipleGridConfigurationElements_ThrowsParserConfigurationException() {
+    Exception e = assertThrows(ParserConfigurationException.class, () -> configReader.readConfig("ErrorMultipleGridConfigurationElements.xml"));
+    System.out.println("[ErrorMultipleGridConfigurationElements.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_InvalidProportionValue_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorInvalidProportionValue.xml"));
+    System.out.println("[ErrorInvalidProportionValue.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_InvalidValueInDoubleParam_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorInvalidValueInDoubleParam.xml"));
+    System.out.println("[ErrorInvalidValueInDoubleParam.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_InvalidCellState_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorInvalidCellState.xml"));
+    System.out.println("[ErrorInvalidCellState.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_EmptyRow_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorEmptyRow.xml"));
+    System.out.println("[ErrorEmptyRow.xml] " + e.getMessage());
+  }
+
+  @Test
+  void readConfig_AcceptedStatesEmpty_ThrowsIllegalArgumentException() {
+    Exception e = assertThrows(IllegalArgumentException.class, () -> configReader.readConfig("ErrorAcceptedStatesEmpty.xml"));
+    System.out.println("[ErrorAcceptedStatesEmpty.xml] " + e.getMessage());
+  }
 }
