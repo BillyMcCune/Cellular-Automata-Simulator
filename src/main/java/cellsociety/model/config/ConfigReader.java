@@ -57,24 +57,12 @@ public class ConfigReader {
     int width = Integer.parseInt(getTextValue(root, "width"));
     int height = Integer.parseInt(getTextValue(root, "height"));
     int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
-    List<List<CellRecord>> initialCells;
-    if (root.getElementsByTagName("initialCells").item(0) != null) {
-      initialCells = parseInitialCells(root);
-    }
-    else if (root.getElementsByTagName("initialStates").item(0) != null) {
-      initialCells = createCellsByRandomTotalStates(root);
-    }
-    else if(root.getElementsByTagName("initialProportions").item(0) != null) {
-      initialCells = createCellsByRandomProportions(root);
-    }
-    else {
-      throw new ParserConfigurationException("Missing Initial Cells or Initial States in XML File");
-    }
+    List<List<CellRecord>> initialGrid = getInitialGrid(root);
 
     ParameterRecord parameters = parseForParameters(root);
     Set<Integer> acceptedStates = parseForAcceptedStates(root);
 
-    checkForInvalidInformation(width, height, acceptedStates, initialCells);
+    checkForInvalidInformation(width, height, acceptedStates, initialGrid);
 
     return new ConfigInfo(
         SimulationType.valueOf(type.toUpperCase()),
@@ -84,12 +72,38 @@ public class ConfigReader {
         width,
         height,
         defaultSpeed,
-        initialCells,
+        initialGrid,
         parameters,
         acceptedStates,
         fileName
     );
   }
+
+  private List<List<CellRecord>> getInitialGrid(Element root) throws ParserConfigurationException {
+    int initialCellsCount = root.getElementsByTagName("initialCells").getLength();
+    int initialStatesCount = root.getElementsByTagName("initialStates").getLength();
+    int initialProportionsCount = root.getElementsByTagName("initialProportions").getLength();
+
+    int providedCount = 0;
+    providedCount += (initialCellsCount > 0 ? 1 : 0);
+    providedCount += (initialStatesCount > 0 ? 1 : 0);
+    providedCount += (initialProportionsCount > 0 ? 1 : 0);
+
+    if (providedCount > 1) {
+      throw new ParserConfigurationException("Multiple grid configuration elements found. Please specify only one of initialCells, initialStates, or initialProportions.");
+    }
+
+    if (initialCellsCount > 0) {
+      return parseInitialCells(root);
+    } else if (initialStatesCount > 0) {
+      return createCellsByRandomTotalStates(root);
+    } else if (initialProportionsCount > 0) {
+      return createCellsByRandomProportions(root);
+    } else {
+      throw new ParserConfigurationException("Missing grid configuration element. Please specify one of initialCells, initialStates, or initialProportions.");
+    }
+  }
+
 
   private List<List<CellRecord>> createCellsByRandomProportions(Element root) {
     int width = Integer.parseInt(getTextValue(root, "width"));
@@ -134,9 +148,6 @@ public class ConfigReader {
 
   private Map<Integer, Integer> parseInitialStates(Element root, Set<Integer> acceptedStates, int totalCells) {
     Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
-    if (initialStatesElement == null) {
-      throw new IllegalArgumentException("Missing 'initialStates' element for random state assignment.");
-    }
 
     Map<Integer, Integer> stateCounts = new HashMap<>();
     NodeList stateNodes = initialStatesElement.getChildNodes();
@@ -197,9 +208,6 @@ public class ConfigReader {
   private Map<Integer, Integer> parseInitialProportions(Element root, Set<Integer> acceptedStates, int totalCells) {
     List<String> errorMessages = new ArrayList<>();
     Element proportionsElement = (Element) root.getElementsByTagName("initialProportions").item(0);
-    if (proportionsElement == null) {
-      errorMessages.add("Missing 'initialProportions' element for random proportion assignment.");
-    }
 
     Map<Integer, Double> proportions = new HashMap<>();
     double totalSpecifiedProportion = 0.0;
@@ -330,7 +338,7 @@ public class ConfigReader {
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();
     } else {
-      return "";
+      throw new IllegalArgumentException(tagName + " parameter in XML file does not exist.");
     }
   }
 
