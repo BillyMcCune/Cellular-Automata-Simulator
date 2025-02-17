@@ -194,7 +194,6 @@ public class SceneController {
       initGrid();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog("Reset Model Error", "Failed to reset the model with reflection.", e);
-      e.getCause().printStackTrace();
     }
   }
 

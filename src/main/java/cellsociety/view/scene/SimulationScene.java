@@ -1,5 +1,6 @@
 package cellsociety.view.scene;
 
+import cellsociety.logging.Log;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import cellsociety.view.controller.ThemeController.UIComponent;
@@ -91,16 +92,19 @@ public class SimulationScene {
    */
   public void start(int framesPerSecond) {
     // Create the splash screen
-    SceneUIWidget.createSplashScreen("English", Theme.DAY, this::splashScreenLanguageCallback, this::splashScreenThemeCallback);
+    SceneUIWidget.createSplashScreen("English", Theme.DAY, this::splashScreenLanguageCallback, this::splashScreenThemeCallback, () -> {
+      // Log the welcome
+      Log.info("Welcome to Cell Society! This simulation is made by Jacob You, Hsuan-Kai Liao, and Billy McCune.");
 
-    // Show the primary stage
-    primaryStage.show();
+      // Show the primary stage
+      primaryStage.show();
 
-    // Set up the game loop
-    Timeline gameLoop = new Timeline();
-    gameLoop.setCycleCount(Timeline.INDEFINITE);
-    gameLoop.getKeyFrames().add(new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond), e -> step(1.0 / framesPerSecond)));
-    gameLoop.play();
+      // Set up the game loop
+      Timeline gameLoop = new Timeline();
+      gameLoop.setCycleCount(Timeline.INDEFINITE);
+      gameLoop.getKeyFrames().add(new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond), e -> step(1.0 / framesPerSecond)));
+      gameLoop.play();
+    });
   }
 
   /* PRIVATE UI SETUP METHODS */

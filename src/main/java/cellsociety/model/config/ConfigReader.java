@@ -1,5 +1,6 @@
 package cellsociety.model.config;
 
+import cellsociety.logging.Log;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class ConfigReader {
       createListOfConfigFiles();
     }
     File dataFile = fileMap.get(fileName);
-    System.out.println("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+    Log.trace("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
     return getConfigInformation(dataFile, fileName);
   }
 
@@ -46,6 +47,12 @@ public class ConfigReader {
    */
   public ConfigInfo getConfigInformation(File xmlFile, String fileName)
       throws ParserConfigurationException, SAXException, IOException {
+
+    // Check the xml file in case of file system's crash
+    if (xmlFile.length() == 0) {
+      throw new IOException("Error: XML file is empty - " + xmlFile.getAbsolutePath());
+    }
+
     Document xmlDocument =
         DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
     Element root = xmlDocument.getDocumentElement();

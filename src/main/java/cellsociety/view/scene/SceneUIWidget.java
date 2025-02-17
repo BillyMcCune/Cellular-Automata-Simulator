@@ -1,5 +1,6 @@
 package cellsociety.view.scene;
 
+import cellsociety.logging.Log;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
@@ -353,8 +354,14 @@ public class SceneUIWidget {
       PrintWriter pw = new PrintWriter(sw);
       e.printStackTrace(pw);
       exceptionArea.setText(sw.toString());
+
+      // Log the exception
+      Log.error(e, message);
     } else {
       exceptionArea.setText("No additional details available.");
+
+      // Log the exception
+      Log.error(message);
     }
 
     // Layout
@@ -380,7 +387,7 @@ public class SceneUIWidget {
    * @param languageConsumer the consumer for the selected language
    * @param themeConsumer the consumer for the selected theme
    */
-  public static void createSplashScreen(String defaultLanguage, Theme defaultTheme, Consumer<String> languageConsumer, Consumer<Theme> themeConsumer) {
+  public static void createSplashScreen(String defaultLanguage, Theme defaultTheme, Consumer<String> languageConsumer, Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
     splashStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -454,7 +461,10 @@ public class SceneUIWidget {
     // Create the Start button
     Button startButton = new Button("Start");
     startButton.getStyleClass().add("splash-start-button");
-    startButton.setOnAction(event -> splashStage.close());
+    startButton.setOnAction(event -> {
+      splashStage.close();
+      startCallback.run();
+    });
 
     // Add all elements to the splash screen VBox
     splashScreen.getChildren().addAll(welcomeLabel, splashBox, startButton);
@@ -467,6 +477,7 @@ public class SceneUIWidget {
     splashStage.setScene(splashScene);
 
     // Show the splash screen and wait for it to close
+    Log.trace("SplashScreen created.");
     splashStage.showAndWait();
   }
 

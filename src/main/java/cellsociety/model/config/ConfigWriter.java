@@ -13,6 +13,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import cellsociety.logging.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -178,7 +180,7 @@ public class ConfigWriter {
       File configDirectory = new File(path);
 
       if (!configDirectory.exists() && !configDirectory.mkdirs()) {
-        System.err.println("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
+        Log.error("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
         return null;
       }
 
@@ -196,12 +198,12 @@ public class ConfigWriter {
 
   private void writeXMLDocument(Document xmlDocument, File outputFile) throws Exception {
     if (outputFile == null) {
-      System.err.println("Output file is null. Cannot save XML.");
+      Log.error("Output file is null. Cannot save XML.");
       return;
     }
     try {
       if (!outputFile.exists() && !outputFile.createNewFile()) {
-        System.err.println("Failed to create new XML file: " + outputFile.getAbsolutePath());
+        Log.error("Failed to create new XML file: " + outputFile.getAbsolutePath());
         return;
       }
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -211,7 +213,7 @@ public class ConfigWriter {
       try (FileOutputStream fos = new FileOutputStream(outputFile)) {
         StreamResult result = new StreamResult(fos);
         transformer.transform(source, result);
-        System.out.println("Config saved to file: " + outputFile.getAbsolutePath());
+        Log.trace("Config saved to file: " + outputFile.getAbsolutePath());
       }
     } catch (IOException e) {
       throw new IOException(" ");
