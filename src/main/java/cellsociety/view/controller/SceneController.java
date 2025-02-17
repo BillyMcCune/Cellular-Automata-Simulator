@@ -194,6 +194,7 @@ public class SceneController {
       initGrid();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog("Reset Model Error", "Failed to reset the model with reflection.", e);
+      e.getCause().printStackTrace();
     }
   }
 
@@ -251,9 +252,9 @@ public class SceneController {
       Method minMethod = null;
       Method maxMethod = null;
       try {
-        getterMethod = logicClass.getMethod("get" + paramName);
-        minMethod = logicClass.getMethod("get" + paramName + "Min");
-        maxMethod = logicClass.getMethod("get" + paramName + "Max");
+        getterMethod = logicClass.getMethod("get" + methodName.substring(3));
+        minMethod = logicClass.getMethod("getMinParam", String.class);
+        maxMethod = logicClass.getMethod("getMaxParam", String.class);
       } catch (NoSuchMethodException e) {
         SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter getter methods for: " + paramName, e);
       }
@@ -268,9 +269,9 @@ public class SceneController {
           double defaultValue = 0;
           try {
             assert minMethod != null;
-            min = (double) minMethod.invoke(gameLogic);
+            min = (double) minMethod.invoke(gameLogic, paramName);
             assert maxMethod != null;
-            max = (double) maxMethod.invoke(gameLogic);
+            max = (double) maxMethod.invoke(gameLogic, paramName);
             defaultValue = (double) getterMethod.invoke(gameLogic);
           } catch (Exception ex) {
             SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter values for: " + paramName, ex);

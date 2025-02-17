@@ -15,30 +15,42 @@ public class FireLogic extends Logic<FireState> {
 
   public FireLogic(Grid<FireState> grid, ParameterRecord parameters) {
     super(grid, parameters);
+    setProbCatch(loadDoubleProperty("FireLogic.probCatch.default"));
+    setProbIgnite(loadDoubleProperty("FireLogic.probIgnite.default"));
+    setProbTree(loadDoubleProperty("FireLogic.probTree.default"));
   }
 
   public void setProbCatch(double percentCatch) {
-    probCatch = percentCatch/100;
+    double min = getMinParam("probCatch");
+    double max = getMaxParam("probCatch");
+    checkBounds(percentCatch, min, max);
+    probCatch = percentCatch / 100.0;
   }
 
   public void setProbIgnite(double percentIgnite) {
-    probIgnite = percentIgnite/100;
+    double min = getMinParam("probIgnite");
+    double max = getMaxParam("probIgnite");
+    checkBounds(percentIgnite, min, max);
+    probIgnite = percentIgnite / 100.0;
   }
 
-  public void setProbGrowTree(double percentGrowTree) {
-    probTree = percentGrowTree/100;
+  public void setProbTree(double percentTree) {
+    double min = getMinParam("probTree");
+    double max = getMaxParam("probTree");
+    checkBounds(percentTree, min, max);
+    probTree = percentTree / 100.0;
   }
 
   public double getProbCatch() {
-    return probCatch;
+    return probCatch * 100;
   }
 
   public double getProbIgnite() {
-    return probIgnite;
+    return probIgnite * 100;
   }
 
   public double getProbTree() {
-    return probTree;
+    return probTree * 100;
   }
 
   @Override
