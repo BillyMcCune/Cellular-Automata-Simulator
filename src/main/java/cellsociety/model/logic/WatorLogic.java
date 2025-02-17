@@ -15,8 +15,10 @@ import java.util.List;
  */
 public class WatorLogic extends Logic<WatorState> {
 
-  private static double fishEnergyGain;
+
   private static double sharkReproductionTime;
+  private static double sharkBaseEnergy;
+  private static double fishEnergyGain;
   private static double fishReproductionTime;
   private final List<Cell<WatorState>> sharkCells;
   private final List<Cell<WatorState>> fishCells;
@@ -40,7 +42,7 @@ public class WatorLogic extends Logic<WatorState> {
     if (baseSharkProperties == null) {
       baseSharkProperties = new HashMap<>();
       baseSharkProperties.put("time", 0.0);
-      baseSharkProperties.put("energy", 0.0);
+      baseSharkProperties.put("energy", sharkBaseEnergy);
     }
     if (baseFishProperties == null) {
       baseFishProperties = new HashMap<>();
@@ -54,7 +56,8 @@ public class WatorLogic extends Logic<WatorState> {
    * @param energy the initial or reset energy value for sharks
    */
   public static void setBaseSharkEnergy(double energy) {
-    baseSharkProperties.put("energy", energy);
+    sharkBaseEnergy = energy;
+    baseSharkProperties.put("energy", sharkBaseEnergy);
   }
 
   /**

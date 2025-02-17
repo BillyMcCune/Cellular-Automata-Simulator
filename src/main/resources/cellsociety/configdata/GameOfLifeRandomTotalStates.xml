@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+  <type>LIFE</type>
+
+  <title>Total State Testt</title>
+
+  <author>Richard Guy</author>
+
+  <description>A test file for the random total state xml configuration. The cell locations should change randomly with each load.</description>
+
+  <parameters>
+  </parameters>
+
+  <width>5</width>
+
+  <height>5</height>
+
+  <defaultSpeed>10</defaultSpeed>
+
+  <initialStates>
+  <state1>6</state1>
+  </initialStates>
+
+  <acceptedStates>0 1</acceptedStates>
+
+
+</simulation>

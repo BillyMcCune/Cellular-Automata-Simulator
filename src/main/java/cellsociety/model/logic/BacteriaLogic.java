@@ -9,24 +9,37 @@ import java.util.Map;
 
 public class BacteriaLogic extends Logic<BacteriaState> {
 
+  private final double beatingThresholdMin = loadDoubleProperty("BacteriaLogic.beatingThreshold.min");
+  private final double beatingThresholdMax = loadDoubleProperty("BacteriaLogic.beatingThreshold.max");
   private double beatingThreshold;
   private int numStates;
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
   public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters) {
     super(grid, parameters);
+    setBeatingThreshold(loadDoubleProperty("BacteriaLogic.beatingThreshold.default"));
+    setNumStates(loadDoubleProperty("BacteriaLogic.numStates.default"));
   }
 
-  public void setPercBeatingThreshold(double beatingThreshold) {
-    this.beatingThreshold = beatingThreshold/100;
+  public void setBeatingThreshold(double percThreshold) throws IllegalArgumentException {
+    double min = getMinParam("beatingThreshold");
+    double max = getMaxParam("beatingThreshold");
+    checkBounds(percThreshold, min, max);
+    this.beatingThreshold = percThreshold / 100.0;
   }
 
-  public void setNumStates(double numStates) {
-    this.numStates = (int) numStates;
-  }
-
+  /**
+   * Returns the beating threshold in percentage form for the Controller
+   *
+   * @return The beating threshold in percentage form
+   */
   public double getBeatingThreshold() {
-    return beatingThreshold;
+    return beatingThreshold * 100;
+  }
+
+  public void setNumStates(double n) throws IllegalArgumentException {
+    checkBounds(n, 0, Double.MAX_VALUE);
+    this.numStates = (int) n;
   }
 
   public double getNumStates() {

@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<simulation>
+  <type>FIRE</type>
+  <title>Basic Fire (Random Total States)</title>
+  <author>Billy</author>
+  <description>
+    A basic fire simulation configuration with random assignment of cell states based on a random proportions
+    of 90 percent trees and 5 percent burning trees.
+  </description>
+  <parameters>
+    <doubleParameter name="probCatch">50</doubleParameter>
+    <doubleParameter name="progIgnite">5</doubleParameter>
+    <doubleParameter name="probTree">10</doubleParameter>
+  </parameters>
+  <width>8</width>
+  <height>8</height>
+  <defaultSpeed>10</defaultSpeed>
+  <initialProportions>
+    <state1>90</state1>
+    <state2>5</state2>
+  </initialProportions>
+  <acceptedStates>0 1 2</acceptedStates>
+</simulation>

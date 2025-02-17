@@ -13,6 +13,7 @@ public class SegregationLogic extends Logic<SegregationState> {
 
   public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) {
     super(grid, parameters);
+    setSatisfiedThreshold(loadDoubleProperty("SegregationLogic.satisfiedThreshold.default"));
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
@@ -27,12 +28,15 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
   }
 
-  public void setSatisfiedThreshold(double percSatisfiedThreshold) {
+  public void setSatisfiedThreshold(double percSatisfiedThreshold) throws IllegalArgumentException {
+    double min = getMinParam("satisfiedThreshold");
+    double max = getMaxParam("satisfiedThreshold");
+    checkBounds(percSatisfiedThreshold, min, max);
     satisfiedThreshold = percSatisfiedThreshold/100;
   }
 
   public double getSatisfiedThreshold() {
-    return satisfiedThreshold;
+    return satisfiedThreshold * 100;
   }
 
   @Override
