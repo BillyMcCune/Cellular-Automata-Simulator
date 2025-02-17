@@ -64,6 +64,9 @@ public class ConfigReader {
     else if (root.getElementsByTagName("initialStates").item(0) != null) {
       initialCells = createCellsByRandomTotalStates(root);
     }
+    else if(root.getElementsByTagName("initialProportions").item(0) != null) {
+      initialCells = createCellsByRandomProportions(root);
+    }
     else {
       throw new ParserConfigurationException("Missing Initial Cells or Initial States in XML File");
     }
@@ -86,6 +89,17 @@ public class ConfigReader {
         acceptedStates,
         fileName
     );
+  }
+
+  private List<List<CellRecord>> createCellsByRandomProportions(Element root) {
+    int width = Integer.parseInt(getTextValue(root, "width"));
+    int height = Integer.parseInt(getTextValue(root, "height"));
+    int totalCells = width * height;
+
+    Set<Integer> acceptedStates = parseForAcceptedStates(root);
+    Map<Integer,Integer> stateCounts = parseInitialProportions(root, acceptedStates, totalCells);
+    List<Integer> randomizedStates = generateRandomizedStateList(stateCounts, totalCells);
+    return createGrid(randomizedStates, width, height);
   }
 
   private List<List<CellRecord>> createCellsByRandomTotalStates(Element root) {
@@ -118,7 +132,6 @@ public class ConfigReader {
     return statesList;
   }
 
-  // Parses the <initialStates> element and returns a mapping from state to cell count.
   private Map<Integer, Integer> parseInitialStates(Element root, Set<Integer> acceptedStates, int totalCells) {
     Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
     if (initialStatesElement == null) {
@@ -165,7 +178,7 @@ public class ConfigReader {
       throw new IllegalArgumentException("Total specified cells (" + specifiedSum +
           ") exceeds grid size (" + totalCells + ").");
     }
-    //if state 0 is not specified, fill the remainder with state 0.
+
     if (!stateCounts.containsKey(0)) {
       if (!acceptedStates.contains(0)) {
         throw new IllegalArgumentException("Default state 0 is not in acceptedStates.");
@@ -181,6 +194,91 @@ public class ConfigReader {
     return stateCounts;
   }
 
+  private Map<Integer, Integer> parseInitialProportions(Element root, Set<Integer> acceptedStates, int totalCells) {
+    List<String> errorMessages = new ArrayList<>();
+    Element proportionsElement = (Element) root.getElementsByTagName("initialProportions").item(0);
+    if (proportionsElement == null) {
+      errorMessages.add("Missing 'initialProportions' element for random proportion assignment.");
+    }
+
+    Map<Integer, Double> proportions = new HashMap<>();
+    double totalSpecifiedProportion = 0.0;
+
+    if (proportionsElement != null) {
+      NodeList nodes = proportionsElement.getChildNodes();
+      for (int i = 0; i < nodes.getLength(); i++) {
+        Node node = nodes.item(i);
+        if (node.getNodeType() != Node.ELEMENT_NODE) continue;
+        Element elem = (Element) node;
+        String tagName = elem.getTagName();
+        if (!tagName.startsWith("state")) continue;
+
+        String numberPart = tagName.substring("state".length());
+        int state;
+        try {
+          state = Integer.parseInt(numberPart);
+        } catch (NumberFormatException e) {
+          errorMessages.add("Invalid state tag name: " + tagName);
+          continue;
+        }
+
+        if (!acceptedStates.contains(state)) {
+          errorMessages.add("State " + state + " is not among accepted states.");
+          continue;
+        }
+
+        double proportion;
+
+        try {
+          proportion = Double.parseDouble(elem.getTextContent().trim());
+        } catch (NumberFormatException e) {
+          errorMessages.add("Invalid proportion value for state " + state + " in <initialProportions>.");
+          continue;
+        }
+        proportions.put(state, proportion);
+        totalSpecifiedProportion += proportion;
+      }
+    }
+
+    if (!proportions.containsKey(0)) {
+      double remainder = 100.0 - totalSpecifiedProportion;
+      if (remainder < 0) {
+        errorMessages.add("Specified proportions exceed 100%.");
+      } else {
+        proportions.put(0, remainder);
+        totalSpecifiedProportion = 100.0;
+      }
+    } else {
+      if (Math.abs(totalSpecifiedProportion - 100.0) > 0.001) {
+        errorMessages.add("When state 0 is provided, the sum of proportions must equal 100%. Found: " + totalSpecifiedProportion);
+      }
+    }
+
+    if (!errorMessages.isEmpty()) {
+      throw new IllegalArgumentException(String.join("\n", errorMessages));
+    }
+
+    Map<Integer, Integer> stateCounts = new HashMap<>();
+    int sumCounts = 0;
+    for (Map.Entry<Integer, Double> entry : proportions.entrySet()) {
+      int state = entry.getKey();
+      double percent = entry.getValue();
+      if (state != 0) {
+        int count = (int) Math.round(totalCells * (percent / 100.0));
+        stateCounts.put(state, count);
+        sumCounts += count;
+      }
+    }
+    stateCounts.put(0, totalCells - sumCounts);
+
+    int totalAssigned = stateCounts.values().stream().mapToInt(Integer::intValue).sum();
+    if (totalAssigned != totalCells) {
+      throw new IllegalStateException("Total assigned cells (" + totalAssigned + ") does not equal grid size (" + totalCells + ").");
+    }
+
+    return stateCounts;
+  }
+
   private List<List<CellRecord>> createGrid(List<Integer> statesList, int width, int height) {
     List<List<CellRecord>> grid = new ArrayList<>();
     int index = 0;
@@ -188,7 +286,6 @@ public class ConfigReader {
       List<CellRecord> row = new ArrayList<>();
       for (int c = 0; c < width; c++) {
         int state = statesList.get(index++);
-        // Create a new CellRecord. (Adjust properties as needed.)
         row.add(new CellRecord(state, new HashMap<>()));
       }
       grid.add(row);
