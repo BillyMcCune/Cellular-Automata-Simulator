@@ -14,7 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import cellsociety.log.Log;
+import cellsociety.logging.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

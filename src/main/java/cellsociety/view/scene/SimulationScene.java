@@ -1,6 +1,6 @@
 package cellsociety.view.scene;
 
-import cellsociety.log.Log;
+import cellsociety.logging.Log;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import cellsociety.view.controller.ThemeController.UIComponent;

@@ -1,6 +1,6 @@
 package cellsociety.model.data.states;
 
-import cellsociety.log.Log;
+import cellsociety.logging.Log;
 
 /**
  * An interface for enums that have an associated integer state value.

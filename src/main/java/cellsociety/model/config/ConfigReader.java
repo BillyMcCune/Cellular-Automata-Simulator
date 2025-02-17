@@ -1,6 +1,6 @@
 package cellsociety.model.config;
 
-import cellsociety.log.Log;
+import cellsociety.logging.Log;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import java.io.File;
 import java.io.IOException;
