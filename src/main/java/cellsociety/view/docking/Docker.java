@@ -25,9 +25,6 @@ public class Docker {
   // Constants
   private static final int DOCK_OUTSIDE_OFFSET = 10;
 
-  private static final String DOCKING_STYLE_PATH = "/cellsociety/style/dark/docking.css";
-  private static final String DOCKING_STYLE_SHEET = Objects.requireNonNull(Docker.class.getResource(DOCKING_STYLE_PATH)).toExternalForm();
-
   // Instance variables
   private final List<SplitPane> splitPanes = new ArrayList<>();
   private final List<DWindow> floatingWindows = new ArrayList<>();
@@ -57,16 +54,15 @@ public class Docker {
 
     SplitPane splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
+    splitPane.getStyleClass().add("dock-split-pane");
     splitPanes.add(splitPane);
 
     // Set the main stage's scene
     Scene mainScene = new Scene(splitPane, mainStage.getWidth(), mainStage.getHeight());
     mainStage.setScene(mainScene);
-    mainScene.getStylesheets().add(DOCKING_STYLE_SHEET);
 
     // Create the dock indicator
     this.dockIndicator = new DIndicator(this);
-    dockIndicator.indicatorStage.getScene().getStylesheets().add(DOCKING_STYLE_SHEET);
 
     // Set the main stage's event listeners
     mainStage.setOnCloseRequest(event -> {
@@ -114,6 +110,24 @@ public class Docker {
   }
 
   /**
+   * Adds a style sheet to the docker and the dock indicator.
+   *
+   * @param styleSheet the style sheet to add
+   */
+  public void addStyleSheet(String styleSheet) {
+    mainStage.getScene().getStylesheets().add(styleSheet);
+    dockIndicator.indicatorStage.getScene().getStylesheets().add(styleSheet);
+  }
+
+  /**
+   * Clears all style sheets from the docker and the dock indicator.
+   */
+  public void clearStyleSheets() {
+    mainStage.getScene().getStylesheets().clear();
+    dockIndicator.indicatorStage.getScene().getStylesheets().clear();
+  }
+
+  /**
    * Reformats the docker to adjust the divider positions of the split panes.
    */
   public void reformat() {
@@ -158,7 +172,9 @@ public class Docker {
 
     // Create a TabPane to hold the content
     TabPane floatingTabPane = new TabPane();
+    floatingTabPane.getStyleClass().add("dock-tab-pane");
     Tab tab = new Tab(title);
+    tab.getStyleClass().add("dock-tab");
     tab.setClosable(false);
     tab.setContent(content);
     floatingTabPane.getTabs().add(tab);
@@ -266,6 +282,7 @@ public class Docker {
     // Get splitPanes
     SplitPane targetSplitPane = findParentSplitPane(destTabPane);
     targetSplitPane = (destTabPane == null) ? (SplitPane) mainStage.getScene().getRoot() : targetSplitPane == null ? new SplitPane() : targetSplitPane;
+    targetSplitPane.getStyleClass().add("dock-split-pane");
 
     // Initial divider positions
     double[] originalPositions = targetSplitPane.getDividerPositions();
@@ -283,7 +300,7 @@ public class Docker {
 
     // Create a new SplitPane if the target SplitPane is not empty
     SplitPane newSplitPane = new SplitPane();
-    newSplitPane.setStyle("-fx-background-color: gray;");
+    newSplitPane.getStyleClass().add("dock-split-pane");
 
     // Check if the target SplitPane is empty
     if (shouldInsertDirectly) {

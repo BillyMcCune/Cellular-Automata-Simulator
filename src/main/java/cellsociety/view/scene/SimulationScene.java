@@ -1,10 +1,12 @@
 package cellsociety.view.scene;
 
+import cellsociety.view.controller.ThemeController;
+import cellsociety.view.controller.ThemeController.Theme;
+import cellsociety.view.controller.ThemeController.UIComponent;
 import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
-import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -25,10 +27,6 @@ public class SimulationScene {
   // Constants
   public static final double DEFAULT_WIDTH = 1200;
   public static final double DEFAULT_HEIGHT = 700;
-
-  // CSS style path
-  public static final String SCENE_STYLE_PATH = "/cellsociety/style/dark/scene.css";
-  public static final String SCENE_STYLE_SHEET = Objects.requireNonNull(SimulationScene.class.getResource(SCENE_STYLE_PATH)).toExternalForm();
 
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
@@ -83,12 +81,19 @@ public class SimulationScene {
     docker.createDWindow("Parameters", parameterPanel, DockPosition.RIGHT);
     docker.reformat();
 
-    // Set the scene style
-    primaryStage.getScene().getStylesheets().add(SCENE_STYLE_SHEET);
-    primaryStage.getScene().getStylesheets().add(SceneUIWidget.WIDGET_STYLE_SHEET);
+    // Set the default style
+    setUIStyle(Theme.DAY);
   }
 
+  /**
+   * Start the simulation scene with the given frames per second
+   * @param framesPerSecond the number of frames per second
+   */
   public void start(int framesPerSecond) {
+    // Create the splash screen
+    SceneUIWidget.createSplashScreen("English", Theme.DAY, this::splashScreenLanguageCallback, this::splashScreenThemeCallback);
+
+    // Show the primary stage
     primaryStage.show();
 
     // Set up the game loop
@@ -136,12 +141,12 @@ public class SimulationScene {
     startPauseButton.setMaxWidth(MAX_BUTTON_WIDTH);
 
     // Set directory button sizes
-    directoryButton.setPrefWidth(BUTTON_WIDTH * 0.5);
+    directoryButton.setPrefWidth(BUTTON_WIDTH * 0.8);
 
     // Set ComboBox
     selectType = new ComboBox<>();
     selectType.getItems().addAll("None");
-    selectType.setPrefWidth(BUTTON_WIDTH * 1.5);
+    selectType.setPrefWidth(BUTTON_WIDTH * 1.8);
     selectType.setMaxWidth(MAX_BUTTON_WIDTH);
 
     // Create directory text field
@@ -231,6 +236,9 @@ public class SimulationScene {
   }
 
   private void selectDropDownCallback() {
+    // Original value
+    String originalValue = selectType.getValue();
+
     // Select a simulation type
     controller.getAllConfigFileNames();
 
@@ -238,6 +246,7 @@ public class SimulationScene {
     String[] items = controller.getAllConfigFileNames().stream().sorted().toArray(String[]::new);
     selectType.getItems().clear();
     selectType.getItems().addAll(items);
+    selectType.setValue(originalValue);
   }
 
   private void resetCallback() {
@@ -297,6 +306,14 @@ public class SimulationScene {
     }
   }
 
+  private void splashScreenThemeCallback(Theme theme) {
+    setUIStyle(theme);
+  }
+
+  private void splashScreenLanguageCallback(String language) {
+    // TODO: Implement language change
+  }
+
   /* PUBLIC UI SETS METHOD */
 
   /**
@@ -340,6 +357,27 @@ public class SimulationScene {
    */
   public void setParameter(String defaultValue, String label, String tooltip, Consumer<String> callback) {
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, label, tooltip, callback));
+  }
+
+  /**
+   * Set the UI style with the given theme
+   * @param theme the theme of the UI style
+   */
+  public void setUIStyle(Theme theme) {
+    // Get the style sheets for the scene, widget, and docking
+    String sceneSheet = ThemeController.getThemeSheet(theme, UIComponent.SCENE);
+    String widgetSheet = ThemeController.getThemeSheet(theme, UIComponent.WIDGET);
+    String dockingSheet = ThemeController.getThemeSheet(theme, UIComponent.DOCKING);
+
+    // Clear the current style sheets and add the new ones
+    primaryStage.getScene().getStylesheets().clear();
+    docker.clearStyleSheets();
+
+    // Add the new style sheets
+    primaryStage.getScene().getStylesheets().add(sceneSheet);
+    primaryStage.getScene().getStylesheets().add(widgetSheet);
+    docker.addStyleSheet(dockingSheet);
+    SceneUIWidget.setWidgetStyleSheet(widgetSheet);
   }
 
   /* PRIVATE UI HELPER METHODS */
