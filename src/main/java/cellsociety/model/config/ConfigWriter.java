@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
+ * @author Billy McCune
  * Updated ConfigWriter that outputs the new XML format.
  * <p>
  * The format includes:
@@ -51,6 +52,12 @@ public class ConfigWriter {
    */
   public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
       throws Exception {
+    if (myNewConfigInfo == null) {
+      throw new NullPointerException("myNewConfigInfo is null");
+    }
+    if (path == null) {
+      throw new NullPointerException("path is null");
+    }
     myConfigInfo = myNewConfigInfo;
     Document xmlDocument = createXMLDocument();
     File outputFile = createOutputFile(path);
@@ -58,6 +65,12 @@ public class ConfigWriter {
     writeXMLDocument(xmlDocument, outputFile);
   }
 
+  /**
+   * Returns the name of the last file that was successfully saved.
+   *
+   * @return the last file saved as a String
+   * @throws Error if no file has been saved yet
+   */
   public String getLastFileSaved() {
     if (LastFileSaved == null) {
       throw new Error("No last file saved");
@@ -65,6 +78,12 @@ public class ConfigWriter {
     return LastFileSaved;
   }
 
+  /**
+   * Creates a new XML Document instance.
+   *
+   * @return a new Document
+   * @throws ParserConfigurationException if a DocumentBuilder cannot be created
+   */
   private Document createXMLDocument() throws ParserConfigurationException {
     try {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -77,6 +96,7 @@ public class ConfigWriter {
 
   /**
    * Populates the XML document with the configuration data.
+   * @param xmlDocument the XML document to populate
    */
   private void populateXMLDocument(Document xmlDocument) {
     Element rootElement = xmlDocument.createElement("simulation");
@@ -180,6 +200,16 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Creates an output file for saving the XML document.
+   * <p>
+   * The file name is based on the configuration title with spaces removed and appended with "Save" and ".xml".
+   * If a file with the same name exists, a duplicate number is appended.
+   *
+   * @param path the directory path where the file should be saved
+   * @return a File object representing the output file, or null if the configuration directory cannot be created
+   * @throws ParserConfigurationException if the output file cannot be created
+   */
   private File createOutputFile(String path) throws ParserConfigurationException {
     try {
       String baseFilename = myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
@@ -187,9 +217,11 @@ public class ConfigWriter {
       File configDirectory = new File(path);
       LastFileSaved = baseFilename + fileExtension;
 
+      if (configDirectory.exists() && !configDirectory.isDirectory()) {
+        throw new ParserConfigurationException("Provided path is not a directory");
+      }
       if (!configDirectory.exists() && !configDirectory.mkdirs()) {
-        Log.error("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
-        return null;
+        throw new ParserConfigurationException("Failed to create config directory: " + path);
       }
 
       File outputFile = new File(configDirectory, baseFilename + fileExtension);
@@ -204,15 +236,21 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Writes the XML Document to the specified output file.
+   *
+   * @param xmlDocument the XML document to write
+   * @param outputFile the file to which the document will be written
+   * @throws Exception if an error occurs during file writing or XML transformation
+   */
   private void writeXMLDocument(Document xmlDocument, File outputFile) throws Exception {
     if (outputFile == null) {
-      Log.error("Output file is null. Cannot save XML.");
-      return;
+      throw new IllegalArgumentException("Output file is null");
     }
     try {
-      if (!outputFile.exists() && !outputFile.createNewFile()) {
-        Log.error("Failed to create new XML file: " + outputFile.getAbsolutePath());
-        return;
+      if (outputFile == null) {
+        Log.error("Output file is null. Cannot save XML.");
+        throw new IllegalArgumentException("Output file is null");
       }
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
       Transformer transformer = transformerFactory.newTransformer();
@@ -224,9 +262,9 @@ public class ConfigWriter {
         Log.trace("Config saved to file: " + outputFile.getAbsolutePath());
       }
     } catch (IOException e) {
-      throw new IOException(" ");
+      throw new IOException("Error writing XML file", e);
     } catch (Exception e) {
-      throw new Exception(" ");
+      throw new Exception("Error transforming XML document", e);
     }
   }
 }

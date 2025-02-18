@@ -31,11 +31,10 @@
 
 
     <row> <cell state="2"/> <cell state="3"/> <cell state="2"/> <cell state="2"/> <cell state="2"/></row>
-    <row><cell state="1"/> <cell state="2"/> <cell state="1"/> <cell state="0"/> <cell state="2"/></row>
-    <row><cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="0"/></row>
+    <row><cell state="0"/> <cell state="2"/> <cell state="1"/> <cell state="0"/> <cell state="2"/></row>
+    <row><cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="0"/></row>
     <row> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
     <row> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
-
 
   </initialCells>
 
