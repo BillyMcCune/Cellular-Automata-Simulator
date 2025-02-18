@@ -1,6 +1,8 @@
 package cellsociety.view.scene;
 
 import cellsociety.logging.Log;
+import cellsociety.view.controller.LanguageController;
+import cellsociety.view.controller.LanguageController.Language;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
@@ -9,6 +11,9 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,6 +29,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -42,9 +48,12 @@ public class SceneUIWidget {
   // UI constants
   public static final double MAX_ZOOM_RATE = 8.0;
   public static final double MIN_ZOOM_RATE = 0.2;
+  public static final double BUTTON_WIDTH = 100;
+  public static final double BUTTON_HEIGHT = 35;
+  public static final double MAX_BUTTON_WIDTH = 200;
 
   // Error Stage
-  private static final double DEFAULT_SPLASH_WIDTH = 400;
+  private static final double DEFAULT_SPLASH_WIDTH = 500;
   private static final double DEFAULT_SPLASH_HEIGHT = 300;
   private static String WIDGET_STYLE_SHEET;
 
@@ -60,15 +69,20 @@ public class SceneUIWidget {
    * @param callback callback function to be called when the value changes
    * @return the range UI control HBox
    */
-  public static HBox createRangeUI(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
+  public static HBox createRangeUI(double min, double max, double defaultValue, StringProperty label, StringProperty tooltip, Consumer<Double> callback) {
     // Create the slider
     Slider slider = new Slider(min, max, defaultValue);
     slider.setMaxWidth(Double.MAX_VALUE);
 
     // Create the label with tooltip
-    Label speedLabel = new Label(label + ": ");
-    speedLabel.getStyleClass().add("range-label");
-    speedLabel.setTooltip(new Tooltip(tooltip));
+    Label rangeLabel = new Label(label + ": ");
+    rangeLabel.textProperty().bind(label);
+    rangeLabel.getStyleClass().add("range-label");
+    Tooltip rangeTooltip = new Tooltip();
+    rangeTooltip.setWrapText(true);
+    rangeTooltip.getStyleClass().add("range-tooltip");
+    rangeTooltip.textProperty().bind(tooltip);
+    rangeLabel.setTooltip(rangeTooltip);
 
     // Format the default value based on the type
     String defaultText;
@@ -101,7 +115,7 @@ public class SceneUIWidget {
     maxLabel.getStyleClass().add("range-minmax");
 
     // Create an HBox control
-    HBox rangeControl = new HBox(5, speedLabel, textField, minLabel, slider, maxLabel);
+    HBox rangeControl = new HBox(5, rangeLabel, textField, minLabel, slider, maxLabel);
     rangeControl.setAlignment(Pos.CENTER);
     HBox.setHgrow(slider, Priority.ALWAYS);
     rangeControl.getStyleClass().add("range-control");
@@ -168,11 +182,16 @@ public class SceneUIWidget {
    * @param callback callback function to be called when the value changes
    * @return the range UI control HBox
    */
-  public static HBox createRangeUI(String defaultValue, String label, String tooltip, Consumer<String> callback) {
+  public static HBox createRangeUI(String defaultValue, StringProperty label, StringProperty tooltip, Consumer<String> callback) {
     // Create the label with tooltip
     Label labelComponent = new Label(label + ": ");
+    labelComponent.textProperty().bind(label);
     labelComponent.getStyleClass().add("range-label");
-    labelComponent.setTooltip(new Tooltip(tooltip));
+    Tooltip tooltipComponent = new Tooltip();
+    tooltipComponent.setWrapText(true);
+    tooltipComponent.getStyleClass().add("range-tooltip");
+    tooltipComponent.textProperty().bind(tooltip);
+    labelComponent.setTooltip(tooltipComponent);
 
     // Create the text input
     TextField textField = new TextField(defaultValue);
@@ -278,23 +297,27 @@ public class SceneUIWidget {
       double zoomFactor = event.getZoomFactor();
 
       scale[0] *= zoomFactor;
+      int signX = content.getScaleX() < 0 ? -1 : 1;
+      int signY = content.getScaleY() < 0 ? -1 : 1;
 
       // limit the scale to reasonable values
       scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
 
-      content.setScaleX(scale[0]);
-      content.setScaleY(scale[0]);
+      content.setScaleX(signX * scale[0]);
+      content.setScaleY(signY * scale[0]);
     });
     pane.setOnScroll(event -> {
       double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
 
       scale[0] *= zoomFactor;
+      int signX = content.getScaleX() < 0 ? -1 : 1;
+      int signY = content.getScaleY() < 0 ? -1 : 1;
 
       // limit the scale to reasonable values
       scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
 
-      content.setScaleX(scale[0]);
-      content.setScaleY(scale[0]);
+      content.setScaleX(signX * scale[0]);
+      content.setScaleY(signY * scale[0]);
 
       event.consume();
     });
@@ -308,8 +331,9 @@ public class SceneUIWidget {
    * @param title the title of the container
    * @return the container UI control
    */
-  public static ScrollPane createContainerUI(Node content, String title) {
-    Label containerTitle = new Label(title);
+  public static ScrollPane createContainerUI(Node content, StringProperty title) {
+    Label containerTitle = new Label();
+    containerTitle.textProperty().bind(title);
     containerTitle.getStyleClass().add("container-title");
 
     VBox containerContainer = new VBox(10, containerTitle, content);
@@ -323,6 +347,54 @@ public class SceneUIWidget {
 
     return scrollPane;
   }
+
+  /**
+   * Create a section UI with a title and rows.
+   * @param title the title of the section
+   * @param rows the rows of the section
+   * @return the section UI control
+   */
+  public static BorderPane createSectionUI(StringProperty title, Node... rows) {
+    // Create a label for the section title
+    Label sectionLabel = new Label();
+    sectionLabel.textProperty().bind(title);
+    sectionLabel.getStyleClass().add("section-label");
+    BorderPane.setAlignment(sectionLabel, Pos.TOP_CENTER);
+
+    // Create VBox to contain rows
+    VBox rowsContainer = new VBox(10, rows);
+
+    // Create BorderPane and set the label and rows
+    BorderPane section = new BorderPane();
+    section.setTop(sectionLabel);
+    section.setCenter(rowsContainer);
+    section.setPadding(new Insets(5));
+    section.getStyleClass().add("section-border");
+
+    return section;
+  }
+
+  /**
+   * Create a button UI with a text and action handler.
+   * @param text the text of the button
+   * @param actionHandler the action handler of the button
+   * @return the button UI control
+   */
+  public static Button createButtonUI(StringProperty text, EventHandler<ActionEvent> actionHandler) {
+    Button button = new Button();
+    button.textProperty().bind(text);
+    button.setPrefWidth(BUTTON_WIDTH);
+    button.setPrefHeight(BUTTON_HEIGHT);
+    button.setMaxWidth(MAX_BUTTON_WIDTH);
+    button.getStyleClass().add("button");
+
+    // Set button action
+    button.setOnAction(actionHandler);
+
+    return button;
+  }
+
+  /* POP-UP SCREEN */
 
   /**
    * Create a modal error dialog with a title, message, and exception details.
@@ -374,7 +446,7 @@ public class SceneUIWidget {
     // Create scene
     Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
     if (WIDGET_STYLE_SHEET != null) {
-      scene.getStylesheets().add(WIDGET_STYLE_SHEET);
+      scene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
     }
     errorStage.setScene(scene);
 
@@ -387,7 +459,7 @@ public class SceneUIWidget {
    * @param languageConsumer the consumer for the selected language
    * @param themeConsumer the consumer for the selected theme
    */
-  public static void createSplashScreen(String defaultLanguage, Theme defaultTheme, Consumer<String> languageConsumer, Consumer<Theme> themeConsumer, Runnable startCallback) {
+  public static void createSplashScreen(Language defaultLanguage, Theme defaultTheme, StringProperty title, StringProperty buttonText, StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
     splashStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -402,25 +474,82 @@ public class SceneUIWidget {
     splashScreen.getStyleClass().add("splash-screen");
 
     // Create the welcome label at the top
-    Label welcomeLabel = new Label("Welcome");
+    Label welcomeLabel = new Label();
+    welcomeLabel.textProperty().bind(title);
     welcomeLabel.getStyleClass().add("splash-welcome");
 
-    // TODO: SET UP LANGUAGE AND THEME SELECTION
+    // Call the new method to create the language and theme selectors
+    HBox themeLanguageSelectors = createThemeLanguageSelectorUI(
+        languageText,
+        themeText,
+        languageConsumer,
+        e -> {
+          themeConsumer.accept(e);
+          splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
+        },
+        defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1).toLowerCase(),
+        defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase()
+    );
+
+
+    // Create the Start button
+    Button startButton = new Button();
+    startButton.textProperty().bind(buttonText);
+    startButton.getStyleClass().add("splash-start-button");
+    startButton.setOnAction(event -> {
+      splashStage.close();
+      startCallback.run();
+    });
+
+    // Add all elements to the splash screen VBox
+    splashScreen.getChildren().addAll(welcomeLabel, themeLanguageSelectors, startButton);
+
+    // Set the scene with the splash screen
+    splashScene.setRoot(splashScreen);
+    if (WIDGET_STYLE_SHEET != null) {
+      splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
+    }
+    splashStage.setScene(splashScene);
+
+    // Show the splash screen and wait for it to close
+    Log.trace("SplashScreen created.");
+    splashStage.showAndWait();
+  }
+
+  /**
+   * Create the Language and Theme selector UI components.
+   * @param languageText the language label text property
+   * @param themeText the theme label text property
+   * @param languageConsumer the consumer for the selected language
+   * @param themeConsumer the consumer for the selected theme
+   * @param defaultLanguage the default language to set in the dropdown
+   * @param defaultTheme the default theme to set in the dropdown
+   * @return an HBox containing the language and theme selectors
+   */
+  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
     // Create the Language label and dropdown (ComboBox)
     HBox languageContainer = new HBox(10);
     languageContainer.setAlignment(Pos.CENTER);
-    Label languageLabel = new Label("Language");
+    Label languageLabel = new Label();
+    languageLabel.textProperty().bind(languageText);
     languageLabel.getStyleClass().add("splash-label");
     ComboBox<String> languageComboBox = new ComboBox<>();
+    languageComboBox.setPrefWidth(BUTTON_WIDTH);
+    languageComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
+    languageComboBox.setMaxHeight(BUTTON_HEIGHT);
     HBox.setHgrow(languageComboBox, Priority.ALWAYS);
-    languageComboBox.getItems().addAll("English", "French", "Spanish");
+    languageComboBox.getItems().addAll(
+        Arrays.stream(LanguageController.Language.values())
+            .map(lang -> lang.name().substring(0, 1).toUpperCase() + lang.name().substring(1).toLowerCase())
+            .toList()
+    );
     languageComboBox.setValue(defaultLanguage);
     languageComboBox.getStyleClass().add("splash-combo-box");
 
-    // Set listener for language selection and display selection
+    // Set listener for language selection
     languageComboBox.setOnAction(event -> {
       String selectedLanguage = languageComboBox.getValue();
-      languageConsumer.accept(selectedLanguage);
+      languageConsumer.accept(Language.valueOf(selectedLanguage.toUpperCase()));
       languageComboBox.setStyle("-fx-text-fill: #7a5cff;");
     });
 
@@ -430,55 +559,37 @@ public class SceneUIWidget {
     // Create the Theme label and dropdown (ComboBox)
     HBox themeContainer = new HBox(10);
     themeContainer.setAlignment(Pos.CENTER);
-    Label themeLabel = new Label("Theme");
+    Label themeLabel = new Label();
+    themeLabel.textProperty().bind(themeText);
     themeLabel.getStyleClass().add("splash-label");
     ComboBox<String> themeComboBox = new ComboBox<>();
+    themeComboBox.setPrefWidth(BUTTON_WIDTH);
+    themeComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
+    themeComboBox.setMaxHeight(BUTTON_HEIGHT);
     HBox.setHgrow(themeComboBox, Priority.ALWAYS);
     themeComboBox.getItems().addAll(
         Arrays.stream(ThemeController.Theme.values())
             .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
             .toList()
     );
-    themeComboBox.setValue(defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase());
+    themeComboBox.setValue(defaultTheme);
     themeComboBox.getStyleClass().add("splash-combo-box");
 
-    // Set listener for theme selection and display selection
+    // Set listener for theme selection
     themeComboBox.setOnAction(event -> {
       String selectedTheme = themeComboBox.getValue();
       themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
-      splashScene.getStylesheets().clear();
-      splashScene.getStylesheets().add(WIDGET_STYLE_SHEET);
     });
 
     // Add the label and ComboBox into the themeContainer HBox
     themeContainer.getChildren().addAll(themeLabel, themeComboBox);
 
-    // Add the language and theme selection to the splash screen
-    HBox splashBox = new HBox(10, languageContainer, themeContainer);
-    HBox.setHgrow(languageContainer, Priority.ALWAYS);
-    HBox.setHgrow(themeContainer, Priority.ALWAYS);
+    // Return the combined HBox containing both the language and theme selectors
+    HBox box = new HBox(10, languageContainer, themeContainer);
+    box.setAlignment(Pos.CENTER);
+    box.setPadding(new Insets(10));
 
-    // Create the Start button
-    Button startButton = new Button("Start");
-    startButton.getStyleClass().add("splash-start-button");
-    startButton.setOnAction(event -> {
-      splashStage.close();
-      startCallback.run();
-    });
-
-    // Add all elements to the splash screen VBox
-    splashScreen.getChildren().addAll(welcomeLabel, splashBox, startButton);
-
-    // Set the scene with the splash screen
-    splashScene.setRoot(splashScreen);
-    if (WIDGET_STYLE_SHEET != null) {
-      splashScene.getStylesheets().add(WIDGET_STYLE_SHEET);
-    }
-    splashStage.setScene(splashScene);
-
-    // Show the splash screen and wait for it to close
-    Log.trace("SplashScreen created.");
-    splashStage.showAndWait();
+    return box;
   }
 
   /* STYLESHEET */

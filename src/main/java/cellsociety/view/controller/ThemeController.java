@@ -1,10 +1,16 @@
 package cellsociety.view.controller;
 
+import cellsociety.logging.Log;
 import cellsociety.view.scene.SceneUIWidget;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A controller class that manages the theme of the program.
+ *
+ * @author Hsuan-Kai Liao
+ */
 public class ThemeController {
 
   // CSS style path
@@ -49,7 +55,6 @@ public class ThemeController {
     } catch (NullPointerException e) {
       SceneUIWidget.createErrorDialog("Theme Error", "The theme " + theme + " was not found.", e);
     }
-
     return null;
   }
 }

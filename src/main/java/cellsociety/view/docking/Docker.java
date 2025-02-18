@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -166,14 +167,15 @@ public class Docker {
    * @param dockPosition the default dock position of the floating window
    * @return the floating window
    */
-  public DWindow createDWindow(String title, Node content, DockPosition dockPosition) {
+  public DWindow createDWindow(StringProperty title, Node content, DockPosition dockPosition) {
     Stage floatingStage = new Stage();
     floatingStage.initStyle(StageStyle.UTILITY);
 
     // Create a TabPane to hold the content
     TabPane floatingTabPane = new TabPane();
     floatingTabPane.getStyleClass().add("dock-tab-pane");
-    Tab tab = new Tab(title);
+    Tab tab = new Tab();
+    tab.textProperty().bind(title);
     tab.getStyleClass().add("dock-tab");
     tab.setClosable(false);
     tab.setContent(content);

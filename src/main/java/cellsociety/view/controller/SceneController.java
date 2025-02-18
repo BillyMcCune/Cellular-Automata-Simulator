@@ -13,9 +13,11 @@ import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 
 /**
@@ -88,7 +90,7 @@ public class SceneController {
         isLoaded = true;
       }
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Load Config Error", "Failed to load configuration file: " + filename, e);
+      SceneUIWidget.createErrorDialog("Load Config Error", e.getMessage(), e);
     }
   }
 
@@ -104,7 +106,7 @@ public class SceneController {
     try {
       configWriter.saveCurrentConfig(configInfo, path);
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Save Config Error", "Failed to save configuration file: " + path, e);
+      SceneUIWidget.createErrorDialog("Save Config Error", e.getMessage(), e);
     }
   }
 
@@ -220,7 +222,7 @@ public class SceneController {
       // Set the grid to the scene
       initGrid();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Reset Grid Error", "Failed to reset the grid with reflection.", e);
+      SceneUIWidget.createErrorDialog("Reset Grid Error", e.getMessage(), e);
     }
   }
 
@@ -258,7 +260,6 @@ public class SceneController {
         SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter getter methods for: " + paramName, e);
       }
 
-      // TODO: SET THE PARAMETER TOOL TIPS
       // Set the parameter listener
       try {
         if (paramType == double.class) {
@@ -286,7 +287,7 @@ public class SceneController {
           };
 
           // Register parameter in simulation UI
-          simulationScene.setParameter(paramName, min, max, defaultValue, "", consumer);
+          simulationScene.setParameter(min, max, defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
         } else if (paramType == String.class) {
           // Get the default value
           String defaultValue = "";
@@ -302,12 +303,12 @@ public class SceneController {
             try {
               setterMethod.invoke(gameLogic, v);
             } catch (Exception ex) {
-              SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, ex);
+              SceneUIWidget.createErrorDialog("Parameter Error", "Invalid parameter input for:" + paramName, ex);
             }
           };
 
           // Register parameter in simulation UI
-          simulationScene.setParameter(defaultValue, paramName, "", consumer);
+          simulationScene.setParameter(defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
         }
       } catch (Exception e) {
         SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, e);
