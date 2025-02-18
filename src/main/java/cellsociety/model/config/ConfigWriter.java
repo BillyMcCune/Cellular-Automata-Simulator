@@ -38,7 +38,7 @@ public class ConfigWriter {
       + "/src/main/resources/cellsociety/SimulationConfigurationData";
   private ConfigInfo myConfigInfo;
   private Document myCurrentXmlDocument;
-
+  private String LastFileSaved;
   public ConfigWriter() {
   }
 
@@ -56,6 +56,13 @@ public class ConfigWriter {
     File outputFile = createOutputFile(path);
     populateXMLDocument(xmlDocument);
     writeXMLDocument(xmlDocument, outputFile);
+  }
+
+  public String getLastFileSaved() {
+    if (LastFileSaved == null) {
+      throw new Error("No last file saved");
+    }
+    return LastFileSaved;
   }
 
   private Document createXMLDocument() throws ParserConfigurationException {
@@ -178,6 +185,7 @@ public class ConfigWriter {
       String baseFilename = myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
       String fileExtension = ".xml";
       File configDirectory = new File(path);
+      LastFileSaved = baseFilename + fileExtension;
 
       if (!configDirectory.exists() && !configDirectory.mkdirs()) {
         Log.error("Failed to create config directory: " + DEFAULT_CONFIG_FOLDER);
