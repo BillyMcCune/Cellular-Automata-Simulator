@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -38,7 +39,6 @@ public class SceneRenderer {
    */
   public static void drawGrid(GridPane grid, int numOfRows, int numOfCols) {
     grid.getChildren().clear();
-    grid.setStyle("-fx-border-color: black; -fx-border-width: " + 3 * DEFAULT_BORDER_SIZE + "; -fx-border-style: solid;");
 
     for (int i = 0; i < numOfCols; i++) {
       for (int j = 0; j < numOfRows; j++) {
@@ -47,6 +47,7 @@ public class SceneRenderer {
         square.setStroke(DEFAULT_BORDER_COLOR);
         square.setStrokeType(StrokeType.INSIDE);
         square.setStrokeWidth(DEFAULT_BORDER_SIZE);
+        GridPane.setMargin(square, new Insets(0));
         grid.add(square, i, j);
       }
     }

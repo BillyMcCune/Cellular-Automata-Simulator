@@ -86,6 +86,38 @@
 }
 
 /* ==========================
+   Section
+   ========================== */
+
+.section-label {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #ffffff;
+}
+
+.section-border {
+  -fx-border-color: #555555;
+  -fx-border-width: 3px;
+  -fx-border-radius: 5px;
+  -fx-padding: 10px;
+}
+
+/* ==========================
+   Button
+   ========================== */
+
+.button {
+  -fx-text-fill: #ffffff;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-padding: 10px 15px;
+  -fx-border-color: transparent;
+  -fx-background-insets: 0, 1, 2;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
+  -fx-transition: all 0.3s ease-in-out;
+}
+
+/* ==========================
    Error Messages
    ========================== */
 .error-message {

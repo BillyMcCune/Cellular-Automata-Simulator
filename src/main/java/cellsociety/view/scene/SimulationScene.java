@@ -1,5 +1,7 @@
 package cellsociety.view.scene;
 
+import static java.lang.Math.abs;
+
 import cellsociety.logging.Log;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
@@ -13,8 +15,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Shape;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -34,10 +38,6 @@ public class SimulationScene {
   public static final double SPEED_MULTIPLIER = 3;
   public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
-  public static final double BUTTON_WIDTH = 80;
-  public static final double BUTTON_HEIGHT = 35;
-  public static final double MAX_BUTTON_WIDTH = 200;
-
   // UI components
   private Button startPauseButton;
   private GridPane grid;
@@ -53,6 +53,8 @@ public class SimulationScene {
 
   private double updateInterval;
   private double timeSinceLastUpdate;
+
+  private boolean doShowBorder = true;
 
   /**
    * Constructor for the SimulationScene class
@@ -110,7 +112,11 @@ public class SimulationScene {
   /* PRIVATE UI SETUP METHODS */
 
   private Pane createGrid() {
-    this.grid = new GridPane();
+    grid = new GridPane();
+    grid.setGridLinesVisible(false);
+    grid.getStyleClass().add("grid-panel");
+    grid.setOpacity(0);
+
     return SceneUIWidget.dragZoomViewUI(grid);
   }
 
@@ -125,80 +131,73 @@ public class SimulationScene {
   }
 
   private ScrollPane createControls() {
-    // Create title
-    Label controlsTitle = new Label("Controls");
-    controlsTitle.getStyleClass().add("controls-title");
-
     // Create buttons
-    startPauseButton = new Button("Start");
-    Button resetButton = new Button("Reset");
-    Button loadButton = new Button("Load");
-    Button saveButton = new Button("Save");
-    Button directoryButton = new Button("📂");
+    startPauseButton = SceneUIWidget.createButtonUI("Start", e -> startPauseCallback());
+    Button resetButton = SceneUIWidget.createButtonUI("Reset", e -> resetCallback());
+    Button loadButton = SceneUIWidget.createButtonUI("Load", e -> loadCallback(selectType.getValue()));
+    Button saveButton = SceneUIWidget.createButtonUI("Save", e -> saveCallback(directoryField.getText()));
+    Button directoryButton = SceneUIWidget.createButtonUI("📂", e -> directorySelectCallback());
+    Button flipButton = SceneUIWidget.createButtonUI("Flip", e -> flipCallback());
 
-    // FIXME: IMPLEMENT SAVE
-    saveButton.setDisable(true);
+    // Create checkbox
+    CheckBox showBorderCheckBox = new CheckBox("Striking Border");
+    showBorderCheckBox.getStyleClass().add("border-checkbox");
+    showBorderCheckBox.setOnAction(e -> toggleBorderCallback(showBorderCheckBox.isSelected()));
+    showBorderCheckBox.setSelected(doShowBorder);
 
-    // Set start button sizes
-    startPauseButton.setPrefWidth(BUTTON_WIDTH);
-    startPauseButton.setPrefHeight(BUTTON_HEIGHT);
-    startPauseButton.setMaxWidth(MAX_BUTTON_WIDTH);
-
-    // Set directory button sizes
-    directoryButton.setPrefWidth(BUTTON_WIDTH * 0.8);
+    // Set button sizes
+    startPauseButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH);
+    startPauseButton.setPrefHeight(SceneUIWidget.BUTTON_HEIGHT);
+    startPauseButton.setMaxWidth(SceneUIWidget.MAX_BUTTON_WIDTH);
+    directoryButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH * 0.8);
 
     // Set ComboBox
     selectType = new ComboBox<>();
-    selectType.getItems().addAll("None");
-    selectType.setPrefWidth(BUTTON_WIDTH * 1.8);
-    selectType.setMaxWidth(MAX_BUTTON_WIDTH);
+    selectDropDownCallback();
+    selectType.setPromptText("...");
+    selectType.setOnMouseClicked(e -> selectDropDownCallback());
+    selectType.setPrefWidth(SceneUIWidget.BUTTON_WIDTH * 1.8);
+    selectType.setMaxWidth(SceneUIWidget.MAX_BUTTON_WIDTH);
+    selectType.setPrefHeight(SceneUIWidget.BUTTON_HEIGHT);
 
     // Create directory text field
     directoryField = new TextField();
-    directoryField.setPromptText("None");
-    directoryField.setEditable(false);
-    directoryField.setPrefWidth((BUTTON_WIDTH - 10));
-    directoryField.setMaxWidth(MAX_BUTTON_WIDTH);
+    directoryField.setPromptText("...");
+    directoryField.setPrefWidth(SceneUIWidget.BUTTON_WIDTH - 10);
+    directoryField.setMaxWidth(SceneUIWidget.MAX_BUTTON_WIDTH);
+    directoryField.setPrefHeight(SceneUIWidget.BUTTON_HEIGHT);
 
-    // Link the width with the start button
-    resetButton.prefWidthProperty().bind(startPauseButton.widthProperty());
-    loadButton.prefWidthProperty().bind(startPauseButton.widthProperty());
-    saveButton.prefWidthProperty().bind(startPauseButton.widthProperty());
-
-    // Link the height with the start button
-    resetButton.prefHeightProperty().bind(startPauseButton.heightProperty());
-    loadButton.prefHeightProperty().bind(startPauseButton.heightProperty());
-    saveButton.prefHeightProperty().bind(startPauseButton.heightProperty());
-    selectType.prefHeightProperty().bind(startPauseButton.heightProperty());
-    directoryButton.prefHeightProperty().bind(startPauseButton.heightProperty());
-    directoryField.prefHeightProperty().bind(startPauseButton.heightProperty());
-
-    // Style buttons with colors
+    // Style buttons
     startPauseButton.getStyleClass().add("start-button");
     resetButton.getStyleClass().add("reset-button");
     loadButton.getStyleClass().add("load-button");
     saveButton.getStyleClass().add("save-button");
     directoryButton.getStyleClass().add("directory-button");
+    flipButton.getStyleClass().add("flip-button");
 
-    // Button callbacks
-    startPauseButton.setOnAction(e -> startPauseCallback());
-    resetButton.setOnAction(e -> resetCallback());
-    loadButton.setOnAction(e -> loadCallback(selectType.getValue()));
-    saveButton.setOnAction(e -> saveCallback(directoryField.getText()));
-    selectType.setOnMouseClicked(e -> selectDropDownCallback());
-    directoryButton.setOnAction(e -> directorySelectCallback());
+    // HBox formatting for each row
+    HBox row1 = new HBox(10, startPauseButton, resetButton);
+    row1.setAlignment(Pos.CENTER);
+    row1.setPadding(new Insets(5));
 
-    // HBox formatting
-    HBox firstRow = new HBox(10, startPauseButton, loadButton, selectType);
-    firstRow.setAlignment(Pos.CENTER);
-    firstRow.setPadding(new Insets(5));
+    HBox row2 = new HBox(10, loadButton, selectType);
+    row2.setAlignment(Pos.CENTER);
+    row2.setPadding(new Insets(5));
 
-    HBox secondRow = new HBox(10, resetButton, saveButton, directoryField, directoryButton);
-    secondRow.setAlignment(Pos.CENTER);
-    secondRow.setPadding(new Insets(5));
+    HBox row3 = new HBox(10, saveButton, directoryField, directoryButton);
+    row3.setAlignment(Pos.CENTER);
+    row3.setPadding(new Insets(5));
 
-    // VBox box containing the control buttons
-    VBox controlsBox = new VBox(10, firstRow, secondRow);
+    HBox row4 = new HBox(10, flipButton, showBorderCheckBox);
+    row4.setAlignment(Pos.CENTER);
+    row4.setPadding(new Insets(5));
+
+    BorderPane section1 = SceneUIWidget.createSectionUI("Operations", row1);
+    BorderPane section2 = SceneUIWidget.createSectionUI("Load & Save", row2, row3);
+    BorderPane section3 = SceneUIWidget.createSectionUI("Grid Settings", row4);
+
+    // Main VBox containing all sections
+    VBox controlsBox = new VBox(10, section1, section2, section3);
     controlsBox.setAlignment(Pos.CENTER);
     controlsBox.getStyleClass().add("controls-box");
     controlsBox.setPadding(new Insets(10));
@@ -211,9 +210,13 @@ public class SimulationScene {
   private ScrollPane createInfoPanel() {
     infoText = new Label();
     infoText.getStyleClass().add("info-text");
-    infoText.setWrapText(true);  // Prevent text from wrapping
+    infoText.setWrapText(true);
 
-    VBox infoBox = new VBox(10, infoText);
+    HBox infoContainer = new HBox(10, infoText);
+    HBox.setHgrow(infoText, Priority.ALWAYS);
+    infoContainer.setAlignment(Pos.CENTER_LEFT);
+
+    VBox infoBox = new VBox(10, infoContainer);
     infoBox.setAlignment(Pos.TOP_CENTER);
     infoBox.getStyleClass().add("info-box");
     infoBox.setPadding(new Insets(10));
@@ -262,6 +265,9 @@ public class SimulationScene {
 
     // Center the grid
     centerGrid();
+
+    // Reset the flip
+    resetFlip();
   }
 
   private void loadCallback(String filename) {
@@ -273,9 +279,10 @@ public class SimulationScene {
       // Load the config file
       controller.loadConfig(filename);
 
+      // TODO: Move this into the controller
       // Clear the parameter box except for the speed
       parameterBox.getChildren().clear();
-      setParameter("Speed", MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), SPEED_TOOLTIP, this::speedChangeCallback);
+      setParameter(MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), "Speed", SPEED_TOOLTIP, this::speedChangeCallback);
 
       // Reset the simulation
       controller.resetModel();
@@ -285,7 +292,13 @@ public class SimulationScene {
       infoText.setText(controller.getConfigInformation());
 
       // Center the grid
+      if (grid.getOpacity() == 0) {
+        grid.setOpacity(1);
+      }
       centerGrid();
+
+      // Reset the flip
+      resetFlip();
     }
   }
 
@@ -310,6 +323,30 @@ public class SimulationScene {
     }
   }
 
+  private void flipCallback() {
+    double scaleX = grid.getScaleX();
+    double scaleY = grid.getScaleY();
+
+    if (scaleX * scaleY < 0) {
+      if (scaleX > 0) {
+        grid.setScaleX(-1 * scaleX);
+      } else {
+        grid.setScaleY(-1 * scaleY);
+      }
+    } else {
+      grid.setScaleX(-1 * scaleX);
+      grid.setScaleY(-1 * scaleY);
+    }
+  }
+
+  private void toggleBorderCallback(boolean showBorder) {
+    doShowBorder = showBorder;
+
+    for (Node node : grid.getChildren()) {
+      ((Shape) node).setStrokeWidth(showBorder ? SceneRenderer.DEFAULT_BORDER_SIZE : 0);
+    }
+  }
+
   private void splashScreenThemeCallback(Theme theme) {
     setUIStyle(theme);
   }
@@ -317,7 +354,6 @@ public class SimulationScene {
   private void splashScreenLanguageCallback(String language) {
     // TODO: Implement language change
   }
-
   /* PUBLIC UI SETS METHOD */
 
   /**
@@ -348,7 +384,7 @@ public class SimulationScene {
    * @param tooltip the tooltip of the parameter
    * @param callback the callback function of the parameter
    */
-  public void setParameter(String label, double min, double max, double defaultValue, String tooltip, Consumer<Double> callback) {
+  public void setParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, label, tooltip, callback));
   }
 
@@ -419,5 +455,10 @@ public class SimulationScene {
     double centerY = (paneHeight - gridHeight) / 2;
 
     grid.relocate(centerX, centerY);
+  }
+
+  private void resetFlip() {
+    grid.setScaleX(abs(grid.getScaleX()));
+    grid.setScaleY(abs(grid.getScaleY()));
   }
 }

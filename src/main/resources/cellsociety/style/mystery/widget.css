@@ -99,6 +99,37 @@
 }
 
 /* ==========================
+   Section
+   ========================== */
+
+.section-label {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: linear-gradient(to bottom, #ffffff, #aaaaaa); /* Soft white gradient */
+}
+
+.section-border {
+  -fx-border-color: rgba(70, 49, 158, 0.66);
+  -fx-border-width: 3px;
+  -fx-border-radius: 5px;
+  -fx-padding: 10px;
+}
+
+/* ==========================
+   Button
+   ========================== */
+.button {
+  -fx-text-fill: linear-gradient(to bottom, #b6b6b6, #ffffff);
+  -fx-font-weight: bold;
+  -fx-background-radius: 8px;
+  -fx-padding: 10px 15px;
+  -fx-border-color: transparent;
+  -fx-background-insets: 0, 1, 2;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 2);
+  -fx-transition: all 0.3s ease-in-out;
+}
+
+/* ==========================
    Error Messages
    ========================== */
 .error-message {
@@ -179,4 +210,15 @@
   -fx-background-color: linear-gradient(to bottom, #3e2a5b, #2a1a3f); /* Darker purple pressed effect */
   -fx-scale-x: 0.98;
   -fx-scale-y: 0.98;  /* Scaling effect on press */
+}
+
+/* ==========================
+   Checker Box
+   ========================== */
+
+.border-checkbox {
+  -fx-border-color: transparent;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: linear-gradient(to bottom, #e8e8e8, #b3b3b3); /* Subtle gradient with light gray */
 }

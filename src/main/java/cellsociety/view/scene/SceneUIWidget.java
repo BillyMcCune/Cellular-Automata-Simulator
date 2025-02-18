@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,6 +26,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -42,11 +45,17 @@ public class SceneUIWidget {
   // UI constants
   public static final double MAX_ZOOM_RATE = 8.0;
   public static final double MIN_ZOOM_RATE = 0.2;
+  public static final double BUTTON_WIDTH = 100;
+  public static final double BUTTON_HEIGHT = 35;
+  public static final double MAX_BUTTON_WIDTH = 200;
 
   // Error Stage
   private static final double DEFAULT_SPLASH_WIDTH = 400;
   private static final double DEFAULT_SPLASH_HEIGHT = 300;
   private static String WIDGET_STYLE_SHEET;
+
+  // Instance variables
+  private static final Scene errorScene = new Scene(new Region(), DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
 
   /* UI WIDGETS */
 
@@ -278,23 +287,27 @@ public class SceneUIWidget {
       double zoomFactor = event.getZoomFactor();
 
       scale[0] *= zoomFactor;
+      int signX = content.getScaleX() < 0 ? -1 : 1;
+      int signY = content.getScaleY() < 0 ? -1 : 1;
 
       // limit the scale to reasonable values
       scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
 
-      content.setScaleX(scale[0]);
-      content.setScaleY(scale[0]);
+      content.setScaleX(signX * scale[0]);
+      content.setScaleY(signY * scale[0]);
     });
     pane.setOnScroll(event -> {
       double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
 
       scale[0] *= zoomFactor;
+      int signX = content.getScaleX() < 0 ? -1 : 1;
+      int signY = content.getScaleY() < 0 ? -1 : 1;
 
       // limit the scale to reasonable values
       scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
 
-      content.setScaleX(scale[0]);
-      content.setScaleY(scale[0]);
+      content.setScaleX(signX * scale[0]);
+      content.setScaleY(signY * scale[0]);
 
       event.consume();
     });
@@ -323,6 +336,52 @@ public class SceneUIWidget {
 
     return scrollPane;
   }
+
+  /**
+   * Create a section UI with a title and rows.
+   * @param title the title of the section
+   * @param rows the rows of the section
+   * @return the section UI control
+   */
+  public static BorderPane createSectionUI(String title, Node... rows) {
+    // Create a label for the section title
+    Label sectionLabel = new Label(title);
+    sectionLabel.getStyleClass().add("section-label");
+    BorderPane.setAlignment(sectionLabel, Pos.CENTER);  // Center the label
+
+    // Create VBox to contain rows
+    VBox rowsContainer = new VBox(5, rows);
+
+    // Create BorderPane and set the label and rows
+    BorderPane section = new BorderPane();
+    section.setTop(sectionLabel);
+    section.setCenter(rowsContainer);
+    section.setPadding(new Insets(5));
+    section.getStyleClass().add("section-border");
+
+    return section;
+  }
+
+  /**
+   * Create a button UI with a text and action handler.
+   * @param text the text of the button
+   * @param actionHandler the action handler of the button
+   * @return the button UI control
+   */
+  public static Button createButtonUI(String text, EventHandler<ActionEvent> actionHandler) {
+    Button button = new Button(text);
+    button.setPrefWidth(BUTTON_WIDTH);
+    button.setPrefHeight(BUTTON_HEIGHT);
+    button.setMaxWidth(MAX_BUTTON_WIDTH);
+    button.getStyleClass().add("button");
+
+    // Set button action
+    button.setOnAction(actionHandler);
+
+    return button;
+  }
+
+  /* POP-UP SCREEN */
 
   /**
    * Create a modal error dialog with a title, message, and exception details.
@@ -374,7 +433,7 @@ public class SceneUIWidget {
     // Create scene
     Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
     if (WIDGET_STYLE_SHEET != null) {
-      scene.getStylesheets().add(WIDGET_STYLE_SHEET);
+      scene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
     }
     errorStage.setScene(scene);
 
@@ -446,8 +505,7 @@ public class SceneUIWidget {
     themeComboBox.setOnAction(event -> {
       String selectedTheme = themeComboBox.getValue();
       themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
-      splashScene.getStylesheets().clear();
-      splashScene.getStylesheets().add(WIDGET_STYLE_SHEET);
+      splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
     });
 
     // Add the label and ComboBox into the themeContainer HBox
@@ -472,7 +530,7 @@ public class SceneUIWidget {
     // Set the scene with the splash screen
     splashScene.setRoot(splashScreen);
     if (WIDGET_STYLE_SHEET != null) {
-      splashScene.getStylesheets().add(WIDGET_STYLE_SHEET);
+      splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
     }
     splashStage.setScene(splashScene);
 

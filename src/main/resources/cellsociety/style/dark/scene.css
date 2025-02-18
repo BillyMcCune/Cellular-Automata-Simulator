@@ -24,6 +24,16 @@
 }
 
 /* ==========================
+   Grid
+   ========================== */
+
+.grid-panel {
+  -fx-border-color: #1e1e1e;
+  -fx-border-style: solid;
+  -fx-border-width: 4px;
+}
+
+/* ==========================
    Containers (Unified Box Styling)
    ========================== */
 .controls-box {
@@ -50,16 +60,6 @@
 /* ==========================
    Button Styling (Dark Mode)
    ========================== */
-.button {
-  -fx-text-fill: #ffffff;
-  -fx-font-weight: bold;
-  -fx-background-radius: 8px;
-  -fx-padding: 10px 15px;
-  -fx-border-color: transparent;
-  -fx-background-insets: 0, 1, 2;
-  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 5, 0, 0, 2);
-  -fx-transition: all 0.3s ease-in-out;
-}
 
 /* Start Button (Green) */
 .start-button {
@@ -150,3 +150,32 @@
   -fx-scale-x: 0.98;
   -fx-scale-y: 0.98;
 }
+
+/* Flip Button (Metal) */
+.flip-button {
+  -fx-background-color: linear-gradient(to bottom, #B0BEC5, #546E7A);
+}
+
+.flip-button:hover {
+  -fx-background-color: linear-gradient(to bottom, #CFD8DC, #455A64);
+  -fx-scale-x: 1.05;
+  -fx-scale-y: 1.05;
+}
+
+.flip-button:pressed {
+  -fx-background-color: linear-gradient(to bottom, #546E7A, #263238);
+  -fx-scale-x: 0.98;
+  -fx-scale-y: 0.98;
+}
+
+/* ==========================
+   Checker Box
+   ========================== */
+
+.border-checkbox {
+  -fx-border-color: transparent;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #e0e0e0;
+}
+
