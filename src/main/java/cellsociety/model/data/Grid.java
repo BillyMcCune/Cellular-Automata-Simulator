@@ -58,9 +58,9 @@ public class Grid<T extends Enum<T> & State> {
   }
 
   /**
-   * Retrieves a specific cell from the grid based on its row and column indices.
+   * Retrieves a specific cell from the grid based on its dx and column indices.
    *
-   * @param row the row index of the desired cell
+   * @param row the dx index of the desired cell
    * @param col the column index of the desired cell
    * @return the {@link Cell<T>} at the specified position
    */

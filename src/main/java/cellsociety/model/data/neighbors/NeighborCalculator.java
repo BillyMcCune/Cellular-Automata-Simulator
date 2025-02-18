@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Abstract base class that calculates the neighbors for a (row, col) in a Grid. It uses simulation
+ * Abstract base class that calculates the neighbors for a (dx, dy) in a Grid. It uses simulation
  * specific directions to calculate these neighbors
  *
  * @author Jacob You
@@ -27,13 +27,13 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
   }
 
   /**
-   * Returns a map from a Direction record (row,col) to the neighbor Cell<T>.
+   * Returns a map from a Direction record (dx,dy) to the neighbor Cell<T>.
    */
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
     Map<Direction, Cell<T>> neighbors = new HashMap<>();
     for (Direction direction : getDirections()) {
-      int nr = row + direction.col();
-      int nc = col + direction.row();
+      int nr = row + direction.dy();
+      int nc = col + direction.dx();
       if (nr >= 0 && nr < grid.getNumRows() && nc >= 0 && nc < grid.getNumCols()) {
         neighbors.put(direction, grid.getCell(nr, nc));
       }
@@ -46,8 +46,8 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
     for (Direction direction : getDirections()) {
-      int nr = (row + direction.row() + numRows) % numRows;
-      int nc = (col + direction.col() + numCols) % numCols;
+      int nr = (row + direction.dx() + numRows) % numRows;
+      int nc = (col + direction.dy() + numCols) % numCols;
       neighbors.put(direction, grid.getCell(nr, nc));
     }
     return neighbors;

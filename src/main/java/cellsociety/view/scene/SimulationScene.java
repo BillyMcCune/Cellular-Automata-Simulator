@@ -189,7 +189,7 @@ public class SimulationScene {
     directoryButton.getStyleClass().add("directory-button");
     flipButton.getStyleClass().add("flip-button");
 
-    // HBox formatting for each row
+    // HBox formatting for each dx
     HBox row1 = new HBox(10, startPauseButton, resetButton);
     row1.setAlignment(Pos.CENTER);
     row1.setPadding(new Insets(5));
@@ -389,8 +389,8 @@ public class SimulationScene {
   }
 
   /**
-   * Set the cell at the given row and column with the given state
-   * @param row the row of the cell
+   * Set the cell at the given dx and column with the given state
+   * @param row the dx of the cell
    * @param col the column of the cell
    * @param state the state of the cell
    */

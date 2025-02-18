@@ -57,7 +57,7 @@ public class SceneRenderer {
    * Draw a cell at the given position in the grid with the given state.
    * The grid is assumed to be a GridPane with rectangles initialized as children.
    * @param grid The grid to draw the cell on
-   * @param row The row of the cell
+   * @param row The dx of the cell
    * @param col The column of the cell
    * @param state The state of the cell
    */

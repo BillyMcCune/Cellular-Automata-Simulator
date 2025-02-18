@@ -351,16 +351,16 @@ public class ConfigReader {
 
   /**
    * parses the grid defined in the XML file from the new <initialCells> format.
-   * each row contains multiple <cell> elements, which are converted to cellRecord.Cell.
+   * each dx contains multiple <cell> elements, which are converted to cellRecord.Cell.
    */
   private List<List<CellRecord>> parseInitialCells(Element root) {
     Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
     if (initialCellsElement == null) {
       throw new IllegalArgumentException("Missing 'initialCells' element.");
     }
-    NodeList rows = initialCellsElement.getElementsByTagName("row");
+    NodeList rows = initialCellsElement.getElementsByTagName("dx");
     if (rows == null || rows.getLength() == 0) {
-      throw new IllegalArgumentException("No 'row' elements found inside 'initialCells'.");
+      throw new IllegalArgumentException("No 'dx' elements found inside 'initialCells'.");
     }
 
     List<List<CellRecord>> grid = new ArrayList<>();
@@ -368,7 +368,7 @@ public class ConfigReader {
       Node rowNode = rows.item(i);
       if (rowNode.getNodeType() != Node.ELEMENT_NODE) continue; // Skip non-element nodes.
       Element rowElement = (Element) rowNode;
-      // Get all <cell> elements in this row.
+      // Get all <cell> elements in this dx.
       NodeList cellNodes = rowElement.getElementsByTagName("cell");
       List<CellRecord> rowCells = new ArrayList<>();
       for (int j = 0; j < cellNodes.getLength(); j++) {
@@ -377,13 +377,13 @@ public class ConfigReader {
           Element cellElement = (Element) cellNode;
           String stateStr = cellElement.getAttribute("state");
           if (stateStr == null || stateStr.isEmpty()) {
-            throw new IllegalArgumentException("Cell missing 'state' attribute at row " + i + ", column " + j);
+            throw new IllegalArgumentException("Cell missing 'state' attribute at dx " + i + ", column " + j);
           }
           int state;
           try {
             state = Integer.parseInt(stateStr);
           } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Invalid cell state at row " + i + ", column " + j + ": " + stateStr, ex);
+            throw new IllegalArgumentException("Invalid cell state at dx " + i + ", column " + j + ": " + stateStr, ex);
           }
 
           Map<String, Double> properties = new HashMap<>();
@@ -396,7 +396,7 @@ public class ConfigReader {
                 double value = Double.parseDouble(attrValue);
                 properties.put(attrName, value);
               } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Invalid cell state at row " + i + ", column " + j + ": " + attrValue, e);
+                throw new IllegalArgumentException("Invalid cell state at dx " + i + ", column " + j + ": " + attrValue, e);
               }
             }
           }
@@ -404,7 +404,7 @@ public class ConfigReader {
         }
       }
       if (rowCells.isEmpty()) {
-        throw new IllegalArgumentException("Empty row encountered in 'initialCells' at index " + i);
+        throw new IllegalArgumentException("Empty dx encountered in 'initialCells' at index " + i);
       }
       grid.add(rowCells);
     }

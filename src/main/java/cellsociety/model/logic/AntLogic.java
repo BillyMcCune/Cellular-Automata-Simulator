@@ -4,7 +4,6 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.neighbors.AntNeighborCalculator;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.AntState;
 import cellsociety.model.data.neighbors.Direction;
 import java.util.ArrayList;
@@ -22,24 +21,23 @@ import java.util.Map;
  */
 public class AntLogic extends Logic<AntState> {
 
-  private int maxAnts;
-  private double evaporationAmount;
+  private double maxAnts;
+  private double evaporationRate;
   private double maxHomePheromone;
   private double maxFoodPheromone;
-  private double baseSelectionProbability;
+  private double basePheromoneWeight;
   private double pheromoneSensitivity;
+  private double pheromoneDiffusionDecay;
   private final Map<Cell<AntState>, List<AntInfo>> cellAntsMap = new HashMap<>();
 
 
   /**
    * Record representing an individual ant in the simulation.
    *
-   * @param row         the row index of the ant's location
-   * @param col         the column index of the ant's location
    * @param orientation the ant's current orientation as a Direction
    * @param hasFood     true if the ant is carrying food, false otherwise
    */
-  public record AntInfo(int row, int col, Direction orientation, boolean hasFood) {
+  public record AntInfo(Direction orientation, boolean hasFood) {
 
   }
 
@@ -52,13 +50,106 @@ public class AntLogic extends Logic<AntState> {
    */
   public AntLogic(Grid<AntState> grid, ParameterRecord parameters) throws IllegalArgumentException {
     super(grid, parameters);
-    maxAnts = (int) getDoubleParamOrFallback("maxAnts");
-    evaporationAmount = getDoubleParamOrFallback("evaporationAmount");
-    maxHomePheromone = getDoubleParamOrFallback("maxHomePheromone");
-    maxFoodPheromone = getDoubleParamOrFallback("maxFoodPheromone");
-    baseSelectionProbability = getDoubleParamOrFallback("baseSelectionProbability");
-    pheromoneSensitivity = getDoubleParamOrFallback("pheromoneSensitivity");
+    setMaxAnts(getDoubleParamOrFallback("maxAnts"));
+    setEvaporationRate(getDoubleParamOrFallback("evaporationRate"));
+    setMaxHomePheromone(getDoubleParamOrFallback("maxHomePheromone"));
+    setMaxFoodPheromone(getDoubleParamOrFallback("maxFoodPheromone"));
+    setBasePheromoneWeight(getDoubleParamOrFallback("basePheromoneWeight"));
+    setPheromoneSensitivity(getDoubleParamOrFallback("pheromoneSensitivity"));
+    setPheromoneDiffusionDecay(getDoubleParamOrFallback("pheromoneDiffusionDecay"));
     initializeAnts();
+  }
+
+  public void setMaxAnts(double maxAnts) throws IllegalArgumentException {
+    double min = getMinParam("maxAnts");
+    double max = getMaxParam("maxAnts");
+    checkBounds(maxAnts, min, max);
+    this.maxAnts = maxAnts;
+  }
+
+  public double getMaxAnts() {
+    return maxAnts;
+  }
+
+  public void setEvaporationRate(double evaporationRate) throws IllegalArgumentException {
+    double min = getMinParam("evaporationRate");
+    double max = getMaxParam("evaporationRate");
+    checkBounds(evaporationRate, min, max);
+    this.evaporationRate = evaporationRate/100;
+  }
+
+  public double getEvaporationRate() {
+    return evaporationRate * 100;
+  }
+
+  public void setMaxHomePheromone(double maxHomePheromone) throws IllegalArgumentException {
+    double min = getMinParam("maxHomePheromone");
+    double max = getMaxParam("maxHomePheromone");
+    checkBounds(maxHomePheromone, min, max);
+    this.maxHomePheromone = maxHomePheromone;
+  }
+
+  public double getMaxHomePheromone() {
+    return maxHomePheromone;
+  }
+
+  public void setMaxFoodPheromone(double maxFoodPheromone) throws IllegalArgumentException {
+    double min = getMinParam("maxFoodPheromone");
+    double max = getMaxParam("maxFoodPheromone");
+    checkBounds(maxFoodPheromone, min, max);
+    this.maxFoodPheromone = maxFoodPheromone;
+  }
+
+  public double getMaxFoodPheromone() {
+    return maxFoodPheromone;
+  }
+
+  public void setBasePheromoneWeight(double basePheromoneWeight) throws IllegalArgumentException {
+    double min = getMinParam("basePheromoneWeight");
+    double max = getMaxParam("basePheromoneWeight");
+    checkBounds(basePheromoneWeight, min, max);
+    this.basePheromoneWeight = basePheromoneWeight;
+  }
+
+  public double getBasePheromoneWeight() {
+    return basePheromoneWeight;
+  }
+
+  public void setPheromoneSensitivity(double pheromoneSensitivity) throws IllegalArgumentException {
+    double min = getMinParam("pheromoneSensitivity");
+    double max = getMaxParam("pheromoneSensitivity");
+    checkBounds(pheromoneSensitivity, min, max);
+    this.pheromoneSensitivity = pheromoneSensitivity;
+  }
+
+  public double getPheromoneSensitivity() {
+    return pheromoneSensitivity;
+  }
+
+  public void setPheromoneDiffusionDecay(double pheromoneDiffusionDecay) throws IllegalArgumentException {
+    double min = getMinParam("pheromoneDiffusionDecay");
+    double max = getMaxParam("pheromoneDiffusionDecay");
+    checkBounds(pheromoneDiffusionDecay, min, max);
+    this.pheromoneDiffusionDecay = pheromoneDiffusionDecay;
+  }
+
+  public double getPheromoneDiffusionDecay() {
+    return pheromoneDiffusionDecay;
+  }
+
+  private void initializeAnts() {
+    for (int r = 0; r < grid.getNumRows(); r++) {
+      for (int c = 0; c < grid.getNumCols(); c++) {
+        Cell<AntState> cell = grid.getCell(r, c);
+        if (cell.getCurrentState() == AntState.NEST) {
+          int antCount = (int) cell.getProperty("antCount");
+          for (int i = 0; i < antCount; i++) {
+            cellAntsMap.computeIfAbsent(cell, k -> new ArrayList<>())
+                .add(new AntInfo(new Direction(0, 1), false));
+          }
+        }
+      }
+    }
   }
 
   @Override
@@ -73,6 +164,19 @@ public class AntLogic extends Logic<AntState> {
         }
       }
     }
+    List<Cell<AntState>> cellsToProcess = new ArrayList<>(cellAntsMap.keySet());
+    for (Cell<AntState> cell : cellsToProcess) {
+      List<AntInfo> antsInCell = new ArrayList<>(cellAntsMap.get(cell));
+      for (AntInfo ant : antsInCell) {
+        moveAnt(cell, ant);
+      }
+    }
+    for (int row = 0; row < numRows; row++) {
+      for (int col = 0; col < numCols; col++) {
+        Cell<AntState> cell = grid.getCell(row, col);
+        evaporatePheromones(cell);
+      }
+    }
     grid.updateGrid();
   }
 
@@ -83,44 +187,54 @@ public class AntLogic extends Logic<AntState> {
       cellAntsMap.remove(cell);
       return;
     }
+
     List<AntInfo> newAnts = new ArrayList<>();
     for (AntInfo ant : ants) {
-      Direction newDirection = determineDirection(cell, ant);
-      newAnts.add(new AntInfo(ant.row, ant.col, newDirection, ant.hasFood));
+      AntInfo newAnt = ant.hasFood() ? antReturnToNest(cell, ant): antFindFoodSource(cell, ant);
+      newAnts.add(newAnt);
     }
     cellAntsMap.put(cell, newAnts);
   }
 
-  private void initializeAnts() {
-    for (int r = 0; r < grid.getNumRows(); r++) {
-      for (int c = 0; c < grid.getNumCols(); c++) {
-        Cell<AntState> cell = grid.getCell(r, c);
-        if (cell.getCurrentState() == AntState.NEST) {
-          int antCount = (int) cell.getProperty("antCount");
-          for (int i = 0; i < antCount; i++) {
-            cellAntsMap.computeIfAbsent(cell, k -> new ArrayList<>())
-                .add(new AntInfo(r, c, new Direction(0, 1), false));
-          }
-        }
-      }
+  // STUFF TO DETERMINE WHETHER THE ANT IS COMING OR GOING
+
+  private AntInfo antReturnToNest(Cell<AntState> cell, AntInfo ant) {
+    if (cell.getCurrentState() == AntState.NEST) {
+      ant = new AntInfo(ant.orientation(), false);
+      return antFindFoodSource(cell, ant);
     }
+    Direction direction = determineDirection(cell, ant);
+    return new AntInfo(direction, true);
   }
 
+  private AntInfo antFindFoodSource(Cell<AntState> cell, AntInfo ant) {
+    if (cell.getCurrentState() == AntState.FOOD) {
+      ant = new AntInfo(ant.orientation(), true);
+      return antReturnToNest(cell, ant);
+    }
+    Direction direction = determineDirection(cell, ant);
+    return new AntInfo(direction, false);
+  }
+
+  // STUFF TO FIND THE DIRECTION TO GO TO
+
   private Direction determineDirection(Cell<AntState> cell, AntInfo ant) {
-    List<Direction> possibleDirections = getPossibleDirections(ant.orientation);
-    String pheromoneType = ant.hasFood ? "homePheromone" : "foodPheromone";
-    Direction chosen = selectLocation(cell, possibleDirections, pheromoneType);
+    List<Direction> possibleDirections = getPossibleDirections(ant.orientation());
+    String pheromoneType = ant.hasFood() ? "homePheromone" : "foodPheromone";
+    List<Direction> validDirections = getValidDirections(possibleDirections, cell);
+    Direction chosen = getPheromoneWeightedDirection(validDirections, cell, pheromoneType);
     if (chosen != null) {
       return chosen;
     }
-    chosen = selectLocation(cell, AntNeighborCalculator.getDirections(), pheromoneType);
-    return (chosen != null) ? chosen : ant.orientation;
+    validDirections = getValidDirections(AntNeighborCalculator.getDirections(), cell);
+    chosen = getPheromoneWeightedDirection(validDirections, cell, pheromoneType);
+    return (chosen != null) ? chosen : new Direction(0, 0);
   }
 
   private List<Direction> getPossibleDirections(Direction orientation) {
-    int dy = orientation.row();
-    int dx = orientation.col();
-    int[][] candidates = {{dx - 1, dy}, {dx + 1, dy}, {dx, dy - 1}, {dx, dy + 1}};
+    int dx = orientation.dx();
+    int dy = orientation.dy();
+    int[][] candidates = {{dy - 1, dx}, {dy + 1, dx}, {dy, dx - 1}, {dy, dx + 1}};
     List<Direction> result = new ArrayList<>();
     for (int[] candidate : candidates) {
       int x = candidate[0];
@@ -134,8 +248,7 @@ public class AntLogic extends Logic<AntState> {
     return result;
   }
 
-  private Direction selectLocation(Cell<AntState> cell, List<Direction> candidateDirs,
-      String pheromoneType) {
+  private List<Direction> getValidDirections(List<Direction> candidateDirs, Cell<AntState> cell) {
     List<Direction> validDirections = new ArrayList<>();
     for (Direction direction : candidateDirs) {
       Cell<AntState> neighbor = getCellInDirection(direction, cell);
@@ -145,13 +258,14 @@ public class AntLogic extends Logic<AntState> {
       }
       validDirections.add(direction);
     }
-    if (validDirections.isEmpty()) {
-      return null;
-    }
-    return getPheromoneWeightedDirection(validDirections, cell, pheromoneType);
+    return validDirections;
   }
 
-  private Direction getPheromoneWeightedDirection(List<Direction> validDirections, Cell<AntState> cell, String pheromoneType) {
+  private Direction getPheromoneWeightedDirection(List<Direction> validDirections,
+      Cell<AntState> cell, String pheromoneType) {
+    if (validDirections == null || validDirections.isEmpty()) {
+      return null;
+    }
     double totalWeight = 0;
     List<Double> weights = new ArrayList<>();
     for (Direction d : validDirections) {
@@ -160,7 +274,7 @@ public class AntLogic extends Logic<AntState> {
         continue;
       }
       double pheromoneLevel = neighbor.getProperty(pheromoneType);
-      double weight = Math.pow(baseSelectionProbability + pheromoneLevel, pheromoneSensitivity);
+      double weight = Math.pow(basePheromoneWeight + pheromoneLevel, pheromoneSensitivity);
       weights.add(weight);
       totalWeight += weight;
     }
@@ -172,7 +286,7 @@ public class AntLogic extends Logic<AntState> {
         return validDirections.get(i);
       }
     }
-    return validDirections.getLast();
+    return validDirections.get(validDirections.size() - 1);
   }
 
   private Cell<AntState> getCellInDirection(Direction direction, Cell<AntState> cell) {
@@ -180,5 +294,49 @@ public class AntLogic extends Logic<AntState> {
       return cell.getNeighbors().get(direction);
     }
     return null;
+  }
+
+  // STUFF TO MOVE THE ANT
+
+  private void moveAnt(Cell<AntState> cell, AntInfo ant) {
+    Cell<AntState> neighbor = getCellInDirection(ant.orientation(), cell);
+    assert neighbor != null; // The validDirections should confirm this
+
+    dropPheromone(cell, ant.hasFood() ? "homePheromone" : "foodPheromone");
+    cell.setProperty("antCount", cell.getProperty("antCount") - 1);
+    neighbor.setProperty("antCount", neighbor.getProperty("antCount") + 1);
+    cellAntsMap.get(cell).remove(ant);
+    cellAntsMap.computeIfAbsent(neighbor, k -> new ArrayList<>()).add(ant);
+  }
+
+  // STUFF TO DROP PHEROMONES
+
+  private void dropPheromone(Cell<AntState> cell, String pheromoneType) {
+    double maxNeighbor = 0;
+    if (cell.getCurrentState() == AntState.NEST && pheromoneType.equals("homePheromone")) {
+      cell.setProperty(pheromoneType, maxHomePheromone);
+    }
+    else if (cell.getCurrentState() == AntState.FOOD && pheromoneType.equals("foodPheromone")) {
+      cell.setProperty(pheromoneType, maxFoodPheromone);
+    }
+    else {
+      for (Cell<AntState> neighbor : cell.getNeighbors().values()) {
+        double neighborLevel = neighbor.getProperty(pheromoneType);
+        if (neighborLevel > maxNeighbor) {
+          maxNeighbor = neighborLevel;
+        }
+      }
+      double desired = maxNeighbor - pheromoneDiffusionDecay;
+      if (desired > 0) {
+        cell.setProperty(pheromoneType, desired);
+        }
+    }
+  }
+
+  private void evaporatePheromones(Cell<AntState> cell) {
+    double currentHome = cell.getProperty("homePheromone");
+    double currentFood = cell.getProperty("foodPheromone");
+    cell.setProperty("homePheromone", Math.max(0, currentHome * (1 - evaporationRate)));
+    cell.setProperty("foodPheromone", Math.max(0, currentFood * (1 - evaporationRate)));
   }
 }

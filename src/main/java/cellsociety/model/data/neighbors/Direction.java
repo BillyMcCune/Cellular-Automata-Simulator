@@ -1,16 +1,16 @@
 package cellsociety.model.data.neighbors;
 
 /**
- * A simple record to hold row and col as an integer coordinate pair.
+ * A simple record to hold dx and dy as an integer coordinate pair.
  *
- * @param col The column number to store
- * @param row The row number to store
+ * @param dy The row offset to store
+ * @param dx The col offset to store
  * @author Jacob You
  */
-public record Direction(int row, int col) {
+public record Direction(int dy, int dx) {
 
   @Override
   public String toString() {
-    return "%s,%s".formatted(row, col);
+    return "%s,%s".formatted(dy, dx);
   }
 }
