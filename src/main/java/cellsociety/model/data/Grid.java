@@ -3,7 +3,7 @@ package cellsociety.model.data;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.neighbors.Coord;
+import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
@@ -58,9 +58,9 @@ public class Grid<T extends Enum<T> & State> {
   }
 
   /**
-   * Retrieves a specific cell from the grid based on its row and column indices.
+   * Retrieves a specific cell from the grid based on its dx and column indices.
    *
-   * @param row the row index of the desired cell
+   * @param row the dx index of the desired cell
    * @param col the column index of the desired cell
    * @return the {@link Cell<T>} at the specified position
    */
@@ -124,7 +124,7 @@ public class Grid<T extends Enum<T> & State> {
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
         Cell<T> cell = getCell(row, col);
-        Map<Coord, Cell<T>> neighbors = neighborCalculator.getNeighbors(this, row, col);
+        Map<Direction, Cell<T>> neighbors = neighborCalculator.getNeighbors(this, row, col);
         cell.setNeighbors(neighbors);
       }
     }

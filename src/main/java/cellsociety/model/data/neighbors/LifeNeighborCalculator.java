@@ -1,6 +1,7 @@
 package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.states.State;
+import java.util.List;
 
 /**
  * Contains the neighbor calculation/directions for Game of Life
@@ -16,8 +17,7 @@ public class LifeNeighborCalculator<T extends Enum<T> & State> extends NeighborC
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected int[][] getDirections() {
-    return DIRECTIONS;
+  public LifeNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }

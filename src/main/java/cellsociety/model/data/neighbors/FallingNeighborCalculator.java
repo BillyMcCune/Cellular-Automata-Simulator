@@ -1,6 +1,7 @@
 package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.states.State;
+import java.util.List;
 
 /**
  * Contains the neighbor calculation/directions for Falling Sand
@@ -14,8 +15,7 @@ public class FallingNeighborCalculator<T extends Enum<T> & State> extends Neighb
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected int[][] getDirections() {
-    return DIRECTIONS;
+  public FallingNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }

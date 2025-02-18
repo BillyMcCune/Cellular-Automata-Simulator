@@ -20,11 +20,12 @@ import org.junit.jupiter.api.Test;
  */
 public class FireLogicTest {
 
-  private final NeighborCalculator<FireState> dummyNeighborCalculator = new NeighborCalculator<FireState>() {
-    @Override
-    protected int[][] getDirections() {
-      return new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    }
+  private static final int[][] DIRECTIONS = {
+      {-1, 0}, {0, -1}, {0, 1}, {1, 0}
+  };
+
+  private final NeighborCalculator<FireState> dummyNeighborCalculator = new NeighborCalculator<FireState>(
+      DIRECTIONS) {
   };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {

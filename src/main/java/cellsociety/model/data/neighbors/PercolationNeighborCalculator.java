@@ -1,6 +1,7 @@
 package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.states.State;
+import java.util.List;
 
 /**
  * Contains the neighbor calculation/directions for Percolation
@@ -17,8 +18,7 @@ public class PercolationNeighborCalculator<T extends Enum<T> & State> extends Ne
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected int[][] getDirections() {
-    return DIRECTIONS;
+  public PercolationNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }
