@@ -13,7 +13,7 @@ public class SegregationLogic extends Logic<SegregationState> {
 
   public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) {
     super(grid, parameters);
-    setSatisfiedThreshold(loadDoubleProperty("SegregationLogic.satisfiedThreshold.default"));
+    setSatisfiedThreshold(getDoubleParamOrFallback("satisfiedThreshold"));
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();

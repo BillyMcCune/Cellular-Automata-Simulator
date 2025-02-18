@@ -9,16 +9,14 @@ import java.util.Map;
 
 public class BacteriaLogic extends Logic<BacteriaState> {
 
-  private final double beatingThresholdMin = loadDoubleProperty("BacteriaLogic.beatingThreshold.min");
-  private final double beatingThresholdMax = loadDoubleProperty("BacteriaLogic.beatingThreshold.max");
   private double beatingThreshold;
   private int numStates;
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
   public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters) {
     super(grid, parameters);
-    setBeatingThreshold(loadDoubleProperty("BacteriaLogic.beatingThreshold.default"));
-    setNumStates(loadDoubleProperty("BacteriaLogic.numStates.default"));
+    setBeatingThreshold(getDoubleParamOrFallback("beatingThreshold"));
+    setNumStates(getDoubleParamOrFallback("numStates"));
   }
 
   public void setBeatingThreshold(double percThreshold) throws IllegalArgumentException {

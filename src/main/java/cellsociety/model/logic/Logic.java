@@ -41,6 +41,32 @@ public abstract class Logic<T extends Enum<T> & State> {
   }
 
   /**
+   * Attempt to read from the ParameterRecord's double map using paramRecordKey.
+   * If missing, fallback to the .properties default in propertyDefaultKey.
+   */
+  protected double getDoubleParamOrFallback(String paramRecordKey) throws IllegalArgumentException {
+    Double recordVal = parameters.myDoubleParameters().get(paramRecordKey);
+    if (recordVal != null) {
+      return recordVal;
+    }
+    String defaultKey = logicClassName + "." + paramRecordKey + ".default";
+    return loadDoubleProperty(defaultKey);
+  }
+
+  /**
+   * Attempt to read from the ParameterRecord's string map using paramRecordKey.
+   * If missing, fallback to the .properties default in propertyDefaultKey.
+   */
+  protected String getStringParamOrFallback(String paramRecordKey) throws IllegalArgumentException {
+    String recordVal = parameters.myStringParameters().get(paramRecordKey);
+    if (recordVal != null) {
+      return recordVal;
+    }
+    String defaultKey = logicClassName + "." + paramRecordKey + ".default";
+    return loadStringProperty(defaultKey);
+  }
+
+  /**
    * Reads a double parameter from the Parameters.properties file.
    * If the parameter is missing, throws an IllegalArgumentException.
    */
