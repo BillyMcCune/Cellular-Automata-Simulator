@@ -25,7 +25,7 @@ public record ConfigInfo(
 ) {
 
   public enum SimulationType {
-    LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR
+    LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR, FALLING, SUGAR, BACTERIA
   }
 
 }
