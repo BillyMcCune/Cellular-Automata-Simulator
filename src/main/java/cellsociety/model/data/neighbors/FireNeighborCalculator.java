@@ -1,6 +1,7 @@
 package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.states.State;
+import java.util.List;
 
 /**
  * Contains the neighbor calculation/directions for Spreading of Fire
@@ -15,7 +16,7 @@ public class FireNeighborCalculator<T extends Enum<T> & State> extends NeighborC
   };
 
   @Override
-  protected int[][] getDirections() {
-    return DIRECTIONS;
+  protected List<Direction> getDirections() {
+    return intToDirections(DIRECTIONS);
   }
 }

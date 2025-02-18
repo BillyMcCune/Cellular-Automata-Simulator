@@ -7,6 +7,6 @@ package cellsociety.model.data.neighbors;
  * @param row The row number to store
  * @author Jacob You
  */
-public record Coord(int row, int col) {
+public record Direction(int row, int col) {
 
 }

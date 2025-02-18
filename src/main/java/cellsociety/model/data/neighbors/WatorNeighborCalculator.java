@@ -4,6 +4,7 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.State;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,22 +22,12 @@ public class WatorNeighborCalculator<T extends Enum<T> & State> extends Neighbor
   };
 
   @Override
-  protected int[][] getDirections() {
-    return DIRECTIONS;
+  protected List<Direction> getDirections() {
+    return intToDirections(DIRECTIONS);
   }
 
   @Override
-  public Map<Coord, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    Map<Coord, Cell<T>> neighbors = new HashMap<>();
-    int numRows = grid.getNumRows();
-    int numCols = grid.getNumCols();
-
-    for (int[] dir : getDirections()) {
-      int nr = (row + dir[0] + numRows) % numRows;
-      int nc = (col + dir[1] + numCols) % numCols;
-      Coord coord = new Coord(nr, nc);
-      neighbors.put(coord, grid.getCell(nr, nc));
-    }
-    return neighbors;
+  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
+    return getTorusNeighbors(grid, row, col);
   }
 }

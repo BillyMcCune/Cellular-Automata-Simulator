@@ -1,6 +1,7 @@
 package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.states.State;
+import java.util.List;
 
 /**
  * Contains the neighbor calculation/directions for Segregation
@@ -19,7 +20,7 @@ public class SegregationNeighborCalculator<T extends Enum<T> & State> extends
   };
 
   @Override
-  protected int[][] getDirections() {
-    return DIRECTIONS;
+  protected List<Direction> getDirections() {
+    return intToDirections(DIRECTIONS);
   }
 }
