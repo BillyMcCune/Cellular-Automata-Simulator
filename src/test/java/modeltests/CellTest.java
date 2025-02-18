@@ -3,7 +3,7 @@ package modeltests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.neighbors.Coord;
+import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,9 +62,9 @@ public class CellTest {
     Cell<TestState> cell = new Cell<>(TestState.ZERO);
     Cell<TestState> n1 = new Cell<>(TestState.ONE);
     Cell<TestState> n2 = new Cell<>(TestState.ZERO);
-    Map<Coord, Cell<TestState>> neighborMap = new HashMap<>();
-    neighborMap.put(new Coord(0, 1), n1);
-    neighborMap.put(new Coord(0, -1), n2);
+    Map<Direction, Cell<TestState>> neighborMap = new HashMap<>();
+    neighborMap.put(new Direction(0, 1), n1);
+    neighborMap.put(new Direction(0, -1), n2);
 
     cell.setNeighbors(neighborMap);
     assertEquals(neighborMap, cell.getNeighbors());

@@ -1,6 +1,6 @@
 package cellsociety.model.data.cells;
 
-import cellsociety.model.data.neighbors.Coord;
+import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Cell<T extends Enum<T> & State> {
 
-  protected Map<Coord, Cell<T>> neighbors = new HashMap<>();
+  protected Map<Direction, Cell<T>> neighbors = new HashMap<>();
   protected T currState;
   protected T nextState;
   protected Map<String, Double> properties;
@@ -34,7 +34,7 @@ public class Cell<T extends Enum<T> & State> {
    *
    * @return a map of coordinates to neighboring cells
    */
-  public Map<Coord, Cell<T>> getNeighbors() {
+  public Map<Direction, Cell<T>> getNeighbors() {
     return neighbors;
   }
 
@@ -70,7 +70,7 @@ public class Cell<T extends Enum<T> & State> {
    *
    * @param neighbors a map of coordinates to neighboring cells
    */
-  public void setNeighbors(Map<Coord, Cell<T>> neighbors) {
+  public void setNeighbors(Map<Direction, Cell<T>> neighbors) {
     this.neighbors = neighbors;
   }
 

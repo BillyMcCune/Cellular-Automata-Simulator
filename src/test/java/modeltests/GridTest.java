@@ -50,14 +50,13 @@ public class GridTest {
   }
 
   private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
-
-    @Override
-    protected int[][] getDirections() {
-      return new int[][]{
-          {-1, -1}, {-1, 0}, {-1, 1},
-          {0, -1}, {0, 1},
-          {1, -1}, {1, 0}, {1, 1}
-      };
+    private static final int[][] DIRECTIONS = {
+        {-1, -1}, {-1, 0}, {-1, 1},
+        {0, -1}, {0, 1},
+        {1, -1}, {1, 0}, {1, 1}
+    };
+    public DummyNeighborCalculator() {
+      super(DIRECTIONS);
     }
   }
 
