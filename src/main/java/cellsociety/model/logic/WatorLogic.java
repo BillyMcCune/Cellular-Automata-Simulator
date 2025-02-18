@@ -9,9 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Implements the Wa-Tor world simulation logic, updating sharks and fish based on
- * energy, breeding times, and moves. All occupant data (energy, time since last breeding)
- * is stored within each Cell's properties map.
+ * Implements the Wa-Tor world simulation logic for {@link Logic}, updating sharks and fish based on
+ * energy, breeding times, and moves. All occupant data (energy, time since last breeding) is stored
+ * within each Cell's properties map.
+ *
+ * @author Jacob You
  */
 public class WatorLogic extends Logic<WatorState> {
 
@@ -30,7 +32,8 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param grid The grid on which to run the Wa-Tor simulation.
    */
-  public WatorLogic(Grid<WatorState> grid, ParameterRecord parameters) throws IllegalArgumentException {
+  public WatorLogic(Grid<WatorState> grid, ParameterRecord parameters)
+      throws IllegalArgumentException {
     super(grid, parameters);
     initializePropertyMaps();
 
@@ -125,8 +128,7 @@ public class WatorLogic extends Logic<WatorState> {
     if (cell.getCurrentState() == WatorState.SHARK) {
       Cell<WatorState> nextLocation = getNextSharkLocation(cell);
       moveShark(cell, nextLocation);
-    }
-    else if (cell.getCurrentState() == WatorState.FISH) {
+    } else if (cell.getCurrentState() == WatorState.FISH) {
       Cell<WatorState> nextLocation = getNextFishLocation(cell);
       moveFish(cell, nextLocation);
     }
@@ -138,8 +140,8 @@ public class WatorLogic extends Logic<WatorState> {
     for (Cell<WatorState> neighbor : sharkCell.getNeighbors().values()) {
       if (neighbor.getNextState() == WatorState.FISH) {
         fishNeighbors.add(neighbor);
-      }
-      else if (neighbor.getCurrentState() == WatorState.OPEN && neighbor.getNextState() == WatorState.OPEN) {
+      } else if (neighbor.getCurrentState() == WatorState.OPEN
+          && neighbor.getNextState() == WatorState.OPEN) {
         openNeighbors.add(neighbor);
       }
     }
@@ -147,8 +149,7 @@ public class WatorLogic extends Logic<WatorState> {
     if (!fishNeighbors.isEmpty()) {
       int index = (int) (Math.random() * fishNeighbors.size());
       nextLocation = fishNeighbors.get(index);
-    }
-    else if (!openNeighbors.isEmpty()) {
+    } else if (!openNeighbors.isEmpty()) {
       int index = (int) (Math.random() * openNeighbors.size());
       nextLocation = openNeighbors.get(index);
     }
@@ -163,8 +164,7 @@ public class WatorLogic extends Logic<WatorState> {
     if (nextLocation.getNextState() == WatorState.FISH) {
       sharkCell.setProperty("energy", energy + fishEnergyGain);
       fishCells.remove(nextLocation);
-    }
-    else {
+    } else {
       sharkCell.setProperty("energy", energy - 1);
     }
     if ((int) sharkCell.getProperty("energy") <= 0) {

@@ -2,5 +2,11 @@ package cellsociety.model.data.neighbors;
 
 /**
  * A simple record to hold row and col as an integer coordinate pair.
+ *
+ * @param col The column number to store
+ * @param row The row number to store
+ * @author Jacob You
  */
-public record Coord(int row, int col) {}
+public record Coord(int row, int col) {
+
+}

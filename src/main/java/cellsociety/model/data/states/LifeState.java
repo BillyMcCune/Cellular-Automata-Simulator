@@ -2,6 +2,8 @@ package cellsociety.model.data.states;
 
 /**
  * Represents the different possible states for Game of Life
+ *
+ * @author Jacob You
  */
 public enum LifeState implements State {
   DEAD(0),

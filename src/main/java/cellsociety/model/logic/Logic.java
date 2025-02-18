@@ -13,6 +13,7 @@ import java.util.Properties;
  * implement specific rules.
  *
  * @param <T> The enum type representing the cell state
+ * @author Jacob You
  */
 public abstract class Logic<T extends Enum<T> & State> {
 
@@ -24,25 +25,31 @@ public abstract class Logic<T extends Enum<T> & State> {
 
   static {
     try (InputStream is = Logic.class.getResourceAsStream(propertyFile)) {
-      if (is == null) {
-        System.err.println("Warning: Could not find '/cellsociety/property/Parameters.properties' in resources.");
-      } else {
-        logicProps.load(is);
-      }
+      logicProps.load(is);
     } catch (IOException e) {
       System.err.println("Error loading parameters properties file: " + e);
     }
   }
 
+  /**
+   * Constructs a Logic instance associated with a given grid and parameter set.
+   *
+   * @param grid       The grid representing the cellular automaton
+   * @param parameters The parameter record containing simulation-specific configurations
+   */
   public Logic(Grid<T> grid, ParameterRecord parameters) {
     this.grid = grid;
     this.parameters = parameters;
-    this.logicClassName = this.getClass().getSimpleName();;
+    this.logicClassName = this.getClass().getSimpleName();
   }
 
   /**
-   * Attempt to read from the ParameterRecord's double map using paramRecordKey.
-   * If missing, fallback to the .properties default in propertyDefaultKey.
+   * Retrieves a double parameter from the ParameterRecord if available; otherwise, falls back to
+   * the default value stored in the Parameters.properties file.
+   *
+   * @param paramRecordKey The key used to look up the parameter in the ParameterRecord
+   * @return The parameter value, either from the ParameterRecord or the properties file
+   * @throws IllegalArgumentException If the parameter is missing from both sources
    */
   protected double getDoubleParamOrFallback(String paramRecordKey) throws IllegalArgumentException {
     Double recordVal = parameters.myDoubleParameters().get(paramRecordKey);
@@ -54,8 +61,12 @@ public abstract class Logic<T extends Enum<T> & State> {
   }
 
   /**
-   * Attempt to read from the ParameterRecord's string map using paramRecordKey.
-   * If missing, fallback to the .properties default in propertyDefaultKey.
+   * Retrieves a string parameter from the ParameterRecord if available; otherwise, falls back to
+   * the default value stored in the Parameters.properties file.
+   *
+   * @param paramRecordKey The key used to look up the parameter in the ParameterRecord
+   * @return The parameter value, either from the ParameterRecord or the properties file
+   * @throws IllegalArgumentException If the parameter is missing from both sources
    */
   protected String getStringParamOrFallback(String paramRecordKey) throws IllegalArgumentException {
     String recordVal = parameters.myStringParameters().get(paramRecordKey);
@@ -67,8 +78,8 @@ public abstract class Logic<T extends Enum<T> & State> {
   }
 
   /**
-   * Reads a double parameter from the Parameters.properties file.
-   * If the parameter is missing, throws an IllegalArgumentException.
+   * Reads a double parameter from the Parameters.properties file. If the parameter is missing,
+   * throws an IllegalArgumentException.
    */
   protected double loadDoubleProperty(String key) throws IllegalArgumentException {
     String valString = logicProps.getProperty(key);
@@ -79,8 +90,8 @@ public abstract class Logic<T extends Enum<T> & State> {
   }
 
   /**
-   * Reads a String parameter from the ParameterRecord.
-   * If the parameter is missing, throws an IllegalArgumentException.
+   * Reads a String parameter from the ParameterRecord. If the parameter is missing, throws an
+   * IllegalArgumentException.
    */
   protected String loadStringProperty(String key) throws IllegalArgumentException {
     String val = logicProps.getProperty(key);
@@ -91,8 +102,8 @@ public abstract class Logic<T extends Enum<T> & State> {
   }
 
   /**
-   * Checks if a value is less than or greater than a min or max
-   * If it is, throws an IllegalArgumentException
+   * Checks if a value is less than or greater than a min or max If it is, throws an
+   * IllegalArgumentException
    *
    * @param value The value to analyze
    * @param min   The minimum value
@@ -104,19 +115,31 @@ public abstract class Logic<T extends Enum<T> & State> {
     }
   }
 
+  /**
+   * Retrieves the minimum allowed value for a given parameter.
+   *
+   * @param paramName The name of the parameter
+   * @return The minimum allowed value of the parameter
+   */
   public double getMinParam(String paramName) {
     String key = logicClassName + "." + paramName + ".min";
     return loadDoubleProperty(key);
   }
 
+  /**
+   * Retrieves the maximum allowed value for a given parameter.
+   *
+   * @param paramName The name of the parameter
+   * @return The maximum allowed value of the parameter
+   */
   public double getMaxParam(String paramName) {
     String key = logicClassName + "." + paramName + ".max";
     return loadDoubleProperty(key);
   }
 
   /**
-   * Updates the entire game state by one tick. Subclasses should provide an implementation for this
-   * method.
+   * Updates the entire game state by one tick, applying the logic to each cell. The grid is updated
+   * after all cells have processed their next states.
    */
   public void update() {
     int numRows = grid.getNumRows();

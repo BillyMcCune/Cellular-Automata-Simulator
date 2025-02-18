@@ -7,7 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract base class that calculates the neighbors for a (row, col) in a Grid.
+ * Abstract base class that calculates the neighbors for a (row, col) in a Grid. It uses simulation
+ * specific directions to calculate these neighbors
+ *
+ * @author Jacob You
  */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
 

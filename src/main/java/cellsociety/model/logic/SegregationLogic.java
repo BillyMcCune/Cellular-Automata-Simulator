@@ -6,12 +6,24 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SegregationState;
 import java.util.ArrayList;
 
+/**
+ * Concrete implementation of {@link Logic} for the Schelling Segregation Model.
+ *
+ * @author Jacob You
+ */
 public class SegregationLogic extends Logic<SegregationState> {
 
   private final ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
   private double satisfiedThreshold;
 
-  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) throws IllegalArgumentException{
+  /**
+   * Constructs a {@code SegregationLogic} instance with the specified grid and parameters.
+   *
+   * @param grid       the grid representing the current state of the simulation
+   * @param parameters the parameter record containing simulation-specific configurations
+   * @throws IllegalArgumentException if parameters are out of bounds
+   */
+  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) throws IllegalArgumentException {
     super(grid, parameters);
     setSatisfiedThreshold(getDoubleParamOrFallback("satisfiedThreshold"));
 
@@ -28,21 +40,39 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
   }
 
-  public void setSatisfiedThreshold(double percSatisfiedThreshold) throws IllegalArgumentException {
+  /**
+   * Sets the satisfaction threshold, determining how many similar neighbors are required for a cell
+   * to stay in place.
+   *
+   * @param threshold the satisfaction threshold in percentage
+   * @throws IllegalArgumentException if the value is outside the allowed range
+   */
+  public void setSatisfiedThreshold(double threshold) throws IllegalArgumentException {
     double min = getMinParam("satisfiedThreshold");
     double max = getMaxParam("satisfiedThreshold");
-    checkBounds(percSatisfiedThreshold, min, max);
-    satisfiedThreshold = percSatisfiedThreshold/100;
+    checkBounds(threshold, min, max);
+    satisfiedThreshold = threshold / 100;
   }
 
+  /**
+   * Retrieves the satisfaction threshold in percentage form for external use.
+   *
+   * @return the satisfaction threshold as a percentage
+   */
   public double getSatisfiedThreshold() {
     return satisfiedThreshold * 100;
   }
 
+  /**
+   * Updates the next state of a single cell based on its similarity to neighboring cells.
+   * If a cell is unsatisfied, it moves to a random available empty location.
+   *
+   * @param cell the cell to update
+   */
   @Override
   protected void updateSingleCell(Cell<SegregationState> cell) {
     if (empty.isEmpty()) {
-      // NO EMPTY SPOTS, the entire grid is gridlocked
+      // No empty spaces available, no movement possible
       return;
     }
     if ((cell.getCurrentState() != SegregationState.OPEN) && (getProportionSimilarNeighbors(cell) < satisfiedThreshold)) {
@@ -57,6 +87,12 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
   }
 
+  /**
+   * Calculates the proportion of similar neighbors surrounding a given cell.
+   *
+   * @param cell the cell whose neighbors are analyzed
+   * @return the proportion of neighbors that share the same state
+   */
   private double getProportionSimilarNeighbors(Cell<SegregationState> cell) {
     double similarNeighbors = 0;
     double totalNeighbors = 0;
@@ -74,10 +110,6 @@ public class SegregationLogic extends Logic<SegregationState> {
     }
 
     double satisfaction = similarNeighbors / totalNeighbors;
-    if (Double.isNaN(satisfaction)) {
-      return 0;
-    } else {
-      return (satisfaction);
-    }
+    return Double.isNaN(satisfaction) ? 0 : satisfaction;
   }
 }

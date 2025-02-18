@@ -8,7 +8,12 @@ import cellsociety.model.data.states.FallingState;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FallingLogic extends Logic<FallingState>{
+/**
+ * Concrete implementation of {@link Logic} for the Falling Sand simulation.
+ *
+ * @author Jacob You
+ */
+public class FallingLogic extends Logic<FallingState> {
 
   public FallingLogic(Grid<FallingState> grid, ParameterRecord parameters) {
     super(grid, parameters);

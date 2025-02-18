@@ -7,13 +7,19 @@ import cellsociety.model.data.states.BacteriaState;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Concrete implementation of {@link Logic} for the Bacteria simulation.
+ *
+ * @author Jacob You
+ */
 public class BacteriaLogic extends Logic<BacteriaState> {
 
   private double beatingThreshold;
   private int numStates;
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
-  public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters) throws IllegalArgumentException{
+  public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters)
+      throws IllegalArgumentException {
     super(grid, parameters);
     setBeatingThreshold(getDoubleParamOrFallback("beatingThreshold"));
     setNumStates(getDoubleParamOrFallback("numStates"));
@@ -51,7 +57,7 @@ public class BacteriaLogic extends Logic<BacteriaState> {
 
     double numBeating = getNumBeating(cell, beatingId);
     int numNeighbors = cell.getNeighbors().size();
-    if (numNeighbors != 0 && numBeating/numNeighbors >= beatingThreshold) {
+    if (numNeighbors != 0 && numBeating / numNeighbors >= beatingThreshold) {
       nextStates.put(cell, beatingId);
     }
   }
