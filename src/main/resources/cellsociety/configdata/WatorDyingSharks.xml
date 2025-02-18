@@ -476,28 +476,6 @@
       <cell state="2"/>
       <cell state="2"/>
     </row>
-    <row>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-      <cell state="2"/>
-    </row>
   </initialCells>
   <acceptedStates>
     0 1 2
