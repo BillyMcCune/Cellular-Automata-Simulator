@@ -50,7 +50,23 @@
   -fx-padding: 5px;
   -fx-background-color: #333333;
   -fx-border-color: #555555;
+  -fx-opacity: 0.9;
 }
+
+.range-tooltip {
+  -fx-background-color: #171717;
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 14px;
+  -fx-padding: 5px 10px;
+  -fx-background-radius: 5px;
+  -fx-border-color: #444444;
+  -fx-border-width: 1px;
+}
+
+.range-tooltip .arrow {
+  -fx-background-color: #2a2a2a;
+}
+
 
 /* ==========================
    Scrollbars
@@ -160,7 +176,6 @@
   -fx-background-color: #333333;
   -fx-border-color: #555555;
   -fx-border-radius: 5px;
-  -fx-padding: 10px;
 }
 
 .splash-combo-box .button {

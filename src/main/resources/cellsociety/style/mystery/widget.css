@@ -52,6 +52,20 @@
   -fx-border-color: #555555;
 }
 
+.range-tooltip {
+  -fx-background-color: #420e4e;
+  -fx-text-fill: linear-gradient(to bottom, #ffffff, #aaaaaa); /* Soft white gradient */
+  -fx-font-size: 14px;
+  -fx-padding: 5px 10px;
+  -fx-background-radius: 5px;
+  -fx-border-color: #7a5cff;
+  -fx-border-width: 1px;
+}
+
+.range-tooltip .arrow {
+  -fx-fill: #420e4e;
+}
+
 /* ==========================
    Content Pane (Three-color gradient)
    ========================== */
@@ -174,7 +188,6 @@
   -fx-background-color: #2a2a2a; /* Dark base background */
   -fx-border-color: #3f2a5b; /* Deep purple border */
   -fx-border-radius: 5px;
-  -fx-padding: 10px;
 }
 
 .splash-combo-box .button {

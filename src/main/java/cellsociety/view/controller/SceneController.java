@@ -260,7 +260,6 @@ public class SceneController {
         SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter getter methods for: " + paramName, e);
       }
 
-      // TODO: SET THE PARAMETER TOOL TIPS
       // Set the parameter listener
       try {
         if (paramType == double.class) {
@@ -288,10 +287,7 @@ public class SceneController {
           };
 
           // Register parameter in simulation UI
-          String paramLabel = Arrays.stream(paramName.split("(?=[A-Z])"))
-              .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-              .collect(Collectors.joining(" "));
-          simulationScene.setParameter(min, max, defaultValue, paramLabel, "", consumer);
+          simulationScene.setParameter(min, max, defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
         } else if (paramType == String.class) {
           // Get the default value
           String defaultValue = "";
@@ -312,10 +308,7 @@ public class SceneController {
           };
 
           // Register parameter in simulation UI
-          String paramLabel = Arrays.stream(paramName.split("(?=[A-Z])"))
-              .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase())
-              .collect(Collectors.joining(" "));
-          simulationScene.setParameter(defaultValue, paramLabel, "", consumer);
+          simulationScene.setParameter(defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
         }
       } catch (Exception e) {
         SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, e);

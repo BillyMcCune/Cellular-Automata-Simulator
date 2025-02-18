@@ -52,6 +52,20 @@
   -fx-border-color: #cccccc;
 }
 
+.range-tooltip {
+  -fx-background-color: #2a2a2a;
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 14px;
+  -fx-padding: 5px 10px;
+  -fx-background-radius: 5px;
+  -fx-border-color: #000000;
+  -fx-border-width: 1px;
+}
+
+.range-tooltip .arrow {
+  -fx-background-color: #2a2a2a;
+}
+
 /* ==========================
    Scrollbars
    ========================== */
@@ -159,7 +173,6 @@
   -fx-background-color: #f4f4f4; /* Lighter background */
   -fx-border-color: #cccccc;
   -fx-border-radius: 5px;
-  -fx-padding: 10px;
 }
 
 .splash-combo-box .button {

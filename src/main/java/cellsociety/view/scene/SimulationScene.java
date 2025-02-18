@@ -3,6 +3,8 @@ package cellsociety.view.scene;
 import static java.lang.Math.abs;
 
 import cellsociety.logging.Log;
+import cellsociety.view.controller.LanguageController;
+import cellsociety.view.controller.LanguageController.Language;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import cellsociety.view.controller.ThemeController.UIComponent;
@@ -36,7 +38,6 @@ public class SimulationScene {
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
   public static final double SPEED_MULTIPLIER = 3;
-  public static final String SPEED_TOOLTIP = "Change the speed of the simulation";
 
   // UI components
   private Button startPauseButton;
@@ -53,7 +54,6 @@ public class SimulationScene {
 
   private double updateInterval;
   private double timeSinceLastUpdate;
-
   private boolean doShowBorder = true;
 
   /**
@@ -70,6 +70,12 @@ public class SimulationScene {
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
 
+    // Set the default style
+    updateUIStyle(Theme.DAY);
+
+    // Set the default language
+    updateUILang(Language.ENGLISH);
+
     // Create the UI components
     Pane gridParent = createGrid();
     ScrollPane controls = createControls();
@@ -78,14 +84,11 @@ public class SimulationScene {
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
-    docker.createDWindow("Controls", controls, DockPosition.TOP);
-    docker.createDWindow("Info", infoLabel, DockPosition.TOP);
-    docker.createDWindow("Grid", gridParent, DockPosition.RIGHT);
-    docker.createDWindow("Parameters", parameterPanel, DockPosition.RIGHT);
+    docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP);
+    docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel, DockPosition.TOP);
+    docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT);
+    docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT);
     docker.reformat();
-
-    // Set the default style
-    setUIStyle(Theme.DAY);
   }
 
   /**
@@ -94,7 +97,16 @@ public class SimulationScene {
    */
   public void start(int framesPerSecond) {
     // Create the splash screen
-    SceneUIWidget.createSplashScreen("English", Theme.DAY, this::splashScreenLanguageCallback, this::splashScreenThemeCallback, () -> {
+    SceneUIWidget.createSplashScreen(
+        Language.ENGLISH,
+        Theme.DAY,
+        LanguageController.getStringProperty("welcome-title"),
+        LanguageController.getStringProperty("welcome-button"),
+        LanguageController.getStringProperty("welcome-language"),
+        LanguageController.getStringProperty("welcome-theme"),
+        this::splashScreenLanguageCallback,
+        this::splashScreenThemeCallback,
+        () -> {
       // Log the welcome
       Log.info("Welcome to Cell Society! This simulation is made by Jacob You, Hsuan-Kai Liao, and Billy McCune.");
 
@@ -106,7 +118,8 @@ public class SimulationScene {
       gameLoop.setCycleCount(Timeline.INDEFINITE);
       gameLoop.getKeyFrames().add(new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond), e -> step(1.0 / framesPerSecond)));
       gameLoop.play();
-    });
+    }
+    );
   }
 
   /* PRIVATE UI SETUP METHODS */
@@ -127,20 +140,21 @@ public class SimulationScene {
     parameterBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(parameterBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(parameterBox, "Parameters");
+    return SceneUIWidget.createContainerUI(parameterBox, LanguageController.getStringProperty("parameter-panel"));
   }
 
   private ScrollPane createControls() {
     // Create buttons
-    startPauseButton = SceneUIWidget.createButtonUI("Start", e -> startPauseCallback());
-    Button resetButton = SceneUIWidget.createButtonUI("Reset", e -> resetCallback());
-    Button loadButton = SceneUIWidget.createButtonUI("Load", e -> loadCallback(selectType.getValue()));
-    Button saveButton = SceneUIWidget.createButtonUI("Save", e -> saveCallback(directoryField.getText()));
-    Button directoryButton = SceneUIWidget.createButtonUI("📂", e -> directorySelectCallback());
-    Button flipButton = SceneUIWidget.createButtonUI("Flip", e -> flipCallback());
+    startPauseButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("start-button"), e -> startPauseCallback());
+    Button resetButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("reset-button"), e -> resetCallback());
+    Button loadButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("load-button"), e -> loadCallback(selectType.getValue()));
+    Button saveButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("save-button"), e -> saveCallback(directoryField.getText()));
+    Button directoryButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("directory-button"), e -> directorySelectCallback());
+    Button flipButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("flip-button"), e -> flipCallback());
 
     // Create checkbox
-    CheckBox showBorderCheckBox = new CheckBox("Striking Border");
+    CheckBox showBorderCheckBox = new CheckBox();
+    showBorderCheckBox.textProperty().bind(LanguageController.getStringProperty("checkbox-text"));
     showBorderCheckBox.getStyleClass().add("border-checkbox");
     showBorderCheckBox.setOnAction(e -> toggleBorderCallback(showBorderCheckBox.isSelected()));
     showBorderCheckBox.setSelected(doShowBorder);
@@ -192,19 +206,28 @@ public class SimulationScene {
     row4.setAlignment(Pos.CENTER);
     row4.setPadding(new Insets(5));
 
-    BorderPane section1 = SceneUIWidget.createSectionUI("Operations", row1);
-    BorderPane section2 = SceneUIWidget.createSectionUI("Load & Save", row2, row3);
-    BorderPane section3 = SceneUIWidget.createSectionUI("Grid Settings", row4);
+    // Create sections
+    BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("operations-section"), row1);
+    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("io-section"), row2, row3);
+    BorderPane section3 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("grid-section"), row4);
+    BorderPane section4 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("themelang-section"), SceneUIWidget.createThemeLanguageSelectorUI(
+        LanguageController.getStringProperty("welcome-language"),
+        LanguageController.getStringProperty("welcome-theme"),
+        this::splashScreenLanguageCallback,
+        this::splashScreenThemeCallback,
+        "...",
+        "..."
+    ));
 
     // Main VBox containing all sections
-    VBox controlsBox = new VBox(10, section1, section2, section3);
+    VBox controlsBox = new VBox(10, section1, section2, section3, section4);
     controlsBox.setAlignment(Pos.CENTER);
     controlsBox.getStyleClass().add("controls-box");
     controlsBox.setPadding(new Insets(10));
     controlsBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(controlsBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(controlsBox, "Controls");
+    return SceneUIWidget.createContainerUI(controlsBox, LanguageController.getStringProperty("controls-panel"));
   }
 
   private ScrollPane createInfoPanel() {
@@ -223,7 +246,7 @@ public class SimulationScene {
     infoBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(infoBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(infoBox, "Information");
+    return SceneUIWidget.createContainerUI(infoBox, LanguageController.getStringProperty("info-panel"));
   }
 
   /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
@@ -282,7 +305,7 @@ public class SimulationScene {
       // TODO: Move this into the controller
       // Clear the parameter box except for the speed
       parameterBox.getChildren().clear();
-      setParameter(MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), "Speed", SPEED_TOOLTIP, this::speedChangeCallback);
+      setParameter(MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), "speed-label","speed-tooltip", this::speedChangeCallback);
 
       // Reset the simulation
       controller.resetModel();
@@ -348,11 +371,11 @@ public class SimulationScene {
   }
 
   private void splashScreenThemeCallback(Theme theme) {
-    setUIStyle(theme);
+    updateUIStyle(theme);
   }
 
-  private void splashScreenLanguageCallback(String language) {
-    // TODO: Implement language change
+  private void splashScreenLanguageCallback(Language language) {
+    updateUILang(language);
   }
   /* PUBLIC UI SETS METHOD */
 
@@ -377,47 +400,26 @@ public class SimulationScene {
 
   /**
    * Set the parameter with the given label, min, max, default value, tooltip, and callback
-   * @param label the label of the parameter
+   * @param labelKey the label key for the StringProperty of the parameter
    * @param min the minimum value of the parameter
    * @param max the maximum value of the parameter
    * @param defaultValue the default value of the parameter
-   * @param tooltip the tooltip of the parameter
+   * @param tooltipKey the tooltip key for the StringProperty of the parameter
    * @param callback the callback function of the parameter
    */
-  public void setParameter(double min, double max, double defaultValue, String label, String tooltip, Consumer<Double> callback) {
-    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, label, tooltip, callback));
+  public void setParameter(double min, double max, double defaultValue, String labelKey, String tooltipKey, Consumer<Double> callback) {
+    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
   }
 
   /**
    * Set the parameter with the given default value, label, tooltip, and callback
    * @param defaultValue the default value of the parameter
-   * @param label the label of the parameter
-   * @param tooltip the tooltip of the parameter
+   * @param labelKey the label key for the StringProperty of the parameter
+   * @param tooltipKey the tooltip key for the StringProperty of the parameter
    * @param callback the callback function of the parameter
    */
-  public void setParameter(String defaultValue, String label, String tooltip, Consumer<String> callback) {
-    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, label, tooltip, callback));
-  }
-
-  /**
-   * Set the UI style with the given theme
-   * @param theme the theme of the UI style
-   */
-  public void setUIStyle(Theme theme) {
-    // Get the style sheets for the scene, widget, and docking
-    String sceneSheet = ThemeController.getThemeSheet(theme, UIComponent.SCENE);
-    String widgetSheet = ThemeController.getThemeSheet(theme, UIComponent.WIDGET);
-    String dockingSheet = ThemeController.getThemeSheet(theme, UIComponent.DOCKING);
-
-    // Clear the current style sheets and add the new ones
-    primaryStage.getScene().getStylesheets().clear();
-    docker.clearStyleSheets();
-
-    // Add the new style sheets
-    primaryStage.getScene().getStylesheets().add(sceneSheet);
-    primaryStage.getScene().getStylesheets().add(widgetSheet);
-    docker.addStyleSheet(dockingSheet);
-    SceneUIWidget.setWidgetStyleSheet(widgetSheet);
+  public void setParameter(String defaultValue, String labelKey, String tooltipKey, Consumer<String> callback) {
+    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
   }
 
   /* PRIVATE UI HELPER METHODS */
@@ -432,11 +434,11 @@ public class SimulationScene {
 
   private void toggleStartPauseButton(boolean isPause) {
     if (isPause) {
-      startPauseButton.setText("Start");
+      startPauseButton.textProperty().bind(LanguageController.getStringProperty("start-button"));
       startPauseButton.getStyleClass().setAll("button", "start-button");
       controller.setStartPause(true);
     } else {
-      startPauseButton.setText("Pause");
+      startPauseButton.textProperty().bind(LanguageController.getStringProperty("pause-button"));
       startPauseButton.getStyleClass().setAll("button", "pause-button");
       controller.setStartPause(false);
     }
@@ -460,5 +462,26 @@ public class SimulationScene {
   private void resetFlip() {
     grid.setScaleX(abs(grid.getScaleX()));
     grid.setScaleY(abs(grid.getScaleY()));
+  }
+
+  private void updateUIStyle(Theme theme) {
+    // Get the style sheets for the scene, widget, and docking
+    String sceneSheet = ThemeController.getThemeSheet(theme, UIComponent.SCENE);
+    String widgetSheet = ThemeController.getThemeSheet(theme, UIComponent.WIDGET);
+    String dockingSheet = ThemeController.getThemeSheet(theme, UIComponent.DOCKING);
+
+    // Clear the current style sheets and add the new ones
+    primaryStage.getScene().getStylesheets().clear();
+    docker.clearStyleSheets();
+
+    // Add the new style sheets
+    primaryStage.getScene().getStylesheets().add(sceneSheet);
+    primaryStage.getScene().getStylesheets().add(widgetSheet);
+    docker.addStyleSheet(dockingSheet);
+    SceneUIWidget.setWidgetStyleSheet(widgetSheet);
+  }
+
+  private void updateUILang(Language language) {
+    LanguageController.switchLanguage(language);
   }
 }
