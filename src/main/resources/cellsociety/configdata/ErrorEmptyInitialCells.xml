@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+  <type>LIFE</type>
+
+
+  <title>Glider Test</title>
+
+
+  <author>Richard Guy</author>
+
+
+  <description>A classic glider pattern in Game of Life.</description>
+
+
+  <parameters>
+  </parameters>
+
+
+  <width>5</width>
+
+
+  <height>5</height>
+
+
+  <defaultSpeed>10</defaultSpeed>
+
+
+  <initialCells>
+
+  </initialCells>
+
+
+  <acceptedStates>0 1</acceptedStates>
+
+
+</simulation>

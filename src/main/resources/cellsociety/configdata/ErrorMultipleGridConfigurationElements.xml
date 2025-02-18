@@ -1,0 +1,105 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+  <type>SEGREGATION</type>
+
+
+  <title>Default Segregation Simulation</title>
+
+
+  <author>Billy</author>
+
+
+  <description>A default version of the segregation simulation.</description>
+
+
+  <parameters>
+
+    <doubleParameter name="satisfiedThreshold">50</doubleParameter>
+
+
+  </parameters>
+
+
+  <width>10</width>
+
+
+  <height>5</height>
+
+
+  <defaultSpeed>1</defaultSpeed>
+
+
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="1"/>
+      <cell state="2"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="2"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
+  <initialProportions>
+    <state1>10</state1>
+    <state2>10</state2>
+  </initialProportions>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+
+
+</simulation>
