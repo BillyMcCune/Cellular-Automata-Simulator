@@ -16,7 +16,15 @@ import java.util.Map;
  */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
 
-  protected abstract List<Direction> getDirections();
+  private static List<Direction> DIRECTIONS;
+
+  public NeighborCalculator(int[][] directions) {
+    DIRECTIONS = intToDirections(directions);
+  }
+
+  public static List<Direction> getDirections() {
+    return DIRECTIONS;
+  }
 
   /**
    * Returns a map from a Direction record (row,col) to the neighbor Cell<T>.
@@ -45,7 +53,7 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return neighbors;
   }
 
-  protected List<Direction> intToDirections(int[][] directions) {
+  protected static List<Direction> intToDirections(int[][] directions) {
     List<Direction> directionList = new ArrayList<>();
     for (int[] dir : directions) {
       directionList.add(new Direction(dir[0], dir[1]));

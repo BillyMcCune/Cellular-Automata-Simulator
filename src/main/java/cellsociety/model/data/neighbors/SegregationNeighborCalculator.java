@@ -19,8 +19,7 @@ public class SegregationNeighborCalculator<T extends Enum<T> & State> extends
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected List<Direction> getDirections() {
-    return intToDirections(DIRECTIONS);
+  public SegregationNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }

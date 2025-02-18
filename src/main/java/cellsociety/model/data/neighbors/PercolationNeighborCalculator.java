@@ -18,8 +18,7 @@ public class PercolationNeighborCalculator<T extends Enum<T> & State> extends Ne
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected List<Direction> getDirections() {
-    return intToDirections(DIRECTIONS);
+  public PercolationNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }

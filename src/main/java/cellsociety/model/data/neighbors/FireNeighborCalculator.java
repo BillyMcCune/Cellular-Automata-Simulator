@@ -15,8 +15,7 @@ public class FireNeighborCalculator<T extends Enum<T> & State> extends NeighborC
       {-1, 0}, {0, -1}, {0, 1}, {1, 0}
   };
 
-  @Override
-  protected List<Direction> getDirections() {
-    return intToDirections(DIRECTIONS);
+  public FireNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }

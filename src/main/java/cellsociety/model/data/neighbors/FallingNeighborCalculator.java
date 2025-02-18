@@ -15,8 +15,7 @@ public class FallingNeighborCalculator<T extends Enum<T> & State> extends Neighb
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected List<Direction> getDirections() {
-    return intToDirections(DIRECTIONS);
+  public FallingNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 }

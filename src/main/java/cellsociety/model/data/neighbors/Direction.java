@@ -9,4 +9,8 @@ package cellsociety.model.data.neighbors;
  */
 public record Direction(int row, int col) {
 
+  @Override
+  public String toString() {
+    return "%s,%s".formatted(row, col);
+  }
 }

@@ -21,9 +21,8 @@ public class WatorNeighborCalculator<T extends Enum<T> & State> extends Neighbor
       {-1, 0}, {1, 0}, {0, -1}, {0, 1}
   };
 
-  @Override
-  protected List<Direction> getDirections() {
-    return intToDirections(DIRECTIONS);
+  public WatorNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 
   @Override

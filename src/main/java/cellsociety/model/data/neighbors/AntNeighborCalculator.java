@@ -21,9 +21,8 @@ public class AntNeighborCalculator<T extends Enum<T> & State> extends NeighborCa
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  @Override
-  protected List<Direction> getDirections() {
-    return intToDirections(DIRECTIONS);
+  public AntNeighborCalculator(int[][] directions) {
+    super(directions);
   }
 
   @Override
