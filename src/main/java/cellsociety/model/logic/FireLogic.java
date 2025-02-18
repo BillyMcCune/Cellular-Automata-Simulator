@@ -13,11 +13,11 @@ public class FireLogic extends Logic<FireState> {
   private double probIgnite;
   private double probTree;
 
-  public FireLogic(Grid<FireState> grid, ParameterRecord parameters) {
+  public FireLogic(Grid<FireState> grid, ParameterRecord parameters) throws IllegalArgumentException {
     super(grid, parameters);
-    setProbCatch(loadDoubleProperty("FireLogic.probCatch.default"));
-    setProbIgnite(loadDoubleProperty("FireLogic.probIgnite.default"));
-    setProbTree(loadDoubleProperty("FireLogic.probTree.default"));
+    setProbCatch(getDoubleParamOrFallback("probCatch"));
+    setProbIgnite(getDoubleParamOrFallback("probIgnite"));
+    setProbTree(getDoubleParamOrFallback("probTree"));
   }
 
   public void setProbCatch(double percentCatch) {

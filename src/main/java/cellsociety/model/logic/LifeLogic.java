@@ -26,7 +26,7 @@ public class LifeLogic extends Logic<LifeState> {
     super(grid, parameters);
     birthRequirement = List.of(3);
     survivalRequirement = List.of(2,3);
-    setRulestring(loadStringProperty("LifeLogic.rulestring.default"));
+    setRulestring(getStringParamOrFallback("rulestring"));
   }
 
   public void setRulestring(String rulestring) throws IllegalArgumentException {

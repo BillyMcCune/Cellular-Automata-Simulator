@@ -33,6 +33,12 @@ public class WatorLogic extends Logic<WatorState> {
   public WatorLogic(Grid<WatorState> grid, ParameterRecord parameters) {
     super(grid, parameters);
     initializePropertyMaps();
+
+    setSharkBaseEnergy(getDoubleParamOrFallback("sharkBaseEnergy"));
+    setFishEnergyGain(getDoubleParamOrFallback("fishEnergyGain"));
+    setSharkReproductionTime(getDoubleParamOrFallback("sharkReproductionTime"));
+    setFishReproductionTime(getDoubleParamOrFallback("fishReproductionTime"));
+
     List<List<Cell<WatorState>>> cellStates = getAllCellStates();
     sharkCells = cellStates.get(0);
     fishCells = cellStates.get(1);
@@ -50,41 +56,49 @@ public class WatorLogic extends Logic<WatorState> {
     }
   }
 
-  /**
-   * Sets the base energy that each shark starts with or resets to upon breeding.
-   *
-   * @param energy the initial or reset energy value for sharks
-   */
-  public static void setBaseSharkEnergy(double energy) {
+  public void setSharkBaseEnergy(double energy) throws IllegalArgumentException {
+    double min = getMinParam("sharkBaseEnergy");
+    double max = getMaxParam("sharkBaseEnergy");
+    checkBounds(energy, min, max);
     sharkBaseEnergy = energy;
-    baseSharkProperties.put("energy", sharkBaseEnergy);
+    baseSharkProperties.put("energy", energy);
   }
 
-  /**
-   * Sets the amount of energy sharks gain upon eating a fish.
-   *
-   * @param energy how much energy a shark gains for each fish consumed
-   */
-  public static void setFishEnergyGain(double energy) {
+  public void setFishEnergyGain(double energy) throws IllegalArgumentException {
+    double min = getMinParam("fishEnergyGain");
+    double max = getMaxParam("fishEnergyGain");
+    checkBounds(energy, min, max);
     fishEnergyGain = energy;
   }
 
-  /**
-   * Sets the number of cycles after which a shark reproduces (resets its breeding chronon).
-   *
-   * @param time how many updates it takes for a shark to breed
-   */
-  public static void setSharkReproductionTime(double time) {
+  public void setSharkReproductionTime(double time) throws IllegalArgumentException {
+    double min = getMinParam("sharkReproductionTime");
+    double max = getMaxParam("sharkReproductionTime");
+    checkBounds(time, min, max);
     sharkReproductionTime = time;
   }
 
-  /**
-   * Sets the number of cycles after which a fish reproduces (resets its breeding chronon).
-   *
-   * @param time how many updates it takes for a fish to breed
-   */
-  public static void setFishReproductionTime(double time) {
+  public void setFishReproductionTime(double time) throws IllegalArgumentException {
+    double min = getMinParam("fishReproductionTime");
+    double max = getMaxParam("fishReproductionTime");
+    checkBounds(time, min, max);
     fishReproductionTime = time;
+  }
+
+  public double getSharkBaseEnergy() {
+    return sharkBaseEnergy;
+  }
+
+  public double getFishEnergyGain() {
+    return fishEnergyGain;
+  }
+
+  public double getSharkReproductionTime() {
+    return sharkReproductionTime;
+  }
+
+  public double getFishReproductionTime() {
+    return fishReproductionTime;
   }
 
   /**
