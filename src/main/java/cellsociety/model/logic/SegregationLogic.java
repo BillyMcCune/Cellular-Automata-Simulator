@@ -11,7 +11,7 @@ public class SegregationLogic extends Logic<SegregationState> {
   private final ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
   private double satisfiedThreshold;
 
-  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) {
+  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) throws IllegalArgumentException{
     super(grid, parameters);
     setSatisfiedThreshold(getDoubleParamOrFallback("satisfiedThreshold"));
 

@@ -30,7 +30,7 @@ public class WatorLogic extends Logic<WatorState> {
    *
    * @param grid The grid on which to run the Wa-Tor simulation.
    */
-  public WatorLogic(Grid<WatorState> grid, ParameterRecord parameters) {
+  public WatorLogic(Grid<WatorState> grid, ParameterRecord parameters) throws IllegalArgumentException {
     super(grid, parameters);
     initializePropertyMaps();
 

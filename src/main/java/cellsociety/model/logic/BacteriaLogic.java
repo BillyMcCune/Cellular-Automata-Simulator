@@ -13,7 +13,7 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   private int numStates;
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
-  public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters) {
+  public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters) throws IllegalArgumentException{
     super(grid, parameters);
     setBeatingThreshold(getDoubleParamOrFallback("beatingThreshold"));
     setNumStates(getDoubleParamOrFallback("numStates"));

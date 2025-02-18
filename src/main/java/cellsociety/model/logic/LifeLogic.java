@@ -22,7 +22,7 @@ public class LifeLogic extends Logic<LifeState> {
    *
    * @param grid the grid representing the current state of grid
    */
-  public LifeLogic(Grid<LifeState> grid, ParameterRecord parameters) {
+  public LifeLogic(Grid<LifeState> grid, ParameterRecord parameters) throws IllegalArgumentException {
     super(grid, parameters);
     birthRequirement = List.of(3);
     survivalRequirement = List.of(2,3);
