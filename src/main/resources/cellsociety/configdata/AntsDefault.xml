@@ -58,8 +58,7 @@
       <cell state="0"/>
       <cell state="0"/>
       <cell state="0"/>
-      <!-- Nest cell with an antCount property -->
-      <cell state="2" antCount="5"/>
+      <cell state="2" searchingEntities="5"/>
       <cell state="0"/>
       <cell state="0"/>
       <cell state="0"/>
@@ -67,7 +66,6 @@
     <row>
       <cell state="0"/>
       <cell state="0"/>
-      <!-- Food cell -->
       <cell state="3"/>
       <cell state="0"/>
       <cell state="0"/>

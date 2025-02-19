@@ -60,13 +60,6 @@ public class FallingLogicTest {
     return new Grid<>(records, factory, dummyNeighborCalculator);
   }
 
-  private Grid<FallingState> createGridFromData(List<List<Integer>> rawData,
-      NeighborCalculator<FallingState> calculator) {
-    CellFactory<FallingState> factory = new CellFactory<>(FallingState.class);
-    List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, calculator);
-  }
-
   private ParameterRecord createDefaultParameterRecord() {
     return new ParameterRecord(Map.of(), Map.of());
   }

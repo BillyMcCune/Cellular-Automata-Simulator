@@ -72,7 +72,7 @@ public class AntLogic extends Logic<AntState> {
     double min = getMinParam("evaporationRate");
     double max = getMaxParam("evaporationRate");
     checkBounds(evaporationRate, min, max);
-    this.evaporationRate = evaporationRate/100;
+    this.evaporationRate = evaporationRate / 100;
   }
 
   public double getEvaporationRate() {
@@ -123,7 +123,8 @@ public class AntLogic extends Logic<AntState> {
     return pheromoneSensitivity;
   }
 
-  public void setPheromoneDiffusionDecay(double pheromoneDiffusionDecay) throws IllegalArgumentException {
+  public void setPheromoneDiffusionDecay(double pheromoneDiffusionDecay)
+      throws IllegalArgumentException {
     double min = getMinParam("pheromoneDiffusionDecay");
     double max = getMaxParam("pheromoneDiffusionDecay");
     checkBounds(pheromoneDiffusionDecay, min, max);
@@ -138,12 +139,27 @@ public class AntLogic extends Logic<AntState> {
     for (int r = 0; r < grid.getNumRows(); r++) {
       for (int c = 0; c < grid.getNumCols(); c++) {
         Cell<AntState> cell = grid.getCell(r, c);
-        if (cell.getCurrentState() == AntState.NEST) {
-          int antCount = (int) cell.getProperty("antCount");
-          for (int i = 0; i < antCount; i++) {
-            cellAntsMap.computeIfAbsent(cell, k -> new ArrayList<>())
-                .add(new AntInfo(new Direction(0, 1), false));
-          }
+        double searchingEntities = cell.getProperty("searchingEntities");
+        double returningEntities = cell.getProperty("returningEntities");
+        List<Direction> validDirections = getValidDirections(
+            AntNeighborCalculator.getDirections(), cell);
+        Direction chosenSearching = getPheromoneWeightedDirection(validDirections, cell,
+            "foodPheromone");
+        Direction chosenReturning = getPheromoneWeightedDirection(validDirections, cell,
+            "homePheromone");
+        if (chosenSearching == null) {
+          chosenSearching = new Direction(0, 0);
+        }
+        if (chosenReturning == null) {
+          chosenReturning = new Direction(0, 0);
+        }
+        for (int i = 0; i < searchingEntities; i++) {
+          cellAntsMap.computeIfAbsent(cell, k -> new ArrayList<>())
+              .add(new AntInfo(chosenSearching, false));
+        }
+        for (int i = 0; i < returningEntities; i++) {
+          cellAntsMap.computeIfAbsent(cell, k -> new ArrayList<>())
+              .add(new AntInfo(chosenReturning, true));
         }
       }
     }
@@ -180,6 +196,9 @@ public class AntLogic extends Logic<AntState> {
   @Override
   public void updateSingleCell(Cell<AntState> cell) {
     List<AntInfo> ants = cellAntsMap.get(cell);
+    if (ants == null) {
+      return;
+    }
     if (ants.isEmpty()) {
       cellAntsMap.remove(cell);
       return;
@@ -187,7 +206,7 @@ public class AntLogic extends Logic<AntState> {
 
     List<AntInfo> newAnts = new ArrayList<>();
     for (AntInfo ant : ants) {
-      AntInfo newAnt = ant.hasFood() ? antReturnToNest(cell, ant): antFindFoodSource(cell, ant);
+      AntInfo newAnt = ant.hasFood() ? antReturnToNest(cell, ant) : antFindFoodSource(cell, ant);
       newAnts.add(newAnt);
     }
     cellAntsMap.put(cell, newAnts);
@@ -198,6 +217,8 @@ public class AntLogic extends Logic<AntState> {
   private AntInfo antReturnToNest(Cell<AntState> cell, AntInfo ant) {
     if (cell.getCurrentState() == AntState.NEST) {
       ant = new AntInfo(ant.orientation(), false);
+      cell.setProperty("searchingEntities", cell.getProperty("searchingEntities") + 1);
+      cell.setProperty("returningEntities", cell.getProperty("returningEntities") - 1);
       return antFindFoodSource(cell, ant);
     }
     Direction direction = determineDirection(cell, ant);
@@ -206,7 +227,10 @@ public class AntLogic extends Logic<AntState> {
 
   private AntInfo antFindFoodSource(Cell<AntState> cell, AntInfo ant) {
     if (cell.getCurrentState() == AntState.FOOD) {
+      cell.setNextState(AntState.EMPTY);
       ant = new AntInfo(ant.orientation(), true);
+      cell.setProperty("searchingEntities", cell.getProperty("searchingEntities") - 1);
+      cell.setProperty("returningEntities", cell.getProperty("returningEntities") + 1);
       return antReturnToNest(cell, ant);
     }
     Direction direction = determineDirection(cell, ant);
@@ -229,6 +253,9 @@ public class AntLogic extends Logic<AntState> {
   }
 
   private List<Direction> getPossibleDirections(Direction orientation) {
+    if (orientation.toString().equals(new Direction(0, 0).toString())) {
+      return AntNeighborCalculator.getDirections();
+    }
     int dx = orientation.dx();
     int dy = orientation.dy();
     int[][] candidates = {{dy - 1, dx}, {dy + 1, dx}, {dy, dx - 1}, {dy, dx + 1}};
@@ -250,7 +277,8 @@ public class AntLogic extends Logic<AntState> {
     for (Direction direction : candidateDirs) {
       Cell<AntState> neighbor = getCellInDirection(direction, cell);
       if (neighbor == null || neighbor.getCurrentState() == AntState.BLOCKED
-          || neighbor.getProperty("antCount") >= maxAnts) {
+          || neighbor.getProperty("searchingEntities") + neighbor.getProperty("returningEntities")
+          >= maxAnts) {
         continue;
       }
       validDirections.add(direction);
@@ -299,9 +327,14 @@ public class AntLogic extends Logic<AntState> {
     Cell<AntState> neighbor = getCellInDirection(ant.orientation(), cell);
     assert neighbor != null; // The validDirections should confirm this
 
-    dropPheromone(cell, ant.hasFood() ? "homePheromone" : "foodPheromone");
-    cell.setProperty("antCount", cell.getProperty("antCount") - 1);
-    neighbor.setProperty("antCount", neighbor.getProperty("antCount") + 1);
+    dropPheromone(cell, ant.hasFood() ? "foodPheromone" : "homePheromone");
+    if (ant.hasFood()) {
+      neighbor.setProperty("returningEntities", neighbor.getProperty("returningEntities") + 1);
+      cell.setProperty("returningEntities", cell.getProperty("returningEntities") - 1);
+    } else {
+      neighbor.setProperty("searchingEntities", neighbor.getProperty("searchingEntities") + 1);
+      cell.setProperty("searchingEntities", cell.getProperty("searchingEntities") - 1);
+    }
     cellAntsMap.get(cell).remove(ant);
     cellAntsMap.computeIfAbsent(neighbor, k -> new ArrayList<>()).add(ant);
   }
@@ -312,11 +345,9 @@ public class AntLogic extends Logic<AntState> {
     double maxNeighbor = 0;
     if (cell.getCurrentState() == AntState.NEST && pheromoneType.equals("homePheromone")) {
       cell.setProperty(pheromoneType, maxHomePheromone);
-    }
-    else if (cell.getCurrentState() == AntState.FOOD && pheromoneType.equals("foodPheromone")) {
+    } else if (cell.getCurrentState() == AntState.FOOD && pheromoneType.equals("foodPheromone")) {
       cell.setProperty(pheromoneType, maxFoodPheromone);
-    }
-    else {
+    } else {
       for (Cell<AntState> neighbor : cell.getNeighbors().values()) {
         double neighborLevel = neighbor.getProperty(pheromoneType);
         if (neighborLevel > maxNeighbor) {
@@ -326,7 +357,7 @@ public class AntLogic extends Logic<AntState> {
       double desired = maxNeighbor - pheromoneDiffusionDecay;
       if (desired > 0) {
         cell.setProperty(pheromoneType, desired);
-        }
+      }
     }
   }
 
