@@ -95,6 +95,7 @@ public class FireLogicTest {
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid, createEmptyParameterRecord());
     logic.setProbCatch(0.0);
+    logic.setProbIgnite(0.0);
     logic.update();
     assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
@@ -268,6 +269,7 @@ public class FireLogicTest {
     Grid<FireState> grid = createGrid(rawData);
     FireLogic logic = new FireLogic(grid, createEmptyParameterRecord());
     logic.setProbCatch(100.0);
+    logic.setProbTree(0.0);
     logic.update();
     assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {

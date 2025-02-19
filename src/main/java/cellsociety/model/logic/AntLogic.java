@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Concrete logic class for the foraging ant simulation. This class tracks individual ant agents
- * using an internal record and updates their positions, orientations, and pheromone deposits. The
- * cell properties maintain aggregate ant counts and pheromone levels, with deposition and
- * evaporation handled according to simulation rules.
+ * Concrete implementation of {@link Logic} for the Foraging Ants simulation.
  *
  * @author Jacob You
  */

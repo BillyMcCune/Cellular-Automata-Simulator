@@ -18,6 +18,14 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   private int numStates;
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
+  /**
+   * Constructs a {@code FireLogic} instance with the specified grid and parameters.
+   *
+   * @param grid       The grid representing the simulation state.
+   * @param parameters The parameters defining the probabilities of fire spread, ignition, and tree
+   *                   growth.
+   * @throws IllegalArgumentException if any parameter value is out of bounds or missing.
+   */
   public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters)
       throws IllegalArgumentException {
     super(grid, parameters);
