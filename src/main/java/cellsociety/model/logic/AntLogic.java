@@ -216,7 +216,7 @@ public class AntLogic extends Logic<AntState> {
 
   private AntInfo antReturnToNest(Cell<AntState> cell, AntInfo ant) {
     if (cell.getCurrentState() == AntState.NEST) {
-      ant = new AntInfo(ant.orientation(), false);
+      ant = new AntInfo(new Direction(0, 0), false);
       cell.setProperty("searchingEntities", cell.getProperty("searchingEntities") + 1);
       cell.setProperty("returningEntities", cell.getProperty("returningEntities") - 1);
       return antFindFoodSource(cell, ant);
@@ -228,7 +228,7 @@ public class AntLogic extends Logic<AntState> {
   private AntInfo antFindFoodSource(Cell<AntState> cell, AntInfo ant) {
     if (cell.getCurrentState() == AntState.FOOD) {
       cell.setNextState(AntState.EMPTY);
-      ant = new AntInfo(ant.orientation(), true);
+      ant = new AntInfo(new Direction(0, 0), true);
       cell.setProperty("searchingEntities", cell.getProperty("searchingEntities") - 1);
       cell.setProperty("returningEntities", cell.getProperty("returningEntities") + 1);
       return antReturnToNest(cell, ant);
@@ -276,7 +276,7 @@ public class AntLogic extends Logic<AntState> {
     List<Direction> validDirections = new ArrayList<>();
     for (Direction direction : candidateDirs) {
       Cell<AntState> neighbor = getCellInDirection(direction, cell);
-      if (neighbor == null || neighbor.getCurrentState() == AntState.BLOCKED
+      if ((neighbor == null || neighbor.getCurrentState() == AntState.BLOCKED)
           || neighbor.getProperty("searchingEntities") + neighbor.getProperty("returningEntities")
           >= maxAnts) {
         continue;
