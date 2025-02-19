@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<simulation>
+  <type>ANT</type>
+  <title>Foraging Ants Simulation</title>
+  <author>Billy McCune</author>
+  <description>
+    Simulates the behavior of foraging ants as they search for food and return to the nest,
+    depositing pheromones along the way.
+  </description>
+
+  <parameters>
+    <doubleParameter name="maxAnts">5</doubleParameter>
+    <doubleParameter name="evaporationRate">10</doubleParameter>
+    <doubleParameter name="maxHomePheromone">100</doubleParameter>
+    <doubleParameter name="maxFoodPheromone">100</doubleParameter>
+    <doubleParameter name="basePheromoneWeight">1</doubleParameter>
+    <doubleParameter name="pheromoneSensitivity">2</doubleParameter>
+    <doubleParameter name="pheromoneDiffusionDecay">1</doubleParameter>
+  </parameters>
+
+  <width>8</width>
+  <height>8</height>
+  <defaultSpeed>10</defaultSpeed>
+
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <!-- Nest cell with an antCount property -->
+      <cell state="2" antCount="5"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <!-- Food cell -->
+      <cell state="3"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
+
+  <acceptedStates>
+    0 1 2 3
+  </acceptedStates>
+</simulation>

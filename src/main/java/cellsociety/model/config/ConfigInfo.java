@@ -46,7 +46,7 @@ public record ConfigInfo(
    * Enumeration of supported simulation types.
    */
   public enum SimulationType {
-    LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR, FALLING, SUGAR, BACTERIA
+    LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR, FALLING, SUGAR, BACTERIA, ANT
   }
 
 }
