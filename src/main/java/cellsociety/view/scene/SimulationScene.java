@@ -451,7 +451,35 @@ public class SimulationScene {
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
   }
 
+  /**
+   * Get the tick speed of the simulation
+   * @return the tick speed of the simulation
+   */
+  public int getTickSpeed() {
+    return (int) (10 / updateInterval / SPEED_MULTIPLIER);
+  }
+
   /* PRIVATE UI HELPER METHODS */
+
+  private static Text processAnsiCodes(String message) {
+    BiFunction<String, String, Text> createTextNode = (text, colorStyle) -> {
+      Text textNode = new Text(text + "\n");
+      textNode.getStyleClass().add("log-text-" + colorStyle);
+      return textNode;
+    };
+
+    if (message.startsWith(Log.ERROR_COLOR)) {
+      return createTextNode.apply(message.substring(Log.ERROR_COLOR.length()), "error");
+    } else if (message.startsWith(Log.WARN_COLOR)) {
+      return createTextNode.apply(message.substring(Log.WARN_COLOR.length()), "warn");
+    } else if (message.startsWith(Log.INFO_COLOR)) {
+      return createTextNode.apply(message.substring(Log.INFO_COLOR.length()), "info");
+    } else if (message.startsWith(Log.TRACE_COLOR)) {
+      return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
+    } else {
+      return createTextNode.apply(message, "default");
+    }
+  }
 
   private void step(double elapsedTime) {
     timeSinceLastUpdate += elapsedTime;
@@ -491,26 +519,6 @@ public class SimulationScene {
   private void resetFlip() {
     grid.setScaleX(abs(grid.getScaleX()));
     grid.setScaleY(abs(grid.getScaleY()));
-  }
-
-  private static Text processAnsiCodes(String message) {
-    BiFunction<String, String, Text> createTextNode = (text, colorStyle) -> {
-      Text textNode = new Text(text + "\n");
-      textNode.getStyleClass().add("log-text-" + colorStyle);
-      return textNode;
-    };
-
-    if (message.startsWith(Log.ERROR_COLOR)) {
-      return createTextNode.apply(message.substring(Log.ERROR_COLOR.length()), "error");
-    } else if (message.startsWith(Log.WARN_COLOR)) {
-      return createTextNode.apply(message.substring(Log.WARN_COLOR.length()), "warn");
-    } else if (message.startsWith(Log.INFO_COLOR)) {
-      return createTextNode.apply(message.substring(Log.INFO_COLOR.length()), "info");
-    } else if (message.startsWith(Log.TRACE_COLOR)) {
-      return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
-    } else {
-      return createTextNode.apply(message, "default");
-    }
   }
 
   private void updateUIStyle(Theme theme) {

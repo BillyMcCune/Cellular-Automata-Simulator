@@ -1,5 +1,6 @@
 package cellsociety.view.scene;
 
+import cellsociety.logging.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -90,7 +91,8 @@ public class SceneRenderer {
         }
       }
     } catch (IOException e) {
-      SceneUIWidget.createErrorDialog("Cell Color Error", "Failed to load cell color properties file:" + DEFAULT_CELL_COLORS_FILE, e);
+      Log.error("Failed to load cell color properties file: " + DEFAULT_CELL_COLORS_FILE);
+      colorMap.put("DEFAULT", Color.BLACK);
     }
 
     return colorMap;

@@ -1,5 +1,6 @@
 package cellsociety.model.logic;
 
+import cellsociety.logging.Log;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
@@ -27,7 +28,7 @@ public abstract class Logic<T extends Enum<T> & State> {
     try (InputStream is = Logic.class.getResourceAsStream(propertyFile)) {
       logicProps.load(is);
     } catch (IOException e) {
-      System.err.println("Error loading parameters properties file: " + e);
+      Log.error(e, "Error loading parameters properties file: ");
     }
   }
 

@@ -1,19 +1,25 @@
 package cellsociety.view.controller;
 
+import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
 import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -90,7 +96,7 @@ public class SceneController {
         isLoaded = true;
       }
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Load Config Error", e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-loadConfig").getValue(), e.getMessage(), e);
     }
   }
 
@@ -104,11 +110,13 @@ public class SceneController {
     }
 
     try {
-      configWriter.saveCurrentConfig(configInfo, path);
+      ConfigInfo savedConfigInfo = saveConfigInfo();
+      configWriter.saveCurrentConfig(savedConfigInfo, path);
       getAllConfigFileNames();
-      SceneUIWidget.createSuccessDialog("SuccessFully Saved File", "The file is saved at" + path,configWriter.getLastFileSaved());
+      String message = String.format(LanguageController.getStringProperty("success-saveConfigMessage").getValue(), path);
+      SceneUIWidget.createSuccessSaveDialog(LanguageController.getStringProperty("success-saveConfigTitle").getValue(), message, configWriter.getLastFileSaved());
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Save Config Error", e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-saveConfig").getValue(), e.getMessage(), e);
     }
   }
 
@@ -197,7 +205,7 @@ public class SceneController {
       // Set the grid to the scene
       initGrid();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Reset Model Error", "Failed to reset the model with reflection.", e);
+      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-resetModel").getValue(), e.getMessage(), e);
     }
   }
 
@@ -208,7 +216,6 @@ public class SceneController {
     if (configInfo == null) {
       return;
     }
-
 
     try {
       SimulationType type = configInfo.myType();
@@ -224,7 +231,7 @@ public class SceneController {
       // Set the grid to the scene
       initGrid();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog("Reset Grid Error", e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-resetGrid").getValue(), e.getMessage(), e);
     }
   }
 
@@ -234,7 +241,7 @@ public class SceneController {
    * @param logicClass The logic class to reset the parameters for
    * @param <T> The type of the logic class
    */
-  public <T extends Logic<?>> void resetParameters(Class<T> logicClass) {
+  public <T extends Logic<?>> void resetParameters(Class<T> logicClass) throws Exception{
     // Iterate over all methods in the class
     for (Method setterMethod : logicClass.getDeclaredMethods()) {
       String methodName = setterMethod.getName();
@@ -251,69 +258,45 @@ public class SceneController {
       String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
       // Get the getter method for the parameter initialization
-      Method getterMethod = null;
-      Method minMethod = null;
-      Method maxMethod = null;
-      try {
-        getterMethod = logicClass.getMethod("get" + methodName.substring(3));
-        minMethod = logicClass.getMethod("getMinParam", String.class);
-        maxMethod = logicClass.getMethod("getMaxParam", String.class);
-      } catch (NoSuchMethodException e) {
-        SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter getter methods for: " + paramName, e);
-      }
+      Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
+      Method minMethod = logicClass.getMethod("getMinParam", String.class);
+      Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
 
       // Set the parameter listener
-      try {
-        if (paramType == double.class) {
-          // Get the default and minmax values
-          double min = 0;
-          double max = 0;
-          double defaultValue = 0;
+      if (paramType == double.class) {
+        // Get the default and minmax values
+        double min = (double) minMethod.invoke(gameLogic, paramName);
+        double max = (double) maxMethod.invoke(gameLogic, paramName);
+        double defaultValue = (double) getterMethod.invoke(gameLogic);
+
+        // Create a consumer for UI updates
+        Consumer<Double> consumer = v -> {
           try {
-            assert minMethod != null;
-            min = (double) minMethod.invoke(gameLogic, paramName);
-            assert maxMethod != null;
-            max = (double) maxMethod.invoke(gameLogic, paramName);
-            defaultValue = (double) getterMethod.invoke(gameLogic);
+            setterMethod.invoke(gameLogic, v);
           } catch (Exception ex) {
-            SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter values for: " + paramName, ex);
+            String message = String.format(LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
+            SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
           }
+        };
 
-          // Create a consumer for UI updates
-          Consumer<Double> consumer = v -> {
-            try {
-              setterMethod.invoke(gameLogic, v);
-            } catch (Exception ex) {
-              SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, ex);
-            }
-          };
+        // Register parameter in simulation UI
+        simulationScene.setParameter(min, max, defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
+      } else if (paramType == String.class) {
+        // Get the default value
+        String defaultValue = (String) getterMethod.invoke(gameLogic);
 
-          // Register parameter in simulation UI
-          simulationScene.setParameter(min, max, defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
-        } else if (paramType == String.class) {
-          // Get the default value
-          String defaultValue = "";
+        // Create a consumer for UI updates
+        Consumer<String> consumer = v -> {
           try {
-            assert getterMethod != null;
-            defaultValue = (String) getterMethod.invoke(gameLogic);
+            setterMethod.invoke(gameLogic, v);
           } catch (Exception ex) {
-            SceneUIWidget.createErrorDialog("Parameter Error", "Failed to get parameter values for: " + paramName, ex);
+            String message = String.format(LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
+            SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
           }
+        };
 
-          // Create a consumer for UI updates
-          Consumer<String> consumer = v -> {
-            try {
-              setterMethod.invoke(gameLogic, v);
-            } catch (Exception ex) {
-              SceneUIWidget.createErrorDialog("Parameter Error", "Invalid parameter input for:" + paramName, ex);
-            }
-          };
-
-          // Register parameter in simulation UI
-          simulationScene.setParameter(defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
-        }
-      } catch (Exception e) {
-        SceneUIWidget.createErrorDialog("Parameter Error", "Failed to set parameter: " + paramName, e);
+        // Register parameter in simulation UI
+        simulationScene.setParameter(defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
       }
     }
   }
@@ -353,5 +336,54 @@ public class SceneController {
         simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
       }
     }
+  }
+
+  private ConfigInfo saveConfigInfo() throws InvocationTargetException, IllegalAccessException {
+    // Save the grid data
+    List<List<CellRecord>> gridData = new ArrayList<>();
+    for (int i = 0; i < grid.getNumRows(); i++) {
+      List<CellRecord> row = new ArrayList<>();
+      for (int j = 0; j < grid.getNumCols(); j++) {
+        Cell<?> cell = grid.getCell(i, j);
+        row.add(new CellRecord(cell.getCurrentState().getValue(), cell.getAllProperties()));
+      }
+      gridData.add(row);
+    }
+
+    // Save the parameters
+    Map<String, Double> doubleParams = new HashMap<>();
+    Map<String, String> stringParams = new HashMap<>();
+
+    for (Method method : gameLogic.getClass().getDeclaredMethods()) {
+      String methodName = method.getName();
+      if (!methodName.startsWith("get")) {
+        continue;
+      }
+
+      String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
+      if (method.getReturnType() == double.class) {
+        doubleParams.put(paramName, (double) method.invoke(gameLogic));
+      } else if (method.getReturnType() == String.class) {
+        stringParams.put(paramName, (String) method.invoke(gameLogic));
+      }
+    }
+
+    ParameterRecord parameters = new ParameterRecord(doubleParams, stringParams);
+
+
+    // TODO: Make user input for title, author, description
+    return new ConfigInfo(
+        configInfo.myType(),
+        configInfo.myTitle(),
+        configInfo.myAuthor(),
+        configInfo.myDescription(),
+        grid.getNumCols(),
+        grid.getNumRows(),
+        simulationScene.getTickSpeed(),
+        gridData,
+        parameters,
+        configInfo.acceptedStates(),
+        configInfo.myFileName()
+    );
   }
 }

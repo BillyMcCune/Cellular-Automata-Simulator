@@ -55,6 +55,9 @@ public class SceneUIWidget {
   // Error Stage
   private static final double DEFAULT_SPLASH_WIDTH = 500;
   private static final double DEFAULT_SPLASH_HEIGHT = 300;
+  private static final double DEFAULT_SAVE_WIDTH = 300;
+  private static final double DEFAULT_SAVE_HEIGHT = 200;
+
   private static String WIDGET_STYLE_SHEET;
 
   /* UI WIDGETS */
@@ -457,7 +460,6 @@ public class SceneUIWidget {
     errorStage.showAndWait();
   }
 
-
   /**
    * Create a modal success dialog to inform the user that a file was successfully saved.
    *
@@ -465,50 +467,7 @@ public class SceneUIWidget {
    * @param message   the main message to display (e.g., "File successfully saved!")
    * @param fileName  the name of the file that was saved
    */
-  public static void createSuccessDialog(String title, String message, String fileName) {
-    Stage successStage = new Stage();
-    successStage.setTitle(title);
-    successStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
-
-    Label titleLabel = new Label(title);
-    titleLabel.getStyleClass().add("success-title");
-
-    Label messageLabel = new Label(message);
-    messageLabel.getStyleClass().add("success-message");
-
-    Label fileNameLabel = new Label("File name: " + fileName);
-    fileNameLabel.getStyleClass().add("success-filename");
-
-    Log.info(String.format("Success: %s (File: %s)", message, fileName));
-
-    Button closeButton = new Button("Close");
-    closeButton.setOnAction(event -> successStage.close());
-
-    VBox layout = new VBox(15);
-    layout.setAlignment(Pos.TOP_CENTER);
-    layout.setPadding(new Insets(20));
-    layout.getChildren().addAll(titleLabel, messageLabel, fileNameLabel, closeButton);
-
-    Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
-    if (WIDGET_STYLE_SHEET != null) {
-      scene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
-    }
-    // Add your stylesheet or styling if needed
-    // scene.getStylesheets().add("path/to/css/file.css");
-
-    successStage.setScene(scene);
-    successStage.showAndWait();
-  }
-
-
-  /**
-   * Create a modal success dialog to inform the user that a file was successfully saved.
-   *
-   * @param title     the title of the success dialog
-   * @param message   the main message to display (e.g., "File successfully saved!")
-   * @param fileName  the name of the file that was saved
-   */
-  public static void createSaveSuccessDialog(String title, String message, String fileName) {
+  public static void createSuccessSaveDialog(String title, String message, String fileName) {
     Stage successStage = new Stage();
     successStage.setTitle(title);
     successStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
@@ -528,7 +487,7 @@ public class SceneUIWidget {
     layout.setAlignment(Pos.CENTER);
     layout.setPadding(new Insets(20));
 
-    Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
+    Scene scene = new Scene(layout, DEFAULT_SAVE_WIDTH, DEFAULT_SAVE_HEIGHT);
     if (WIDGET_STYLE_SHEET != null) {
       scene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
     }
