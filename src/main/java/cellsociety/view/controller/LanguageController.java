@@ -69,7 +69,7 @@ public class LanguageController {
    * @return the string property
    */
   public static StringProperty getStringProperty(String key) {
-    return translations.getOrDefault(key, null);
+    return translations.getOrDefault(key, new SimpleStringProperty("??"));
   }
 
   /**

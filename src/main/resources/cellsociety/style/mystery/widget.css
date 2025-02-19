@@ -23,6 +23,13 @@
   -fx-text-fill: linear-gradient(to bottom, #ff4d4d, #ff0000); /* Electric red gradient */
 }
 
+.success-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-font-family: "Arial", "Sans-serif";
+  -fx-text-fill: #00ff00;
+}
+
 /* ==========================
    Range Slider
    ========================== */
@@ -234,4 +241,18 @@
   -fx-font-size: 14px;
   -fx-font-weight: bold;
   -fx-text-fill: linear-gradient(to bottom, #e8e8e8, #b3b3b3); /* Subtle gradient with light gray */
+}
+
+/* ==========================
+   Success Save
+   ========================== */
+
+.success-message {
+  -fx-font-weight: bold;
+  -fx-text-fill: #8fff8f;
+}
+
+.success-filename {
+  -fx-font-weight: bold;
+  -fx-text-fill: #8fff8f;
 }

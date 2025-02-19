@@ -12,6 +12,10 @@ import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -20,7 +24,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -81,11 +88,13 @@ public class SimulationScene {
     ScrollPane controls = createControls();
     ScrollPane infoLabel = createInfoPanel();
     ScrollPane parameterPanel = createParameterPanel();
+    ScrollPane logPanel = createLogPanel();
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
     docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP);
     docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel, DockPosition.TOP);
+    docker.createDWindow(LanguageController.getStringProperty("log-window"), logPanel, DockPosition.TOP);
     docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT);
     docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT);
     docker.reformat();
@@ -247,6 +256,26 @@ public class SimulationScene {
     VBox.setVgrow(infoBox, Priority.ALWAYS);
 
     return SceneUIWidget.createContainerUI(infoBox, LanguageController.getStringProperty("info-panel"));
+  }
+
+  private ScrollPane createLogPanel() {
+    // Create the log text area
+    TextFlow logText = new TextFlow();
+    logText.getStyleClass().add("log-text");
+    Log.addLogListener(log -> {
+      Text text = processAnsiCodes(log);
+      logText.getChildren().add(text);
+    });
+    VBox.setVgrow(logText, Priority.ALWAYS);
+
+    // Create the log container
+    VBox logContainer = new VBox(logText);
+    logContainer.setAlignment(Pos.TOP_LEFT);
+    logContainer.getStyleClass().add("log-box");
+    logContainer.setMinHeight(Region.USE_COMPUTED_SIZE);
+    VBox.setVgrow(logContainer, Priority.ALWAYS);
+
+    return SceneUIWidget.createContainerUI(logContainer, LanguageController.getStringProperty("log-panel"));
   }
 
   /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
@@ -462,6 +491,26 @@ public class SimulationScene {
   private void resetFlip() {
     grid.setScaleX(abs(grid.getScaleX()));
     grid.setScaleY(abs(grid.getScaleY()));
+  }
+
+  private static Text processAnsiCodes(String message) {
+    BiFunction<String, String, Text> createTextNode = (text, colorStyle) -> {
+      Text textNode = new Text(text + "\n");
+      textNode.getStyleClass().add("log-text-" + colorStyle);
+      return textNode;
+    };
+
+    if (message.startsWith(Log.ERROR_COLOR)) {
+      return createTextNode.apply(message.substring(Log.ERROR_COLOR.length()), "error");
+    } else if (message.startsWith(Log.WARN_COLOR)) {
+      return createTextNode.apply(message.substring(Log.WARN_COLOR.length()), "warn");
+    } else if (message.startsWith(Log.INFO_COLOR)) {
+      return createTextNode.apply(message.substring(Log.INFO_COLOR.length()), "info");
+    } else if (message.startsWith(Log.TRACE_COLOR)) {
+      return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
+    } else {
+      return createTextNode.apply(message, "default");
+    }
   }
 
   private void updateUIStyle(Theme theme) {

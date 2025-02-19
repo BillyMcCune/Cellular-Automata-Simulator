@@ -2,7 +2,11 @@ package cellsociety.logging;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -26,17 +30,23 @@ public class Log {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     // ASCII color format
-    private static final String RESTORE_COLOR = "\u001B[0m";
-    private static final String TRACE_COLOR = "\u001B[37m";
-    private static final String INFO_COLOR = "\u001B[32m";
-    private static final String WARN_COLOR = "\u001B[33m";
-    private static final String ERROR_COLOR = "\u001B[31m";
+    public static final String RESTORE_COLOR = "\u001B[0m";
+    public static final String TRACE_COLOR = "\u001B[37m";
+    public static final String INFO_COLOR = "\u001B[32m";
+    public static final String WARN_COLOR = "\u001B[33m";
+    public static final String ERROR_COLOR = "\u001B[31m";
+
+    // List to store the log messages
+    private static final int MAX_LOG_SIZE = 1000;
+    private static final List<String> LOG_MESSAGES = new ArrayList<>();
+    private static final List<Consumer<String>> LOG_CONSUMERS = new ArrayList<>();
 
     /* MAIN LOG METHOD */
 
     private static void log(LogLevel level, String msg) {
         String formattedMessage = formatMessage(level, msg);
         printFormattedMessage(level, formattedMessage);
+        storeLogMessage(formattedMessage);
     }
 
     private static void log(LogLevel level, String msg, Throwable e) {
@@ -51,25 +61,31 @@ public class Log {
         String formattedMessage = formatMessage(level, msg + "\n" + splitLine + "\n" + stackTraceString + "\n" + splitLine);
 
         printFormattedMessage(level, formattedMessage);
+        storeLogMessage(formattedMessage);
     }
 
     private static void printFormattedMessage(LogLevel level, String formattedMessage) {
         switch (level) {
             case TRACE:
                 System.out.println(TRACE_COLOR + formattedMessage + RESTORE_COLOR);  // Light Gray
+                notifyLogListeners(TRACE_COLOR + formattedMessage + "\n");
                 break;
             case INFO:
                 System.out.println(INFO_COLOR + formattedMessage + RESTORE_COLOR);  // Green
+                notifyLogListeners(INFO_COLOR + formattedMessage + "\n");
                 break;
             case WARN:
                 System.out.println(WARN_COLOR + formattedMessage + RESTORE_COLOR);  // Yellow
+                notifyLogListeners(WARN_COLOR + formattedMessage + "\n");
                 break;
             case ERROR:
                 // Format the error message itself
-                System.err.println(ERROR_COLOR + formattedMessage + RESTORE_COLOR);
+                System.err.println(ERROR_COLOR + formattedMessage + RESTORE_COLOR); // Red
+                notifyLogListeners(ERROR_COLOR + formattedMessage + "\n");
                 break;
             default:
                 System.out.println(formattedMessage);
+                notifyLogListeners(formattedMessage + "\n");
         }
     }
 
@@ -123,6 +139,13 @@ public class Log {
         }
 
         return wrappedMessage.toString();
+    }
+
+    private static void storeLogMessage(String message) {
+        if (LOG_MESSAGES.size() >= MAX_LOG_SIZE) {
+            LOG_MESSAGES.removeFirst();
+        }
+        LOG_MESSAGES.add(message);
     }
 
     /* LOG APIS */
@@ -269,5 +292,44 @@ public class Log {
      */
     public static void error(Throwable e, String format, Object... args) {
         log(LogLevel.ERROR, String.format(format, args), e);
+    }
+
+    /* LISTENERS */
+
+    /**
+     * Add a log listener to receive log messages.
+     * @param consumer The consumer to receive log messages.
+     */
+    public static void addLogListener(Consumer<String> consumer) {
+        LOG_CONSUMERS.add(consumer);
+    }
+
+    /**
+     * Remove a log listener from receiving log messages.
+     * @param consumer The consumer to remove.
+     */
+    public static void removeLogListener(Consumer<String> consumer) {
+        LOG_CONSUMERS.remove(consumer);
+    }
+
+    /**
+     * Clear all log listeners.
+     */
+    public static void clearLogListeners() {
+        LOG_CONSUMERS.clear();
+    }
+
+    private static void notifyLogListeners(String message) {
+        LOG_CONSUMERS.forEach(consumer -> consumer.accept(message));
+    }
+
+    /* LOG OUTPUT */
+
+    /**
+     * Return an unmodifiable view of the logMessages list
+     * @return The unmodifiable list of log messages
+     */
+    public static List<String> getLogMessages() {
+        return Collections.unmodifiableList(LOG_MESSAGES);
     }
 }
