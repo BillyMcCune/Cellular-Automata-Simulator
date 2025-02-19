@@ -76,6 +76,14 @@ public class SceneRenderer {
     }
   }
 
+  /**
+   * Draw a cell at the given position in the grid with the given state and properties.
+   * @param grid The grid to draw the cell on
+   * @param row The row of the cell
+   * @param col The column of the cell
+   * @param state The state of the cell
+   * @param allProperties The properties of the cell
+   */
   public static void drawParameters(GridPane grid, int row, int col, Enum<?> state, Map<String, Double> allProperties) {
     for (Node node : grid.getChildren()) {
       if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&

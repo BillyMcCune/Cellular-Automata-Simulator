@@ -80,7 +80,7 @@ public class Log {
                 break;
             case ERROR:
                 // Format the error message itself
-                System.err.println(ERROR_COLOR + formattedMessage + RESTORE_COLOR); // Red
+                System.out.println(ERROR_COLOR + formattedMessage + RESTORE_COLOR); // Red
                 notifyLogListeners(ERROR_COLOR + formattedMessage + "\n");
                 break;
             default:
@@ -320,6 +320,9 @@ public class Log {
     }
 
     private static void notifyLogListeners(String message) {
+        if (LOG_CONSUMERS.isEmpty()) {
+            return;
+        }
         LOG_CONSUMERS.forEach(consumer -> consumer.accept(message));
     }
 
