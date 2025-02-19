@@ -13,9 +13,7 @@ public class SugarNeighborCalculator<T extends Enum<T> & State> extends
     NeighborCalculator<T> {
 
   private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
+      {-1, 0}, {0, -1}, {0, 1}, {1, 0}
   };
 
   public SugarNeighborCalculator() {
