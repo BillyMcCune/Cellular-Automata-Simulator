@@ -43,6 +43,9 @@ public class SimulationScene {
   public static final double MIN_SPEED = 0;
   public static final double SPEED_MULTIPLIER = 3;
 
+  public static final double NEW_SIMULATION_OFFSETX = 50;
+  public static final double NEW_SIMULATION_OFFSETY = 50;
+
   // UI components
   private Button startPauseButton;
   private GridPane grid;
@@ -56,6 +59,7 @@ public class SimulationScene {
   private final Docker docker;
   private final SceneController controller;
 
+  private int framesPerSecond;
   private double updateInterval;
   private double timeSinceLastUpdate;
   private boolean doShowBorder = true;
@@ -74,10 +78,8 @@ public class SimulationScene {
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
 
-    // Set the default style
+    // Set the default style and language
     updateUIStyle(Theme.DAY);
-
-    // Set the default language
     updateUILang(Language.ENGLISH);
 
     // Create the UI components
@@ -101,9 +103,26 @@ public class SimulationScene {
    * Start the simulation scene with the given frames per second
    * @param framesPerSecond the number of frames per second
    */
-  public void start(int framesPerSecond) {
+  public void start(int framesPerSecond, boolean showSplashScreen) {
+    this.framesPerSecond = framesPerSecond;
+
+    // Callback to start the simulation
+    Runnable startSimulationCallback = () -> {
+      // Show the primary stage
+      primaryStage.show();
+
+      // Set up the game loop
+      Timeline gameLoop = new Timeline();
+      gameLoop.setCycleCount(Timeline.INDEFINITE);
+      gameLoop.getKeyFrames().add(
+          new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond),
+              e -> step(1.0 / framesPerSecond)));
+      gameLoop.play();
+    };
+
     // Create the splash screen
-    SceneUIWidget.createSplashScreen(
+    if (showSplashScreen) {
+      SceneUIWidget.createSplashScreen(
         Language.ENGLISH,
         Theme.DAY,
         LanguageController.getStringProperty("welcome-title"),
@@ -113,19 +132,19 @@ public class SimulationScene {
         this::splashScreenLanguageCallback,
         this::splashScreenThemeCallback,
         () -> {
-      // Log the welcome
-      Log.info("Welcome to Cell Society! This simulation is made by Jacob You, Hsuan-Kai Liao, and Billy McCune.");
+          // Log the welcome
+          Log.info("Welcome to Cell Society! This simulation is made by Jacob You, Hsuan-Kai Liao, and Billy McCune.");
 
-      // Show the primary stage
-      primaryStage.show();
+          // Run the simulation
+          startSimulationCallback.run();
+        }
+      );
+    } else {
+      // Run the simulation
+      Log.trace("New simulation started.");
 
-      // Set up the game loop
-      Timeline gameLoop = new Timeline();
-      gameLoop.setCycleCount(Timeline.INDEFINITE);
-      gameLoop.getKeyFrames().add(new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond), e -> step(1.0 / framesPerSecond)));
-      gameLoop.play();
+      startSimulationCallback.run();
     }
-    );
   }
 
   /* PRIVATE UI SETUP METHODS */
@@ -153,6 +172,7 @@ public class SimulationScene {
     // Create buttons
     startPauseButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("start-button"), e -> startPauseCallback());
     Button resetButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("reset-button"), e -> resetCallback());
+    Button newButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("new-button"), e -> newSimulationCallback());
     Button loadButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("load-button"), e -> loadCallback(selectType.getValue()));
     Button saveButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("save-button"), e -> saveCallback(directoryField.getText()));
     Button directoryButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("directory-button"), e -> directorySelectCallback());
@@ -166,9 +186,6 @@ public class SimulationScene {
     showBorderCheckBox.setSelected(doShowBorder);
 
     // Set button sizes
-    startPauseButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH);
-    startPauseButton.setPrefHeight(SceneUIWidget.BUTTON_HEIGHT);
-    startPauseButton.setMaxWidth(SceneUIWidget.MAX_BUTTON_WIDTH);
     directoryButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH * 0.8);
 
     // Set ComboBox
@@ -190,13 +207,14 @@ public class SimulationScene {
     // Style buttons
     startPauseButton.getStyleClass().add("start-button");
     resetButton.getStyleClass().add("reset-button");
+    newButton.getStyleClass().add("new-button");
     loadButton.getStyleClass().add("load-button");
     saveButton.getStyleClass().add("save-button");
     directoryButton.getStyleClass().add("directory-button");
     flipButton.getStyleClass().add("flip-button");
 
     // HBox formatting for each dx
-    HBox row1 = new HBox(10, startPauseButton, resetButton);
+    HBox row1 = new HBox(10, startPauseButton, resetButton, newButton);
     row1.setAlignment(Pos.CENTER);
     row1.setPadding(new Insets(5));
 
@@ -317,6 +335,16 @@ public class SimulationScene {
 
     // Reset the flip
     resetFlip();
+  }
+
+  private void newSimulationCallback() {
+    Stage newStage = new Stage();
+    newStage.setX(primaryStage.getX() + NEW_SIMULATION_OFFSETX);
+    newStage.setY(primaryStage.getY() + NEW_SIMULATION_OFFSETY);
+    newStage.setTitle("New Simulation");
+
+    SimulationScene newScene = new SimulationScene(newStage);
+    newScene.start(framesPerSecond, false);
   }
 
   private void loadCallback(String filename) {

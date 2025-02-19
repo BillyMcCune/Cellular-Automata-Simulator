@@ -53,7 +53,7 @@ public class SceneUIWidget {
   public static final double MAX_BUTTON_WIDTH = 200;
 
   // Error Stage
-  private static final double DEFAULT_SPLASH_WIDTH = 500;
+  private static final double DEFAULT_SPLASH_WIDTH = 400;
   private static final double DEFAULT_SPLASH_HEIGHT = 300;
   private static final double DEFAULT_SAVE_WIDTH = 300;
   private static final double DEFAULT_SAVE_HEIGHT = 200;
