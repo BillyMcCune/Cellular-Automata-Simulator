@@ -12,9 +12,7 @@ import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
 import cellsociety.view.controller.SceneController;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
@@ -24,7 +22,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -425,6 +422,18 @@ public class SimulationScene {
    */
   public void setCell(int row, int col, Enum<?> state) {
     SceneRenderer.drawCell(grid, row, col, state);
+  }
+
+  /**
+   * Set the cell at the given dx and column with the cell's properties
+   *
+   * @param row           the dx of the cell
+   * @param col           the column of the cell
+   * @param state         the state of the cell
+   * @param allProperties the properties of the cell
+   */
+  public void setParameters(int row, int col, Enum<?> state, Map<String, Double> allProperties) {
+    SceneRenderer.drawParameters(grid, row, col, state, allProperties);
   }
 
   /**

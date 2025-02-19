@@ -3,7 +3,9 @@ package cellsociety.view.scene;
 import cellsociety.logging.Log;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javafx.geometry.Insets;
@@ -74,6 +76,38 @@ public class SceneRenderer {
     }
   }
 
+  public static void drawParameters(GridPane grid, int row, int col, Enum<?> state, Map<String, Double> allProperties) {
+    for (Node node : grid.getChildren()) {
+      if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
+          GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
+
+        System.out.println(node);
+        System.out.println(allProperties);
+        System.out.println("Row" + row + "Col" + col);
+        List<String> propertyKeys = getPropertyKeys(state.getClass().getSimpleName());
+        List<String> propertiesToDraw = new ArrayList<>();
+        if (allProperties != null && !allProperties.isEmpty()) {
+          for (Map.Entry<String, Double> entry : allProperties.entrySet()) {
+            if (propertyKeys.contains(entry.getKey())) {
+              if (allProperties.get(entry.getKey()) > 0) {
+                propertiesToDraw.add(entry.getKey());
+              }
+            }
+          }
+        }
+        if (propertiesToDraw.isEmpty()) {
+          return;
+        }
+        for (String property : propertiesToDraw) {
+          String stateName = state.getClass().getSimpleName() + "." + property;
+          ((Rectangle) node).setFill(DEFAULT_CELL_COLORS.get(stateName));
+          System.out.println(DEFAULT_CELL_COLORS.get(stateName));
+        }
+        return;
+      }
+    }
+  }
+
   /* PRIVATE HELPER METHODS */
 
   private static Map<String, Color> loadCellColorProperties() {
@@ -96,5 +130,24 @@ public class SceneRenderer {
     }
 
     return colorMap;
+  }
+
+  /**
+   * Returns a list of overlay keys for a given simulation state.
+   * An property key is defined as the portion after the dot in a property key (e.g. "AntState.searchingEntities")
+   * where the first character of the overlay key is lower-case.
+   */
+  private static List<String> getPropertyKeys(String simulationStateName) {
+    List<String> propertyKeys = new ArrayList<>();
+    String prefix = simulationStateName + ".";
+    for (String key : DEFAULT_CELL_COLORS.keySet()) {
+      if (key.startsWith(prefix)) {
+        String suffix = key.substring(prefix.length());
+        if (!suffix.isEmpty() && Character.isLowerCase(suffix.charAt(0))) {
+          propertyKeys.add(suffix);
+        }
+      }
+    }
+    return propertyKeys;
   }
 }

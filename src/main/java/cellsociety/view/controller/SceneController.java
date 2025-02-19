@@ -76,6 +76,7 @@ public class SceneController {
       for (int i = 0; i < grid.getNumRows(); i++) {
         for (int j = 0; j < grid.getNumCols(); j++) {
           simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
+          simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(), grid.getCell(i, j).getAllProperties());
         }
       }
 
@@ -334,6 +335,7 @@ public class SceneController {
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
         simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
+        simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(), grid.getCell(i, j).getAllProperties());
       }
     }
   }
