@@ -35,13 +35,6 @@ import javax.xml.parsers.ParserConfigurationException;
  * Use the ZOMBIES acronym to help you remember to consider these questions when coming up with useful scenarios to test the program:
  *
  */
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.junit.jupiter.api.Test;
-import org.xml.sax.SAXException;
-
 public class ConfigReaderTest {
 
   ConfigReader configReader = new ConfigReader();

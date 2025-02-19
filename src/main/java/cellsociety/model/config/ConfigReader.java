@@ -22,6 +22,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
+/**
+ * @author Billy McCune
+ * The ConfigReader class is responsible for reading and parsing XML configuration files
+ * for the simulation. It supports different ways of defining the initial grid, parameters, and accepted states.
+ */
 public class ConfigReader {
 
   private static final String DATA_FILE_EXTENSION = "*.xml";
@@ -30,7 +36,13 @@ public class ConfigReader {
   private final Map<String, File> fileMap = new HashMap<>();
 
   /**
-   * loads and parses the configuration file data.
+   * Loads and parses the configuration file data.
+   *
+   * @param fileName the name of the configuration file to be read.
+   * @return a {@code ConfigInfo} object representing the parsed configuration.
+   * @throws ParserConfigurationException if a parser configuration error occurs.
+   * @throws IOException if an I/O error occurs.
+   * @throws SAXException if a SAX parsing error occurs.
    */
   public ConfigInfo readConfig(String fileName)
       throws ParserConfigurationException, IOException, SAXException {
@@ -43,12 +55,18 @@ public class ConfigReader {
   }
 
   /**
-   * parses the XML file and creates a new ConfigInfo record.
+   * Parses the XML file and creates a new {@code ConfigInfo} record.
+   *
+   * @param xmlFile the XML file containing configuration information.
+   * @param fileName the name of the configuration file.
+   * @return a {@code ConfigInfo} object with all parsed configuration data.
+   * @throws ParserConfigurationException if a parser configuration error occurs.
+   * @throws SAXException if a SAX parsing error occurs.
+   * @throws IOException if an I/O error occurs.
    */
   public ConfigInfo getConfigInformation(File xmlFile, String fileName)
       throws ParserConfigurationException, SAXException, IOException {
 
-    // Check the xml file in case of file system's crash
     if (xmlFile.length() == 0) {
       throw new IOException("Error: XML file is empty - " + xmlFile.getAbsolutePath());
     }
@@ -86,6 +104,14 @@ public class ConfigReader {
     );
   }
 
+  /**
+   * Retrieves the initial grid configuration from the XML root element. Determines whether the grid
+   * is specified using {@code initialCells}, {@code initialStates}, or {@code initialProportions}.
+   *
+   * @param root the root XML element.
+   * @return a 2D list of {@code CellRecord} representing the initial grid.
+   * @throws ParserConfigurationException if multiple grid configuration elements are found or if the grid configuration is missing.
+   */
   private List<List<CellRecord>> getInitialGrid(Element root) throws ParserConfigurationException {
     int initialCellsCount = root.getElementsByTagName("initialCells").getLength();
     int initialStatesCount = root.getElementsByTagName("initialStates").getLength();
@@ -112,6 +138,12 @@ public class ConfigReader {
   }
 
 
+  /**
+   * Creates the initial grid by assigning cell states based on random proportions specified in the XML.
+   *
+   * @param root the root XML element.
+   * @return a 2D list of {@code CellRecord} representing the grid.
+   */
   private List<List<CellRecord>> createCellsByRandomProportions(Element root) {
     int width = Integer.parseInt(getTextValue(root, "width"));
     int height = Integer.parseInt(getTextValue(root, "height"));
@@ -123,6 +155,13 @@ public class ConfigReader {
     return createGrid(randomizedStates, width, height);
   }
 
+
+  /**
+   * Creates the initial grid by assigning cell states based on total state counts specified in the XML.
+   *
+   * @param root the root XML element.
+   * @return a 2D list of {@code CellRecord} representing the grid.
+   */
   private List<List<CellRecord>> createCellsByRandomTotalStates(Element root) {
     int width = Integer.parseInt(getTextValue(root, "width"));
     int height = Integer.parseInt(getTextValue(root, "height"));
@@ -134,6 +173,15 @@ public class ConfigReader {
     return createGrid(randomizedStates, width, height);
   }
 
+
+  /**
+   * Generates a randomized list of cell states based on the provided state counts.
+   *
+   * @param stateCounts a map where the key is the state and the value is the number of cells in that state.
+   * @param totalCells the total number of cells in the grid.
+   * @return a shuffled list of cell state integers.
+   * @throws IllegalStateException if the total number of states does not match the total cell count.
+   */
   private List<Integer> generateRandomizedStateList(Map<Integer, Integer> stateCounts, int totalCells) {
     List<Integer> statesList = new ArrayList<>();
 
@@ -153,6 +201,15 @@ public class ConfigReader {
     return statesList;
   }
 
+  /**
+   * Parses the {@code initialStates} element from the XML and maps each state to its specified count.
+   *
+   * @param root the root XML element.
+   * @param acceptedStates the set of accepted cell states.
+   * @param totalCells the total number of cells in the grid.
+   * @return a map where the key is the cell state and the value is the count for that state.
+   * @throws IllegalArgumentException if the specified states or counts are invalid.
+   */
   private Map<Integer, Integer> parseInitialStates(Element root, Set<Integer> acceptedStates, int totalCells) {
     Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
 
@@ -212,6 +269,16 @@ public class ConfigReader {
     return stateCounts;
   }
 
+  /**
+   * Parses the {@code initialProportions} element from the XML and calculates cell counts based on the specified proportions.
+   *
+   * @param root the root XML element.
+   * @param acceptedStates the set of accepted cell states.
+   * @param totalCells the total number of cells in the grid.
+   * @return a map where the key is the cell state and the value is the calculated count for that state.
+   * @throws IllegalArgumentException if any proportion values are invalid or the total proportions exceed 100%.
+   * @throws IllegalStateException if the total assigned cell count does not match the grid size.
+   */
   private Map<Integer, Integer> parseInitialProportions(Element root, Set<Integer> acceptedStates, int totalCells) {
     List<String> errorMessages = new ArrayList<>();
     Element proportionsElement = (Element) root.getElementsByTagName("initialProportions").item(0);
@@ -294,6 +361,14 @@ public class ConfigReader {
     return stateCounts;
   }
 
+  /**
+   * Creates a 2D grid of {@code CellRecord} objects from a flat list of states.
+   *
+   * @param statesList a list of cell state integers.
+   * @param width the expected number of columns in the grid.
+   * @param height the expected number of rows in the grid.
+   * @return a 2D list of {@code CellRecord} representing the grid.
+   */
   private List<List<CellRecord>> createGrid(List<Integer> statesList, int width, int height) {
     List<List<CellRecord>> grid = new ArrayList<>();
     int index = 0;
@@ -324,6 +399,11 @@ public class ConfigReader {
     }
   }
 
+  /**
+   * Returns a list of configuration file names available in the configuration folder.
+   *
+   * @return a list of file name strings.
+   */
   public List<String> getFileNames(){
     if (fileMap.isEmpty()) {
       createListOfConfigFiles();
@@ -332,14 +412,23 @@ public class ConfigReader {
   }
 
   /**
-   * Retrieves the version from internal resources.
+   * Retrieves the version number from internal resources.
+   *
+   * @return the version as a double.
    */
   public double getVersion() {
     ResourceBundle resources = ResourceBundle.getBundle(INTERNAL_CONFIGURATION);
     return Double.parseDouble(resources.getString("Version"));
   }
 
-
+  /**
+   * Retrieves the text content of the first occurrence of a given tag within an element.
+   *
+   * @param e the XML element.
+   * @param tagName the name of the tag whose value is to be retrieved.
+   * @return the text content of the tag.
+   * @throws IllegalArgumentException if the tag does not exist.
+   */
   private String getTextValue(Element e, String tagName) {
     NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
@@ -350,8 +439,12 @@ public class ConfigReader {
   }
 
   /**
-   * parses the grid defined in the XML file from the new <initialCells> format.
-   * each row contains multiple <cell> elements, which are converted to cellRecord.Cell.
+   * Parses the grid defined in the XML file from the {@code <initialCells>} format.
+   * Each row contains multiple {@code <cell>} elements, which are converted to {@code CellRecord} objects.
+   *
+   * @param root the root XML element.
+   * @return a 2D list of {@code CellRecord} representing the grid.
+   * @throws IllegalArgumentException if required elements or attributes are missing or invalid.
    */
   private List<List<CellRecord>> parseInitialCells(Element root) {
     Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
@@ -368,7 +461,6 @@ public class ConfigReader {
       Node rowNode = rows.item(i);
       if (rowNode.getNodeType() != Node.ELEMENT_NODE) continue; // Skip non-element nodes.
       Element rowElement = (Element) rowNode;
-      // Get all <cell> elements in this row.
       NodeList cellNodes = rowElement.getElementsByTagName("cell");
       List<CellRecord> rowCells = new ArrayList<>();
       for (int j = 0; j < cellNodes.getLength(); j++) {
@@ -412,12 +504,18 @@ public class ConfigReader {
   }
 
   /**
-   * parses the parameters from the XML file.
-   * expected XML format:
-   * <parameters>
-   *   <doubleParameter name="param1">1.23</doubleParameter>
-   *   <stringParameter name="param2">value</stringParameter>
-   * </parameters>
+   * Parses the parameters from the XML file.
+   * Expected XML format:
+   * <pre>
+   *   &lt;parameters&gt;
+   *     &lt;doubleParameter name="param1"&gt;1.23&lt;/doubleParameter&gt;
+   *     &lt;stringParameter name="param2"&gt;value&lt;/stringParameter&gt;
+   *   &lt;/parameters&gt;
+   * </pre>
+   *
+   * @param root the root XML element.
+   * @return a {@code ParameterRecord} containing maps of double and string parameters.
+   * @throws IllegalArgumentException if parameter elements are missing required attributes or contain invalid values.
    */
   private ParameterRecord parseForParameters(Element root) {
     Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
@@ -455,8 +553,13 @@ public class ConfigReader {
     return new ParameterRecord(doubleParams, stringParams);
   }
 
+
   /**
-   * Parses accepted states from a single <acceptedStates> element containing a space‐separated list.
+   * Parses accepted states from a single {@code <acceptedStates>} element containing a space‐separated list.
+   *
+   * @param root the root XML element.
+   * @return a set of accepted state integers.
+   * @throws IllegalArgumentException if the accepted states element is missing or contains invalid values.
    */
   private Set<Integer> parseForAcceptedStates(Element root) {
     Element acceptedStatesElement = (Element) root.getElementsByTagName("acceptedStates").item(0);
@@ -480,13 +583,27 @@ public class ConfigReader {
   }
 
   /**
-   * checks grid bounds and validates that every cell has an accepted state.
+   * Checks the grid bounds and validates that every cell has an accepted state.
+   *
+   * @param gridWidth the expected grid width.
+   * @param gridHeight the expected grid height.
+   * @param acceptedStates the set of accepted states.
+   * @param grid the 2D grid of {@code CellRecord} to be validated.
+   * @throws IllegalArgumentException if the grid dimensions or cell states are invalid.
    */
   private void checkForInvalidInformation(int gridWidth, int gridHeight, Set<Integer> acceptedStates, List<List<CellRecord>> grid) {
     checkGridBounds(gridWidth, gridHeight, grid);
     checkInvalidStates(acceptedStates, grid);
   }
 
+  /**
+   * Validates that the grid dimensions match the expected width and height.
+   *
+   * @param width the expected number of columns.
+   * @param height the expected number of rows.
+   * @param grid the 2D grid of {@code CellRecord}.
+   * @throws IllegalArgumentException if the grid dimensions do not match.
+   */
   private void checkGridBounds(int width, int height, List<List<CellRecord>> grid) {
     if (grid.size() != height) {
       throw new IllegalArgumentException(
@@ -502,6 +619,13 @@ public class ConfigReader {
     }
   }
 
+  /**
+   * Validates that every cell in the grid has a state that is among the accepted states.
+   *
+   * @param acceptedStates the set of accepted states.
+   * @param grid the 2D grid of {@code CellRecord} to be validated.
+   * @throws IllegalArgumentException if any cell contains an invalid state.
+   */
   private void checkInvalidStates(Set<Integer> acceptedStates, List<List<CellRecord>> grid) {
     for (List<CellRecord> row : grid) {
       for (CellRecord cell : row) {

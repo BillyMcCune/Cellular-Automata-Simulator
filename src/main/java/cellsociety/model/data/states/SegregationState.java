@@ -1,7 +1,9 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for the Percolation Simulation
+ * Represents the different possible states for the Segregation Simulation
+ *
+ * @author Jacob You
  */
 public enum SegregationState implements State {
   OPEN(0),

@@ -106,7 +106,7 @@ public class SceneController {
     try {
       configWriter.saveCurrentConfig(configInfo, path);
       getAllConfigFileNames();
-      SceneUIWidget.createSaveSuccessDialog("SuccessFully Saved File", "The file is saved at" + path,configWriter.getLastFileSaved());
+      SceneUIWidget.createSuccessDialog("SuccessFully Saved File", "The file is saved at" + path,configWriter.getLastFileSaved());
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog("Save Config Error", e.getMessage(), e);
     }

@@ -436,6 +436,9 @@ public class SceneUIWidget {
       Log.error(message);
     }
 
+
+
+
     // Layout
     VBox layout = new VBox(15, titleLabel, messageLabel, exceptionArea);
     layout.setAlignment(Pos.TOP_CENTER);
@@ -453,6 +456,50 @@ public class SceneUIWidget {
     // Show the dialog and wait for the user to close it
     errorStage.showAndWait();
   }
+
+
+  /**
+   * Create a modal success dialog to inform the user that a file was successfully saved.
+   *
+   * @param title     the title of the success dialog
+   * @param message   the main message to display (e.g., "File successfully saved!")
+   * @param fileName  the name of the file that was saved
+   */
+  public static void createSuccessDialog(String title, String message, String fileName) {
+    Stage successStage = new Stage();
+    successStage.setTitle(title);
+    successStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
+
+    Label titleLabel = new Label(title);
+    titleLabel.getStyleClass().add("success-title");
+
+    Label messageLabel = new Label(message);
+    messageLabel.getStyleClass().add("success-message");
+
+    Label fileNameLabel = new Label("File name: " + fileName);
+    fileNameLabel.getStyleClass().add("success-filename");
+
+    Log.info(String.format("Success: %s (File: %s)", message, fileName));
+
+    Button closeButton = new Button("Close");
+    closeButton.setOnAction(event -> successStage.close());
+
+    VBox layout = new VBox(15);
+    layout.setAlignment(Pos.TOP_CENTER);
+    layout.setPadding(new Insets(20));
+    layout.getChildren().addAll(titleLabel, messageLabel, fileNameLabel, closeButton);
+
+    Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
+    if (WIDGET_STYLE_SHEET != null) {
+      scene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
+    }
+    // Add your stylesheet or styling if needed
+    // scene.getStylesheets().add("path/to/css/file.css");
+
+    successStage.setScene(scene);
+    successStage.showAndWait();
+  }
+
 
   /**
    * Create a modal success dialog to inform the user that a file was successfully saved.

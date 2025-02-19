@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+
+
+  <title>Simple Move Segregation Simulation</title>
+
+
+  <author>Billy</author>
+
+
+  <description>A version of the segregation simulation where only one block differs from the others in a group and can make one move to be satisfied.</description>
+
+
+  <parameters>
+
+
+    <doubleParameter name="satisfiedThreshold">"bruh"</doubleParameter>
+
+
+  </parameters>
+
+
+  <width>10</width>
+
+
+  <height>5</height>
+
+
+  <defaultSpeed>10</defaultSpeed>
+
+
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+      <cell state="1"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="2"/>
+      <cell state="2"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+
+
+</simulation>

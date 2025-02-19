@@ -4,19 +4,21 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.PercolationState;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Concrete implementation of {@link Logic} for Princeton's Percolation Automata.
+ *
+ * @author Jacob You
  */
 public class PercolationLogic extends Logic<PercolationState> {
 
   /**
    * Constructs a {@code PercolationLogic} instance with the specified grid.
    *
-   * @param grid the grid representing the current state of the grid
+   * @param grid       the grid representing the current state of the grid
+   * @param parameters the parameter record containing simulation-specific configurations
    */
   public PercolationLogic(Grid<PercolationState> grid, ParameterRecord parameters) {
     super(grid, parameters);

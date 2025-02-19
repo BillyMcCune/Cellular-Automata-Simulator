@@ -1,17 +1,19 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for Game of Life
+ * Represents the different possible states for Foraging Ants
  *
  * @author Jacob You
  */
-public enum LifeState implements State {
-  DEAD(0),
-  ALIVE(1);
+public enum AntState implements State {
+  EMPTY(0),
+  BLOCKED(1),
+  NEST(2),
+  FOOD(3);
 
   private final int value;
 
-  LifeState(int value) {
+  AntState(int value) {
     this.value = value;
   }
 

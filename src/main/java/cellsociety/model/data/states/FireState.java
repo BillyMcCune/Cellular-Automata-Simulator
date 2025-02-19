@@ -1,5 +1,10 @@
 package cellsociety.model.data.states;
 
+/**
+ * Represents the different possible states for Spreading of Fire
+ *
+ * @author Jacob You
+ */
 public enum FireState implements State {
   EMPTY(0),
   TREE(1),

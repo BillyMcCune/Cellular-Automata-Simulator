@@ -11,8 +11,11 @@ import java.util.regex.Pattern;
 
 /**
  * Concrete implementation of {@link Logic} for Conway's Game of Life.
+ *
+ * @author Jacob You
  */
 public class LifeLogic extends Logic<LifeState> {
+
   private List<Integer> birthRequirement;
   private List<Integer> survivalRequirement;
   private String rulestring;
@@ -20,20 +23,34 @@ public class LifeLogic extends Logic<LifeState> {
   /**
    * Constructs a {@code LifeLogic} instance with the specified grid.
    *
-   * @param grid the grid representing the current state of grid
+   * @param grid       the grid representing the current state of grid
+   * @param parameters the parameters for the simulation
+   * @throws IllegalArgumentException if the rulestring is invalid
    */
-  public LifeLogic(Grid<LifeState> grid, ParameterRecord parameters) {
+  public LifeLogic(Grid<LifeState> grid, ParameterRecord parameters)
+      throws IllegalArgumentException {
     super(grid, parameters);
     birthRequirement = List.of(3);
-    survivalRequirement = List.of(2,3);
+    survivalRequirement = List.of(2, 3);
     setRulestring(getStringParamOrFallback("rulestring"));
   }
 
+  /**
+   * Sets the rulestring for the simulation.
+   *
+   * @param rulestring the rulestring defining birth and survival conditions
+   * @throws IllegalArgumentException if the rulestring format is invalid
+   */
   public void setRulestring(String rulestring) throws IllegalArgumentException {
     parseRulestring(rulestring);
     this.rulestring = rulestring;
   }
 
+  /**
+   * Gets the current rulestring used in the simulation.
+   *
+   * @return the current rulestring
+   */
   public String getRulestring() {
     return rulestring;
   }
@@ -50,7 +67,7 @@ public class LifeLogic extends Logic<LifeState> {
     Pattern p = Pattern.compile("^B(\\d*)/S(\\d*)$");
     Matcher m = p.matcher(rulestring.trim());
     if (!m.matches()) {
-      throw new IllegalArgumentException("Invalid B/S notation: " + rulestring);
+      throw new IllegalArgumentException();
     }
     birthRequirement = parseDigitsToList(m.group(1));
     survivalRequirement = parseDigitsToList(m.group(2));
@@ -62,9 +79,8 @@ public class LifeLogic extends Logic<LifeState> {
     if (!m.matches()) {
       throw new IllegalArgumentException();
     }
-
-    this.survivalRequirement = parseDigitsToList(m.group(1));
-    this.birthRequirement = parseDigitsToList(m.group(2));
+    survivalRequirement = parseDigitsToList(m.group(1));
+    birthRequirement = parseDigitsToList(m.group(2));
   }
 
   private List<Integer> parseDigitsToList(String digits) throws IllegalArgumentException {

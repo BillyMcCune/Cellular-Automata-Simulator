@@ -7,6 +7,9 @@ import cellsociety.model.data.cells.CellFactory;
 import org.junit.jupiter.api.Test;
 import cellsociety.model.data.states.State;
 
+/**
+ * @author Jacob You
+ */
 public class CellFactoryTest {
 
   private enum TestState implements State {

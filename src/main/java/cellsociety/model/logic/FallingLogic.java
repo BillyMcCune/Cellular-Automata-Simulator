@@ -3,12 +3,17 @@ package cellsociety.model.logic;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.neighbors.Coord;
+import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.FallingState;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FallingLogic extends Logic<FallingState>{
+/**
+ * Concrete implementation of {@link Logic} for the Falling Sand simulation.
+ *
+ * @author Jacob You
+ */
+public class FallingLogic extends Logic<FallingState> {
 
   public FallingLogic(Grid<FallingState> grid, ParameterRecord parameters) {
     super(grid, parameters);
@@ -25,7 +30,7 @@ public class FallingLogic extends Logic<FallingState>{
   @Override
   protected void updateSingleCell(Cell<FallingState> cell) {
     if (cell.getCurrentState() == FallingState.SAND) {
-      Cell<FallingState> neighbor = cell.getNeighbors().get(new Coord(1, 0));
+      Cell<FallingState> neighbor = cell.getNeighbors().get(new Direction(1, 0));
       if (neighbor != null) {
         if (neighbor.getCurrentState() == FallingState.EMPTY) {
           neighbor.setNextState(FallingState.SAND);
