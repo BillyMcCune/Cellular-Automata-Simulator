@@ -1,8 +1,10 @@
 package cellsociety.model.config;
 
+import cellsociety.view.controller.LanguageController;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,8 +22,7 @@ import org.w3c.dom.Element;
 
 /**
  * @author Billy McCune
- * Updated ConfigWriter that outputs the new XML format.
- * <p>
+ * A config writer class to create xml files
  * The format includes:
  * <ul>
  *   <li><code>&lt;simulation&gt;</code> as the root element</li>
@@ -40,6 +41,8 @@ public class ConfigWriter {
   private ConfigInfo myConfigInfo;
   private Document myCurrentXmlDocument;
   private String LastFileSaved;
+  private String errorMessage;
+
   public ConfigWriter() {
   }
 
@@ -48,15 +51,17 @@ public class ConfigWriter {
    *
    * @param myNewConfigInfo the configuration info to save
    * @param path the directory where the XML file will be saved
-   * @throws ParserConfigurationException if an error occurs during document creation
+   * @throws Exception if an error occurs during saving
    */
   public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
       throws Exception {
     if (myNewConfigInfo == null) {
-      throw new NullPointerException("myNewConfigInfo is null");
+      errorMessage = LanguageController.getStringProperty("error-nullConfigInfo").getValue();
+      throw new NullPointerException(errorMessage);
     }
     if (path == null) {
-      throw new NullPointerException("path is null");
+      errorMessage = LanguageController.getStringProperty("error-nullPath").getValue();
+      throw new NullPointerException(errorMessage);
     }
     myConfigInfo = myNewConfigInfo;
     Document xmlDocument = createXMLDocument();
@@ -73,7 +78,8 @@ public class ConfigWriter {
    */
   public String getLastFileSaved() {
     if (LastFileSaved == null) {
-      throw new Error("No last file saved");
+      errorMessage = LanguageController.getStringProperty("error-noLastFileSaved").getValue();
+      throw new Error(errorMessage);
     }
     return LastFileSaved;
   }
@@ -90,7 +96,8 @@ public class ConfigWriter {
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
       return docBuilder.newDocument();
     } catch (ParserConfigurationException e) {
-      throw new ParserConfigurationException("Error creating XML document: " + e.getMessage());
+      errorMessage = LanguageController.getStringProperty("error-creatingXMLDocument").getValue();
+      throw new ParserConfigurationException(MessageFormat.format(errorMessage, e.getMessage()));
     }
   }
 
@@ -207,7 +214,7 @@ public class ConfigWriter {
    * If a file with the same name exists, a duplicate number is appended.
    *
    * @param path the directory path where the file should be saved
-   * @return a File object representing the output file, or null if the configuration directory cannot be created
+   * @return a File object representing the output file
    * @throws ParserConfigurationException if the output file cannot be created
    */
   private File createOutputFile(String path) throws ParserConfigurationException {
@@ -218,10 +225,12 @@ public class ConfigWriter {
       LastFileSaved = baseFilename + fileExtension;
 
       if (configDirectory.exists() && !configDirectory.isDirectory()) {
-        throw new ParserConfigurationException("Provided path is not a directory");
+        errorMessage = LanguageController.getStringProperty("error-notDirectory").getValue();
+        throw new ParserConfigurationException(errorMessage);
       }
       if (!configDirectory.exists() && !configDirectory.mkdirs()) {
-        throw new ParserConfigurationException("Failed to create config directory: " + path);
+        errorMessage = LanguageController.getStringProperty("error-failedToCreateConfigDirectory").getValue();
+        throw new ParserConfigurationException(MessageFormat.format(errorMessage, path));
       }
 
       File outputFile = new File(configDirectory, baseFilename + fileExtension);
@@ -232,7 +241,8 @@ public class ConfigWriter {
       }
       return outputFile;
     } catch (NullPointerException e) {
-      throw new ParserConfigurationException("Could not create output file");
+      errorMessage = LanguageController.getStringProperty("error-couldNotCreateOutputFile").getValue();
+      throw new ParserConfigurationException(errorMessage);
     }
   }
 
@@ -245,12 +255,14 @@ public class ConfigWriter {
    */
   private void writeXMLDocument(Document xmlDocument, File outputFile) throws Exception {
     if (outputFile == null) {
-      throw new IllegalArgumentException("Output file is null");
+      errorMessage = LanguageController.getStringProperty("error-outputFileNull").getValue();
+      throw new IllegalArgumentException(errorMessage);
     }
     try {
       if (outputFile == null) {
         Log.error("Output file is null. Cannot save XML.");
-        throw new IllegalArgumentException("Output file is null");
+        errorMessage = LanguageController.getStringProperty("error-outputFileNull").getValue();
+        throw new IllegalArgumentException(errorMessage);
       }
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
       Transformer transformer = transformerFactory.newTransformer();
@@ -262,9 +274,11 @@ public class ConfigWriter {
         Log.trace("Config saved to file: " + outputFile.getAbsolutePath());
       }
     } catch (IOException e) {
-      throw new IOException("Error writing XML file", e);
+      errorMessage = LanguageController.getStringProperty("error-writingXMLFile").getValue();
+      throw new IOException(errorMessage, e);
     } catch (Exception e) {
-      throw new Exception("Error transforming XML document", e);
+      errorMessage = LanguageController.getStringProperty("error-transformingXMLDocument").getValue();
+      throw new Exception(errorMessage, e);
     }
   }
 }

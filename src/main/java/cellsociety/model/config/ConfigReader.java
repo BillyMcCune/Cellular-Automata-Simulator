@@ -2,8 +2,10 @@ package cellsociety.model.config;
 
 import cellsociety.logging.Log;
 import cellsociety.model.config.ConfigInfo.SimulationType;
+import cellsociety.view.controller.LanguageController;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.beans.property.StringProperty;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -34,6 +37,7 @@ public class ConfigReader {
   private static final String DATA_FILE_FOLDER = "/src/main/resources/cellsociety/configdata";
   private static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
   private final Map<String, File> fileMap = new HashMap<>();
+  private String errorMessage;
 
   /**
    * Loads and parses the configuration file data.
@@ -68,7 +72,8 @@ public class ConfigReader {
       throws ParserConfigurationException, SAXException, IOException {
 
     if (xmlFile.length() == 0) {
-      throw new IOException("Error: XML file is empty - " + xmlFile.getAbsolutePath());
+      errorMessage = LanguageController.getStringProperty("error-xmlFile-isEmpty").getValue();
+      throw new IOException(MessageFormat.format(errorMessage,fileName));
     }
 
     Document xmlDocument =
@@ -123,7 +128,8 @@ public class ConfigReader {
     providedCount += (initialProportionsCount > 0 ? 1 : 0);
 
     if (providedCount > 1) {
-      throw new ParserConfigurationException("Multiple grid configuration elements found. Please specify only one of initialCells, initialStates, or initialProportions.");
+      errorMessage = LanguageController.getStringProperty("error-multipleGridConfigs").getValue();
+      throw new ParserConfigurationException(errorMessage);
     }
 
     if (initialCellsCount > 0) {
@@ -133,8 +139,13 @@ public class ConfigReader {
     } else if (initialProportionsCount > 0) {
       return createCellsByRandomProportions(root);
     } else {
-      throw new ParserConfigurationException("Missing grid configuration element. Please specify one of initialCells, initialStates, or initialProportions.");
+      errorMessage = LanguageController.getStringProperty("error-missingGridConfig").getValue();
+      throw new ParserConfigurationException(errorMessage);
     }
+  }
+
+  private StringProperty getErrorMessage(String labelKey){
+    return LanguageController.getStringProperty(labelKey);
   }
 
 
@@ -194,7 +205,8 @@ public class ConfigReader {
     }
 
     if (statesList.size() != totalCells) {
-      throw new IllegalStateException("Mismatch between total cells and states list size.");
+      errorMessage = LanguageController.getStringProperty("error-totalCellsDoesntEqualTotalStates").getValue();
+      throw new IllegalStateException(errorMessage);
     }
 
     Collections.shuffle(statesList, new Random());
@@ -231,18 +243,21 @@ public class ConfigReader {
       try {
         state = Integer.parseInt(numberPart);
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid state tag name: " + tagName);
+        errorMessage = LanguageController.getStringProperty("error-invalidStateTag").getValue();
+        throw new IllegalArgumentException(MessageFormat.format(errorMessage,numberPart));
       }
 
       if (!acceptedStates.contains(state)) {
-        throw new IllegalArgumentException("State " + state + " is not among accepted states.");
+        errorMessage = LanguageController.getStringProperty("error-stateIsNotInAcceptedStates").getValue();
+        throw new IllegalArgumentException(MessageFormat.format(errorMessage,state));
       }
 
       int count;
       try {
         count = Integer.parseInt(stateElement.getTextContent().trim());
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid cell count for state " + state + " in <initialStates>.");
+        errorMessage = LanguageController.getStringProperty("error-invalidCellCountForState").getValue();
+        throw new IllegalArgumentException(MessageFormat.format(errorMessage,state));
       }
 
       stateCounts.put(state, count);
@@ -250,20 +265,21 @@ public class ConfigReader {
     }
 
     if (specifiedSum > totalCells) {
-      throw new IllegalArgumentException("Total specified cells (" + specifiedSum +
-          ") exceeds grid size (" + totalCells + ").");
+      errorMessage = LanguageController.getStringProperty("error-TotalCellExceedsGridSize").getValue();
+      throw new IllegalArgumentException(MessageFormat.format(errorMessage,specifiedSum,totalCells));
     }
 
     if (!stateCounts.containsKey(0)) {
       if (!acceptedStates.contains(0)) {
-        throw new IllegalArgumentException("Default state 0 is not in acceptedStates.");
+        errorMessage = LanguageController.getStringProperty("error-NoDefaultZeroInAcceptedStates").getValue();
+        throw new IllegalArgumentException(errorMessage);
       }
       int remaining = totalCells - specifiedSum;
       stateCounts.put(0, remaining);
     } else {
       if (specifiedSum != totalCells) {
-        throw new IllegalArgumentException("When default state (0) is explicitly specified, " +
-            "the sum of counts must equal grid size (" + totalCells + ").");
+        errorMessage = LanguageController.getStringProperty("error-specifiedSumDoesNotEqualTotalSum").getValue();
+        throw new IllegalArgumentException(MessageFormat.format(errorMessage,totalCells));
       }
     }
     return stateCounts;
@@ -300,12 +316,14 @@ public class ConfigReader {
         try {
           state = Integer.parseInt(numberPart);
         } catch (NumberFormatException e) {
-          errorMessages.add("Invalid state tag name: " + tagName);
+          errorMessage = LanguageController.getStringProperty("error-invalidStateTag").getValue();
+          errorMessages.add(MessageFormat.format(errorMessage,numberPart));
           continue;
         }
 
         if (!acceptedStates.contains(state)) {
-          errorMessages.add("State " + state + " is not among accepted states.");
+          errorMessage = LanguageController.getStringProperty("error-stateIsNotInAcceptedStates").getValue();
+          errorMessages.add(MessageFormat.format(errorMessage,state));
           continue;
         }
 
@@ -314,7 +332,8 @@ public class ConfigReader {
         try {
           proportion = Double.parseDouble(elem.getTextContent().trim());
         } catch (NumberFormatException e) {
-          errorMessages.add("Invalid proportion value for state " + state + " in <initialProportions>.");
+          errorMessage = LanguageController.getStringProperty("error-InvalidProportion").getValue();
+          errorMessages.add(MessageFormat.format(errorMessage,state));
           continue;
         }
         proportions.put(state, proportion);
@@ -325,14 +344,16 @@ public class ConfigReader {
     if (!proportions.containsKey(0)) {
       double remainder = 100.0 - totalSpecifiedProportion;
       if (remainder < 0) {
-        errorMessages.add("Specified proportions exceed 100%.");
+        errorMessage = LanguageController.getStringProperty("error-proportionsExceed100").getValue();
+        errorMessages.add(errorMessage);
       } else {
         proportions.put(0, remainder);
         totalSpecifiedProportion = 100.0;
       }
     } else {
       if (Math.abs(totalSpecifiedProportion - 100.0) > 0.001) {
-        errorMessages.add("When state 0 is provided, the sum of proportions must equal 100%. Found: " + totalSpecifiedProportion);
+        errorMessage = LanguageController.getStringProperty("error-totalProportionsGreaterThan100").getValue();
+        errorMessages.add(MessageFormat.format(errorMessage,totalSpecifiedProportion));
       }
     }
 
@@ -355,7 +376,8 @@ public class ConfigReader {
 
     int totalAssigned = stateCounts.values().stream().mapToInt(Integer::intValue).sum();
     if (totalAssigned != totalCells) {
-      throw new IllegalStateException("Total assigned cells (" + totalAssigned + ") does not equal grid size (" + totalCells + ").");
+      errorMessage = LanguageController.getStringProperty("error-TotalCellExceedsGridSize ").getValue();
+      throw new IllegalStateException(MessageFormat.format(errorMessage,totalAssigned,totalCells));
     }
 
     return stateCounts;
@@ -394,8 +416,8 @@ public class ConfigReader {
           .filter(File::isFile)
           .forEach(file -> fileMap.put(file.getName(), file));
     } catch (NullPointerException e) {
-      throw new IllegalStateException(
-          "Configuration directory not found: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+      errorMessage = LanguageController.getStringProperty("error-configDirectoryNotFound").getValue();
+      throw new IllegalStateException(MessageFormat.format(errorMessage,System.getProperty("user.dir") + DATA_FILE_FOLDER));
     }
   }
 
@@ -434,7 +456,8 @@ public class ConfigReader {
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();
     } else {
-      throw new IllegalArgumentException(tagName + " parameter in XML file does not exist.");
+      errorMessage = LanguageController.getStringProperty("error-parameterDoesNotExist").getValue();
+      throw new IllegalArgumentException(MessageFormat.format(errorMessage,tagName));
     }
   }
 
@@ -449,11 +472,13 @@ public class ConfigReader {
   private List<List<CellRecord>> parseInitialCells(Element root) {
     Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
     if (initialCellsElement == null) {
-      throw new IllegalArgumentException("Missing 'initialCells' element.");
+      errorMessage = LanguageController.getStringProperty("error-missingInitialCells").getValue();
+      throw new IllegalArgumentException(errorMessage);
     }
     NodeList rows = initialCellsElement.getElementsByTagName("row");
     if (rows == null || rows.getLength() == 0) {
-      throw new IllegalArgumentException("No 'row' elements found inside 'initialCells'.");
+      errorMessage = LanguageController.getStringProperty("error-noRowsInInitialCells").getValue();
+      throw new IllegalArgumentException(errorMessage);
     }
 
     List<List<CellRecord>> grid = new ArrayList<>();
@@ -469,13 +494,15 @@ public class ConfigReader {
           Element cellElement = (Element) cellNode;
           String stateStr = cellElement.getAttribute("state");
           if (stateStr == null || stateStr.isEmpty()) {
-            throw new IllegalArgumentException("Cell missing 'state' attribute at row " + i + ", column " + j);
+            errorMessage = LanguageController.getStringProperty("error-missingCellState").getValue();
+            throw new IllegalArgumentException(MessageFormat.format(errorMessage,i,j));
           }
           int state;
           try {
             state = Integer.parseInt(stateStr);
           } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Invalid cell state at row " + i + ", column " + j + ": " + stateStr, ex);
+            errorMessage = LanguageController.getStringProperty("error-invalidCellState").getValue();
+            throw new IllegalArgumentException(MessageFormat.format(errorMessage,i,j,stateStr));
           }
 
           Map<String, Double> properties = new HashMap<>();
@@ -488,7 +515,8 @@ public class ConfigReader {
                 double value = Double.parseDouble(attrValue);
                 properties.put(attrName, value);
               } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Invalid cell state at row " + i + ", column " + j + ": " + attrValue, e);
+                errorMessage = LanguageController.getStringProperty("error-InvalidCellState").getValue();
+                throw new IllegalArgumentException(MessageFormat.format(errorMessage,i,j,attrName), e);
               }
             }
           }
@@ -496,7 +524,8 @@ public class ConfigReader {
         }
       }
       if (rowCells.isEmpty()) {
-        throw new IllegalArgumentException("Empty row encountered in 'initialCells' at index " + i);
+        errorMessage = LanguageController.getStringProperty("error-EmptyRow").getValue();
+        throw new IllegalArgumentException(MessageFormat.format(errorMessage,i));
       }
       grid.add(rowCells);
     }
@@ -533,7 +562,8 @@ public class ConfigReader {
         String tagName = paramElement.getTagName();
         String name = paramElement.getAttribute("name");
         if (name == null || name.isEmpty()) {
-          throw new IllegalArgumentException("Parameter element missing 'name' attribute.");
+          errorMessage = LanguageController.getStringProperty("error-missingParameterName").getValue();
+          throw new IllegalArgumentException(errorMessage);
         }
         String textContent = paramElement.getTextContent().trim();
         if (tagName.equals("doubleParameter")) {
@@ -541,7 +571,8 @@ public class ConfigReader {
             double value = Double.parseDouble(textContent);
             doubleParams.put(name, value);
           } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid double value for parameter " + name + ": " + textContent, e);
+            errorMessage = LanguageController.getStringProperty("error-InvalidParameterValue").getValue();
+            throw new IllegalArgumentException(MessageFormat.format(errorMessage,name,textContent));
           }
         } else if (tagName.equals("stringParameter")) {
           stringParams.put(name, textContent);
@@ -564,11 +595,13 @@ public class ConfigReader {
   private Set<Integer> parseForAcceptedStates(Element root) {
     Element acceptedStatesElement = (Element) root.getElementsByTagName("acceptedStates").item(0);
     if (acceptedStatesElement == null) {
-      throw new IllegalArgumentException("Missing 'acceptedStates' element.");
+      errorMessage = LanguageController.getStringProperty("error-MissingAcceptedState").getValue();
+      throw new IllegalArgumentException(errorMessage);
     }
     String statesText = acceptedStatesElement.getTextContent().trim();
     if (statesText.isEmpty()) {
-      throw new IllegalArgumentException("'acceptedStates' element is empty.");
+      errorMessage = LanguageController.getStringProperty("error-acceptedStatesEmpty").getValue();
+      throw new IllegalArgumentException(errorMessage);
     }
     Set<Integer> acceptedStates = new HashSet<>();
     String[] tokens = statesText.split("\\s+");
@@ -576,7 +609,8 @@ public class ConfigReader {
       try {
         acceptedStates.add(Integer.parseInt(token));
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("Invalid accepted state value: " + token);
+        errorMessage = LanguageController.getStringProperty("error-invalidAcceptedState").getValue();
+        throw new IllegalArgumentException(MessageFormat.format(errorMessage, token));
       }
     }
     return acceptedStates;
@@ -606,14 +640,16 @@ public class ConfigReader {
    */
   private void checkGridBounds(int width, int height, List<List<CellRecord>> grid) {
     if (grid.size() != height) {
+      errorMessage = LanguageController.getStringProperty("error-wrongNumberOfRows").getValue();
       throw new IllegalArgumentException(
-          "Grid in file has wrong number of rows. Expected " + height + " but found " + grid.size()
+          MessageFormat.format(errorMessage, height, grid.size())
       );
     }
     for (List<CellRecord> row : grid) {
       if (row.size() != width) {
+        errorMessage = LanguageController.getStringProperty("error-wrongNumberOfColumns").getValue();
         throw new IllegalArgumentException(
-            "Grid in file has wrong number of columns. Expected " + width + " but found " + row.size()
+            MessageFormat.format(errorMessage, width,row.size())
         );
       }
     }
@@ -630,8 +666,9 @@ public class ConfigReader {
     for (List<CellRecord> row : grid) {
       for (CellRecord cell : row) {
         if (!acceptedStates.contains(cell.state())) {
+          errorMessage = LanguageController.getStringProperty("error-GridHasInvalidState").getValue();
           throw new IllegalArgumentException(
-              "Grid in file contains an invalid state: " + cell.state()
+              MessageFormat.format(errorMessage, cell.state())
           );
         }
       }
