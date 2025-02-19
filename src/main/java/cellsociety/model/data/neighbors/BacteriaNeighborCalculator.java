@@ -17,7 +17,7 @@ public class BacteriaNeighborCalculator<T extends Enum<T> & State> extends Neigh
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  public BacteriaNeighborCalculator(int[][] directions) {
-    super(directions);
+  public BacteriaNeighborCalculator() {
+    super(DIRECTIONS);
   }
 }

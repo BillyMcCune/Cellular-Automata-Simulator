@@ -18,7 +18,7 @@ public class PercolationNeighborCalculator<T extends Enum<T> & State> extends Ne
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  public PercolationNeighborCalculator(int[][] directions) {
-    super(directions);
+  public PercolationNeighborCalculator() {
+    super(DIRECTIONS);
   }
 }

@@ -17,7 +17,7 @@ public class LifeNeighborCalculator<T extends Enum<T> & State> extends NeighborC
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  public LifeNeighborCalculator(int[][] directions) {
-    super(directions);
+  public LifeNeighborCalculator() {
+    super(DIRECTIONS);
   }
 }

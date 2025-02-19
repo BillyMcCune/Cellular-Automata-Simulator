@@ -19,7 +19,7 @@ public class SegregationNeighborCalculator<T extends Enum<T> & State> extends
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  public SegregationNeighborCalculator(int[][] directions) {
-    super(directions);
+  public SegregationNeighborCalculator() {
+    super(DIRECTIONS);
   }
 }
