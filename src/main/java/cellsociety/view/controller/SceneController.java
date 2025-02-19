@@ -13,12 +13,8 @@ import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * The SceneController class is responsible for controlling the flow of the application and managing the different scenes.
@@ -66,6 +62,10 @@ public class SceneController {
    * Update the simulation scene with the latest data from the model.
    */
   public void update() {
+    if (grid == null || gameLogic == null) {
+      return;
+    }
+
     if (!isPaused) {
       for (int i = 0; i < grid.getNumRows(); i++) {
         for (int j = 0; j < grid.getNumCols(); j++) {

@@ -183,7 +183,7 @@ public class ConfigWriter {
 
   /**
    * Adds the grid (initial cells) to the document.
-   * Each row in the grid becomes a <row> element containing one or more <cell> elements.
+   * Each dx in the grid becomes a <dx> element containing one or more <cell> elements.
    * Each <cell> element has a required "state" attribute and additional properties if available.
    *
    * @param initialCellsElement the XML element to which rows are added
@@ -193,7 +193,7 @@ public class ConfigWriter {
   private void addInitialCellsElements(Element initialCellsElement,
       List<List<CellRecord>> grid, Document xmlDocument) {
     for (List<CellRecord> row : grid) {
-      Element rowElement = xmlDocument.createElement("row");
+      Element rowElement = xmlDocument.createElement("dx");
       for (CellRecord cell : row) {
         Element cellElement = xmlDocument.createElement("cell");
         cellElement.setAttribute("state", String.valueOf(cell.state()));

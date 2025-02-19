@@ -20,15 +20,14 @@ import org.junit.jupiter.api.Test;
  */
 public class PercolationLogicTest {
 
-  private final NeighborCalculator<PercolationState> dummyNeighborCalculator = new NeighborCalculator<PercolationState>() {
-    @Override
-    protected int[][] getDirections() {
-      return new int[][]{
-          {-1, -1}, {-1, 0}, {-1, 1},
-          {0, -1}, {0, 1},
-          {1, -1}, {1, 0}, {1, 1}
-      };
-    }
+  private static final int[][] DIRECTIONS = {
+      {-1, -1}, {-1, 0}, {-1, 1},
+      {0, -1}, {0, 1},
+      {1, -1}, {1, 0}, {1, 1}
+  };
+
+  private final NeighborCalculator<PercolationState> dummyNeighborCalculator = new NeighborCalculator<PercolationState>(
+      DIRECTIONS) {
   };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
@@ -108,7 +107,9 @@ public class PercolationLogicTest {
     assertEquals(PercolationState.BLOCKED, grid.getCell(1, 2).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
-        if (i == 1 && j == 2) continue;
+        if (i == 1 && j == 2) {
+          continue;
+        }
         assertEquals(PercolationState.PERCOLATED, grid.getCell(i, j).getCurrentState());
       }
     }

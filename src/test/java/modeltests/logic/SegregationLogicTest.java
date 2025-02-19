@@ -20,15 +20,14 @@ import org.junit.jupiter.api.Test;
  */
 public class SegregationLogicTest {
 
-  private final NeighborCalculator<SegregationState> dummyNeighborCalculator = new NeighborCalculator<SegregationState>() {
-    @Override
-    protected int[][] getDirections() {
-      return new int[][] {
-          {-1, -1}, {-1, 0}, {-1, 1},
-          {0, -1},          {0, 1},
-          {1, -1},  {1, 0}, {1, 1}
-      };
-    }
+  private static final int[][] DIRECTIONS = {
+      {-1, -1}, {-1, 0}, {-1, 1},
+      {0, -1}, {0, 1},
+      {1, -1}, {1, 0}, {1, 1}
+  };
+
+  private final NeighborCalculator<SegregationState> dummyNeighborCalculator = new NeighborCalculator<SegregationState>(
+      DIRECTIONS) {
   };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {

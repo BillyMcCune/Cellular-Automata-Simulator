@@ -20,15 +20,14 @@ import org.junit.jupiter.api.Test;
  */
 public class LifeLogicTest {
 
-  private final NeighborCalculator<LifeState> dummyNeighborCalculator = new NeighborCalculator<LifeState>() {
-    @Override
-    protected int[][] getDirections() {
-      return new int[][]{
-          {-1, -1}, {-1, 0}, {-1, 1},
-          {0, -1}, {0, 1},
-          {1, -1}, {1, 0}, {1, 1}
-      };
-    }
+  private static final int[][] DIRECTIONS = {
+      {-1, -1}, {-1, 0}, {-1, 1},
+      {0, -1}, {0, 1},
+      {1, -1}, {1, 0}, {1, 1}
+  };
+
+  private final NeighborCalculator<LifeState> dummyNeighborCalculator = new NeighborCalculator<LifeState>(
+      DIRECTIONS) {
   };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

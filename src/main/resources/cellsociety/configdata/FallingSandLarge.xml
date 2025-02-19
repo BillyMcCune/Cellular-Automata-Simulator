@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<simulation>
+  <type>FALLING</type>
+  <title>Falling Sand Test - 10x10</title>
+  <author>Jacob You</author>
+  <description>
+    A 10x10 Falling Sand simulation for testing particle movement.
+    This setup includes metal (1) barriers, sand (2) arranged in midair,
+    and water (3) placed in locations where it can fall and spread.
+  </description>
+
+  <parameters>
+    <parameter name="gravity" value="9.81"/>
+    <parameter name="diffusionRate" value="0.5"/>
+  </parameters>
+
+  <width>10</width>
+  <height>10</height>
+  <defaultSpeed>15</defaultSpeed>
+
+  <initialCells>
+    <!-- Top row: Mostly empty with a bit of metal -->
+    <row> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/>
+      <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
+
+    <!-- Water and open spaces -->
+    <row> <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/>
+      <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> </row>
+
+    <!-- Sand falling with space to drop -->
+    <row> <cell state="0"/> <cell state="2"/> <cell state="2"/> <cell state="0"/> <cell state="0"/>
+      <cell state="0"/> <cell state="2"/> <cell state="2"/> <cell state="0"/> <cell state="0"/> </row>
+
+    <!-- More scattered particles and barriers -->
+    <row> <cell state="1"/> <cell state="0"/> <cell state="2"/> <cell state="0"/> <cell state="1"/>
+      <cell state="1"/> <cell state="0"/> <cell state="2"/> <cell state="0"/> <cell state="1"/> </row>
+
+    <!-- Open areas for water and sand to move -->
+    <row> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
+
+    <!-- More open areas and a small pool of water -->
+    <row> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="3"/>
+      <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
+
+    <!-- Some sand on platforms -->
+    <row> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="2"/>
+      <cell state="2"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> </row>
+
+    <!-- Water trapped in some areas -->
+    <row> <cell state="0"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="1"/>
+      <cell state="1"/> <cell state="0"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> </row>
+
+    <!-- Mixed environment -->
+    <row> <cell state="2"/> <cell state="0"/> <cell state="3"/> <cell state="1"/> <cell state="0"/>
+      <cell state="0"/> <cell state="1"/> <cell state="3"/> <cell state="0"/> <cell state="2"/> </row>
+
+    <!-- Bottom row: solid metal barrier -->
+    <row> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="1"/>
+      <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> </row>
+
+  </initialCells>
+
+  <acceptedStates>0 1 2 3</acceptedStates>
+
+</simulation>

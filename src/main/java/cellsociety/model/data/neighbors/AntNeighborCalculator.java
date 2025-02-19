@@ -8,20 +8,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Contains the neighbor calculation/directions for Wator Uses unique logic to specify a torus
- * looping world
+ * Contains the neighbor calculation/directions for ForagingAnts
  *
  * @param <T> The State for the simulation
  * @author Jacob You
  */
-
-public class WatorNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
+public class AntNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
   private static final int[][] DIRECTIONS = {
-      {-1, 0}, {1, 0}, {0, -1}, {0, 1}
+      {-1, -1}, {-1, 0}, {-1, 1},
+      {0, -1}, {0, 1},
+      {1, -1}, {1, 0}, {1, 1}
   };
 
-  public WatorNeighborCalculator() {
+  public AntNeighborCalculator() {
     super(DIRECTIONS);
   }
 

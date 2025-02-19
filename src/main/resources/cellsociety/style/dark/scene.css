@@ -23,6 +23,33 @@
   -fx-text-fill: #e0e0e0;
 }
 
+.log-text {
+  -fx-font-family: "Courier New", monospace;  /* Use a monospace font for console-like appearance */
+  -fx-line-spacing: 2px;  /* Add line spacing for readability */
+  -fx-font-weight: bold;
+  -fx-font-size: 12px;
+}
+
+.log-text-error{
+  -fx-fill: #d32f2f;
+}
+
+.log-text-warn {
+  -fx-fill: #f57c00;
+}
+
+.log-text-info {
+  -fx-fill: #19d25a;
+}
+
+.log-text-trace {
+  -fx-fill: #c3c3c3;
+}
+
+.log-text-default {
+  -fx-fill: #c3c3c3;
+}
+
 /* ==========================
    Grid
    ========================== */
@@ -51,6 +78,13 @@
 }
 
 .parameter-box {
+  -fx-border-color: #333333;
+  -fx-padding: 8px;
+  -fx-background-color: #2a2a2a;
+  -fx-border-radius: 6px;
+}
+
+.log-box {
   -fx-border-color: #333333;
   -fx-padding: 8px;
   -fx-background-color: #2a2a2a;

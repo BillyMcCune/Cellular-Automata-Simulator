@@ -502,6 +502,42 @@ public class SceneUIWidget {
 
 
   /**
+   * Create a modal success dialog to inform the user that a file was successfully saved.
+   *
+   * @param title     the title of the success dialog
+   * @param message   the main message to display (e.g., "File successfully saved!")
+   * @param fileName  the name of the file that was saved
+   */
+  public static void createSaveSuccessDialog(String title, String message, String fileName) {
+    Stage successStage = new Stage();
+    successStage.setTitle(title);
+    successStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
+
+    Label titleLabel = new Label(title);
+    titleLabel.getStyleClass().add("success-title");
+
+    Label messageLabel = new Label(message);
+    messageLabel.getStyleClass().add("success-message");
+
+    Label fileNameLabel = new Label("File name: " + fileName);
+    fileNameLabel.getStyleClass().add("success-filename");
+
+    Log.info(String.format("Success: %s (File: %s)", message, fileName));
+
+    VBox layout = new VBox(15, titleLabel, messageLabel, fileNameLabel);
+    layout.setAlignment(Pos.CENTER);
+    layout.setPadding(new Insets(20));
+
+    Scene scene = new Scene(layout, DEFAULT_SPLASH_WIDTH, DEFAULT_SPLASH_HEIGHT);
+    if (WIDGET_STYLE_SHEET != null) {
+      scene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
+    }
+
+    successStage.setScene(scene);
+    successStage.showAndWait();
+  }
+
+  /**
    * Create a splash screen with language and theme selection.
    * @param languageConsumer the consumer for the selected language
    * @param themeConsumer the consumer for the selected theme

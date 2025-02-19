@@ -20,11 +20,12 @@ import org.junit.jupiter.api.Test;
  */
 public class FireLogicTest {
 
-  private final NeighborCalculator<FireState> dummyNeighborCalculator = new NeighborCalculator<FireState>() {
-    @Override
-    protected int[][] getDirections() {
-      return new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    }
+  private static final int[][] DIRECTIONS = {
+      {-1, 0}, {0, -1}, {0, 1}, {1, 0}
+  };
+
+  private final NeighborCalculator<FireState> dummyNeighborCalculator = new NeighborCalculator<FireState>(
+      DIRECTIONS) {
   };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
@@ -94,6 +95,7 @@ public class FireLogicTest {
     Grid<FireState> grid = createGrid(rawGrid);
     FireLogic logic = new FireLogic(grid, createEmptyParameterRecord());
     logic.setProbCatch(0.0);
+    logic.setProbIgnite(0.0);
     logic.update();
     assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
@@ -267,6 +269,7 @@ public class FireLogicTest {
     Grid<FireState> grid = createGrid(rawData);
     FireLogic logic = new FireLogic(grid, createEmptyParameterRecord());
     logic.setProbCatch(100.0);
+    logic.setProbTree(0.0);
     logic.update();
     assertEquals(FireState.EMPTY, grid.getCell(1, 1).getCurrentState());
     for (int i = 0; i < grid.getNumRows(); i++) {
