@@ -243,8 +243,8 @@ public class SceneController {
    * @param <T> The type of the logic class
    */
   public <T extends Logic<?>> void resetParameters(Class<T> logicClass) throws Exception{
-    // Iterate over all methods in the class
-    for (Method setterMethod : logicClass.getDeclaredMethods()) {
+    // Iterate over all public methods in the class
+    for (Method setterMethod : logicClass.getMethods()) {
       String methodName = setterMethod.getName();
 
       // Check if the method starts with "set" and has exactly one parameter
