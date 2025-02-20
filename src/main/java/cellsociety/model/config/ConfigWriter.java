@@ -193,7 +193,7 @@ public class ConfigWriter {
   private void addInitialCellsElements(Element initialCellsElement,
       List<List<CellRecord>> grid, Document xmlDocument) {
     for (List<CellRecord> row : grid) {
-      Element rowElement = xmlDocument.createElement("dx");
+      Element rowElement = xmlDocument.createElement("row");
       for (CellRecord cell : row) {
         Element cellElement = xmlDocument.createElement("cell");
         cellElement.setAttribute("state", String.valueOf(cell.state()));
