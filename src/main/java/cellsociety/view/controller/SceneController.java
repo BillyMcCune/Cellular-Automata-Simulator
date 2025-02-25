@@ -378,6 +378,7 @@ public class SceneController {
         configInfo.myType(),
         configInfo.myCellShapeType(),
         configInfo.myGridEdgeType(),
+        configInfo.myneighborArrangementType(),
         configInfo.myTitle(),
         configInfo.myAuthor(),
         configInfo.myDescription(),
