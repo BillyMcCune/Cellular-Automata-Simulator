@@ -33,6 +33,13 @@ public class BacteriaLogic extends Logic<BacteriaState> {
     setNumStates(getDoubleParamOrFallback("numStates"));
   }
 
+  /**
+   * Sets the threshold for the percentage of surrounding cells that must beat the current cell
+   * to change the current cell state
+   *
+   * @param percThreshold The percentage of surrounding cells required to change the cell
+   * @throws IllegalArgumentException if the beatingThreshold is out of bounds or invalid
+   */
   public void setBeatingThreshold(double percThreshold) throws IllegalArgumentException {
     double min = getMinParam("beatingThreshold");
     double max = getMaxParam("beatingThreshold");
@@ -49,19 +56,32 @@ public class BacteriaLogic extends Logic<BacteriaState> {
     return beatingThreshold * 100;
   }
 
+  /**
+   * Sets the total number of states in the simulation
+   *
+   * @param n The number of states in the simulation
+   * @throws IllegalArgumentException if the number of states is out of bounds invalid
+   */
   public void setNumStates(double n) throws IllegalArgumentException {
-    checkBounds(n, 0, Double.MAX_VALUE);
+    checkBounds(n, 1, Double.MAX_VALUE);
     this.numStates = (int) n;
   }
 
+  /**
+   * Returns the number of states
+   *
+   * @return The number of states
+   */
   public double getNumStates() {
     return numStates;
   }
 
   @Override
   protected void updateSingleCell(Cell<BacteriaState> cell) {
-    double id = cell.getProperty("id");
+    double id = cell.getProperty("coloredId");
     double beatingId = (id + 1) % numStates;
+
+    System.out.println(id);
 
     double numBeating = getNumBeating(cell, beatingId);
     int numNeighbors = cell.getNeighbors().size();
@@ -72,8 +92,18 @@ public class BacteriaLogic extends Logic<BacteriaState> {
 
   @Override
   public void update() {
+    int numRows = grid.getNumRows();
+    int numCols = grid.getNumCols();
+
+    for (int row = 0; row < numRows; row++) {
+      for (int col = 0; col < numCols; col++) {
+        Cell<BacteriaState> cell = grid.getCell(row, col);
+        updateSingleCell(cell);
+      }
+    }
+
     for (Cell<BacteriaState> changedCell : nextStates.keySet()) {
-      changedCell.setProperty("id", nextStates.get(changedCell));
+      changedCell.setProperty("coloredId", nextStates.get(changedCell));
     }
     grid.updateGrid();
   }
@@ -81,7 +111,7 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   private int getNumBeating(Cell<BacteriaState> cell, double beatingId) {
     int numBeating = 0;
     for (Cell<BacteriaState> neighbor : cell.getNeighbors().values()) {
-      if (neighbor.getProperty("id") == beatingId) {
+      if (neighbor.getProperty("coloredId") == beatingId) {
         numBeating++;
       }
     }

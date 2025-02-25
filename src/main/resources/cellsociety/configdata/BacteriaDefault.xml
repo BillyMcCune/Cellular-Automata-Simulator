@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<simulation>
+  <type>BACTERIA</type>
+  <title>Rock-Paper-Scissors Bacteria</title>
+  <author>Jacob You</author>
+  <description>
+    Demonstrates a bacteria CA following Rock-Paper-Scissors logic:
+    each cell's "coloredId" competes with the next coloredId in a cyclic chain.
+  </description>
+
+  <parameters>
+    <doubleParameter name="beatingThreshold">30</doubleParameter>
+    <doubleParameter name="numStates">3</doubleParameter>
+  </parameters>
+
+  <width>5</width>
+  <height>5</height>
+  <defaultSpeed>10</defaultSpeed>
+
+  <initialCells>
+    <row>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="2"/>
+      <cell state="0" coloredId="1"/>
+    </row>
+    <row>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="2"/>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="2"/>
+    </row>
+    <row>
+      <cell state="0" coloredId="2"/>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="0"/>
+    </row>
+    <row>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="2"/>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="2"/>
+    </row>
+    <row>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="0"/>
+      <cell state="0" coloredId="1"/>
+      <cell state="0" coloredId="2"/>
+      <cell state="0" coloredId="1"/>
+    </row>
+  </initialCells>
+
+  <acceptedStates>0 1 2</acceptedStates>
+</simulation>
