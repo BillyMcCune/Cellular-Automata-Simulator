@@ -8,9 +8,9 @@ import cellsociety.view.controller.LanguageController.Language;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import cellsociety.view.controller.ThemeController.UIComponent;
+import cellsociety.view.controller.SceneController;
 import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
-import cellsociety.view.controller.SceneController;
 import java.io.File;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -572,6 +572,8 @@ public class SimulationScene {
     primaryStage.getScene().getStylesheets().add(sceneSheet);
     primaryStage.getScene().getStylesheets().add(widgetSheet);
     docker.addStyleSheet(dockingSheet);
+    docker.addStyleSheet(sceneSheet);
+    docker.addStyleSheet(widgetSheet);
     SceneUIWidget.setWidgetStyleSheet(widgetSheet);
   }
 

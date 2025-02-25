@@ -1,12 +1,12 @@
 /* ==========================
-   Docker
+   Docker (Mystery)
    ========================== */
 .docker {
   -fx-background-color: linear-gradient(to bottom, #1f1034, #2b1a50);
   -fx-border-color: #3e2766;
   -fx-border-width: 1;
-  -fx-border-radius: 8;
-  -fx-padding: 12;
+  -fx-border-radius: 6;
+  -fx-padding: 10;
 }
 
 /* ==========================
@@ -16,7 +16,7 @@
   -fx-background-color: linear-gradient(to bottom, #2b1a50, #3e2766);
   -fx-border-color: #4a2d8b;
   -fx-border-width: 1;
-  -fx-border-radius: 8;
+  -fx-border-radius: 6;
 }
 
 .dock-tab-pane .tab-header-area .tab-header-background {
@@ -27,20 +27,19 @@
   -fx-background-color: linear-gradient(to bottom, #3b246f, #5a3ea1);
   -fx-border-color: #6a4dff;
   -fx-border-radius: 6;
-}
-
-.dock-tab .tab-label {
-  -fx-text-fill: #d0c1f0;
-  -fx-font: 14px "Segoe UI Semibold";
+  -fx-padding: 0;
 }
 
 .dock-tab:hover {
   -fx-background-color: rgba(104, 122, 243, 0.5);
 }
 
-/* ==========================
-   Tab Pane
-   ========================== */
+.dock-tab-label {
+  -fx-text-fill: #d0c1f0;
+  -fx-font: 14px "Segoe UI Semibold";
+  -fx-padding: 4px;
+}
+
 .tab-header-area {
   -fx-background-color: linear-gradient(to bottom, #2c194d, #301a5e);
 }
@@ -59,7 +58,7 @@
 }
 
 .dock-indicator .label {
-  -fx-font-size: 40px;
+  -fx-font-size: 35px;
   -fx-font-weight: bold;
   -fx-text-fill: #0007ac;
 }
