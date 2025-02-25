@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class ThemeControllerTest {
 
   @Test
-  public void testGetThemeSheetDay() {
+  public void GetThemeSheetDay_ThemeAndComponent_ThemeSheetIsNotNull() {
     ThemeController.Theme theme = ThemeController.Theme.DAY;
     ThemeController.UIComponent component = ThemeController.UIComponent.SCENE;
     String themeSheet = ThemeController.getThemeSheet(theme, component);
@@ -20,7 +20,7 @@ public class ThemeControllerTest {
   }
 
   @Test
-  public void testGetThemeSheetDark() {
+  public void GetThemeSheetDark_ThemeAndComponent_ThemeSheetIsNotNull() {
     ThemeController.Theme theme = ThemeController.Theme.DARK;
     ThemeController.UIComponent component = ThemeController.UIComponent.WIDGET;
     String themeSheet = ThemeController.getThemeSheet(theme, component);
@@ -28,7 +28,7 @@ public class ThemeControllerTest {
   }
 
   @Test
-  public void testGetThemeSheetMystery() {
+  public void GetThemeSheetMystery_ThemeAndComponent_ThemeSheetIsNotNull() {
     ThemeController.Theme theme = ThemeController.Theme.MYSTERY;
     ThemeController.UIComponent component = ThemeController.UIComponent.DOCKING;
     String themeSheet = ThemeController.getThemeSheet(theme, component);

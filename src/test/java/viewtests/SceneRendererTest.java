@@ -15,20 +15,20 @@ import org.junit.jupiter.api.Test;
 public class SceneRendererTest {
 
   @Test
-  public void testDrawGrid() {
+  public void DrawGrid_GridPaneAndSize_GridIsDrawn() {
     GridPane gridPane = new GridPane();
     SceneRenderer.drawGrid(gridPane, 10, 10);
   }
 
   @Test
-  public void testDrawCell() {
+  public void DrawCell_GridPaneAndCellPosition_CellIsDrawn() {
     GridPane gridPane = new GridPane();
     SceneRenderer.drawGrid(gridPane, 10, 10);
     SceneRenderer.drawCell(gridPane, 0, 0, LifeState.ALIVE);
   }
 
   @Test
-  public void testDrawParameters() {
+  public void DrawParameters_GridPaneAndCellState_ParametersAreDrawn() {
     GridPane gridPane = new GridPane();
     SceneRenderer.drawGrid(gridPane, 10, 10);
     Map<String, Double> parameters = Map.of(

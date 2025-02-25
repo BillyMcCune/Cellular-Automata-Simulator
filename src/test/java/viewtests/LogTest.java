@@ -14,13 +14,13 @@ public class LogTest {
   private final PrintStream originalSystemErr = System.err;
 
   // Helper method to reset the output streams
-  private void resetStreams() {
+  private void ResetStreams() {
     System.setOut(originalSystemOut);
     System.setErr(originalSystemErr);
   }
 
   @Test
-  public void testTraceMessage() {
+  public void TraceMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     // Redirect System.out and System.err to capture output
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
@@ -30,11 +30,11 @@ public class LogTest {
     // Assert that the output contains the expected trace message
     assertTrue(outContent.toString().contains("Test trace message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testTraceFormattedMessage() {
+  public void TraceFormattedMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -42,11 +42,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testInfoMessage() {
+  public void InfoMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -54,11 +54,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test info message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testInfoFormattedMessage() {
+  public void InfoFormattedMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -66,11 +66,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted info message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testWarnMessage() {
+  public void WarnMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -78,11 +78,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test warn message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testWarnFormattedMessage() {
+  public void WarnFormattedMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -90,11 +90,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted warn message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testErrorMessage() {
+  public void ErrorMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -102,11 +102,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test error message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testErrorFormattedMessage() {
+  public void ErrorFormattedMessage_StateIsGiven_ExpectedOutputIsPrinted() {
     System.setOut(new PrintStream(outContent));
     System.setErr(new PrintStream(errContent));
 
@@ -114,11 +114,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted error message"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testTraceWithException() {
+  public void TraceWithException_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -128,11 +128,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test trace with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testInfoWithException() {
+  public void InfoWithException_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -142,11 +142,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test info with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testWarnWithException() {
+  public void WarnWithException_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -156,11 +156,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test warn with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testErrorWithException() {
+  public void ErrorWithException_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -170,11 +170,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test error with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testTraceWithExceptionAndFormat() {
+  public void TraceWithExceptionAndFormat_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -184,11 +184,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted trace with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testInfoWithExceptionAndFormat() {
+  public void InfoWithExceptionAndFormat_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -198,11 +198,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted info with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testWarnWithExceptionAndFormat() {
+  public void WarnWithExceptionAndFormat_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -212,11 +212,11 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted warn with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 
   @Test
-  public void testErrorWithExceptionAndFormat() {
+  public void ErrorWithExceptionAndFormat_StateIsGiven_ExpectedOutputIsPrinted() {
     Exception e = new Exception("Test exception");
 
     System.setOut(new PrintStream(outContent));
@@ -226,6 +226,6 @@ public class LogTest {
 
     assertTrue(outContent.toString().contains("Test formatted error with exception"));
 
-    resetStreams();
+    ResetStreams();
   }
 }
