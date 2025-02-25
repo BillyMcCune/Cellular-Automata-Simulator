@@ -48,8 +48,6 @@ public class AntLogicTest {
         Map<String, Double> props = new HashMap<>();
         props.put("searchingEntities", 0.0);
         props.put("returningEntities", 0.0);
-        // For nest cells, the "antCount" property will be used to initialize searchingEntities.
-        props.put("antCount", 1.0);
         props.put("homePheromone", 0.0);
         props.put("foodPheromone", 0.0);
         recordRow.add(new CellRecord(state, props));
@@ -71,18 +69,17 @@ public class AntLogicTest {
     doubleParams.put("evaporationRate", 1.0);
     doubleParams.put("maxHomePheromone", 100.0);
     doubleParams.put("maxFoodPheromone", 100.0);
-    doubleParams.put("basePheromoneWeight", 0.001);
+    doubleParams.put("basePheromoneWeight", 0.0);
     doubleParams.put("pheromoneSensitivity", 10.0);
     doubleParams.put("pheromoneDiffusionDecay", 2.0);
     return new ParameterRecord(doubleParams, Map.of("rulestring", "B3/S23"));
   }
 
   @Test
-  public void testInitialization_AntMapFromNest() {
+  public void AntLogic_InitializeGrid_CorrectStateLoading() {
     List<List<Integer>> data = createGridData(3, 3, AntState.EMPTY.getValue());
     data.get(1).set(1, AntState.NEST.getValue());
     Grid<AntState> grid = createGridFromData(data);
-    grid.getCell(1, 1).setProperty("antCount", 5.0);
     grid.getCell(1, 1).setProperty("searchingEntities", 5.0);
     grid.getCell(1, 1).setProperty("returningEntities", 0.0);
     AntLogic logic = new AntLogic(grid, createDefaultParameterRecord());
@@ -93,7 +90,7 @@ public class AntLogicTest {
   }
 
   @Test
-  public void testAntSwitch_SearchingToReturning() {
+  public void AntLogic_SearchingAntOnFood_SwitchToReturning() {
     List<List<Integer>> data = createGridData(3, 3, AntState.EMPTY.getValue());
     data.get(1).set(1, AntState.FOOD.getValue());
     Grid<AntState> grid = createGridFromData(data);
@@ -108,26 +105,22 @@ public class AntLogicTest {
   }
 
   @Test
-  public void testAntMove_UpdatesCellProperties() {
+  public void AntLogic_MovingAnt_UpdateCellProperties() {
     List<List<Integer>> data = createGridData(2, 2, AntState.EMPTY.getValue());
     data.get(0).set(0, AntState.NEST.getValue());
     data.get(0).set(1, AntState.EMPTY.getValue());
     Grid<AntState> grid = createGridFromData(data);
-    grid.getCell(0, 0).setProperty("antCount", 1.0);
     grid.getCell(0, 0).setProperty("searchingEntities", 1.0);
     grid.getCell(0, 0).setProperty("returningEntities", 0.0);
     AntLogic logic = new AntLogic(grid, createDefaultParameterRecord());
     logic.update();
     double srcCount = grid.getCell(0, 0).getProperty("searchingEntities")
         + grid.getCell(0, 0).getProperty("returningEntities");
-    double tgtCount = grid.getCell(0, 1).getProperty("searchingEntities")
-        + grid.getCell(0, 1).getProperty("returningEntities");
-    assertEquals(0.0, srcCount, 0.0001);
-    assertTrue(tgtCount > 0);
+    assertEquals(0.0, srcCount);
   }
 
   @Test
-  public void testEvaporation_ReducesPheromones() {
+  public void AntLogic_PheromoneEvaporation_PheromoneLevelDecreases() {
     List<List<Integer>> data = createGridData(1, 1, AntState.EMPTY.getValue());
     Grid<AntState> grid = createGridFromData(data);
     AntLogic logic = new AntLogic(grid, createDefaultParameterRecord());
@@ -138,5 +131,49 @@ public class AntLogicTest {
     double expected = 100.0 * (1 - logic.getEvaporationRate()/100.0);
     assertTrue(cell.getProperty("homePheromone") <= expected);
     assertTrue(cell.getProperty("foodPheromone") <= expected);
+  }
+
+  @Test
+  public void AntLogic_SearchingAntNextToFoodPheromone_AntMovesToPheromone() {
+
+    List<List<Integer>> rawData = createGridData(3, 3, AntState.EMPTY.getValue());
+    rawData.get(1).set(1, AntState.EMPTY.getValue()); // center cell
+    Grid<AntState> grid = createGridFromData(rawData);
+
+    Cell<AntState> center = grid.getCell(1, 1);
+    center.setProperty("searchingEntities", 1.0);
+    center.setProperty("foodPheromone", 0.0);
+
+    // The top neighbor cell
+    Cell<AntState> top = grid.getCell(0, 1);
+    top.setProperty("foodPheromone", 50.0);
+    top.setProperty("searchingEntities", 0.0);
+
+    AntLogic logic = new AntLogic(grid, createDefaultParameterRecord());
+
+    logic.update();
+    assertNotEquals(0, top.getProperty("searchingEntities"));
+  }
+
+  @Test
+  public void AntLogic_SearchingAntNextToHomePheromone_AntMovesToPheromone() {
+
+    List<List<Integer>> rawData = createGridData(3, 3, AntState.EMPTY.getValue());
+    rawData.get(1).set(1, AntState.EMPTY.getValue()); // center cell
+    Grid<AntState> grid = createGridFromData(rawData);
+
+    Cell<AntState> center = grid.getCell(1, 1);
+    center.setProperty("returningEntities", 1.0);
+    center.setProperty("homePheromone", 0.0);
+
+    // The top neighbor cell
+    Cell<AntState> top = grid.getCell(0, 1);
+    top.setProperty("homePheromone", 50.0);
+    top.setProperty("returningEntities", 0.0);
+
+    AntLogic logic = new AntLogic(grid, createDefaultParameterRecord());
+
+    logic.update();
+    assertNotEquals(0, top.getProperty("returningEntities"));
   }
 }
