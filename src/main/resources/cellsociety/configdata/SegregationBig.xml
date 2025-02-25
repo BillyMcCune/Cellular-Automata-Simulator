@@ -21,7 +21,10 @@
     
   
   </parameters>
-  
+
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
   
   <width>40</width>
   

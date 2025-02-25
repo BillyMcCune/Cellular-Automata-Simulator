@@ -14,12 +14,16 @@
     <parameter name="diffusionRate" value="0.5"/>
   </parameters>
 
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
+
   <width>10</width>
   <height>10</height>
   <defaultSpeed>15</defaultSpeed>
 
   <initialCells>
-    <!-- Top row: Mostly empty with a bit of metal -->
+
     <row> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/>
       <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
 

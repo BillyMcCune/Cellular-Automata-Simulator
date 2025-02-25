@@ -38,8 +38,7 @@ public class SceneRenderer {
 
   /**
    * Draw a grid on the given GridPane with the given number of rows and columns.
-   *
-   * @param grid      The grid to draw on
+   * @param grid The grid to draw on
    * @param numOfRows The number of rows in the grid
    * @param numOfCols The number of columns in the grid
    */

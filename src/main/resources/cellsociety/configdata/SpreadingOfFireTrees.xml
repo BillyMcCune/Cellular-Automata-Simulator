@@ -21,7 +21,10 @@
     <doubleParameter name="probTree">10</doubleParameter>
 
   </parameters>
-  
+
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
   
   <width>24</width>
   

@@ -376,6 +376,9 @@ public class SceneController {
     // TODO: Make user input for title, author, description
     return new ConfigInfo(
         configInfo.myType(),
+        configInfo.myCellShapeType(),
+        configInfo.myGridEdgeType(),
+        configInfo.myneighborArrangementType(),
         configInfo.myTitle(),
         configInfo.myAuthor(),
         configInfo.myDescription(),

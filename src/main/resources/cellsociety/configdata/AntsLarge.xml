@@ -17,6 +17,11 @@
     <doubleParameter name="pheromoneDiffusionDecay">2</doubleParameter>
   </parameters>
 
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
+
+
   <width>20</width>
   <height>10</height>
   <defaultSpeed>10</defaultSpeed>

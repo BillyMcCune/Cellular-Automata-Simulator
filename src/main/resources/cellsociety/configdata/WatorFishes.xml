@@ -22,8 +22,11 @@
     <doubleParameter name="fishReproductionTime">1</doubleParameter>
     
   </parameters>
-  
-  
+
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
+
   <width>20</width>
   
   
