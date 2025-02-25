@@ -121,6 +121,10 @@ public class ConfigWriter {
     gridEdgeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myGridEdgeType().toString()));
     rootElement.appendChild(gridEdgeElement);
 
+    Element neighborArrangementElement = xmlDocument.createElement("neighborArrangementType");
+    neighborArrangementElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myneighborArrangementType().toString()));
+    rootElement.appendChild(neighborArrangementElement);
+
     Element titleElement = xmlDocument.createElement("title");
     titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myTitle()));
     rootElement.appendChild(titleElement);

@@ -7,6 +7,7 @@ import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigInfo.cellShapeType;
 import cellsociety.model.config.ConfigInfo.gridEdgeType;
+import cellsociety.model.config.ConfigInfo.neighborArrangementType;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
 import java.io.File;
@@ -45,6 +46,7 @@ public class ConfigWriterTest {
         SimulationType.LIFE,
         cellShapeType.SQUARE,
         gridEdgeType.BASE,
+        neighborArrangementType.MOORE,
         "TestTitle",
         "TestAuthor",
         "TestDescription",
@@ -104,6 +106,7 @@ public class ConfigWriterTest {
         validConfig.myType(),
         validConfig.myCellShapeType(),
         validConfig.myGridEdgeType(),
+        validConfig.myneighborArrangementType(),
         validConfig.myTitle(),
         validConfig.myAuthor(),
         validConfig.myDescription(),
@@ -127,6 +130,7 @@ public class ConfigWriterTest {
         validConfig.myType(),
         validConfig.myCellShapeType(),
         validConfig.myGridEdgeType(),
+        validConfig.myneighborArrangementType(),
         validConfig.myTitle(),
         validConfig.myAuthor(),
         validConfig.myDescription(),
@@ -150,6 +154,7 @@ public class ConfigWriterTest {
         validConfig.myType(),
         validConfig.myCellShapeType(),
         validConfig.myGridEdgeType(),
+        validConfig.myneighborArrangementType(),
         validConfig.myTitle(),
         validConfig.myAuthor(),
         validConfig.myDescription(),

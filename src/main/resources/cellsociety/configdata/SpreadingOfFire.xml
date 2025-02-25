@@ -22,6 +22,7 @@
 
   <cellShapeType>Square</cellShapeType>
   <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
   
   <width>8</width>
   

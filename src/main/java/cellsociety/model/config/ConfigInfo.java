@@ -31,6 +31,7 @@ public record ConfigInfo(
     SimulationType myType,
     cellShapeType myCellShapeType,
     gridEdgeType myGridEdgeType,
+    neighborArrangementType myneighborArrangementType,
     String myTitle,
     String myAuthor,
     String myDescription,
@@ -62,6 +63,10 @@ public record ConfigInfo(
    */
   public enum gridEdgeType{
     BASE, TOROIDAL, MIRROR
+  }
+
+  public enum neighborArrangementType {
+    MOORE, NEUMANN, EXTENDEDMOORE
   }
 
 }

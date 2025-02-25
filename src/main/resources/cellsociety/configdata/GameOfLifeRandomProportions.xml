@@ -10,6 +10,7 @@
   <parameters></parameters>
   <cellShapeType>Square</cellShapeType>
   <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
   <width>10</width>
   <height>10</height>
   <defaultSpeed>10</defaultSpeed>
