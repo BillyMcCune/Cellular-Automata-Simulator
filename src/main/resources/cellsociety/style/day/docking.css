@@ -1,5 +1,5 @@
 /* ==========================
-   Docker
+   Docker (Light)
    ========================== */
 .docker {
   -fx-background-color: #f8f8f8;
@@ -27,15 +27,17 @@
   -fx-background-color: #f0f0f0;
   -fx-border-color: #cccccc;
   -fx-border-radius: 6;
-}
-
-.dock-tab .tab-label {
-  -fx-text-fill: #333333;
-  -fx-font: 14px "Arial";
+  -fx-padding: 0;
 }
 
 .dock-tab:hover {
   -fx-background-color: rgba(122, 92, 255, 0.2); /* Purple accent */
+}
+
+.dock-tab-label {
+  -fx-text-fill: #333333;
+  -fx-font: 14px "Segoe UI Semibold";
+  -fx-padding: 4px;
 }
 
 .tab-header-area {
@@ -56,7 +58,7 @@
 }
 
 .dock-indicator .label {
-  -fx-font-size: 40px;
+  -fx-font-size: 35px;
   -fx-font-weight: bold;
   -fx-text-fill: #222222;
 }

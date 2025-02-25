@@ -1,6 +1,5 @@
 package cellsociety.view.docking;
 
-import cellsociety.view.docking.Docker.DockPosition;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,15 +19,15 @@ import javafx.stage.StageStyle;
  */
 public class DIndicator {
   // Constants
-  private static final int DOCK_INDICATOR_WIDTH = 40;
-  private static final int DOCK_INDICATOR_HEIGHT = 40;
+  private static final int DOCK_INDICATOR_WIDTH = 35;
+  private static final int DOCK_INDICATOR_HEIGHT = 35;
   private static final double INDICATOR_INNER_SHIFT_OFFSET = 20;
   private static final double INDICATOR_OUTER_SHIFT_OFFSET = 10;
 
   // Indicator attributes
   final Docker docker;
   final Stage indicatorStage;
-  DockPosition indicatorPosition;
+  Docker.DockPosition indicatorPosition;
 
   /**
    * Constructs a dock indicator with the given docker.
@@ -63,7 +62,7 @@ public class DIndicator {
       } else {
         // Get the midpoints of the edges of the mainStage
         Point2D[] edgeMidpoints = getStageEdgeMidpoints(docker.mainStage);
-        Map.Entry<DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
+        Map.Entry<Docker.DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
         indicatorPosition = nearestEdgeMidpoint.getKey();
         updateIndicatorPosition(nearestEdgeMidpoint.getValue(), indicatorPosition, false);
 
@@ -73,7 +72,7 @@ public class DIndicator {
     } else {
       // Get the midpoints of the edges of the TabPane
       Point2D[] edgeMidpoints = getTabPaneEdgeMidpoints(tp);
-      Map.Entry<DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
+      Map.Entry<Docker.DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
       indicatorPosition = nearestEdgeMidpoint.getKey();
       updateIndicatorPosition(nearestEdgeMidpoint.getValue(), indicatorPosition, true);
 
@@ -93,7 +92,7 @@ public class DIndicator {
     indicatorStage.setY(-DOCK_INDICATOR_HEIGHT);
   }
 
-  void updateIndicatorPosition(Point2D nearestEdgeMidpoint, DockPosition dockPosition, boolean inOrOutShift) {
+  void updateIndicatorPosition(Point2D nearestEdgeMidpoint, Docker.DockPosition dockPosition, boolean inOrOutShift) {
     if (nearestEdgeMidpoint == null) return;
 
     double newX = nearestEdgeMidpoint.getX();
@@ -136,7 +135,7 @@ public class DIndicator {
 
   /* HELPER METHODS */
 
-  private Point2D[] getTabPaneEdgeMidpoints(TabPane tabPane) {
+  static private Point2D[] getTabPaneEdgeMidpoints(TabPane tabPane) {
     Bounds bounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
 
     double leftX = bounds.getMinX();
@@ -151,11 +150,12 @@ public class DIndicator {
         new Point2D(leftX, centerY),   // Left center
         new Point2D(rightX, centerY),  // Right center
         new Point2D(centerX, topY),    // Top center
-        new Point2D(centerX, bottomY)  // Bottom center
+        new Point2D(centerX, bottomY), // Bottom center
+        new Point2D(centerX, centerY)  // Center
     };
   }
 
-  private Point2D[] getStageEdgeMidpoints(Stage stage) {
+  static private Point2D[] getStageEdgeMidpoints(Stage stage) {
     double stageX = stage.getScene().getWindow().getX();
     double stageY = stage.getScene().getWindow().getY();
     double stageWidth = stage.getWidth();
@@ -175,18 +175,23 @@ public class DIndicator {
     };
   }
 
-  private Map.Entry<DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY) {
-    Map<DockPosition, Point2D> edges = new HashMap<>();
-    edges.put(DockPosition.LEFT, midpoints[0]);   // Left center
-    edges.put(DockPosition.RIGHT, midpoints[1]);  // Right center
-    edges.put(DockPosition.TOP, midpoints[2]);    // Top center
-    edges.put(DockPosition.BOTTOM, midpoints[3]); // Bottom center
+  static private Map.Entry<Docker.DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY) {
+    Map<Docker.DockPosition, Point2D> edges = new HashMap<>();
+    edges.put(Docker.DockPosition.LEFT, midpoints[0]);   // Left center
+    edges.put(Docker.DockPosition.RIGHT, midpoints[1]);  // Right center
+    edges.put(Docker.DockPosition.TOP, midpoints[2]);    // Top center
+    edges.put(Docker.DockPosition.BOTTOM, midpoints[3]); // Bottom center
 
-    DockPosition closestEdge = null;
+    // Check if there is a center point
+    if (midpoints.length >= 5) {
+      edges.put(Docker.DockPosition.CENTER, midpoints[4]); // Center
+    }
+
+    Docker.DockPosition closestEdge = null;
     Point2D closestPoint = null;
     double minDistance = Double.MAX_VALUE;
 
-    for (Map.Entry<DockPosition, Point2D> entry : edges.entrySet()) {
+    for (Map.Entry<Docker.DockPosition, Point2D> entry : edges.entrySet()) {
       double distance = entry.getValue().distance(mouseX, mouseY);
       if (distance < minDistance) {
         minDistance = distance;
@@ -197,5 +202,4 @@ public class DIndicator {
 
     return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
   }
-
 }
