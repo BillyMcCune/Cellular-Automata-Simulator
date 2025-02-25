@@ -3,8 +3,6 @@ package cellsociety.model.data.neighbors;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.State;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,12 +15,10 @@ import java.util.Map;
 
 public class WatorNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, 0}, {1, 0}, {0, -1}, {0, 1}
-  };
+  private static final int[][] directions = NeighborCalculator.VONNEUMANN;
 
   public WatorNeighborCalculator() {
-    super(DIRECTIONS);
+    super(directions);
   }
 
   @Override

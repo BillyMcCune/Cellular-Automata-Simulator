@@ -15,14 +15,10 @@ import java.util.Map;
  */
 public class AntNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
+  private static final int[][] directions = NeighborCalculator.MOORE;
 
   public AntNeighborCalculator() {
-    super(DIRECTIONS);
+    super(directions);
   }
 
   @Override

@@ -12,13 +12,9 @@ import java.util.List;
 
 public class PercolationNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1},         {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
+  private static final int[][] directions = NeighborCalculator.MOORE;
 
   public PercolationNeighborCalculator() {
-    super(DIRECTIONS);
+    super(directions);
   }
 }

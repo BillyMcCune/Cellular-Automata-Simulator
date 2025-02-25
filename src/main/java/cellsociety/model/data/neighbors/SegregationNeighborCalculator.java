@@ -13,13 +13,9 @@ import java.util.List;
 public class SegregationNeighborCalculator<T extends Enum<T> & State> extends
     NeighborCalculator<T> {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
+  private static final int[][] directions = NeighborCalculator.MOORE;
 
   public SegregationNeighborCalculator() {
-    super(DIRECTIONS);
+    super(directions);
   }
 }

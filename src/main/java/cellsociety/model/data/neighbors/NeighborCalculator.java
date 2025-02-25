@@ -16,14 +16,16 @@ import java.util.Map;
  */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
 
-  private static List<Direction> DIRECTIONS;
+  private static List<Direction> directions;
+  public static final int[][] MOORE = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+  public static final int[][] VONNEUMANN = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
   public NeighborCalculator(int[][] directions) {
-    DIRECTIONS = intToDirections(directions);
+    NeighborCalculator.directions = intToDirections(directions);
   }
 
   public static List<Direction> getDirections() {
-    return DIRECTIONS;
+    return directions;
   }
 
   /**
