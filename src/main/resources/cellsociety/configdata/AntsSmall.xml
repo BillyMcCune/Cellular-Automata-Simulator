@@ -17,6 +17,8 @@
     <doubleParameter name="pheromoneDiffusionDecay">1</doubleParameter>
   </parameters>
 
+  <cellShapeType>Square</cellShapeType>
+
   <width>3</width>
   <height>3</height>
   <defaultSpeed>10</defaultSpeed>

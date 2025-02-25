@@ -30,6 +30,7 @@ import java.util.Set;
 
 public record ConfigInfo(
     SimulationType myType,
+    cellShapeType myCellShape,
     String myTitle,
     String myAuthor,
     String myDescription,
@@ -47,6 +48,14 @@ public record ConfigInfo(
    */
   public enum SimulationType {
     LIFE, PERCOLATION, FIRE, SEGREGATION, WATOR, FALLING, SUGAR, BACTERIA, ANT
+  }
+
+  /**
+   * Enumeration of supported cell shape types.
+   */
+
+  public enum cellShapeType {
+    SQUARE, TRIANGLE, HEXAGON
   }
 
 }

@@ -2,6 +2,7 @@ package cellsociety.model.config;
 
 import cellsociety.logging.Log;
 import cellsociety.model.config.ConfigInfo.SimulationType;
+import cellsociety.model.config.ConfigInfo.cellShapeType;
 import cellsociety.view.controller.LanguageController;
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +81,8 @@ public class ConfigReader {
         DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
     Element root = xmlDocument.getDocumentElement();
 
-    String type = getTextValue(root, "type");
+    String SimType = getTextValue(root, "type");
+    String cellShape = getTextValue(root, "cellShapeType");
     String title = getTextValue(root, "title");
     String author = getTextValue(root, "author");
     String description = getTextValue(root, "description");
@@ -95,7 +97,8 @@ public class ConfigReader {
     checkForInvalidInformation(width, height, acceptedStates, initialGrid);
 
     return new ConfigInfo(
-        SimulationType.valueOf(type.toUpperCase()),
+        SimulationType.valueOf(SimType.toUpperCase()),
+        cellShapeType.valueOf(cellShape.toUpperCase()),
         title,
         author,
         description,

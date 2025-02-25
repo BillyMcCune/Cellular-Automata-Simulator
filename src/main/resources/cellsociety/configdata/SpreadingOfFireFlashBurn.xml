@@ -23,8 +23,9 @@
     
   
   </parameters>
-  
-  
+
+  <cellShapeType>Square</cellShapeType>
+
   <width>8</width>
   
   

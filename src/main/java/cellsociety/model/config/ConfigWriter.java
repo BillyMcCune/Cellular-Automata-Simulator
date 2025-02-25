@@ -113,6 +113,10 @@ public class ConfigWriter {
     typeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myType().toString()));
     rootElement.appendChild(typeElement);
 
+    Element cellShapeElement = xmlDocument.createElement("cellShapeType");
+    cellShapeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myCellShape().toString()));
+    rootElement.appendChild(cellShapeElement);
+
     Element titleElement = xmlDocument.createElement("title");
     titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myTitle()));
     rootElement.appendChild(titleElement);
@@ -267,6 +271,9 @@ public class ConfigWriter {
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
       Transformer transformer = transformerFactory.newTransformer();
       DOMSource source = new DOMSource(xmlDocument);
+
+      transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
       try (FileOutputStream fos = new FileOutputStream(outputFile)) {
         StreamResult result = new StreamResult(fos);

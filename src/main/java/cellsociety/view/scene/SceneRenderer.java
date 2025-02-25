@@ -89,9 +89,6 @@ public class SceneRenderer {
       if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
           GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
 
-        System.out.println(node);
-        System.out.println(allProperties);
-        System.out.println("Row" + row + "Col" + col);
         List<String> propertyKeys = getPropertyKeys(state.getClass().getSimpleName());
         List<String> propertiesToDraw = new ArrayList<>();
         if (allProperties != null && !allProperties.isEmpty()) {
@@ -109,7 +106,6 @@ public class SceneRenderer {
         for (String property : propertiesToDraw) {
           String stateName = state.getClass().getSimpleName() + "." + property;
           ((Rectangle) node).setFill(DEFAULT_CELL_COLORS.get(stateName));
-          System.out.println(DEFAULT_CELL_COLORS.get(stateName));
         }
         return;
       }

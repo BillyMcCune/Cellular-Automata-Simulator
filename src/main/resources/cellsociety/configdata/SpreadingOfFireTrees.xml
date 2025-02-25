@@ -21,7 +21,8 @@
     <doubleParameter name="probTree">10</doubleParameter>
 
   </parameters>
-  
+
+  <cellShapeType>Square</cellShapeType>
   
   <width>24</width>
   

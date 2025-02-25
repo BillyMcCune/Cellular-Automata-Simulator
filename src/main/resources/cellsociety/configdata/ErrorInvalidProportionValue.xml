@@ -8,6 +8,9 @@
     This will result in approximately 40 percent alive cells (state 1) and 60 percent dead cells (state 0).
   </description>
   <parameters></parameters>
+
+  <cellShapeType>Square</cellShapeType>
+
   <width>10</width>
   <height>10</height>
   <defaultSpeed>10</defaultSpeed>

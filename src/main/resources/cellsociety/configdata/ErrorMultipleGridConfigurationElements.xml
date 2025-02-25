@@ -14,12 +14,15 @@
   <description>A default version of the segregation simulation.</description>
 
 
+
   <parameters>
 
     <doubleParameter name="satisfiedThreshold">50</doubleParameter>
 
 
   </parameters>
+
+  <cellShapeType>Square</cellShapeType>
 
 
   <width>10</width>

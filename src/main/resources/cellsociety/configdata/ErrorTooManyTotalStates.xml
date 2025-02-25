@@ -13,6 +13,7 @@
   <parameters>
   </parameters>
 
+  <cellShapeType>Square</cellShapeType>
   <width>5</width>
 
   <height>5</height>

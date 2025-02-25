@@ -12,6 +12,7 @@
     <doubleParameter name="progIgnite">5</doubleParameter>
     <doubleParameter name="probTree">10</doubleParameter>
   </parameters>
+  <cellShapeType>Square</cellShapeType>
   <width>8</width>
   <height>8</height>
   <defaultSpeed>10</defaultSpeed>

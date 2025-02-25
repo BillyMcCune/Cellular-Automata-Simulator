@@ -17,6 +17,8 @@
   <parameters>
   </parameters>
 
+  <cellShapeType>Square</cellShapeType>
+
 
   <width>5</width>
 
