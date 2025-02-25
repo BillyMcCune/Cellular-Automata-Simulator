@@ -6,6 +6,7 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigInfo.cellShapeType;
+import cellsociety.model.config.ConfigInfo.gridEdgeType;
 import cellsociety.model.config.ParameterRecord;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class ConfigInfoTest {
     return new ConfigInfo(
         SimulationType.LIFE,
         cellShapeType.SQUARE,
+        gridEdgeType.BASE,
         "Test Simulation",
         "Test Author",
         "Test Description",
@@ -87,7 +89,8 @@ public class ConfigInfoTest {
     ConfigInfo config1 = createValidConfigInfo();
     ConfigInfo config2 = new ConfigInfo(
         config1.myType(),
-        config1.myCellShape(),
+        config1.myCellShapeType(),
+        config1.myGridEdgeType(),
         "Different Title",// change title
         config1.myAuthor(),
         config1.myDescription(),
@@ -137,6 +140,7 @@ public class ConfigInfoTest {
     ConfigInfo config = new ConfigInfo(
         SimulationType.FIRE,
         cellShapeType.SQUARE,
+        gridEdgeType.BASE,
         "Simulation",
         "Author",
         "Description",

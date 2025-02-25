@@ -6,6 +6,7 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ConfigInfo.cellShapeType;
+import cellsociety.model.config.ConfigInfo.gridEdgeType;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
 import java.io.File;
@@ -43,6 +44,7 @@ public class ConfigWriterTest {
     return new ConfigInfo(
         SimulationType.LIFE,
         cellShapeType.SQUARE,
+        gridEdgeType.BASE,
         "TestTitle",
         "TestAuthor",
         "TestDescription",
@@ -100,7 +102,8 @@ public class ConfigWriterTest {
   public void saveCurrentConfig_ConfigWithNullParameters_ThrowsNullPointerException(@TempDir Path tempDir) {
     ConfigInfo configWithNullParams = new ConfigInfo(
         validConfig.myType(),
-        validConfig.myCellShape(),
+        validConfig.myCellShapeType(),
+        validConfig.myGridEdgeType(),
         validConfig.myTitle(),
         validConfig.myAuthor(),
         validConfig.myDescription(),
@@ -122,7 +125,8 @@ public class ConfigWriterTest {
   public void saveCurrentConfig_ConfigWithNullGrid_ThrowsNullPointerException(@TempDir Path tempDir) {
     ConfigInfo configWithNullGrid = new ConfigInfo(
         validConfig.myType(),
-        validConfig.myCellShape(),
+        validConfig.myCellShapeType(),
+        validConfig.myGridEdgeType(),
         validConfig.myTitle(),
         validConfig.myAuthor(),
         validConfig.myDescription(),
@@ -144,7 +148,8 @@ public class ConfigWriterTest {
   public void saveCurrentConfig_ConfigWithNullAcceptedStates_ThrowsNullPointerException(@TempDir Path tempDir) {
     ConfigInfo configWithNullAcceptedStates = new ConfigInfo(
         validConfig.myType(),
-        validConfig.myCellShape(),
+        validConfig.myCellShapeType(),
+        validConfig.myGridEdgeType(),
         validConfig.myTitle(),
         validConfig.myAuthor(),
         validConfig.myDescription(),

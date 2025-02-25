@@ -28,6 +28,7 @@
   </parameters>
 
   <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
 
 
   <width>40</width>

@@ -114,8 +114,12 @@ public class ConfigWriter {
     rootElement.appendChild(typeElement);
 
     Element cellShapeElement = xmlDocument.createElement("cellShapeType");
-    cellShapeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myCellShape().toString()));
+    cellShapeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myCellShapeType().toString()));
     rootElement.appendChild(cellShapeElement);
+
+    Element gridEdgeElement = xmlDocument.createElement("gridEdgeType");
+    gridEdgeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myGridEdgeType().toString()));
+    rootElement.appendChild(gridEdgeElement);
 
     Element titleElement = xmlDocument.createElement("title");
     titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myTitle()));

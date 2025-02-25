@@ -1,6 +1,5 @@
 package cellsociety.model.config;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +29,8 @@ import java.util.Set;
 
 public record ConfigInfo(
     SimulationType myType,
-    cellShapeType myCellShape,
+    cellShapeType myCellShapeType,
+    gridEdgeType myGridEdgeType,
     String myTitle,
     String myAuthor,
     String myDescription,
@@ -53,9 +53,15 @@ public record ConfigInfo(
   /**
    * Enumeration of supported cell shape types.
    */
-
   public enum cellShapeType {
     SQUARE, TRIANGLE, HEXAGON
+  }
+
+  /**
+   * Enumeration of the supported grid Edge Type
+   */
+  public enum gridEdgeType{
+    BASE, TOROIDAL, MIRROR
   }
 
 }

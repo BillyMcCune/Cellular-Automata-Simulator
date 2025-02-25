@@ -19,6 +19,7 @@
   </parameters>
 
   <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
 
   <width>8</width>
   <height>8</height>
