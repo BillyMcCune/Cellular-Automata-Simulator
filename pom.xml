@@ -187,7 +187,7 @@
                 </executions>
                 <configuration>
                     <rulesets>
-                        <ruleset>.oogasalad.pmd.xml</ruleset>
+                        <ruleset>.cellsociety_pmd.xml</ruleset>
                     </rulesets>
                     <failurePriority>2</failurePriority>
                     <minimumTokens>60</minimumTokens>
@@ -258,7 +258,7 @@
                         </reports>
                         <configuration>
                             <rulesets>
-                                <ruleset>.oogasalad.pmd.xml</ruleset>
+                                <ruleset>.cellsociety_pmd.xml</ruleset>
                             </rulesets>
                             <failurePriority>2</failurePriority>
                             <minimumTokens>60</minimumTokens>
