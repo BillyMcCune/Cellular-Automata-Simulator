@@ -81,8 +81,6 @@ public class BacteriaLogic extends Logic<BacteriaState> {
     double id = cell.getProperty("coloredId");
     double beatingId = (id + 1) % numStates;
 
-    System.out.println(id);
-
     double numBeating = getNumBeating(cell, beatingId);
     int numNeighbors = cell.getNeighbors().size();
     if (numNeighbors != 0 && numBeating / numNeighbors >= beatingThreshold) {

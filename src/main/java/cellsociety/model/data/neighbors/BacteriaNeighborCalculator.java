@@ -1,7 +1,10 @@
 package cellsociety.model.data.neighbors;
 
+import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.State;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains the neighbor calculation/directions for Bacteria Rock Paper Scissors
@@ -16,5 +19,13 @@ public class BacteriaNeighborCalculator<T extends Enum<T> & State> extends Neigh
    */
   public BacteriaNeighborCalculator() {
     super(NeighborCalculator.MOORE);
+  }
+
+  /**
+   * Creates neighbors based off torus grid neighbor assignment.
+   */
+  @Override
+  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
+    return getTorusNeighbors(grid, row, col);
   }
 }
