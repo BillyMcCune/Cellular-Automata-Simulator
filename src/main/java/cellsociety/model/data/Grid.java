@@ -102,6 +102,10 @@ public class Grid<T extends Enum<T> & State> {
     return 0;
   }
 
+  public NeighborCalculator<T> getNeighborCalculator() {
+    return neighborCalculator;
+  }
+
   private void initializeGrid(List<List<CellRecord>> rawGrid, CellFactory<T> factory) {
     for (List<CellRecord> rowStates : rawGrid) {
       List<Cell<T>> newRow = new ArrayList<>();

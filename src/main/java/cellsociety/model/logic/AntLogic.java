@@ -142,7 +142,7 @@ public class AntLogic extends Logic<AntState> {
         double searchingEntities = cell.getProperty("searchingEntities");
         double returningEntities = cell.getProperty("returningEntities");
         List<Direction> validDirections = getValidDirections(
-            AntNeighborCalculator.getDirections(), cell);
+            grid.getNeighborCalculator().getDirections(), cell);
         Direction chosenSearching = getPheromoneWeightedDirection(validDirections, cell,
             "foodPheromone");
         Direction chosenReturning = getPheromoneWeightedDirection(validDirections, cell,
@@ -247,14 +247,14 @@ public class AntLogic extends Logic<AntState> {
     if (chosen != null) {
       return chosen;
     }
-    validDirections = getValidDirections(AntNeighborCalculator.getDirections(), cell);
+    validDirections = getValidDirections(grid.getNeighborCalculator().getDirections(), cell);
     chosen = getPheromoneWeightedDirection(validDirections, cell, pheromoneType);
     return (chosen != null) ? chosen : new Direction(0, 0);
   }
 
   private List<Direction> getPossibleDirections(Direction orientation) {
     if (orientation.toString().equals(new Direction(0, 0).toString())) {
-      return AntNeighborCalculator.getDirections();
+      return grid.getNeighborCalculator().getDirections();
     }
     int dx = orientation.dx();
     int dy = orientation.dy();

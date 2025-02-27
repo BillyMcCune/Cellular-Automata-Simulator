@@ -3,7 +3,6 @@ package cellsociety.model.data.neighbors;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.State;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,10 +21,15 @@ public class BacteriaNeighborCalculator<T extends Enum<T> & State> extends Neigh
   }
 
   /**
-   * Creates neighbors based off torus grid neighbor assignment.
+   * Creates neighbors based off standard grid neighbor assignment.
+   *
+   * @param grid   The Grid to query
+   * @param row    The cell row
+   * @param col    The cell column
    */
   @Override
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    return getTorusNeighbors(grid, row, col);
+    calculateStandardNeighbors(grid, row, col);
+    return getNeighbors();
   }
 }

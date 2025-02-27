@@ -19,7 +19,7 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   private final Map<Cell<BacteriaState>, Double> nextStates = new HashMap<>();
 
   /**
-   * Constructs a {@code FireLogic} instance with the specified grid and parameters.
+   * Constructs a {@code BacteriaLogic} instance with the specified grid and parameters.
    *
    * @param grid       The grid representing the simulation state.
    * @param parameters The parameters defining the probabilities of fire spread, ignition, and tree

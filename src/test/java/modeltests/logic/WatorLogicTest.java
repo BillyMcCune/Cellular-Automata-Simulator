@@ -27,7 +27,7 @@ public class WatorLogicTest {
 
   private final NeighborCalculator<WatorState> neighborCalc = new NeighborCalculator<WatorState>(ORTHOGONAL_DIRECTIONS) {
     @Override
-    public Map<Direction, cellsociety.model.data.cells.Cell<WatorState>> getNeighbors(Grid<WatorState> grid, int row, int col) {
+    public Map<Direction, cellsociety.model.data.cells.Cell<WatorState>> calculateStandardNeighbors(Grid<WatorState> grid, int row, int col) {
       Map<Direction, cellsociety.model.data.cells.Cell<WatorState>> neighbors = new HashMap<>();
       int numRows = grid.getNumRows();
       int numCols = grid.getNumCols();

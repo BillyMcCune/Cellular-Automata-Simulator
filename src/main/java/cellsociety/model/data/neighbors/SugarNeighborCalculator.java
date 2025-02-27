@@ -1,21 +1,56 @@
 package cellsociety.model.data.neighbors;
 
+import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.State;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Contains the neighbor calculation/directions for Segregation
+ * A neighbor calculator that finds only orthogonal neighbors (up, right, down, left)
+ * up to a specified vision distance. Diagonal directions are excluded.
  *
- * @param <T> The State for the simulation
- * @author Jacob You
+ * @param <T> the state for the simulation
  */
+public class SugarNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-public class SugarNeighborCalculator<T extends Enum<T> & State> extends
-    NeighborCalculator<T> {
+  public SugarNeighborCalculator() {
+    super(new int[0][0]);
+  }
 
   /**
-   * Creates a specific NeighborCalculator with the specified directions.
+   * Returns orthogonal neighbors of a cell within a specified vision range, clamping to grid boundaries.
+   * Diagonals are excluded.
+   *
+   * @param grid   The Grid to query
+   * @param row    The cell row
+   * @param col    The cell column
+   * @param vision The vision distance
+   * @return A map from a relative Direction to the neighbor Cell
    */
-  public SugarNeighborCalculator() {
-    super(NeighborCalculator.VONNEUMANN);
+  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col, int vision) {
+    Map<Direction, Cell<T>> neighbors = new HashMap<>();
+    int numRows = grid.getNumRows();
+    int numCols = grid.getNumCols();
+    for (int dist = 1; dist <= vision; dist++) {
+      int upRow = row - dist;
+      int downRow = row + dist;
+      int leftCol = col - dist;
+      int rightCol = col + dist;
+
+      if (upRow >= 0) {
+        neighbors.put(new Direction(-dist, 0), grid.getCell(upRow, col));
+      }
+      if (downRow < numRows) {
+        neighbors.put(new Direction(dist, 0), grid.getCell(downRow, col));
+      }
+      if (leftCol >= 0) {
+        neighbors.put(new Direction(0, -dist), grid.getCell(row, leftCol));
+      }
+      if (rightCol < numCols) {
+        neighbors.put(new Direction(0, dist), grid.getCell(row, rightCol));
+      }
+    }
+    return neighbors;
   }
 }

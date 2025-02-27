@@ -1,7 +1,10 @@
 package cellsociety.model.data.neighbors;
 
+import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.State;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains the neighbor calculation/directions for Falling Sand

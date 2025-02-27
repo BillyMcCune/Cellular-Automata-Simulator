@@ -28,7 +28,7 @@ public class BacteriaLogicTest {
   private final NeighborCalculator<BacteriaState> dummyNeighborCalculator = new NeighborCalculator<BacteriaState>(
       EIGHT_DIRECTIONS) {
     @Override
-    public Map<Direction, Cell<BacteriaState>> getNeighbors(Grid<BacteriaState> grid, int row,
+    public Map<Direction, Cell<BacteriaState>> calculateStandardNeighbors(Grid<BacteriaState> grid, int row,
         int col) {
       Map<Direction, Cell<BacteriaState>> neighbors = new HashMap<>();
       int numRows = grid.getNumRows();
