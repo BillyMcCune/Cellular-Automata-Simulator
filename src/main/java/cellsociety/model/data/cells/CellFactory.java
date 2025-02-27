@@ -11,7 +11,7 @@ import cellsociety.model.data.states.State;
  */
 public class CellFactory<T extends Enum<T> & State> {
 
-  private final Class<T> stateType;
+  private Class<T> stateType;
 
   /**
    * Constructs a new GenericCellFactory.

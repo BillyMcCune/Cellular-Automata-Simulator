@@ -15,12 +15,16 @@ import java.util.Map;
  */
 public class AntNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] directions = NeighborCalculator.MOORE;
-
+  /**
+   * Creates a specific NeighborCalculator with the specified directions
+   */
   public AntNeighborCalculator() {
-    super(directions);
+    super(NeighborCalculator.MOORE);
   }
 
+  /**
+   * Creates neighbors based off torus grid neighbor assignment.
+   */
   @Override
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
     return getTorusNeighbors(grid, row, col);

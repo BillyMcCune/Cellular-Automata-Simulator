@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for the Wator Simulation
+ * Represents the different possible states for the Wator Simulation.
  *
  * @author Jacob You
  */

@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for the Segregation Simulation
+ * Represents the different possible states for the Segregation Simulation.
  *
  * @author Jacob You
  */

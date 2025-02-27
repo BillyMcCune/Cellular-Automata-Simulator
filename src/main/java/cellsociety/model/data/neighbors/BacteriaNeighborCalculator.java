@@ -11,9 +11,10 @@ import java.util.List;
  */
 public class BacteriaNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] directions = NeighborCalculator.MOORE;
-
+  /**
+   * Creates a specific NeighborCalculator with the specified directions.
+   */
   public BacteriaNeighborCalculator() {
-    super(directions);
+    super(NeighborCalculator.MOORE);
   }
 }

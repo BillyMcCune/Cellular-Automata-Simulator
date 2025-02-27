@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for Spreading of Fire
+ * Represents the different possible states for Spreading of Fire.
  *
  * @author Jacob You
  */

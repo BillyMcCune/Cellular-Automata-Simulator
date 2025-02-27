@@ -11,11 +11,14 @@ import java.util.List;
  */
 public class FallingNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] directions = {
+  public static final int[][] FALLING_DIRECTIONS = {
       {1, -1}, {1, 0}, {1, 1}
   };
 
+  /**
+   * Creates a specific NeighborCalculator with the specified directions.
+   */
   public FallingNeighborCalculator() {
-    super(directions);
+    super(FALLING_DIRECTIONS);
   }
 }

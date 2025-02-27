@@ -19,12 +19,12 @@ import java.util.Map;
 public class Grid<T extends Enum<T> & State> {
 
   private Class<?> simulationType;
-  private final NeighborCalculator<T> neighborCalculator;
+  private NeighborCalculator<T> neighborCalculator;
 
   /**
    * The two-dimensional grid of {@link Cell} objects.
    */
-  private final List<List<Cell<T>>> grid = new ArrayList<>();
+  private List<List<Cell<T>>> grid = new ArrayList<>();
 
   /**
    * Constructs a {@code Grid} from a two-dimensional list of states and a cell factory. Each state
@@ -62,7 +62,7 @@ public class Grid<T extends Enum<T> & State> {
    *
    * @param row the dx index of the desired cell
    * @param col the column index of the desired cell
-   * @return the {@link Cell<T>} at the specified position
+   * @return the cell at the specified position
    */
   public Cell<T> getCell(int row, int col) {
     return grid.get(row).get(col);

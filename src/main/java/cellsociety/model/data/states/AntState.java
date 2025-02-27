@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for Foraging Ants
+ * Represents the different possible states for Foraging Ants.
  *
  * @author Jacob You
  */

@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Abstract base class that calculates the neighbors for a (dx, dy) in a Grid. It uses simulation
- * specific directions to calculate these neighbors
+ * specific directions to calculate these neighbors.
  *
  * @author Jacob You
  */
@@ -20,10 +20,20 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
   public static final int[][] MOORE = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   public static final int[][] VONNEUMANN = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
+  /**
+   * Creates a new neighbor calculator, assigning given integers to new direction objects.
+   *
+   * @param directions an array of length-2 arrays indicating coordinates
+   */
   public NeighborCalculator(int[][] directions) {
     NeighborCalculator.directions = intToDirections(directions);
   }
 
+  /**
+   * Returns all the directions of the current NeighborCalculator.
+   *
+   * @return the directions of the NeighborCalculator
+   */
   public static List<Direction> getDirections() {
     return directions;
   }
@@ -43,6 +53,10 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return neighbors;
   }
 
+  /**
+   * Returns a map from a Direction record (dx,dy) to the neighbor Cell, assuming that
+   * the grid loops around.
+   */
   public Map<Direction, Cell<T>> getTorusNeighbors(Grid<T> grid, int row, int col) {
     Map<Direction, Cell<T>> neighbors = new HashMap<>();
     int numRows = grid.getNumRows();
@@ -55,7 +69,7 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return neighbors;
   }
 
-  protected static List<Direction> intToDirections(int[][] directions) {
+  private static List<Direction> intToDirections(int[][] directions) {
     List<Direction> directionList = new ArrayList<>();
     for (int[] dir : directions) {
       directionList.add(new Direction(dir[0], dir[1]));

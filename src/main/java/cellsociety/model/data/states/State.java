@@ -9,6 +9,11 @@ import cellsociety.logging.Log;
  */
 public interface State {
 
+  /**
+   * Returns the integer value of the given state.
+   *
+   * @return the integer value of the given state
+   */
   int getValue();
 
   /**

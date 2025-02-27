@@ -13,16 +13,15 @@ import java.util.Map;
  */
 public class Cell<T extends Enum<T> & State> {
 
-  protected Map<Direction, Cell<T>> neighbors = new HashMap<>();
-  protected T currState;
-  protected T nextState;
-  protected Map<String, Double> properties;
+  private Map<Direction, Cell<T>> neighbors = new HashMap<>();
+  private T currState;
+  private T nextState;
+  private Map<String, Double> properties;
 
   /**
    * Constructs a {@code Cell} with the specified initial state.
    *
    * @param state the initial state of the cell
-   * @author
    */
   public Cell(T state) {
     currState = state;

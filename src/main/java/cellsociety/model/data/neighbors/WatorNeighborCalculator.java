@@ -15,12 +15,16 @@ import java.util.Map;
 
 public class WatorNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
-  private static final int[][] directions = NeighborCalculator.VONNEUMANN;
-
+  /**
+   * Creates a specific NeighborCalculator with the specified directions.
+   */
   public WatorNeighborCalculator() {
-    super(directions);
+    super(NeighborCalculator.VONNEUMANN);
   }
 
+  /**
+   * Creates neighbors based off torus grid neighbor assignment.
+   */
   @Override
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
     return getTorusNeighbors(grid, row, col);

@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for the Percolation Simulation
+ * Represents the different possible states for the Percolation Simulation.
  *
  * @author Jacob You
  */

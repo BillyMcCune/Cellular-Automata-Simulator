@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for SugarScape
+ * Represents the different possible states for SugarScape.
  *
  * @author Jacob You
  */
