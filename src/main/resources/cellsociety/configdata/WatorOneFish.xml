@@ -26,7 +26,7 @@
 
   <cellShapeType>Square</cellShapeType>
   <gridEdgeType>BASE</gridEdgeType>
-  <neighborArrangementType>Moore</neighborArrangementType>
+  <neighborArrangementType>Neumann</neighborArrangementType>
 
 
   <width>5</width>

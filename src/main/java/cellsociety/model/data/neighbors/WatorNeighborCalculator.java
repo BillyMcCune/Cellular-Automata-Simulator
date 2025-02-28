@@ -27,7 +27,6 @@ public class WatorNeighborCalculator<T extends Enum<T> & State> extends Neighbor
    */
   @Override
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    calculateTorusNeighbors(grid, row, col);
-    return getNeighbors();
+    return calculateTorusNeighbors(grid, row, col);
   }
 }

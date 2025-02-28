@@ -16,8 +16,7 @@ import java.util.Map;
  */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
 
-  private List<Direction> directions;
-  private Map<Direction, Cell<T>> neighbors;
+  private final List<Direction> directions;
   public static final int[][] MOORE = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   public static final int[][] VONNEUMANN = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 
@@ -40,15 +39,6 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
   }
 
   /**
-   * Returns the neighbor mapping of the current NeighborCalculator.
-   *
-   * @return the current neighbors
-   */
-  public Map<Direction, Cell<T>> getNeighbors() {
-    return neighbors;
-  }
-
-  /**
    * Base class to be overwritten. By default, selects standard neighbor assignment.
    *
    * @param grid   The Grid to query
@@ -58,14 +48,15 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
    * @return the cell neighbors
    */
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    calculateStandardNeighbors(grid, row, col);
-    return getNeighbors();
+    return calculateStandardNeighbors(grid, row, col);
   }
 
   /**
    * Returns a map from a Direction record (dx,dy) to the neighbor Cell<T>.
+   *
+   * @return the map of neighbors
    */
-  public void calculateStandardNeighbors(Grid<T> grid, int row, int col) {
+  public Map<Direction, Cell<T>> calculateStandardNeighbors(Grid<T> grid, int row, int col) {
     Map<Direction, Cell<T>> neighbors = new HashMap<>();
     for (Direction direction : getDirections()) {
       int nr = row + direction.dy();
@@ -74,7 +65,7 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
         neighbors.put(direction, grid.getCell(nr, nc));
       }
     }
-    this.neighbors = neighbors;
+    return neighbors;
   }
 
   /**

@@ -53,7 +53,7 @@ public class Grid<T extends Enum<T> & State> {
     grid.clear();
     if (rawGrid != null && !rawGrid.isEmpty()) {
       initializeGrid(rawGrid, factory);
-      assignNeighbors();
+      reassignNeighbors();
     }
   }
 
@@ -121,7 +121,11 @@ public class Grid<T extends Enum<T> & State> {
     }
   }
 
-  private void assignNeighbors() {
+  /**
+   * Reinitialize all neighbors according to any new changes that might have happened
+   * in the NeighborCalculator class
+   */
+  public void reassignNeighbors() {
     if (grid.isEmpty()) {
       return;
     }

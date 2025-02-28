@@ -29,7 +29,6 @@ public class BacteriaNeighborCalculator<T extends Enum<T> & State> extends Neigh
    */
   @Override
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    calculateStandardNeighbors(grid, row, col);
-    return getNeighbors();
+    return calculateStandardNeighbors(grid, row, col);
   }
 }

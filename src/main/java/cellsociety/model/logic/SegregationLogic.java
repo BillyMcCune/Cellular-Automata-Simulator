@@ -23,7 +23,8 @@ public class SegregationLogic extends Logic<SegregationState> {
    * @param parameters the parameter record containing simulation-specific configurations
    * @throws IllegalArgumentException if parameters are out of bounds
    */
-  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters) throws IllegalArgumentException {
+  public SegregationLogic(Grid<SegregationState> grid, ParameterRecord parameters)
+      throws IllegalArgumentException {
     super(grid, parameters);
     setSatisfiedThreshold(getDoubleParamOrFallback("satisfiedThreshold"));
 
@@ -64,8 +65,8 @@ public class SegregationLogic extends Logic<SegregationState> {
   }
 
   /**
-   * Updates the next state of a single cell based on its similarity to neighboring cells.
-   * If a cell is unsatisfied, it moves to a random available empty location.
+   * Updates the next state of a single cell based on its similarity to neighboring cells. If a cell
+   * is unsatisfied, it moves to a random available empty location.
    *
    * @param cell the cell to update
    */
@@ -75,7 +76,8 @@ public class SegregationLogic extends Logic<SegregationState> {
       // No empty spaces available, no movement possible
       return;
     }
-    if ((cell.getCurrentState() != SegregationState.OPEN) && (getProportionSimilarNeighbors(cell) < satisfiedThreshold)) {
+    if ((cell.getCurrentState() != SegregationState.OPEN) && (getProportionSimilarNeighbors(cell)
+        < satisfiedThreshold)) {
       int randomEmptyIndex = (int) (Math.random() * empty.size());
       Cell<SegregationState> selectedCell = empty.get(randomEmptyIndex);
 

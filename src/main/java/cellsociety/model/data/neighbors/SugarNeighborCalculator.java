@@ -14,8 +14,14 @@ import java.util.Map;
  */
 public class SugarNeighborCalculator<T extends Enum<T> & State> extends NeighborCalculator<T> {
 
+  private int vision;
+
   public SugarNeighborCalculator() {
     super(new int[0][0]);
+  }
+
+  public void setVision(int vision) {
+    this.vision = vision;
   }
 
   /**
@@ -25,10 +31,13 @@ public class SugarNeighborCalculator<T extends Enum<T> & State> extends Neighbor
    * @param grid   The Grid to query
    * @param row    The cell row
    * @param col    The cell column
-   * @param vision The vision distance
    * @return A map from a relative Direction to the neighbor Cell
    */
-  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col, int vision) {
+  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
+    return calculateSugarNeighbors(grid, row, col);
+  }
+
+  public Map<Direction, Cell<T>> calculateSugarNeighbors(Grid<T> grid, int row, int col) {
     Map<Direction, Cell<T>> neighbors = new HashMap<>();
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();

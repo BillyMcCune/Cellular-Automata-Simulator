@@ -15,6 +15,10 @@
     <doubleParameter name="sugarGrowBackInterval">3</doubleParameter>
   </parameters>
 
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Custom</neighborArrangementType>
+
   <width>5</width>
   <height>5</height>
   <defaultSpeed>10</defaultSpeed>

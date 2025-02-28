@@ -14,7 +14,7 @@ import java.util.List;
  * Sand falling onto water will swap the two, and sand and water movements
  * are handled in separate methods.
  *
- * Author: Jacob You
+ * @author: Jacob You
  */
 public class FallingLogic extends Logic<FallingState> {
 

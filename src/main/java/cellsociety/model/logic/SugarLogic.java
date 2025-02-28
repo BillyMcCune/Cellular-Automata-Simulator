@@ -3,15 +3,20 @@ package cellsociety.model.logic;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.SugarState;
 import cellsociety.model.data.neighbors.SugarNeighborCalculator;
 import cellsociety.model.data.neighbors.Direction;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implements SugarScape logic using a SugarNeighborCalculator for orthogonal neighbor retrieval at
+ * runtime. Agents look for the patch with the most sugar (within vision) and move there, consuming
+ * sugar each tick. Agents store their own sugar in the "agentSugar" property.
+ *
+ * @author Jacob You
+ */
 public class SugarLogic extends Logic<SugarState> {
 
   private double vision;
@@ -19,19 +24,19 @@ public class SugarLogic extends Logic<SugarState> {
   private double sugarGrowBackRate;
   private int sugarGrowBackInterval;
   private int tick;
-  private final Map<Cell<SugarState>, Double> agentSugarMap;
+
   private final List<Cell<SugarState>> agentCells;
   private final List<Cell<SugarState>> patchCells;
-  private Map<Cell<SugarState>, Map<Direction, Cell<SugarState>>> cachedNeighbors;
   private final SugarNeighborCalculator<SugarState> neighborCalc;
 
   /**
-   * Constructs a SugarLogic instance.
-   * Agents move to the patch with the highest sugar within vision and consume sugar.
-   * Sugar on patches regrows every sugarGrowBackInterval ticks.
+   * Constructs a SugarLogic instance. Agents move to the patch with the highest sugar within vision
+   * and consume sugar. Patches regrow sugar every sugarGrowBackInterval ticks.
    *
-   * @param grid the grid representing the simulation state
-   * @param parameters the parameter record containing vision, sugarMetabolism, sugarGrowBackRate, and sugarGrowBackInterval
+   * @param grid       the grid representing the simulation state
+   * @param parameters the parameter record containing vision, sugarMetabolism, sugarGrowBackRate,
+   *                   and sugarGrowBackInterval
+   * @throws IllegalArgumentException if any parameter is out of bounds
    */
   public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters) {
     super(grid, parameters);
@@ -40,20 +45,16 @@ public class SugarLogic extends Logic<SugarState> {
     setSugarMetabolism(getDoubleParamOrFallback("sugarMetabolism"));
     setSugarGrowBackRate(getDoubleParamOrFallback("sugarGrowBackRate"));
     setSugarGrowBackInterval((int) getDoubleParamOrFallback("sugarGrowBackInterval"));
+
     tick = 0;
-    agentSugarMap = new HashMap<>();
     agentCells = new ArrayList<>();
     patchCells = new ArrayList<>();
-    cachedNeighbors = new HashMap<>();
     initializeCells();
-    recalcNeighbors();
   }
 
   /**
-   * Updates the simulation by growing sugar (if applicable) and updating agent cells.
-   * Then, the grid is updated to apply all next states.
-   *
-   * @return void
+   * Updates the simulation each tick by regrowing sugar (if needed) and updating every agent cell.
+   * Then, applies next states to the grid.
    */
   @Override
   public void update() {
@@ -61,58 +62,80 @@ public class SugarLogic extends Logic<SugarState> {
     if (tick % sugarGrowBackInterval == 0) {
       growSugar();
     }
-    List<Cell<SugarState>> currentAgents = new ArrayList<>(agentCells);
-    for (Cell<SugarState> cell : currentAgents) {
-      updateSingleCell(cell);
+    List<Cell<SugarState>> currentAgentCells = new ArrayList<>(agentCells);
+    for (Cell<SugarState> agentCell : currentAgentCells) {
+      updateSingleCell(agentCell);
     }
     grid.updateGrid();
   }
 
   /**
-   * Updates a single agent cell by moving it to the best neighboring patch if available;
-   * otherwise, the agent loses sugar due to metabolism.
+   * Updates a single cell that contains an agent: the agent tries to find the best patch with the
+   * most sugar, moves and consumes sugar, or else remains and loses sugar through metabolism.
    *
-   * @param cell the cell containing the agent to update
-   * @return void
+   * @param cell the cell containing the agent
    */
   @Override
   protected void updateSingleCell(Cell<SugarState> cell) {
     if (cell.getCurrentState() != SugarState.AGENT) {
       return;
     }
-    Map<Direction, Cell<SugarState>> neighbors = cachedNeighbors.get(cell);
-    Cell<SugarState> target = findBestPatch(neighbors);
-    if (target != null && target != cell) {
-      moveAgent(cell, target);
+    Cell<SugarState> bestPatch = findBestPatch(cell);
+    if (bestPatch != null && bestPatch != cell) {
+      moveAgent(cell, bestPatch);
     } else {
-      double agentSugar = agentSugarMap.get(cell);
+      double agentSugar = cell.getProperty("agentSugar");
       agentSugar -= sugarMetabolism;
       if (agentSugar <= 0) {
         cell.setNextState(SugarState.EMPTY);
-        agentSugarMap.remove(cell);
         agentCells.remove(cell);
+        cell.setProperty("agentSugar", 0);
       } else {
-        agentSugarMap.put(cell, agentSugar);
+        cell.setProperty("agentSugar", agentSugar);
       }
     }
   }
 
+  /**
+   * Returns the current vision parameter.
+   *
+   * @return the vision distance for agent perception
+   */
   public double getVision() {
     return vision;
   }
 
+  /**
+   * Sets the vision distance and checks bounds.
+   *
+   * @param vision the new vision distance
+   * @throws IllegalArgumentException if vision is out of valid range
+   */
   public void setVision(double vision) {
     double min = getMinParam("vision");
     double max = getMaxParam("vision");
     checkBounds(vision, min, max);
     this.vision = vision;
-    recalcNeighbors();
+    // TODO: Map string to everything else instead inside the neighbor calc thing
+    ((SugarNeighborCalculator<SugarState>) grid.getNeighborCalculator()).setVision((int) vision);
+    grid.reassignNeighbors();
   }
 
+  /**
+   * Returns the current sugar metabolism value.
+   *
+   * @return the sugar metabolism (amount lost per tick)
+   */
   public double getSugarMetabolism() {
     return sugarMetabolism;
   }
 
+  /**
+   * Sets the sugar metabolism value, checking parameter bounds.
+   *
+   * @param sugarMetabolism the new sugarMetabolism
+   * @throws IllegalArgumentException if sugarMetabolism is out of valid range
+   */
   public void setSugarMetabolism(double sugarMetabolism) {
     double min = getMinParam("sugarMetabolism");
     double max = getMaxParam("sugarMetabolism");
@@ -120,10 +143,21 @@ public class SugarLogic extends Logic<SugarState> {
     this.sugarMetabolism = sugarMetabolism;
   }
 
+  /**
+   * Returns the sugar grow-back rate.
+   *
+   * @return sugarGrowBackRate
+   */
   public double getSugarGrowBackRate() {
     return sugarGrowBackRate;
   }
 
+  /**
+   * Sets the sugar grow-back rate, checking parameter bounds.
+   *
+   * @param sugarGrowBackRate new sugarGrowBackRate
+   * @throws IllegalArgumentException if out of valid range
+   */
   public void setSugarGrowBackRate(double sugarGrowBackRate) {
     double min = getMinParam("sugarGrowBackRate");
     double max = getMaxParam("sugarGrowBackRate");
@@ -131,10 +165,21 @@ public class SugarLogic extends Logic<SugarState> {
     this.sugarGrowBackRate = sugarGrowBackRate;
   }
 
+  /**
+   * Returns the sugar grow-back interval.
+   *
+   * @return sugarGrowBackInterval
+   */
   public int getSugarGrowBackInterval() {
     return sugarGrowBackInterval;
   }
 
+  /**
+   * Sets the sugar grow-back interval, checking parameter bounds.
+   *
+   * @param sugarGrowBackInterval new sugarGrowBackInterval
+   * @throws IllegalArgumentException if out of valid range
+   */
   public void setSugarGrowBackInterval(int sugarGrowBackInterval) {
     double min = getMinParam("sugarGrowBackInterval");
     double max = getMaxParam("sugarGrowBackInterval");
@@ -142,35 +187,23 @@ public class SugarLogic extends Logic<SugarState> {
     this.sugarGrowBackInterval = sugarGrowBackInterval;
   }
 
-  private void recalcNeighbors() {
-    cachedNeighbors.clear();
-    for (int r = 0; r < grid.getNumRows(); r++) {
-      for (int c = 0; c < grid.getNumCols(); c++) {
-        Cell<SugarState> cell = grid.getCell(r, c);
-        SugarNeighborCalculator<SugarState> calc = (SugarNeighborCalculator<SugarState>) grid.getNeighborCalculator();
-        cachedNeighbors.put(cell, calc.getNeighbors(grid, r, c, (int) vision));
-      }
-    }
-  }
-
   private void initializeCells() {
-    for (int r = 0; r < grid.getNumRows(); r++) {
-      for (int c = 0; c < grid.getNumCols(); c++) {
+    int rows = grid.getNumRows();
+    int cols = grid.getNumCols();
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < cols; c++) {
         Cell<SugarState> cell = grid.getCell(r, c);
-        if (cell.getProperty("sugarAmount") == 0.0 && cell.getProperty("maxSugar") == 0.0) {
-          cell.setProperty("sugarAmount", 5.0);
-          cell.setProperty("maxSugar", 10.0);
+        double maxSugar = cell.getProperty("maxSugar");
+        if (maxSugar != 0) {
+          patchCells.add(cell);
         }
         if (cell.getCurrentState() == SugarState.AGENT) {
           agentCells.add(cell);
-          double initialAgentSugar = cell.getProperty("agentSugar");
-          if (initialAgentSugar == 0.0) {
-            initialAgentSugar = 10.0;
-            cell.setProperty("agentSugar", initialAgentSugar);
+          double currentAgentSugar = cell.getProperty("agentSugar");
+          if (currentAgentSugar == 0.0) {
+            currentAgentSugar = 10.0;
+            cell.setProperty("agentSugar", currentAgentSugar);
           }
-          agentSugarMap.put(cell, initialAgentSugar);
-        } else {
-          patchCells.add(cell);
         }
       }
     }
@@ -185,16 +218,16 @@ public class SugarLogic extends Logic<SugarState> {
     }
   }
 
-  private Cell<SugarState> findBestPatch(Map<Direction, Cell<SugarState>> neighbors) {
+  private Cell<SugarState> findBestPatch(Cell<SugarState> agentCell) {
     double bestSugar = -1;
     int bestDistance = Integer.MAX_VALUE;
     Cell<SugarState> bestPatch = null;
-    for (Map.Entry<Direction, Cell<SugarState>> entry : neighbors.entrySet()) {
+    for (Map.Entry<Direction, Cell<SugarState>> entry : agentCell.getNeighbors().entrySet()) {
       Direction dir = entry.getKey();
       Cell<SugarState> candidate = entry.getValue();
       if (candidate.getCurrentState() == SugarState.EMPTY) {
         double sugar = candidate.getProperty("sugarAmount");
-        int distance = Math.abs(dir.dx() + dir.dy());
+        int distance = Math.abs(dir.dx()) + Math.abs(dir.dy());
         if (sugar > bestSugar || (sugar == bestSugar && distance < bestDistance)) {
           bestSugar = sugar;
           bestDistance = distance;
@@ -206,23 +239,21 @@ public class SugarLogic extends Logic<SugarState> {
   }
 
   private void moveAgent(Cell<SugarState> from, Cell<SugarState> to) {
-    double agentSugar = agentSugarMap.get(from);
+    double agentSugar = from.getProperty("agentSugar");
     double patchSugar = to.getProperty("sugarAmount");
     agentSugar += patchSugar;
     to.setProperty("sugarAmount", 0.0);
     agentSugar -= sugarMetabolism;
     if (agentSugar <= 0) {
-      from.setNextState(SugarState.EMPTY);
       to.setNextState(SugarState.EMPTY);
-      agentSugarMap.remove(from);
       agentCells.remove(from);
     } else {
-      from.setNextState(SugarState.EMPTY);
       to.setNextState(SugarState.AGENT);
-      agentSugarMap.remove(from);
-      agentSugarMap.put(to, agentSugar);
       agentCells.remove(from);
       agentCells.add(to);
+      to.setProperty("agentSugar", agentSugar);
     }
+    from.setNextState(SugarState.EMPTY);
+    from.setProperty("agentSugar", 0.0);
   }
 }
