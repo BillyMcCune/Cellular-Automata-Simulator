@@ -11,7 +11,10 @@ import cellsociety.view.controller.ThemeController.UIComponent;
 import cellsociety.view.controller.SceneController;
 import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
+import cellsociety.view.renderer.drawer.GridDrawer;
+import cellsociety.view.renderer.SceneRenderer;
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -48,7 +51,7 @@ public class SimulationScene {
 
   // UI components
   private Button startPauseButton;
-  private GridPane grid;
+  private Pane grid;
   private VBox parameterBox;
   private ComboBox<String> selectType;
   private TextField directoryField;
@@ -150,8 +153,7 @@ public class SimulationScene {
   /* PRIVATE UI SETUP METHODS */
 
   private Pane createGrid() {
-    grid = new GridPane();
-    grid.setGridLinesVisible(false);
+    grid = new Pane();
     grid.getStyleClass().add("grid-panel");
     grid.setOpacity(0);
 
@@ -418,9 +420,11 @@ public class SimulationScene {
 
   private void toggleBorderCallback(boolean showBorder) {
     doShowBorder = showBorder;
+    List<Node> children = grid.getChildren();
 
-    for (Node node : grid.getChildren()) {
-      ((Shape) node).setStrokeWidth(showBorder ? SceneRenderer.DEFAULT_BORDER_SIZE : 0);
+    // The last child is the boundary
+    for (int i = 0; i < children.size() - 1; i++) {
+      ((Shape) children.get(i)).setStrokeWidth(showBorder ? GridDrawer.DEFAULT_BORDER_SIZE : 0);
     }
   }
 
@@ -448,8 +452,8 @@ public class SimulationScene {
    * @param col the column of the cell
    * @param state the state of the cell
    */
-  public void setCell(int row, int col, Enum<?> state) {
-    SceneRenderer.drawCell(grid, row, col, state);
+  public void setCell(int rowCount, int row, int col, Enum<?> state) {
+    SceneRenderer.drawCell(grid, rowCount, row, col, state);
   }
 
   /**

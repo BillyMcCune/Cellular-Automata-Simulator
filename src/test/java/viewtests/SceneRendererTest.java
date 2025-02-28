@@ -2,13 +2,13 @@ package viewtests;
 
 import cellsociety.model.data.states.FireState;
 import cellsociety.model.data.states.LifeState;
-import cellsociety.view.scene.SceneRenderer;
+import cellsociety.view.renderer.SceneRenderer;
 import java.util.Map;
 import javafx.scene.layout.GridPane;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for the {@link cellsociety.view.scene.SceneRenderer} class.
+ * Tests for the {@link SceneRenderer} class.
  *
  * @author Hsuan-Kai Liao
  */
@@ -24,7 +24,7 @@ public class SceneRendererTest {
   public void DrawCell_GridPaneAndCellPosition_CellIsDrawn() {
     GridPane gridPane = new GridPane();
     SceneRenderer.drawGrid(gridPane, 10, 10);
-    SceneRenderer.drawCell(gridPane, 0, 0, LifeState.ALIVE);
+    SceneRenderer.drawCell(gridPane, 0, 0, 0, LifeState.ALIVE);
   }
 
   @Test

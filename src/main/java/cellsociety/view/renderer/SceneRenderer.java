@@ -1,6 +1,10 @@
-package cellsociety.view.scene;
+package cellsociety.view.renderer;
 
 import cellsociety.logging.Log;
+import cellsociety.view.renderer.drawer.GridDrawer;
+import cellsociety.view.renderer.drawer.HexagonGridDrawer;
+import cellsociety.view.renderer.drawer.SquareGridDrawer;
+import cellsociety.view.renderer.drawer.TriangleGridDrawer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,12 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
+import javafx.scene.shape.Shape;
 
 /**
  * The SceneRenderer class is responsible for rendering the simulation scene. It provides methods to
@@ -23,10 +27,6 @@ import javafx.scene.shape.StrokeType;
  */
 public class SceneRenderer {
 
-  public static final Color DEFAULT_BACKGROUND_COLOR = Color.DIMGRAY;
-  public static final Color DEFAULT_BORDER_COLOR = Color.LIGHTGRAY;
-  public static final int DEFAULT_CELL_SIZE = 20;
-  public static final int DEFAULT_BORDER_SIZE = 1;
   public static final String PROPERTY_TO_DETECT = "coloredId";
   private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
 
@@ -34,28 +34,21 @@ public class SceneRenderer {
   public static final String DEFAULT_CELL_COLORS_FILE = "cellsociety/property/CellColor.properties";
   public static final Map<String, Color> DEFAULT_CELL_COLORS = loadCellColorProperties();
 
+  // Private
+  // TODO: Make this configurable
+  private static Class<? extends GridDrawer> gridDrawerClass = TriangleGridDrawer.class;
+
   /* PUBLIC METHODS */
 
   /**
-   * Draw a grid on the given GridPane with the given number of rows and columns.
-   * @param grid The grid to draw on
+   * Draw the grid on the given pane with the given number of rows and columns.
+   *
+   * @param pane      The pane to draw the grid on
    * @param numOfRows The number of rows in the grid
    * @param numOfCols The number of columns in the grid
    */
-  public static void drawGrid(GridPane grid, int numOfRows, int numOfCols) {
-    grid.getChildren().clear();
-
-    for (int i = 0; i < numOfCols; i++) {
-      for (int j = 0; j < numOfRows; j++) {
-        Rectangle square = new Rectangle(DEFAULT_CELL_SIZE, DEFAULT_CELL_SIZE);
-        square.setFill(DEFAULT_BACKGROUND_COLOR);
-        square.setStroke(DEFAULT_BORDER_COLOR);
-        square.setStrokeType(StrokeType.INSIDE);
-        square.setStrokeWidth(DEFAULT_BORDER_SIZE);
-        GridPane.setMargin(square, new Insets(0));
-        grid.add(square, i, j);
-      }
-    }
+  public static void drawGrid(Pane pane, int numOfRows, int numOfCols) {
+    GridDrawer.drawGrid(pane, numOfRows, numOfCols, gridDrawerClass);
   }
 
   /**
@@ -67,20 +60,14 @@ public class SceneRenderer {
    * @param col   The column of the cell
    * @param state The state of the cell
    */
-  public static void drawCell(GridPane grid, int row, int col, Enum<?> state) {
-    for (Node node : grid.getChildren()) {
-      if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null &&
-          GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
-
-        String stateName = state.getClass().getSimpleName() + "." + state.name();
-        Color cellColor = DEFAULT_CELL_COLORS.get(stateName);
-        if (cellColor == null) {
-          return;
-        }
-        ((Rectangle) node).setFill(cellColor);
-        return;
-      }
+  public static void drawCell(Pane grid, int rowCount, int row, int col, Enum<?> state) {
+    Node node = grid.getChildren().get(rowCount * row + col);
+    String stateName = state.getClass().getSimpleName() + "." + state.name();
+    Color cellColor = DEFAULT_CELL_COLORS.get(stateName);
+    if (cellColor == null) {
+      return;
     }
+    ((Shape) node).setFill(cellColor);
   }
 
   /**
@@ -92,7 +79,7 @@ public class SceneRenderer {
    * @param state         The state of the cell
    * @param allProperties The properties of the cell
    */
-  public static void drawParameters(GridPane grid, int row, int col, Enum<?> state,
+  public static void drawParameters(Pane grid, int row, int col, Enum<?> state,
       Map<String, Double> allProperties) {
     for (Node node : grid.getChildren()) {
 

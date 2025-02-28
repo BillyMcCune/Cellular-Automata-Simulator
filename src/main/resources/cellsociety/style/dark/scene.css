@@ -55,9 +55,7 @@
    ========================== */
 
 .grid-panel {
-  -fx-border-color: #1e1e1e;
-  -fx-border-style: solid;
-  -fx-border-width: 4px;
+  -fx-border-color: transparent;
 }
 
 /* ==========================

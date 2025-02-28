@@ -75,7 +75,7 @@ public class SceneController {
     if (!isPaused) {
       for (int i = 0; i < grid.getNumRows(); i++) {
         for (int j = 0; j < grid.getNumCols(); j++) {
-          simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
+          simulationScene.setCell(grid.getNumCols(), i, j, grid.getCell(i, j).getCurrentState());
           simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(), grid.getCell(i, j).getAllProperties());
         }
       }
@@ -334,7 +334,7 @@ public class SceneController {
     simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
-        simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
+        simulationScene.setCell(grid.getNumCols(), i, j, grid.getCell(i, j).getCurrentState());
         simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(), grid.getCell(i, j).getAllProperties());
       }
     }
