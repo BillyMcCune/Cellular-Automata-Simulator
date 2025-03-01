@@ -4,12 +4,15 @@ import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,15 +53,7 @@ public class modelAPI {
     if (grid == null || gameLogic == null) {
       return;
     }
-
-    for (int i = 0; i < grid.getNumRows(); i++) {
-      for (int j = 0; j < grid.getNumCols(); j++) {
-//        simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
-//        simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(),
-        //   grid.getCell(i, j).getAllProperties());
         gameLogic.update();
-      }
-    }
   }
 
 
@@ -264,9 +259,46 @@ public class modelAPI {
     }
   }
 
-  public Grid<?> getGrid() {
-    return grid;
+  /**
+   * Retrieves the states of the cells in the grid.
+   *
+   * @return a 2D list of integers representing each cell's state.
+   */
+  public List<List<Integer>> getCellStates() {
+    List<List<Integer>> cellStates = new ArrayList<>();
+    if (grid == null) {
+      return cellStates;
+    }
+    for (int i = 0; i < grid.getNumRows(); i++) {
+      List<Integer> rowStates = new ArrayList<>();
+      for (int j = 0; j < grid.getNumCols(); j++) {
+        Cell<?> cell = grid.getCell(i, j);
+        rowStates.add(cell.getCurrentState().getValue());
+      }
+      cellStates.add(rowStates);
+    }
+    return cellStates;
   }
 
-
+  /**
+   * Retrieves the properties of the cells in the grid.
+   *
+   * @return a 2D list where each inner list contains a map of cell properties (property name to value).
+   */
+  public List<List<Map<String, Double>>> getCellProperties() {
+    List<List<Map<String, Double>>> cellProperties = new ArrayList<>();
+    if (grid == null) {
+      return cellProperties;
+    }
+    for (int i = 0; i < grid.getNumRows(); i++) {
+      List<Map<String, Double>> rowProperties = new ArrayList<>();
+      for (int j = 0; j < grid.getNumCols(); j++) {
+        // Assuming grid.getCell returns an instance of Cell with a getAllProperties method.
+        Cell<?> cell = grid.getCell(i, j);
+        rowProperties.add(cell.getAllProperties());
+      }
+      cellProperties.add(rowProperties);
+    }
+    return cellProperties;
+  }
 }

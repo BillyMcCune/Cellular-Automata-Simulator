@@ -5,7 +5,6 @@ import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.modelAPI.modelAPI;
 import java.io.IOException;
@@ -26,7 +25,8 @@ public class configAPI {
   private ParameterRecord parameterRecord;
   private boolean isLoaded;
   private modelAPI myModelAPI;
-  private Grid<?> myGrid;
+  private List<List<Integer>> myGridStates;
+  private List<List<Map<String,Double>>> myGridProperties;
 
   /**
    * Retrieves a list of available configuration file names.
@@ -81,13 +81,13 @@ public class configAPI {
       throws ParserConfigurationException, IOException, TransformerException {
     configWriter = new ConfigWriter();
     //Save the grid dataGrid<?>
-    myGrid = myModelAPI.getGrid();
+    myGridStates = myModelAPI.getCellStates();
+    myGridProperties = myModelAPI.getCellProperties();
     List<List<CellRecord>> gridData = new ArrayList<>();
-    for (int i = 0; i < myGrid.getNumRows(); i++) {
+    for (int i = 0; i < myGridStates.size(); i++) {
       List<CellRecord> row = new ArrayList<>();
-      for (int j = 0; j < myGrid.getNumCols(); j++) {
-        Cell<?> cell = myGrid.getCell(i, j);
-        row.add(new CellRecord(cell.getCurrentState().getValue(), cell.getAllProperties()));
+      for (int j = 0; j < myGridStates.get(i).size(); j++) {
+        row.add(new CellRecord(myGridStates.get(i).get(j), myGridProperties.get(i).get(j)));
       }
       gridData.add(row);
     }
@@ -106,8 +106,8 @@ public class configAPI {
         configInfo.myTitle(),
         configInfo.myAuthor(),
         configInfo.myDescription(),
-        myGrid.getNumCols(),
-        myGrid.getNumRows(),
+        gridData.getFirst().size(),
+        gridData.size(),
         configInfo.myTickSpeed(),
         gridData,
         parameters,
