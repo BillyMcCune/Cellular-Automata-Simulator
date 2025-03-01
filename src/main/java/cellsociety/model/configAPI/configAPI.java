@@ -116,16 +116,17 @@ public class configAPI {
   }
 
   public Map<String, String> getSimulationInformation() {
-    if (configInfo == null) {
-      return new HashMap<>();
+    try {
+      HashMap<String, String> simulationDetails = new HashMap<>();
+      simulationDetails.put("author", configInfo.myAuthor());
+      simulationDetails.put("title", configInfo.myTitle());
+      simulationDetails.put("type", configInfo.myType().toString());
+      simulationDetails.put("description", configInfo.myDescription());
+      return simulationDetails;
     }
-    HashMap<String, String> simulationDetails = new HashMap<>();
-    simulationDetails.put("author", configInfo.myAuthor());
-    simulationDetails.put("title", configInfo.myTitle());
-    simulationDetails.put("type", configInfo.myType().toString());
-    simulationDetails.put("description", configInfo.myDescription());
-
-    return simulationDetails;
+    catch (NullPointerException e) {
+      throw new NullPointerException("error-configInfo-NULL");
+    }
   }
 
 
