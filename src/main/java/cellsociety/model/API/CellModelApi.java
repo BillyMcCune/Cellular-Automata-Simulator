@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 /**
  * @author Billy McCune
  */
+//TODO figure out config not loaded error code stuff
 public class CellModelApi {
 
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
@@ -291,11 +292,25 @@ public class CellModelApi {
    * @throws NumberFormatException if the configuration information is not loaded
    */
   public int getGridWidth() {
-    return 0;
+    try {
+      return configInfo.myGridWidth();
+    } catch (NullPointerException e) {
+      throw new NumberFormatException("error-configInfo-NULL");
+    }
   }
 
+  /**
+   * Retrieves the grid height from the configuration
+   *
+   * @return the grid height
+   * @throws NumberFormatException if the configuration information is not loaded
+   */
   public int getGridHeight() {
-    return 0;
+    try {
+      return configInfo.myGridHeight();
+    } catch (NullPointerException e) {
+      throw new NumberFormatException("error-configInfo-NULL");
+    }
   }
 
   public double getConfigSpeed() {
