@@ -298,6 +298,15 @@ public class CellModelApi {
     return 0;
   }
 
+  public double getConfigSpeed() {
+    try {
+      return configInfo.myTickSpeed();
+    } catch (NullPointerException e) {
+      throw new NumberFormatException("error-configInfo-NULL");
+    }
+  }
+
+
   public String getCellColor(int row, int col) {
     return null;
   }
