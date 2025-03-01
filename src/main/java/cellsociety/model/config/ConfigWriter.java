@@ -53,7 +53,7 @@ public class ConfigWriter {
    * @throws Exception if an error occurs during saving
    */
   public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
-      throws Exception {
+      throws NullPointerException, ParserConfigurationException, IOException, TransformerException {
     if (myNewConfigInfo == null) {
       throw new NullPointerException("error-nullConfigInfo");
     }
