@@ -2,38 +2,27 @@ package cellsociety.model.modelAPI;
 
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
-import cellsociety.model.config.ConfigReader;
-import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.xml.sax.SAXException;
 
 /**
  * @author Billy McCune
  */
 //TODO figure out config not loaded error code stuff
-public class ModelAPI {
+public class modelAPI {
 
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
   private static final String STATE_PACKAGE = "cellsociety.model.data.states";
   private static final String NEIGHBOR_PACKAGE = "cellsociety.model.data.neighbors";
-  private ConfigReader configReader;
-  private ConfigWriter configWriter;
-  private ConfigInfo configInfo;
   private ParameterRecord parameterRecord;
+  private ConfigInfo configInfo;
 
   // Model
   private Grid<?> grid;
@@ -45,6 +34,11 @@ public class ModelAPI {
   private boolean isLoaded;
 
 
+
+  public void setConfiginfo(ConfigInfo configInfo) {
+     this.configInfo = configInfo;
+     this.parameterRecord = configInfo.myParameters();
+  }
   /**
    * Updates the simulation by invoking the game logic update method.
    * <p>
@@ -90,7 +84,7 @@ public class ModelAPI {
 
       //initialize the game logic instance using the grid and parameters
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
-          .newInstance(grid, configInfo.myParameters());
+          .newInstance(grid, parameterRecord);
     } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
              InstantiationException | IllegalAccessException e) {
       throw new ClassNotFoundException("error-resetGrid", e);
@@ -125,6 +119,7 @@ public class ModelAPI {
    * @param value     the new double value
    * @throws IllegalStateException if the game logic has not been initialized
    */
+  //TODO implement error messages
   public void setDoubleParameter(String paramName, Double value) {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic has not been initialized.");
@@ -159,7 +154,6 @@ public class ModelAPI {
    * @throws NumberFormatException if there is an error related to a null configuration
    */
   public void setStringParameter(String paramName, String value) {
-
     if (parameterRecord == null) {
       parameterRecord = configInfo.myParameters();
     }
