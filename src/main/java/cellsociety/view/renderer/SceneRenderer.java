@@ -3,7 +3,6 @@ package cellsociety.view.renderer;
 import cellsociety.logging.Log;
 import cellsociety.view.renderer.drawer.GridDrawer;
 import cellsociety.view.renderer.drawer.HexagonGridDrawer;
-import cellsociety.view.renderer.drawer.SquareGridDrawer;
 import cellsociety.view.renderer.drawer.TriangleGridDrawer;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +35,7 @@ public class SceneRenderer {
 
   // Private
   // TODO: Make this configurable
-  private static Class<? extends GridDrawer> gridDrawerClass = TriangleGridDrawer.class;
+  private static Class<? extends GridDrawer> gridDrawerClass = HexagonGridDrawer.class;
 
   /* PUBLIC METHODS */
 
