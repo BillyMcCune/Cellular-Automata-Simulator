@@ -34,11 +34,11 @@ public class modelAPI {
   private boolean isLoaded;
 
 
-
   public void setConfiginfo(ConfigInfo configInfo) {
-     this.configInfo = configInfo;
-     this.parameterRecord = configInfo.myParameters();
+    this.configInfo = configInfo;
+    this.parameterRecord = configInfo.myParameters();
   }
+
   /**
    * Updates the simulation by invoking the game logic update method.
    * <p>
@@ -56,7 +56,6 @@ public class modelAPI {
 //        simulationScene.setCell(i, j, grid.getCell(i, j).getCurrentState());
 //        simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(),
         //   grid.getCell(i, j).getAllProperties());
-
         gameLogic.update();
       }
     }
@@ -263,6 +262,10 @@ public class modelAPI {
              IllegalAccessException e) {
       throw new RuntimeException("error-resetModel");
     }
+  }
+
+  public Grid<?> getGrid() {
+    return grid;
   }
 
 

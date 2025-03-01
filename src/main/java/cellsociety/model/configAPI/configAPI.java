@@ -1,13 +1,14 @@
 package cellsociety.model.configAPI;
 
+import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
+import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.modelAPI.modelAPI;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +17,6 @@ import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
-import cellsociety.model.config.CellRecord;
-import cellsociety.model.data.Grid;
 
 public class configAPI {
 
@@ -28,6 +27,7 @@ public class configAPI {
   private boolean isLoaded;
   private modelAPI myModelAPI;
   private Grid<?> myGrid;
+
   /**
    * Retrieves a list of available configuration file names.
    *
@@ -77,32 +77,28 @@ public class configAPI {
   public String saveSimulation(String FilePath)
       throws ParserConfigurationException, IOException, TransformerException {
     configWriter = new ConfigWriter();
-     //Save the grid data
-   List<List<CellRecord>> gridData = new ArrayList<>();
-   for (int i = 0; i < myGrid.getNumRows(); i++) {
-     List<CellRecord> row = new ArrayList<>();
-        for (int j = 0; j < myGrid.getNumCols(); j++) {
+    //Save the grid dataGrid<?>
+    myGrid = myModelAPI.getGrid();
+    List<List<CellRecord>> gridData = new ArrayList<>();
+    for (int i = 0; i < myGrid.getNumRows(); i++) {
+      List<CellRecord> row = new ArrayList<>();
+      for (int j = 0; j < myGrid.getNumCols(); j++) {
         Cell<?> cell = myGrid.getCell(i, j);
-           row.add(new CellRecord(cell.getCurrentState().getValue(), cell.getAllProperties()));
-        }
-       gridData.add(row);
+        row.add(new CellRecord(cell.getCurrentState().getValue(), cell.getAllProperties()));
       }
+      gridData.add(row);
+    }
 
-      // Save the parameters
-        Map<String, Double> doubleParams = new HashMap<>();
-        Map<String, String> stringParams = new HashMap<>();
+    Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
+    Map<String, String> stringParams = myModelAPI.getStringParameters();
 
-        doubleParams = myModelAPI.getDoubleParameters();
-        stringParams = myModelAPI.getStringParameters();
+    ParameterRecord parameters = new ParameterRecord(doubleParams, stringParams);
 
-      ParameterRecord parameters = new ParameterRecord(doubleParams, stringParams);
-
-
-      // TODO: Make user input for title, author, description
-      ConfigInfo savedConfigInfo =  new ConfigInfo(
-          configInfo.myType(),
-          configInfo.myCellShapeType(),
-          configInfo.myGridEdgeType(),
+    // TODO: Make user input for title, author, description
+    ConfigInfo savedConfigInfo = new ConfigInfo(
+        configInfo.myType(),
+        configInfo.myCellShapeType(),
+        configInfo.myGridEdgeType(),
         configInfo.myneighborArrangementType(),
         configInfo.myTitle(),
         configInfo.myAuthor(),
@@ -170,12 +166,10 @@ public class configAPI {
       simulationDetails.put("type", configInfo.myType().toString());
       simulationDetails.put("description", configInfo.myDescription());
       return simulationDetails;
-    }
-    catch (NullPointerException e) {
+    } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
     }
   }
-
 
 
   public Map<String, String> getSimulationStyles() {
