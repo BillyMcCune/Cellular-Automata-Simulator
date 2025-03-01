@@ -8,6 +8,7 @@ import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
@@ -295,10 +296,7 @@ public class SceneUIWidget {
       content.relocate(offsetX, offsetY);
     });
 
-    final double[] scale = {1.0};
-    pane.setOnZoom(event -> {
-      double zoomFactor = event.getZoomFactor();
-
+    BiConsumer<Double, double[]> zoomContent = (zoomFactor, scale) -> {
       scale[0] *= zoomFactor;
       int signX = content.getScaleX() < 0 ? -1 : 1;
       int signY = content.getScaleY() < 0 ? -1 : 1;
@@ -308,20 +306,16 @@ public class SceneUIWidget {
 
       content.setScaleX(signX * scale[0]);
       content.setScaleY(signY * scale[0]);
+    };
+
+    double[] scale = {1.0};
+    pane.setOnZoom(event -> {
+      double zoomFactor = event.getZoomFactor();
+      zoomContent.accept(zoomFactor, scale);
     });
     pane.setOnScroll(event -> {
       double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
-
-      scale[0] *= zoomFactor;
-      int signX = content.getScaleX() < 0 ? -1 : 1;
-      int signY = content.getScaleY() < 0 ? -1 : 1;
-
-      // limit the scale to reasonable values
-      scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
-
-      content.setScaleX(signX * scale[0]);
-      content.setScaleY(signY * scale[0]);
-
+      zoomContent.accept(zoomFactor, scale);
       event.consume();
     });
 
@@ -438,9 +432,6 @@ public class SceneUIWidget {
       // Log the exception
       Log.error(message);
     }
-
-
-
 
     // Layout
     VBox layout = new VBox(15, titleLabel, messageLabel, exceptionArea);
@@ -568,8 +559,10 @@ public class SceneUIWidget {
    * @param defaultTheme the default theme to set in the dropdown
    * @return an HBox containing the language and theme selectors
    */
-  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
-    // Create the Language label and dropdown (ComboBox)
+  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText,
+      Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer,
+      String defaultLanguage, String defaultTheme) {
+
     HBox languageContainer = new HBox(10);
     languageContainer.setAlignment(Pos.CENTER);
     Label languageLabel = new Label();
@@ -580,6 +573,7 @@ public class SceneUIWidget {
     languageComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
     languageComboBox.setMaxHeight(BUTTON_HEIGHT);
     HBox.setHgrow(languageComboBox, Priority.ALWAYS);
+
     languageComboBox.getItems().addAll(
         Arrays.stream(LanguageController.Language.values())
             .map(lang -> lang.name().substring(0, 1).toUpperCase() + lang.name().substring(1).toLowerCase())
@@ -587,18 +581,12 @@ public class SceneUIWidget {
     );
     languageComboBox.setValue(defaultLanguage);
     languageComboBox.getStyleClass().add("splash-combo-box");
-
-    // Set listener for language selection
     languageComboBox.setOnAction(event -> {
       String selectedLanguage = languageComboBox.getValue();
       languageConsumer.accept(Language.valueOf(selectedLanguage.toUpperCase()));
-      languageComboBox.setStyle("-fx-text-fill: #7a5cff;");
     });
-
-    // Add the label and ComboBox into the languageContainer HBox
     languageContainer.getChildren().addAll(languageLabel, languageComboBox);
 
-    // Create the Theme label and dropdown (ComboBox)
     HBox themeContainer = new HBox(10);
     themeContainer.setAlignment(Pos.CENTER);
     Label themeLabel = new Label();
@@ -609,6 +597,7 @@ public class SceneUIWidget {
     themeComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
     themeComboBox.setMaxHeight(BUTTON_HEIGHT);
     HBox.setHgrow(themeComboBox, Priority.ALWAYS);
+
     themeComboBox.getItems().addAll(
         Arrays.stream(ThemeController.Theme.values())
             .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
@@ -616,17 +605,12 @@ public class SceneUIWidget {
     );
     themeComboBox.setValue(defaultTheme);
     themeComboBox.getStyleClass().add("splash-combo-box");
-
-    // Set listener for theme selection
     themeComboBox.setOnAction(event -> {
       String selectedTheme = themeComboBox.getValue();
       themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
     });
-
-    // Add the label and ComboBox into the themeContainer HBox
     themeContainer.getChildren().addAll(themeLabel, themeComboBox);
 
-    // Return the combined HBox containing both the language and theme selectors
     HBox box = new HBox(10, languageContainer, themeContainer);
     box.setAlignment(Pos.CENTER);
     box.setPadding(new Insets(10));
