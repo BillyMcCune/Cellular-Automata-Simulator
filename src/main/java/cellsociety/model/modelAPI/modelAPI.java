@@ -18,7 +18,6 @@ import java.util.Map;
 /**
  * @author Billy McCune
  */
-//TODO figure out config not loaded error code stuff
 public class modelAPI {
 
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
@@ -36,7 +35,6 @@ public class modelAPI {
   // Instance variables
   private boolean isLoaded;
 
-
   public void setConfiginfo(ConfigInfo configInfo) {
     this.configInfo = configInfo;
     this.parameterRecord = configInfo.myParameters();
@@ -44,21 +42,16 @@ public class modelAPI {
 
   /**
    * Updates the simulation by invoking the game logic update method.
-   * <p>
-   * Note: This method currently iterates over the grid cells and calls {@code gameLogic.update()}.
-   * Any view-related code has been commented out.
-   * </p>
    */
   public void updateSimulation() {
     if (grid == null || gameLogic == null) {
       return;
     }
-        gameLogic.update();
+    gameLogic.update();
   }
 
-
   /**
-   * Resets the simulation grid by reinitializing both the grid and game logic
+   * Resets the simulation grid by reinitializing both the grid and game logic.
    *
    * @throws ClassNotFoundException if the required logic class cannot be found
    */
@@ -70,13 +63,13 @@ public class modelAPI {
       SimulationType type = configInfo.myType();
       String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
 
-      //dynamically load the Logic class
+      // Dynamically load the Logic class.
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
 
-      //initialize the internal grid using the configuration
+      // Initialize the internal grid using the configuration.
       grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
 
-      //initialize the game logic instance using the grid and parameters
+      // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, parameterRecord);
     } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
@@ -86,10 +79,10 @@ public class modelAPI {
   }
 
   /**
-   * Retrieves the double parameters from the parameter record
+   * Retrieves the double parameters from the parameter record.
    *
-   * @return a Map of parameter names to their double values
-   * @throws NullPointerException if the configuration information is not loaded
+   * @return a Map of parameter names to their double values.
+   * @throws NullPointerException if the configuration information is not loaded.
    */
   public Map<String, Double> getDoubleParameters() {
     try {
@@ -103,17 +96,14 @@ public class modelAPI {
   }
 
   /**
-   * Sets a double parameter in the simulation
-   * <p>
+   * Sets a double parameter in the simulation.
    * This method updates the parameter record and uses reflection to invoke the corresponding setter
-   * on the game logic
-   * </p>
+   * on the game logic.
    *
    * @param paramName the parameter name (e.g., "probCatch")
    * @param value     the new double value
-   * @throws IllegalStateException if the game logic has not been initialized
+   * @throws IllegalStateException if the game logic has not been initialized.
    */
-  //TODO implement error messages
   public void setDoubleParameter(String paramName, Double value) {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic has not been initialized.");
@@ -126,35 +116,32 @@ public class modelAPI {
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
 
     try {
-      //find the setter method that accepts a double
+      // Find the setter method that accepts a double.
       Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
-      //invoke the setter on the game logic
+      // Invoke the setter on the game logic.
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       System.err.println("Failed to set double parameter '" + paramName + "': " + e.getMessage());
     }
   }
 
-
   /**
    * Sets a string parameter in the simulation.
-   * <p>
    * This method updates the parameter record and uses reflection to invoke the corresponding setter
-   * on the game logic
-   * </p>
+   * on the game logic.
    *
    * @param paramName the parameter name (e.g., "probCatch")
    * @param value     the new string value
-   * @throws NumberFormatException if there is an error related to a null configuration
+   * @throws NumberFormatException if there is an error related to a null configuration.
    */
   public void setStringParameter(String paramName, String value) {
     if (parameterRecord == null) {
       parameterRecord = configInfo.myParameters();
     }
-    //update the parameter record
+    // Update the parameter record.
     parameterRecord.myStringParameters().put(paramName, value);
 
-    //construct the setter method name (e.g., "setLabel" for "label")
+    // Construct the setter method name (e.g., "setLabel" for "label").
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
     try {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
@@ -182,34 +169,37 @@ public class modelAPI {
     }
   }
 
-
   public String getCellColor(int row, int col) {
     return null;
   }
 
-  public String getCellShape() {
-    return null;
-  }
-
   public void setCellShape(String cellShape) {
-
+    // Not implemented.
   }
 
-  public <T extends Logic<?>> void resetParameters(Class<T> logicClass)
-      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+  /**
+   * Resets the simulation parameters by iterating over the game logic's setter methods and updating
+   * the parameter record accordingly.
+   *
+   * @throws InvocationTargetException if a getter or setter method throws an exception.
+   * @throws IllegalAccessException    if the currently executing method does not have access.
+   * @throws NoSuchMethodException     if a required getter method is not found.
+   */
+  public void resetParameters() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic has not been initialized.");
     }
     if (parameterRecord == null) {
       parameterRecord = configInfo.myParameters();
     }
-    //iterate through each public method in the logic class
+    Class<?> logicClass = gameLogic.getClass();
+    // Iterate through each public method in the logic class.
     for (Method setterMethod : logicClass.getMethods()) {
       String methodName = setterMethod.getName();
       if (!methodName.startsWith("set") || setterMethod.getParameterCount() != 1) {
         continue;
       }
-      //convert method name to parameter name (e.g., setSpeed → speed)
+      // Convert method name to parameter name (e.g., setSpeed → speed).
       String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
       Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
       Class<?> paramType = setterMethod.getParameterTypes()[0];
@@ -224,22 +214,23 @@ public class modelAPI {
     }
   }
 
-
+  /**
+   * Resets the simulation model by dynamically loading the appropriate classes for the logic,
+   * state, and neighbor calculator, and then initializing the grid and game logic.
+   *
+   * @throws NoSuchMethodException if a required constructor or method is not found.
+   */
   public void resetModel() throws NoSuchMethodException {
-    if (configInfo == null) {
-      return;
-    }
-
     try {
       SimulationType type = configInfo.myType();
       String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
 
-      //dynamically load the Logic and State classes
+      // Dynamically load the Logic and State classes.
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
       Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
       Class<?> neighborClass = Class.forName(NEIGHBOR_PACKAGE + "." + name + "NeighborCalculator");
 
-      //dynamically create cell factory, grid, and logic
+      // Dynamically create cell factory, grid, and logic.
       Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
 
@@ -250,12 +241,12 @@ public class modelAPI {
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());
 
-      //set the parameters for the simulation
-      resetParameters(gameLogic.getClass());
+      // Reset simulation parameters using the new backend logic.
+      resetParameters();
 
     } catch (ClassNotFoundException | InvocationTargetException | InstantiationException |
              IllegalAccessException e) {
-      throw new RuntimeException("error-resetModel");
+      throw new RuntimeException("error-resetModel", e);
     }
   }
 

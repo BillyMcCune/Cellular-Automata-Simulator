@@ -1,394 +1,215 @@
 package cellsociety.view.controller;
 
-import cellsociety.model.config.CellRecord;
-import cellsociety.model.config.ConfigInfo;
-import cellsociety.model.config.ConfigInfo.SimulationType;
-import cellsociety.model.config.ConfigReader;
-import cellsociety.model.config.ConfigWriter;
-import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.data.Grid;
-import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.neighbors.NeighborCalculator;
+import cellsociety.model.configAPI.configAPI;
+import cellsociety.model.modelAPI.modelAPI;
 import cellsociety.model.logic.Logic;
 import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
-/**
- * The SceneController class is responsible for controlling the flow of the application and managing the different scenes.
- * It communicates with the ConfigIO parts and the main Model Logics.
- *
- * @author Hsuan-Kai Liao
- */
 public class SceneController {
-  // Constant Package Paths
-  private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
-  private static final String STATE_PACKAGE = "cellsociety.model.data.states";
-  private static final String NEIGHBOR_PACKAGE = "cellsociety.model.data.neighbors";
-
-  // ConfigIO
-  private final ConfigReader configReader;
-  private final ConfigWriter configWriter;
-  private ConfigInfo configInfo;
-
-  // Scene
+  private modelAPI myModelAPI;
+  private configAPI myConfigAPI;
   private final SimulationScene simulationScene;
-
-  // Model
-  private Grid<?> grid;
-  private CellFactory<?> cellFactory;
-  private Logic<?> gameLogic;
-  private NeighborCalculator<?> neighborCalculator;
-
-  // Instance variables
   private boolean isLoaded;
   private boolean isPaused;
 
   /**
-   * Constructor for the SceneController class.
-   * @param scene The simulation scene to control
+   * Constructor for the SceneController.
+   * Creates the model and configuration APIs and links them together.
+   * @param scene the simulation scene to control
    */
   public SceneController(SimulationScene scene) {
-    // Initialize
-    this.configReader = new ConfigReader();
-    this.configWriter = new ConfigWriter();
+    myModelAPI = new modelAPI();
+    myConfigAPI = new configAPI();
+    // Connect the config API to the model API so that configuration updates propagate.
+    myConfigAPI.setModelAPI(myModelAPI);
     this.simulationScene = scene;
     this.isPaused = true;
   }
 
   /**
-   * Update the simulation scene with the latest data from the model.
+   * Updates the simulation by delegating to the model API and then refreshing the scene.
    */
   public void update() {
-    if (grid == null || gameLogic == null) {
-      return;
-    }
-
-    if (!isPaused) {
-      for (int i = 0; i < grid.getNumRows(); i++) {
-        for (int j = 0; j < grid.getNumCols(); j++) {
-          simulationScene.setCell(grid.getNumCols(), i, j, grid.getCell(i, j).getCurrentState());
-          simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(), grid.getCell(i, j).getAllProperties());
-        }
-      }
-
-      gameLogic.update();
-    }
+    myModelAPI.updateSimulation();
+    initGrid();
   }
 
-  /* CONFIG IO APIS */
+  /* CONFIGURATION IO APIS */
 
   /**
-   * Load the configuration file with the given filename.
-   * @param filename The name of the configuration file to load
+   * Loads a configuration file using configAPI.
+   * On success, resets the model and refreshes the scene.
+   * @param filename the configuration file to load
    */
   public void loadConfig(String filename) {
     try {
-      configInfo = configReader.readConfig(filename);
-      if (configInfo != null) {
-        isLoaded = true;
-      }
+      myConfigAPI.loadSimulation(filename);
+      myModelAPI.resetModel();
+      initGrid();
+    } catch (ParserConfigurationException | IOException | SAXException ex) {
+      SceneUIWidget.createErrorDialog(
+          LanguageController.getStringProperty("error-loadConfig").getValue(),
+          ex.getMessage(), ex);
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-loadConfig").getValue(), e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(
+          LanguageController.getStringProperty("error-loadConfig").getValue(),
+          e.getMessage(), e);
     }
   }
 
   /**
-   * Write the current configuration to a file with the given filename.
-   * @param path The path to save the configuration file
+   * Saves the current simulation configuration using configAPI.
+   * @param path the path to save the configuration file
    */
   public void saveConfig(String path) {
-    if (configInfo == null) {
-      return;
-    }
-
     try {
-      ConfigInfo savedConfigInfo = saveConfigInfo();
-      configWriter.saveCurrentConfig(savedConfigInfo, path);
-      getAllConfigFileNames();
-      String message = String.format(LanguageController.getStringProperty("success-saveConfigMessage").getValue(), path);
-      SceneUIWidget.createSuccessSaveDialog(LanguageController.getStringProperty("success-saveConfigTitle").getValue(), message, configWriter.getLastFileSaved());
+      String savedFile = myConfigAPI.saveSimulation(path);
+      List<String> fileNames = myConfigAPI.getFileNames();
+      String message = String.format(
+          LanguageController.getStringProperty("success-saveConfigMessage").getValue(), path);
+      SceneUIWidget.createSuccessSaveDialog(
+          LanguageController.getStringProperty("success-saveConfigTitle").getValue(),
+          message, savedFile);
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-saveConfig").getValue(), e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(
+          LanguageController.getStringProperty("error-saveConfig").getValue(),
+          e.getMessage(), e);
     }
   }
 
   /**
-   * Get a list of all the configuration file names.
-   * @return A list of all the configuration file names
+   * Retrieves a list of all available configuration file names.
+   * @return a list of configuration file names
    */
   public List<String> getAllConfigFileNames() {
-    return configReader.getFileNames();
+    return myConfigAPI.getFileNames();
   }
 
   /**
-   * Get the information about the current configuration.
-   * @return A string containing the information about the current configuration
+   * Retrieves simulation information from the configuration.
+   * @return a formatted string containing author, title, type, and description.
    */
   public String getConfigInformation() {
-    if (configInfo == null) {
-      return "";
+    try {
+      Map<String, String> simulationInfo = myConfigAPI.getSimulationInformation();
+      return String.format("Author: %s\nTitle: %s\nType: %s\nDescription: %s",
+          simulationInfo.get("author"),
+          simulationInfo.get("title"),
+          simulationInfo.get("type"),
+          simulationInfo.get("description"));
+    } catch (NullPointerException ex) {
+      // TODO: Handle missing configuration appropriately.
     }
-
-    return String.format(
-        "Author: %s\nTitle: %s\nType: %s\nDescription: %s",
-        configInfo.myAuthor(),
-        configInfo.myTitle(),
-        configInfo.myType(),
-        configInfo.myDescription()
-    );
+    return "";
   }
 
   /**
-   * Get the title of the current configuration.
-   * @return The title of the current configuration
-   */
-  public String getConfigTitle() {
-    if (configInfo == null) {
-      return "";
-    }
-
-    return configInfo.myTitle();
-  }
-
-  /**
-   * Get the speed of the current configuration.
-   * @return The speed of the current configuration
+   * Retrieves the simulation tick speed from the configuration.
+   * @return the simulation speed
    */
   public double getConfigSpeed() {
-    if (configInfo == null) {
-      return 0;
+    try {
+      return myConfigAPI.getConfigSpeed();
+    } catch (NullPointerException ex) {
+      // TODO: Handle missing configuration appropriately.
     }
-
-    return configInfo.myTickSpeed();
+    return 0;
   }
 
   /* MODEL APIS */
 
   /**
-   * Reset the model with the current configuration.
+   * Resets the entire model using the model API and refreshes the scene.
    */
   public void resetModel() {
-    if (configInfo == null) {
-      return;
-    }
-
     try {
-      SimulationType type = configInfo.myType();
-      String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
-
-      // Dynamically load the Logic and State classes
-      Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
-      Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
-      Class<?> neighborClass = Class.forName(NEIGHBOR_PACKAGE + "." + name + "NeighborCalculator");
-
-      // Dynamically create cell factory, grid, and logic
-      Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
-      cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
-
-      Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
-      neighborCalculator = (NeighborCalculator<?>) neighborObject;
-
-      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
-      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class).newInstance(grid, configInfo.myParameters());
-
-      // Set the parameters for the simulation
-      resetParameters(gameLogic.getClass());
-
-      // Set the grid to the scene
-      initGrid();
+      myModelAPI.resetModel();
+      simulationScene.refresh();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-resetModel").getValue(), e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(
+          LanguageController.getStringProperty("error-resetModel").getValue(),
+          e.getMessage(), e);
     }
   }
 
   /**
-   * Reset the grid while keep the current parameter configuration.
+   * Resets only the grid in the model using the model API and refreshes the scene.
    */
   public void resetGrid() {
-    if (configInfo == null) {
-      return;
-    }
-
     try {
-      SimulationType type = configInfo.myType();
-      String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
-
-      // Dynamically load the Logic class
-      Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
-
-      // Dynamically create cell grid, and logic
-      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
-      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class).newInstance(grid, configInfo.myParameters());
-
-      // Set the grid to the scene
-      initGrid();
+      myModelAPI.resetGrid();
+      simulationScene.refresh();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-resetGrid").getValue(), e.getMessage(), e);
+      SceneUIWidget.createErrorDialog(
+          LanguageController.getStringProperty("error-resetGrid").getValue(),
+          e.getMessage(), e);
     }
   }
 
   /**
-   * Reset the parameters for the simulation.
-   *
-   * @param logicClass The logic class to reset the parameters for
-   * @param <T> The type of the logic class
+   * Resets simulation parameters via the model API.
    */
-  public <T extends Logic<?>> void resetParameters(Class<T> logicClass) throws Exception{
-    // Iterate over all public methods in the class
-    for (Method setterMethod : logicClass.getMethods()) {
-      String methodName = setterMethod.getName();
-
-      // Check if the method starts with "set" and has exactly one parameter
-      if (!methodName.startsWith("set") || setterMethod.getParameterCount() != 1) {
-        continue;
-      }
-
-      // Get the parameter type
-      Class<?> paramType = setterMethod.getParameterTypes()[0];
-
-      // Convert method name to parameter name (e.g., setSpeed → speed)
-      String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
-
-      // Get the getter method for the parameter initialization
-      Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
-      Method minMethod = logicClass.getMethod("getMinParam", String.class);
-      Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
-
-      // Set the parameter listener
-      if (paramType == double.class) {
-        // Get the default and minmax values
-        double min = (double) minMethod.invoke(gameLogic, paramName);
-        double max = (double) maxMethod.invoke(gameLogic, paramName);
-        double defaultValue = (double) getterMethod.invoke(gameLogic);
-
-        // Create a consumer for UI updates
-        Consumer<Double> consumer = v -> {
-          try {
-            setterMethod.invoke(gameLogic, v);
-          } catch (Exception ex) {
-            String message = String.format(LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
-            SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
-          }
-        };
-
-        // Register parameter in simulation UI
-        simulationScene.setParameter(min, max, defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
-      } else if (paramType == String.class) {
-        // Get the default value
-        String defaultValue = (String) getterMethod.invoke(gameLogic);
-
-        // Create a consumer for UI updates
-        Consumer<String> consumer = v -> {
-          try {
-            setterMethod.invoke(gameLogic, v);
-          } catch (Exception ex) {
-            String message = String.format(LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
-            SceneUIWidget.createErrorDialog(LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
-          }
-        };
-
-        // Register parameter in simulation UI
-        simulationScene.setParameter(defaultValue, paramName + "-label", paramName + "-tooltip", consumer);
-      }
+  public void resetParameters() {
+    try {
+      myModelAPI.resetParameters();
+    } catch (Exception e) {
+      SceneUIWidget.createErrorDialog(
+          LanguageController.getStringProperty("error-resetParameters").getValue(),
+          e.getMessage(), e);
     }
   }
 
   /* CONTROLLER APIS */
 
   /**
-   * Start or pause the simulation.
-   * @param isPaused True if the simulation should be paused, false otherwise
+   * Starts or pauses the simulation.
+   * @param isPaused true to pause the simulation, false to start it
    */
   public void setStartPause(boolean isPaused) {
     this.isPaused = isPaused;
   }
 
   /**
-   * Check if the simulation is currently paused.
-   * @return True if the simulation is paused, false otherwise
+   * Indicates whether the simulation is loaded.
+   * @return true if loaded, false otherwise
    */
   public boolean isLoaded() {
     return isLoaded;
   }
 
   /**
-   * Check if the simulation is currently paused.
-   * @return True if the simulation is paused, false otherwise
+   * Indicates whether the simulation is paused.
+   * @return true if paused, false otherwise
    */
   public boolean isPaused() {
     return isPaused;
   }
 
-  /* PRIVATE HELPER METHODS */
-
+  /**
+   * Initializes the grid on the simulation scene by retrieving the cell states and properties
+   * from the model API.
+   */
   private void initGrid() {
-    simulationScene.setGrid(grid.getNumRows(), grid.getNumCols());
-    for (int i = 0; i < grid.getNumRows(); i++) {
-      for (int j = 0; j < grid.getNumCols(); j++) {
-        simulationScene.setCell(grid.getNumCols(), i, j, grid.getCell(i, j).getCurrentState());
-        simulationScene.setParameters(i, j, grid.getCell(i, j).getCurrentState(), grid.getCell(i, j).getAllProperties());
+    List<List<Integer>> cellStates = myModelAPI.getCellStates();
+    List<List<Map<String, Double>>> cellProperties = myModelAPI.getCellProperties();
+    if (cellStates == null || cellStates.isEmpty()) {
+      return;
+    }
+    int numRows = cellStates.size();
+    int numCols = cellStates.get(0).size();
+    simulationScene.setGrid(numRows, numCols);
+    for (int i = 0; i < numRows; i++) {
+      for (int j = 0; j < numCols; j++) {
+        simulationScene.setCell(numCols, i, j, cellStates.get(i).get(j));
+        simulationScene.setParameters(i, j, cellStates.get(i).get(j), cellProperties.get(i).get(j));
       }
     }
   }
-
-  private ConfigInfo saveConfigInfo() throws InvocationTargetException, IllegalAccessException {
-    // Save the grid data
-    List<List<CellRecord>> gridData = new ArrayList<>();
-    for (int i = 0; i < grid.getNumRows(); i++) {
-      List<CellRecord> row = new ArrayList<>();
-      for (int j = 0; j < grid.getNumCols(); j++) {
-        Cell<?> cell = grid.getCell(i, j);
-        row.add(new CellRecord(cell.getCurrentState().getValue(), cell.getAllProperties()));
-      }
-      gridData.add(row);
-    }
-
-    // Save the parameters
-    Map<String, Double> doubleParams = new HashMap<>();
-    Map<String, String> stringParams = new HashMap<>();
-
-    for (Method method : gameLogic.getClass().getDeclaredMethods()) {
-      String methodName = method.getName();
-      if (!methodName.startsWith("get")) {
-        continue;
-      }
-
-      String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
-      if (method.getReturnType() == double.class) {
-        doubleParams.put(paramName, (double) method.invoke(gameLogic));
-      } else if (method.getReturnType() == String.class) {
-        stringParams.put(paramName, (String) method.invoke(gameLogic));
-      }
-    }
-
-    ParameterRecord parameters = new ParameterRecord(doubleParams, stringParams);
-
-
-    // TODO: Make user input for title, author, description
-    return new ConfigInfo(
-        configInfo.myType(),
-        configInfo.myCellShapeType(),
-        configInfo.myGridEdgeType(),
-        configInfo.myneighborArrangementType(),
-        configInfo.myTitle(),
-        configInfo.myAuthor(),
-        configInfo.myDescription(),
-        grid.getNumCols(),
-        grid.getNumRows(),
-        simulationScene.getTickSpeed(),
-        gridData,
-        parameters,
-        configInfo.acceptedStates(),
-        configInfo.myFileName()
-    );
-  }
+}
 }
