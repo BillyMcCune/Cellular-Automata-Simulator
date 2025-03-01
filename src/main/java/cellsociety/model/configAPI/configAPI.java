@@ -38,6 +38,10 @@ public class configAPI {
     return configReader.getFileNames();
   }
 
+  public void setModelAPI(modelAPI modelAPI) {
+    myModelAPI = modelAPI;
+  }
+
   /**
    * Loads a simulation configuration from the specified file.
    *
@@ -47,13 +51,12 @@ public class configAPI {
    * @throws SAXException                 if a SAX parsing error occurs - check configReader for
    *                                      more information regarding load simulation errors
    */
-  public void loadSimulation(String fileName, modelAPI modelAPI)
+  public void loadSimulation(String fileName)
       throws ParserConfigurationException, IOException, SAXException {
     try {
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
         isLoaded = true;
-        myModelAPI = modelAPI;
         myModelAPI.setConfiginfo(configInfo);
       }
     } catch (ParserConfigurationException e) {
@@ -66,7 +69,7 @@ public class configAPI {
   }
 
   /**
-   * Saves the current simulation configuration to the specified file path
+   * Saves the current simulation configuration to the specified file path.
    *
    * @param FilePath the file path where the configuration should be saved
    * @return the file name of the simulation that was saved
@@ -117,7 +120,7 @@ public class configAPI {
 
 
   /**
-   * Retrieves the accepted simulation states
+   * Retrieves the accepted simulation states.
    *
    * @return a of accepted state integers
    * @throws NullPointerException if the configuration information is not loaded
@@ -131,7 +134,7 @@ public class configAPI {
   }
 
   /**
-   * Retrieves the grid width from the configuration
+   * Retrieves the grid width from the configuration.
    *
    * @return the grid width
    * @throws NumberFormatException if the configuration information is not loaded
@@ -145,7 +148,7 @@ public class configAPI {
   }
 
   /**
-   * Retrieves the grid height from the configuration
+   * Retrieves the grid height from the configuration.
    *
    * @return the grid height
    * @throws NumberFormatException if the configuration information is not loaded
