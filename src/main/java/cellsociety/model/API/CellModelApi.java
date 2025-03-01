@@ -340,13 +340,39 @@ public class CellModelApi {
   }
 
 
+  public void resetModel() throws NoSuchMethodException {
+    if (configInfo == null) {
+      return;
+    }
 
+    try {
+      SimulationType type = configInfo.myType();
+      String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
 
+      //dynamically load the Logic and State classes
+      Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
+      Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
+      Class<?> neighborClass = Class.forName(NEIGHBOR_PACKAGE + "." + name + "NeighborCalculator");
+
+      //dynamically create cell factory, grid, and logic
+      Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
+      cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
 
       Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
       neighborCalculator = (NeighborCalculator<?>) neighborObject;
 
+      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
+      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
+          .newInstance(grid, configInfo.myParameters());
 
+      //set the parameters for the simulation
+      resetParameters(gameLogic.getClass());
+
+    } catch (ClassNotFoundException | InvocationTargetException | InstantiationException |
+             IllegalAccessException e) {
+      throw new RuntimeException("error-resetModel");
+    }
+  }
 
 
 }
