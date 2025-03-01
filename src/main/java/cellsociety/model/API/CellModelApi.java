@@ -22,7 +22,7 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 /**
-* @author Billy McCune
+ * @author Billy McCune
  */
 public class CellModelApi {
 
@@ -310,12 +310,41 @@ public class CellModelApi {
 
   }
 
+  public <T extends Logic<?>> void resetParameters(Class<T> logicClass)
+      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    if (gameLogic == null) {
+      throw new IllegalStateException("Game logic has not been initialized.");
+    }
+    if (parameterRecord == null) {
+      parameterRecord = configInfo.myParameters();
+    }
+    //iterate through each public method in the logic class
+    for (Method setterMethod : logicClass.getMethods()) {
+      String methodName = setterMethod.getName();
+      if (!methodName.startsWith("set") || setterMethod.getParameterCount() != 1) {
+        continue;
+      }
+      //convert method name to parameter name (e.g., setSpeed → speed)
+      String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
+      Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
+      Class<?> paramType = setterMethod.getParameterTypes()[0];
+
+      if (paramType == double.class) {
+        double defaultValue = (double) getterMethod.invoke(gameLogic);
+        parameterRecord.myDoubleParameters().put(paramName, defaultValue);
+      } else if (paramType == String.class) {
+        String defaultValue = (String) getterMethod.invoke(gameLogic);
+        parameterRecord.myStringParameters().put(paramName, defaultValue);
+      }
+    }
+  }
 
 
 
 
 
-
+      Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
+      neighborCalculator = (NeighborCalculator<?>) neighborObject;
 
 
 
