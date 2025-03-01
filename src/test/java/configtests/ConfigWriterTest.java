@@ -81,7 +81,7 @@ public class ConfigWriterTest {
   @Test
   public void getLastFileSaved_WithoutSave_ThrowsError() {
     ConfigWriter writer = new ConfigWriter();
-    assertThrows(Error.class, writer::getLastFileSaved,
+    assertThrows(NullPointerException.class, writer::getLastFileSaved,
         "Expected an Error when getLastFileSaved() is called before any save operation.");
   }
 

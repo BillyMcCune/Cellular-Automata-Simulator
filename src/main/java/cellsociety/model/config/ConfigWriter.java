@@ -1,5 +1,6 @@
 package cellsociety.model.config;
 
+import cellsociety.logging.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,15 +15,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import cellsociety.logging.Log;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * @author Billy McCune
- * A config writer class to create xml files
- * The format includes:
+ * @author Billy McCune A config writer class to create xml files The format includes:
  * <ul>
  *   <li><code>&lt;simulation&gt;</code> as the root element</li>
  *   <li><code>&lt;type&gt;</code>, <code>&lt;title&gt;</code>, <code>&lt;author&gt;</code>, and <code>&lt;description&gt;</code></li>
@@ -49,11 +46,11 @@ public class ConfigWriter {
    * Saves the current configuration to an XML file at the given path.
    *
    * @param myNewConfigInfo the configuration info to save
-   * @param path the directory where the XML file will be saved
+   * @param path            the directory where the XML file will be saved
    * @throws Exception if an error occurs during saving
    */
   public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
-      throws Exception {
+      throws NullPointerException, ParserConfigurationException, IOException, TransformerException {
     if (myNewConfigInfo == null) {
       throw new NullPointerException("error-nullConfigInfo");
     }
@@ -98,6 +95,7 @@ public class ConfigWriter {
 
   /**
    * Populates the XML document with the configuration data.
+   *
    * @param xmlDocument the XML document to populate
    */
   private void populateXMLDocument(Document xmlDocument) {
@@ -109,15 +107,18 @@ public class ConfigWriter {
     rootElement.appendChild(typeElement);
 
     Element cellShapeElement = xmlDocument.createElement("cellShapeType");
-    cellShapeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myCellShapeType().toString()));
+    cellShapeElement.appendChild(
+        xmlDocument.createTextNode(myConfigInfo.myCellShapeType().toString()));
     rootElement.appendChild(cellShapeElement);
 
     Element gridEdgeElement = xmlDocument.createElement("gridEdgeType");
-    gridEdgeElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myGridEdgeType().toString()));
+    gridEdgeElement.appendChild(
+        xmlDocument.createTextNode(myConfigInfo.myGridEdgeType().toString()));
     rootElement.appendChild(gridEdgeElement);
 
     Element neighborArrangementElement = xmlDocument.createElement("neighborArrangementType");
-    neighborArrangementElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myneighborArrangementType().toString()));
+    neighborArrangementElement.appendChild(
+        xmlDocument.createTextNode(myConfigInfo.myneighborArrangementType().toString()));
     rootElement.appendChild(neighborArrangementElement);
 
     Element titleElement = xmlDocument.createElement("title");
@@ -137,15 +138,18 @@ public class ConfigWriter {
     rootElement.appendChild(parametersElement);
 
     Element widthElement = xmlDocument.createElement("width");
-    widthElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridWidth())));
+    widthElement.appendChild(
+        xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridWidth())));
     rootElement.appendChild(widthElement);
 
     Element heightElement = xmlDocument.createElement("height");
-    heightElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridHeight())));
+    heightElement.appendChild(
+        xmlDocument.createTextNode(String.valueOf(myConfigInfo.myGridHeight())));
     rootElement.appendChild(heightElement);
 
     Element defaultSpeedElement = xmlDocument.createElement("defaultSpeed");
-    defaultSpeedElement.appendChild(xmlDocument.createTextNode(String.valueOf(myConfigInfo.myTickSpeed())));
+    defaultSpeedElement.appendChild(
+        xmlDocument.createTextNode(String.valueOf(myConfigInfo.myTickSpeed())));
     rootElement.appendChild(defaultSpeedElement);
 
     Element initialCellsElement = xmlDocument.createElement("initialCells");
@@ -161,13 +165,13 @@ public class ConfigWriter {
   }
 
   /**
-   * Adds parameter elements as children of the given parametersElement.
-   * For each double parameter, creates a <doubleParameter name="...">value</doubleParameter> element,
-   * and for each string parameter, creates a <stringParameter name="...">value</stringParameter> element.
+   * Adds parameter elements as children of the given parametersElement. For each double parameter,
+   * creates a <doubleParameter name="...">value</doubleParameter> element, and for each string
+   * parameter, creates a <stringParameter name="...">value</stringParameter> element.
    *
    * @param parametersElement the XML element to which parameter elements are added
-   * @param params the ParameterRecord holding the parameters
-   * @param xmlDocument the XML document being built
+   * @param params            the ParameterRecord holding the parameters
+   * @param xmlDocument       the XML document being built
    */
   private void addParametersElements(Element parametersElement,
       ParameterRecord params, Document xmlDocument) {
@@ -189,13 +193,13 @@ public class ConfigWriter {
   }
 
   /**
-   * Adds the grid (initial cells) to the document.
-   * Each dx in the grid becomes a <dx> element containing one or more <cell> elements.
-   * Each <cell> element has a required "state" attribute and additional properties if available.
+   * Adds the grid (initial cells) to the document. Each dx in the grid becomes a <dx> element
+   * containing one or more <cell> elements. Each <cell> element has a required "state" attribute
+   * and additional properties if available.
    *
    * @param initialCellsElement the XML element to which rows are added
-   * @param grid the grid of cells (List of List of CellRecord)
-   * @param xmlDocument the XML document being built
+   * @param grid                the grid of cells (List of List of CellRecord)
+   * @param xmlDocument         the XML document being built
    */
   private void addInitialCellsElements(Element initialCellsElement,
       List<List<CellRecord>> grid, Document xmlDocument) {
@@ -217,8 +221,8 @@ public class ConfigWriter {
   /**
    * Creates an output file for saving the XML document.
    * <p>
-   * The file name is based on the configuration title with spaces removed and appended with "Save" and ".xml".
-   * If a file with the same name exists, a duplicate number is appended.
+   * The file name is based on the configuration title with spaces removed and appended with "Save"
+   * and ".xml". If a file with the same name exists, a duplicate number is appended.
    *
    * @param path the directory path where the file should be saved
    * @return a File object representing the output file
@@ -234,14 +238,15 @@ public class ConfigWriter {
       if (configDirectory.exists() && !configDirectory.isDirectory()) {
         throw new ParserConfigurationException("error-notDirectory");
       }
-      if (!configDirectory.exists() && !configDirectory.mkdirs()) {;
+      if (!configDirectory.exists() && !configDirectory.mkdirs()) {
         throw new ParserConfigurationException("error-failedToCreateConfigDirectory" + "," + path);
       }
 
       File outputFile = new File(configDirectory, baseFilename + fileExtension);
       int duplicateNumber = 1;
       while (outputFile.exists()) {
-        outputFile = new File(configDirectory, baseFilename + "_" + duplicateNumber + fileExtension);
+        outputFile = new File(configDirectory,
+            baseFilename + "_" + duplicateNumber + fileExtension);
         duplicateNumber++;
       }
       return outputFile;
@@ -254,10 +259,11 @@ public class ConfigWriter {
    * Writes the XML Document to the specified output file.
    *
    * @param xmlDocument the XML document to write
-   * @param outputFile the file to which the document will be written
+   * @param outputFile  the file to which the document will be written
    * @throws Exception if an error occurs during file writing or XML transformation
    */
-  private void writeXMLDocument(Document xmlDocument, File outputFile) throws IOException, TransformerException {
+  private void writeXMLDocument(Document xmlDocument, File outputFile)
+      throws IOException, TransformerException {
     if (outputFile == null) {
       throw new IllegalArgumentException("error-outputFileNull");
     }
