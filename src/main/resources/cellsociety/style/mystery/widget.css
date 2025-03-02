@@ -11,8 +11,10 @@
    ========================== */
 
 .mini-map-pane {
-  -fx-border-color: #020202;
+  -fx-background-color: #333333;
+  -fx-border-color: #583c85;
   -fx-border-width: 3px;
+  -fx-background-radius: 10;
   -fx-border-radius: 10;
   -fx-padding: 10px;
 }
