@@ -16,7 +16,7 @@
   
   <parameters>
 
-    <doubleParameter name="baseSharkEnergy">5</doubleParameter>
+    <doubleParameter name="sharkBaseEnergy">5</doubleParameter>
     <doubleParameter name="fishEnergyGain">2</doubleParameter>
     <doubleParameter name="sharkReproductionTime">3</doubleParameter>
     <doubleParameter name="fishReproductionTime">1</doubleParameter>
