@@ -40,7 +40,7 @@ import javafx.stage.Stage;
  */
 public class SimulationScene {
   // Constants
-  public static final double DEFAULT_WIDTH = 1200;
+  public static final double DEFAULT_WIDTH = 1300;
   public static final double DEFAULT_HEIGHT = 700;
 
   public static final double MAX_SPEED = 100;
