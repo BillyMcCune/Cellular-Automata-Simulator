@@ -15,6 +15,6 @@ public class LifeNeighborCalculator<T extends Enum<T> & State> extends NeighborC
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public LifeNeighborCalculator() {
-    super(NeighborCalculator.MOORE);
+    super("square", "moore", false);
   }
 }

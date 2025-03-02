@@ -17,6 +17,6 @@ public class SegregationNeighborCalculator<T extends Enum<T> & State> extends
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public SegregationNeighborCalculator() {
-    super(NeighborCalculator.MOORE);
+    super("square", "moore", false);
   }
 }

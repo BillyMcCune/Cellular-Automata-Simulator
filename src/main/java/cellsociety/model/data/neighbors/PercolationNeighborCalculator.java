@@ -16,6 +16,6 @@ public class PercolationNeighborCalculator<T extends Enum<T> & State> extends Ne
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public PercolationNeighborCalculator() {
-    super(NeighborCalculator.MOORE);
+    super("square", "moore", false);
   }
 }

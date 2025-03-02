@@ -17,6 +17,6 @@ public class AntNeighborCalculator<T extends Enum<T> & State> extends NeighborCa
    * Creates a specific NeighborCalculator with the specified directions
    */
   public AntNeighborCalculator() {
-    super(NeighborCalculator.MOORE);
+    super("square", "moore", true);
   }
 }

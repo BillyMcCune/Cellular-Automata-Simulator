@@ -50,15 +50,12 @@ public class GridTest {
   }
 
   private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
-    private static final int[][] DIRECTIONS = {
-        {-1, -1}, {-1, 0}, {-1, 1},
-        {0, -1}, {0, 1},
-        {1, -1}, {1, 0}, {1, 1}
-    };
     public DummyNeighborCalculator() {
-      super(DIRECTIONS);
+      super("square", "moore", false);
     }
   }
+
+
 
   private List<List<CellRecord>> createRawGrid(int rows, int cols, int defaultState) {
     List<List<CellRecord>> raw = new ArrayList<>();

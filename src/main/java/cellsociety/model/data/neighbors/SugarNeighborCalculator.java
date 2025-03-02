@@ -17,7 +17,7 @@ public class SugarNeighborCalculator<T extends Enum<T> & State> extends Neighbor
   private int vision;
 
   public SugarNeighborCalculator() {
-    super(new int[0][0]);
+    super("square", "neumann", false);
   }
 
   public void setVision(int vision) {

@@ -6,7 +6,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.config.CellRecord;
+import cellsociety.model.data.neighbors.FireNeighborCalculator;
 import cellsociety.model.data.neighbors.NeighborCalculator;
+import cellsociety.model.data.states.FallingState;
 import cellsociety.model.data.states.FireState;
 import cellsociety.model.logic.FireLogic;
 import java.util.ArrayList;
@@ -24,9 +26,10 @@ public class FireLogicTest {
       {-1, 0}, {0, -1}, {0, 1}, {1, 0}
   };
 
-  private final NeighborCalculator<FireState> dummyNeighborCalculator = new NeighborCalculator<FireState>(
-      DIRECTIONS) {
-  };
+  private final NeighborCalculator<FireState> dummyNeighborCalculator =
+      new NeighborCalculator<FireState>("square", "moore", false) {
+      };
+
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
     List<List<Integer>> rawGrid = new ArrayList<>();

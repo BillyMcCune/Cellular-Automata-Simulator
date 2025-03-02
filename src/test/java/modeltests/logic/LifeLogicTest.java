@@ -26,8 +26,8 @@ public class LifeLogicTest {
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  private final NeighborCalculator<LifeState> dummyNeighborCalculator = new NeighborCalculator<LifeState>(
-      DIRECTIONS) {
+  private final NeighborCalculator<LifeState> dummyNeighborCalculator =
+      new NeighborCalculator<LifeState>("square", "moore", false) {
   };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

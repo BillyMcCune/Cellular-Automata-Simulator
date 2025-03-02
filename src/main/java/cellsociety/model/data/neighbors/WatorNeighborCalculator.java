@@ -19,14 +19,6 @@ public class WatorNeighborCalculator<T extends Enum<T> & State> extends Neighbor
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public WatorNeighborCalculator() {
-    super(NeighborCalculator.VONNEUMANN);
-  }
-
-  /**
-   * Creates neighbors based off torus grid neighbor assignment.
-   */
-  @Override
-  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int row, int col) {
-    return calculateTorusNeighbors(grid, row, col);
+    super("square", "neumann", true);
   }
 }

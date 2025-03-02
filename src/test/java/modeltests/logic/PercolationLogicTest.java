@@ -7,6 +7,7 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.neighbors.NeighborCalculator;
+import cellsociety.model.data.states.LifeState;
 import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.logic.PercolationLogic;
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class PercolationLogicTest {
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  private final NeighborCalculator<PercolationState> dummyNeighborCalculator = new NeighborCalculator<PercolationState>(
-      DIRECTIONS) {
-  };
+  private final NeighborCalculator<PercolationState> dummyNeighborCalculator =
+      new NeighborCalculator<PercolationState>("square", "moore", false) {
+      };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
     List<List<Integer>> rawGrid = new ArrayList<>();

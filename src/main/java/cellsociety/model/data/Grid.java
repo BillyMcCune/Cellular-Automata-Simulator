@@ -129,12 +129,6 @@ public class Grid<T extends Enum<T> & State> {
     if (grid.isEmpty()) {
       return;
     }
-    for (int row = 0; row < getNumRows(); row++) {
-      for (int col = 0; col < getNumCols(); col++) {
-        Cell<T> cell = getCell(row, col);
-        Map<Direction, Cell<T>> neighbors = neighborCalculator.getNeighbors(this, row, col);
-        cell.setNeighbors(neighbors);
-      }
-    }
+    //TODO: reimplement with new parameters
   }
 }

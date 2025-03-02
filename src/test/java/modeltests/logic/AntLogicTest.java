@@ -9,6 +9,7 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.AntState;
+import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.logic.AntLogic;
 import cellsociety.model.data.neighbors.Direction;
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ public class AntLogicTest {
       {-1, 0}, {1, 0}, {0, -1}, {0, 1}
   };
 
-  private final NeighborCalculator<AntState> dummyNeighborCalculator = new NeighborCalculator<AntState>(DIRECTIONS) {};
+  private final NeighborCalculator<AntState> dummyNeighborCalculator =
+      new NeighborCalculator<AntState>("square", "moore", true) {
+      };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {
     List<List<Integer>> data = new ArrayList<>();

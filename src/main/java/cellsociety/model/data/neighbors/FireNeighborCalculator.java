@@ -14,6 +14,6 @@ public class FireNeighborCalculator<T extends Enum<T> & State> extends NeighborC
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public FireNeighborCalculator() {
-    super(NeighborCalculator.VONNEUMANN);
+    super("square", "neumann", false);
   }
 }

@@ -22,6 +22,6 @@ public class FallingNeighborCalculator<T extends Enum<T> & State> extends Neighb
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public FallingNeighborCalculator() {
-    super(FALLING_DIRECTIONS);
+    super("square", "moore", false);
   }
 }

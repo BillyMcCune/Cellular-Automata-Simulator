@@ -7,6 +7,7 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
+import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.data.states.SegregationState;
 import cellsociety.model.logic.SegregationLogic;
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class SegregationLogicTest {
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  private final NeighborCalculator<SegregationState> dummyNeighborCalculator = new NeighborCalculator<SegregationState>(
-      DIRECTIONS) {
-  };
+  private final NeighborCalculator<SegregationState> dummyNeighborCalculator =
+      new NeighborCalculator<SegregationState>("square", "moore", false) {
+      };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
     List<List<Integer>> raw = new ArrayList<>();
