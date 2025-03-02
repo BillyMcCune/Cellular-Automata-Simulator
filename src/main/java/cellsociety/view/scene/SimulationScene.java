@@ -52,6 +52,7 @@ public class SimulationScene {
   // UI components
   private Button startPauseButton;
   private Pane grid;
+  private Pane miniGrid;
   private VBox parameterBox;
   private ComboBox<String> selectType;
   private TextField directoryField;
@@ -157,7 +158,11 @@ public class SimulationScene {
     grid.getStyleClass().add("grid-panel");
     grid.setOpacity(0);
 
-    return SceneUIWidget.dragZoomViewUI(grid);
+    miniGrid = new Pane();
+    miniGrid.getStyleClass().add("grid-panel");
+    miniGrid.setOpacity(0);
+
+    return SceneUIWidget.dragZoomViewUI(grid, miniGrid);
   }
 
   private ScrollPane createParameterPanel() {
@@ -373,6 +378,7 @@ public class SimulationScene {
       // Center the grid
       if (grid.getOpacity() == 0) {
         grid.setOpacity(1);
+        miniGrid.setOpacity(1);
       }
       centerGrid();
 
@@ -444,6 +450,7 @@ public class SimulationScene {
    */
   public void setGrid(int numOfRows, int numOfCols) {
     SceneRenderer.drawGrid(grid, numOfRows, numOfCols);
+    SceneRenderer.drawGrid(miniGrid, numOfRows, numOfCols);
   }
 
   /**
@@ -454,6 +461,7 @@ public class SimulationScene {
    */
   public void setCell(int rowCount, int row, int col, Enum<?> state) {
     SceneRenderer.drawCell(grid, rowCount, row, col, state);
+    SceneRenderer.drawCell(miniGrid, rowCount, row, col, state);
   }
 
   /**

@@ -247,9 +247,8 @@ public class SceneUIWidget {
    *
    * @param content the content node to be displayed
    */
-  public static Pane dragZoomViewUI(Node content) {
+  public static Pane dragZoomViewUI(Node content, Node miniContent) {
     Pane pane = new Pane();
-    pane.getStyleClass().add("content-pane");
     pane.getChildren().add(content);
 
     // Create centering consumer
@@ -295,7 +294,6 @@ public class SceneUIWidget {
       double offsetY = event.getSceneY() - mouseY[0];
       content.relocate(offsetX, offsetY);
     });
-
     BiConsumer<Double, double[]> zoomContent = (zoomFactor, scale) -> {
       scale[0] *= zoomFactor;
       int signX = content.getScaleX() < 0 ? -1 : 1;
@@ -307,7 +305,6 @@ public class SceneUIWidget {
       content.setScaleX(signX * scale[0]);
       content.setScaleY(signY * scale[0]);
     };
-
     double[] scale = {1.0};
     pane.setOnZoom(event -> {
       double zoomFactor = event.getZoomFactor();
@@ -317,6 +314,33 @@ public class SceneUIWidget {
       double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
       zoomContent.accept(zoomFactor, scale);
       event.consume();
+    });
+
+    // Create a mini map
+    Pane miniMapPane = new Pane();
+    miniMapPane.getStyleClass().add("mini-map-pane");
+    miniMapPane.setOpacity(0.5);
+    miniMapPane.setMaxSize(100, 100);
+    miniMapPane.setMinSize(100, 100);
+    miniMapPane.setLayoutX(10);
+    miniMapPane.setLayoutY(10);
+    pane.getChildren().add(miniMapPane);
+    miniMapPane.getChildren().add(miniContent);
+    miniContent.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+      double contentWidth = miniContent.prefWidth(-1);
+      double contentHeight = miniContent.prefHeight(-1);
+      Insets insets = miniMapPane.getPadding();
+
+      double scaleX = (miniMapPane.getWidth() - insets.getLeft() - insets.getRight()) / contentWidth;
+      double scaleY = (miniMapPane.getHeight() - insets.getTop() - insets.getBottom()) / contentHeight;
+      double minScale = Math.min(scaleX, scaleY);
+
+      double offsetX = (miniMapPane.getWidth() - contentWidth) / 2;
+      double offsetY = (miniMapPane.getHeight() - contentHeight) / 2;
+
+      miniContent.setScaleX(minScale);
+      miniContent.setScaleY(minScale);
+      miniContent.relocate(offsetX, offsetY);
     });
 
     return pane;
@@ -344,6 +368,7 @@ public class SceneUIWidget {
 
     return scrollPane;
   }
+
 
   /**
    * Create a section UI with a title and rows.
@@ -559,9 +584,7 @@ public class SceneUIWidget {
    * @param defaultTheme the default theme to set in the dropdown
    * @return an HBox containing the language and theme selectors
    */
-  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText,
-      Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer,
-      String defaultLanguage, String defaultTheme) {
+  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
 
     HBox languageContainer = new HBox(10);
     languageContainer.setAlignment(Pos.CENTER);
@@ -627,4 +650,7 @@ public class SceneUIWidget {
   public static void setWidgetStyleSheet(String styleSheet) {
     SceneUIWidget.WIDGET_STYLE_SHEET = styleSheet;
   }
+
+  /* PRIVATE HELPER METHODS */
+
 }
