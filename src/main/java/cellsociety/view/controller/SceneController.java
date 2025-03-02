@@ -168,17 +168,57 @@ public class SceneController {
   }
 
   /**
-   * Resets simulation parameters via the model API.
+   * Updates the simulation parameters in the UI by retrieving the parameter values
+   * from modelAPI. This replaces the old reflection‐based method.
    */
   public void resetParameters() {
-    try {
-      myModelAPI.resetParameters();
-    } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(
-          LanguageController.getStringProperty("error-resetParameters").getValue(),
-          e.getMessage(), e);
+    // Clear the parameter UI controls if needed (for example, clearing parameterBox).
+    // (Assuming simulationScene or parameterBox is cleared elsewhere when a new configuration is loaded.)
+
+    // Update double parameters.
+    Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
+    for (Map.Entry<String, Double> entry : doubleParams.entrySet()) {
+      String paramName = entry.getKey();
+      double defaultValue = entry.getValue();
+      // Use default min/max ranges (adjust as needed).
+      double min = 0;
+      double max = 100;
+      // Use the simulationScene.setParameter method that creates a slider control.
+      simulationScene.setParameter(min, max, defaultValue,
+          paramName + "-label", paramName + "-tooltip",
+          newVal -> {
+            try {
+              myModelAPI.setDoubleParameter(paramName, newVal);
+            } catch (Exception ex) {
+              String message = String.format(
+                  LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
+              SceneUIWidget.createErrorDialog(
+                  LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
+            }
+          });
+    }
+
+    // Update string parameters.
+    Map<String, String> stringParams = myModelAPI.getStringParameters();
+    for (Map.Entry<String, String> entry : stringParams.entrySet()) {
+      String paramName = entry.getKey();
+      String defaultValue = entry.getValue();
+      // Use the simulationScene.setParameter method that creates a text field control.
+      simulationScene.setParameter(defaultValue,
+          paramName + "-label", paramName + "-tooltip",
+          newVal -> {
+            try {
+              myModelAPI.setStringParameter(paramName, newVal);
+            } catch (Exception ex) {
+              String message = String.format(
+                  LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
+              SceneUIWidget.createErrorDialog(
+                  LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
+            }
+          });
     }
   }
+
 
   /* CONTROLLER APIS */
 
@@ -238,50 +278,6 @@ public class SceneController {
     }
   }
 
-  /**
-   * Updates the parameter panel by retrieving parameters from modelAPI.
-   * For double parameters, we assume a default range (e.g. 0 to 100) and create a slider.
-   * For string parameters, we create a text field.
-   */
-  public void updateParameterPanel() {
-    // Clear the existing controls.
-    parameterBox.getChildren().clear();
 
-    // Retrieve double parameters from the model.
-    Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
-    for (Map.Entry<String, Double> entry : doubleParams.entrySet()) {
-      String paramName = entry.getKey();
-      double defaultValue = entry.getValue();
-      // Define default min and max values for the slider.
-      double min = 0;
-      double max = 100;
-      // Create a slider UI widget using SceneUIWidget.createRangeUI.
-      // Adjust label and tooltip keys as needed.
-      parameterBox.getChildren().add(
-          SceneUIWidget.createRangeUI(
-              min, max, defaultValue,
-              LanguageController.getStringProperty(paramName),
-              LanguageController.getStringProperty(paramName + "-tooltip"),
-              newVal -> myModelAPI.setDoubleParameter(paramName, newVal)
-          )
-      );
-    }
-
-    // Retrieve string parameters from the model.
-    Map<String, String> stringParams = myModelAPI.getStringParameters();
-    for (Map.Entry<String, String> entry : stringParams.entrySet()) {
-      String paramName = entry.getKey();
-      String defaultValue = entry.getValue();
-      // Create a text field UI widget.
-      parameterBox.getChildren().add(
-          SceneUIWidget.createRangeUI(
-              defaultValue,
-              LanguageController.getStringProperty(paramName),
-              LanguageController.getStringProperty(paramName + "-tooltip"),
-              newVal -> myModelAPI.setStringParameter(paramName, newVal)
-          )
-      );
-    }
-  }
 
 }
