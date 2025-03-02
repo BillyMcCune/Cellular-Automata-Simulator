@@ -457,18 +457,6 @@ public class SimulationScene {
     SceneRenderer.drawCell(grid, rowCount, row, col, color);
   }
 
-//  /**
-//   * Set the cell at the given dx and column with the cell's properties
-//   *
-//   * @param row           the dx of the cell
-//   * @param col           the column of the cell
-//   * @param state         the state of the cell
-//   * @param allProperties the properties of the cell
-//   */
-//  public void setParameters(int row, int col, Enum<?> state, Map<String, Double> allProperties) {
-//    SceneRenderer.drawParameters(grid, row, col, state, allProperties);
-//  }
-
   /**
    * Set the parameter with the given label, min, max, default value, tooltip, and callback
    * @param labelKey the label key for the StringProperty of the parameter
@@ -479,7 +467,9 @@ public class SimulationScene {
    * @param callback the callback function of the parameter
    */
   public void setParameter(double min, double max, double defaultValue, String labelKey, String tooltipKey, Consumer<Double> callback) {
+    System.out.println(min + " " + max + " " + defaultValue);
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
+    System.out.println(parameterBox.getChildren().size());
   }
 
   /**
@@ -490,6 +480,7 @@ public class SimulationScene {
    * @param callback the callback function of the parameter
    */
   public void setParameter(String defaultValue, String labelKey, String tooltipKey, Consumer<String> callback) {
+    System.out.println("setting parameter" + defaultValue + " " + labelKey + " " + tooltipKey);
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
   }
 

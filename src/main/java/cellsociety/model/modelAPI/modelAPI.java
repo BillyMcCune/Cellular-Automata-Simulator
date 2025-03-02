@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.function.Consumer;
 import javafx.scene.paint.Color;
 
 /**
@@ -28,7 +29,7 @@ public class modelAPI {
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
   private static final String STATE_PACKAGE = "cellsociety.model.data.states";
   private static final String NEIGHBOR_PACKAGE = "cellsociety.model.data.neighbors";
-  private ParameterRecord parameterRecord;
+  private ParameterRecord myParameterRecord;
   private ConfigInfo configInfo;
 
   // Model
@@ -59,7 +60,7 @@ public class modelAPI {
 
   public void setConfigInfo(ConfigInfo configInfo) {
     this.configInfo = configInfo;
-    this.parameterRecord = configInfo.myParameters();
+    this.myParameterRecord = configInfo.myParameters();
   }
 
   /**
@@ -93,7 +94,7 @@ public class modelAPI {
 
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
-          .newInstance(grid, parameterRecord);
+          .newInstance(grid, myParameterRecord);
     } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
              InstantiationException | IllegalAccessException e) {
       throw new ClassNotFoundException("error-resetGrid", e);
@@ -108,10 +109,11 @@ public class modelAPI {
    */
   public Map<String, Double> getDoubleParameters() {
     try {
-      if (parameterRecord == null) {
-        parameterRecord = configInfo.myParameters();
+      if (myParameterRecord == null) {
+        myParameterRecord = configInfo.myParameters();
       }
-      return parameterRecord.myDoubleParameters();
+      System.out.println(myParameterRecord.myDoubleParameters());
+      return myParameterRecord.myDoubleParameters();
     } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
     }
@@ -129,19 +131,21 @@ public class modelAPI {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic has not been initialized.");
     }
-    if (parameterRecord == null) {
-      parameterRecord = configInfo.myParameters();
+    if (myParameterRecord == null) {
+      myParameterRecord = configInfo.myParameters();
     }
 
-    parameterRecord.myDoubleParameters().put(paramName, value);
+    myParameterRecord.myDoubleParameters().put(paramName, value);
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-
+    System.out.println(setterName);
     try {
       // Find the setter method that accepts a double.
       Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
       // Invoke the setter on the game logic.
+      System.out.println(value);
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      System.out.println("error with setter");
       throw new NoSuchElementException(e);
     }
   }
@@ -155,19 +159,21 @@ public class modelAPI {
    * @throws NumberFormatException if there is an error related to a null configuration.
    */
   public void setStringParameter(String paramName, String value) {
-    if (parameterRecord == null) {
-      parameterRecord = configInfo.myParameters();
+    if (myParameterRecord == null) {
+      myParameterRecord = configInfo.myParameters();
     }
     // Update the parameter record.
-    parameterRecord.myStringParameters().put(paramName, value);
+    myParameterRecord.myStringParameters().put(paramName, value);
 
     // Construct the setter method name (e.g., "setLabel" for "label").
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
+    System.out.println(setterName);
     try {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
              NullPointerException e) {
+      System.out.println("error with setter");
       throw new NumberFormatException("error-configInfo-NULL");
     }
   }
@@ -180,10 +186,10 @@ public class modelAPI {
    */
   public Map<String, String> getStringParameters() {
     try {
-      if (parameterRecord == null) {
-        parameterRecord = configInfo.myParameters();
+      if (myParameterRecord == null) {
+        myParameterRecord = configInfo.myParameters();
       }
-      return parameterRecord.myStringParameters();
+      return myParameterRecord.myStringParameters();
     } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
     }
@@ -293,39 +299,47 @@ public class modelAPI {
   }
 
   /**
-   * Resets the simulation parameters by iterating over the game logic's setter methods and updating
-   * the parameter record accordingly.
+   * Resets the simulation parameters by iterating over the public setter methods
+   * of the currently loaded gameLogic. For each setter, the corresponding getter,
+   * getMinParam, and getMaxParam methods are used to obtain the default and bounds values,
+   * which are then stored in the parameter record.
    *
-   * @throws InvocationTargetException if a getter or setter method throws an exception.
-   * @throws IllegalAccessException    if the currently executing method does not have access.
-   * @throws NoSuchMethodException     if a required getter method is not found.
+   * @throws Exception if a required method is not found or cannot be invoked.
    */
   public void resetParameters()
-      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+      throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     if (gameLogic == null) {
-      throw new IllegalStateException("Game logic has not been initialized.");
-    }
-    if (parameterRecord == null) {
-      parameterRecord = configInfo.myParameters();
+      throw new IllegalStateException("Game logic is not initialized.");
     }
     Class<?> logicClass = gameLogic.getClass();
-    // Iterate through each public method in the logic class.
     for (Method setterMethod : logicClass.getMethods()) {
       String methodName = setterMethod.getName();
+      // Only consider public setter methods that start with "set" and take one parameter.
       if (!methodName.startsWith("set") || setterMethod.getParameterCount() != 1) {
         continue;
       }
-      // Convert method name to parameter name (e.g., setSpeed → speed).
+      // Derive the parameter name from the setter method.
       String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
+
+
+      // Retrieve the corresponding getter and bound methods.
       Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
+      Method minMethod = logicClass.getMethod("getMinParam", String.class);
+      Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
       Class<?> paramType = setterMethod.getParameterTypes()[0];
 
       if (paramType == double.class) {
+        double min = (double) minMethod.invoke(gameLogic, paramName);
+        double max = (double) maxMethod.invoke(gameLogic, paramName);
         double defaultValue = (double) getterMethod.invoke(gameLogic);
-        parameterRecord.myDoubleParameters().put(paramName, defaultValue);
+        // Update the parameter record for double parameters.
+        myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
+        System.out.println(myParameterRecord.myDoubleParameters());
       } else if (paramType == String.class) {
         String defaultValue = (String) getterMethod.invoke(gameLogic);
-        parameterRecord.myStringParameters().put(paramName, defaultValue);
+        // Update the parameter record for string parameters.
+        myParameterRecord.myStringParameters().put(paramName, defaultValue);
+        System.out.println(myParameterRecord.myStringParameters());
       }
     }
   }
@@ -408,5 +422,75 @@ public class modelAPI {
       cellProperties.add(rowProperties);
     }
     return cellProperties;
+  }
+
+  /**
+   * Returns a Consumer that will invoke the appropriate setter for a double parameter.
+   *
+   * @param paramName the name of the parameter (e.g., "probCatch")
+   * @return a Consumer<Double> that calls setDoubleParameter(paramName, newValue)
+   * @throws NoSuchElementException if the corresponding setter is not found.
+   */
+  public Consumer<Double> getDoubleParameterConsumer(String paramName) {
+    String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
+    try {
+      Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
+      return newVal -> {
+        try {
+          setterMethod.invoke(gameLogic, newVal.doubleValue());
+        } catch (InvocationTargetException e) {
+          throw new RuntimeException("error-invalidParameterMessage");
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException("error-setParameter");
+        }};
+    } catch (NoSuchMethodException e) {
+      throw new NoSuchElementException("error-invalidParameterMessage");
+    }
+  }
+
+  /**
+   * Returns a Consumer that will invoke the appropriate setter for a String parameter.
+   *
+   * @param paramName the name of the parameter
+   * @return a Consumer<String> that calls setStringParameter(paramName, newValue)
+   * @throws NoSuchElementException if the corresponding setter is not found.
+   */
+  public Consumer<String> getStringParameterConsumer(String paramName)
+      throws NoSuchMethodException {
+    String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
+    try {
+      Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
+      return newVal -> {
+        try {
+          setterMethod.invoke(gameLogic, newVal);
+
+        } catch (InvocationTargetException e) {
+          throw new RuntimeException("error-invalidParameterMessage");
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException("error-setParameter");
+        }
+      };
+    } catch (NoSuchMethodException e) {
+      throw new NoSuchElementException("error-invalidParameterMessage");
+    }
+  }
+
+  /**
+   * Returns the minimum and maximum bounds for a given parameter.
+   *
+   * @param paramName the name of the parameter (e.g., "probCatch")
+   * @return a double array where index 0 is the minimum value and index 1 is the maximum value
+   * @throws Exception if the underlying methods cannot be found or invoked.
+   */
+  public double[] getParameterBounds(String paramName) throws Exception {
+    if (gameLogic == null) {
+      throw new IllegalStateException("Game logic is not initialized.");
+    }
+    Class<?> logicClass = gameLogic.getClass();
+    Method minMethod = logicClass.getMethod("getMinParam", String.class);
+    Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
+    double min = (double) minMethod.invoke(gameLogic, paramName);
+    double max = (double) maxMethod.invoke(gameLogic, paramName);
+    return new double[]{ min, max };
   }
 }

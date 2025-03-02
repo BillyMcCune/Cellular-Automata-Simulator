@@ -6,8 +6,10 @@ import cellsociety.model.modelAPI.modelAPI;
 import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -61,11 +63,13 @@ public class SceneController {
       myModelAPI.resetModel();
       initGrid();
       isLoaded = true;
-      updateParameterPanel();
-    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException ex) {
+      resetParameters();
+    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException | InvocationTargetException |IllegalAccessException ex) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-loadConfig").getValue(),
           ex.getMessage(), ex);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -145,6 +149,7 @@ public class SceneController {
   public void resetModel() {
     try {
       myModelAPI.resetModel();
+      resetParameters();
       updateGrid();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog(
@@ -169,33 +174,37 @@ public class SceneController {
 
   /**
    * Updates the simulation parameters in the UI by retrieving the parameter values
-   * from modelAPI. This replaces the old reflection‐based method.
+   * from modelAPI. This method calls the model's resetParameters method (which updates
+   * the parameter record based on the current gameLogic), and then iterates over the
+   * double and string parameters to register callbacks in the UI.
+   *
+   * @throws InvocationTargetException
+   * @throws IllegalAccessException
+   * @throws NoSuchMethodException
    */
-  public void resetParameters() {
-    // Clear the parameter UI controls if needed (for example, clearing parameterBox).
-    // (Assuming simulationScene or parameterBox is cleared elsewhere when a new configuration is loaded.)
+  public void resetParameters()
+      throws Exception {
+    // First, update the model's parameter record.
+    myModelAPI.resetParameters();
+
+
 
     // Update double parameters.
     Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
     for (Map.Entry<String, Double> entry : doubleParams.entrySet()) {
       String paramName = entry.getKey();
       double defaultValue = entry.getValue();
-      // Use default min/max ranges (adjust as needed).
-      double min = 0;
-      double max = 100;
-      // Use the simulationScene.setParameter method that creates a slider control.
+      double[] parameterBounds = myModelAPI.getParameterBounds(paramName);
+      // Retrieve min and max using the game logic's methods.
+      double min = parameterBounds[0];
+      double max = parameterBounds[1];
+
+      // Obtain the consumer from modelAPI.
+      Consumer<Double> consumer = myModelAPI.getDoubleParameterConsumer(paramName);
+
+      // Register the parameter in the simulation UI.
       simulationScene.setParameter(min, max, defaultValue,
-          paramName + "-label", paramName + "-tooltip",
-          newVal -> {
-            try {
-              myModelAPI.setDoubleParameter(paramName, newVal);
-            } catch (Exception ex) {
-              String message = String.format(
-                  LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
-              SceneUIWidget.createErrorDialog(
-                  LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
-            }
-          });
+          paramName + "-label", paramName + "-tooltip", consumer);
     }
 
     // Update string parameters.
@@ -203,21 +212,17 @@ public class SceneController {
     for (Map.Entry<String, String> entry : stringParams.entrySet()) {
       String paramName = entry.getKey();
       String defaultValue = entry.getValue();
-      // Use the simulationScene.setParameter method that creates a text field control.
+
+      // Obtain the consumer from modelAPI.
+      Consumer<String> consumer = myModelAPI.getStringParameterConsumer(paramName);
+
+      // Register the parameter in the simulation UI.
       simulationScene.setParameter(defaultValue,
-          paramName + "-label", paramName + "-tooltip",
-          newVal -> {
-            try {
-              myModelAPI.setStringParameter(paramName, newVal);
-            } catch (Exception ex) {
-              String message = String.format(
-                  LanguageController.getStringProperty("error-invalidParameterMessage").getValue(), paramName);
-              SceneUIWidget.createErrorDialog(
-                  LanguageController.getStringProperty("error-setParameter").getValue(), message, ex);
-            }
-          });
+          paramName + "-label", paramName + "-tooltip", consumer);
     }
   }
+
+
 
 
   /* CONTROLLER APIS */
