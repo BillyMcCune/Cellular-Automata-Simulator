@@ -8,6 +8,7 @@ import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
@@ -248,9 +249,8 @@ public class SceneUIWidget {
    *
    * @param content the content node to be displayed
    */
-  public static Pane dragZoomViewUI(Node content) {
+  public static Pane dragZoomViewUI(Node content, Node miniContent) {
     Pane pane = new Pane();
-    pane.getStyleClass().add("content-pane");
     pane.getChildren().add(content);
 
     // Create centering consumer
@@ -296,11 +296,7 @@ public class SceneUIWidget {
       double offsetY = event.getSceneY() - mouseY[0];
       content.relocate(offsetX, offsetY);
     });
-
-    final double[] scale = {1.0};
-    pane.setOnZoom(event -> {
-      double zoomFactor = event.getZoomFactor();
-
+    BiConsumer<Double, double[]> zoomContent = (zoomFactor, scale) -> {
       scale[0] *= zoomFactor;
       int signX = content.getScaleX() < 0 ? -1 : 1;
       int signY = content.getScaleY() < 0 ? -1 : 1;
@@ -310,21 +306,44 @@ public class SceneUIWidget {
 
       content.setScaleX(signX * scale[0]);
       content.setScaleY(signY * scale[0]);
+    };
+    double[] scale = {1.0};
+    pane.setOnZoom(event -> {
+      double zoomFactor = event.getZoomFactor();
+      zoomContent.accept(zoomFactor, scale);
     });
     pane.setOnScroll(event -> {
       double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
-
-      scale[0] *= zoomFactor;
-      int signX = content.getScaleX() < 0 ? -1 : 1;
-      int signY = content.getScaleY() < 0 ? -1 : 1;
-
-      // limit the scale to reasonable values
-      scale[0] = Math.max(MIN_ZOOM_RATE, Math.min(scale[0], MAX_ZOOM_RATE));
-
-      content.setScaleX(signX * scale[0]);
-      content.setScaleY(signY * scale[0]);
-
+      zoomContent.accept(zoomFactor, scale);
       event.consume();
+    });
+
+    // Create a mini map
+    Pane miniMapPane = new Pane();
+    miniMapPane.getStyleClass().add("mini-map-pane");
+    miniMapPane.setOpacity(0.5);
+    miniMapPane.setMaxSize(100, 100);
+    miniMapPane.setMinSize(100, 100);
+    miniMapPane.setLayoutX(10);
+    miniMapPane.setLayoutY(10);
+    pane.getChildren().add(miniMapPane);
+    miniMapPane.getChildren().add(miniContent);
+    miniContent.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+      double contentWidth = miniContent.prefWidth(-1);
+      double contentHeight = miniContent.prefHeight(-1);
+      Insets insets = miniMapPane.getPadding();
+      Insets borderInsets = miniMapPane.getBorder().getInsets();
+
+      double scaleX = (miniMapPane.getWidth() - insets.getLeft() - insets.getRight()) / contentWidth;
+      double scaleY = (miniMapPane.getHeight() - insets.getTop() - insets.getBottom()) / contentHeight;
+      double minScale = Math.min(scaleX, scaleY);
+
+      double offsetX = (miniMapPane.getWidth() - contentWidth + borderInsets.getLeft() + borderInsets.getRight()) / 2;
+      double offsetY = (miniMapPane.getHeight() - contentHeight + borderInsets.getTop() + borderInsets.getBottom()) / 2;
+
+      miniContent.setScaleX(minScale);
+      miniContent.setScaleY(minScale);
+      miniContent.relocate(offsetX, offsetY);
     });
 
     return pane;
@@ -352,6 +371,7 @@ public class SceneUIWidget {
 
     return scrollPane;
   }
+
 
   /**
    * Create a section UI with a title and rows.
@@ -440,9 +460,6 @@ public class SceneUIWidget {
       // Log the exception
       Log.error(message);
     }
-
-
-
 
     // Layout
     VBox layout = new VBox(15, titleLabel, messageLabel, exceptionArea);
@@ -571,7 +588,7 @@ public class SceneUIWidget {
    * @return an HBox containing the language and theme selectors
    */
   public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
-    // Create the Language label and dropdown (ComboBox)
+    // TODO: REMOVE DULICATED CODE
     HBox languageContainer = new HBox(10);
     languageContainer.setAlignment(Pos.CENTER);
     Label languageLabel = new Label();
@@ -582,6 +599,7 @@ public class SceneUIWidget {
     languageComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
     languageComboBox.setMaxHeight(BUTTON_HEIGHT);
     HBox.setHgrow(languageComboBox, Priority.ALWAYS);
+
     languageComboBox.getItems().addAll(
         Arrays.stream(LanguageController.Language.values())
             .map(lang -> lang.name().substring(0, 1).toUpperCase() + lang.name().substring(1).toLowerCase())
@@ -589,18 +607,12 @@ public class SceneUIWidget {
     );
     languageComboBox.setValue(defaultLanguage);
     languageComboBox.getStyleClass().add("splash-combo-box");
-
-    // Set listener for language selection
     languageComboBox.setOnAction(event -> {
       String selectedLanguage = languageComboBox.getValue();
       languageConsumer.accept(Language.valueOf(selectedLanguage.toUpperCase()));
-      languageComboBox.setStyle("-fx-text-fill: #7a5cff;");
     });
-
-    // Add the label and ComboBox into the languageContainer HBox
     languageContainer.getChildren().addAll(languageLabel, languageComboBox);
 
-    // Create the Theme label and dropdown (ComboBox)
     HBox themeContainer = new HBox(10);
     themeContainer.setAlignment(Pos.CENTER);
     Label themeLabel = new Label();
@@ -611,6 +623,7 @@ public class SceneUIWidget {
     themeComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
     themeComboBox.setMaxHeight(BUTTON_HEIGHT);
     HBox.setHgrow(themeComboBox, Priority.ALWAYS);
+
     themeComboBox.getItems().addAll(
         Arrays.stream(ThemeController.Theme.values())
             .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
@@ -618,17 +631,12 @@ public class SceneUIWidget {
     );
     themeComboBox.setValue(defaultTheme);
     themeComboBox.getStyleClass().add("splash-combo-box");
-
-    // Set listener for theme selection
     themeComboBox.setOnAction(event -> {
       String selectedTheme = themeComboBox.getValue();
       themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
     });
-
-    // Add the label and ComboBox into the themeContainer HBox
     themeContainer.getChildren().addAll(themeLabel, themeComboBox);
 
-    // Return the combined HBox containing both the language and theme selectors
     HBox box = new HBox(10, languageContainer, themeContainer);
     box.setAlignment(Pos.CENTER);
     box.setPadding(new Insets(10));
@@ -645,4 +653,7 @@ public class SceneUIWidget {
   public static void setWidgetStyleSheet(String styleSheet) {
     SceneUIWidget.WIDGET_STYLE_SHEET = styleSheet;
   }
+
+  /* PRIVATE HELPER METHODS */
+
 }

@@ -1,7 +1,15 @@
 package cellsociety.view.renderer;
 
 import cellsociety.view.renderer.drawer.GridDrawer;
-import cellsociety.view.renderer.drawer.SquareGridDrawer;
+import cellsociety.view.renderer.drawer.HexagonGridDrawer;
+import cellsociety.view.renderer.drawer.TriangleGridDrawer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
