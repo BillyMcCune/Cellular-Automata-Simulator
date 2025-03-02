@@ -16,7 +16,6 @@ import cellsociety.view.renderer.drawer.GridDrawer;
 import cellsociety.view.renderer.SceneRenderer;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
@@ -445,6 +444,7 @@ public class SimulationScene {
    */
   public void setCell(int rowCount, int row, int col, String color) {
     SceneRenderer.drawCell(grid, rowCount, row, col, color);
+    SceneRenderer.drawCell(miniGrid, rowCount, row, col, color);
   }
 
   /**
