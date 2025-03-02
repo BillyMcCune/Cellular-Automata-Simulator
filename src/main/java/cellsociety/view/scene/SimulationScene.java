@@ -349,9 +349,8 @@ public class SimulationScene {
       // Reset the simulation
       controller.resetModel();
 
-      // Update the UI Text
+      // Update the Title Text
       primaryStage.setTitle(controller.getSimulationTitle());
-      infoText.setText(controller.getConfigInformation());
 
       // Center the grid
       if (grid.getOpacity() == 0) {
@@ -438,6 +437,15 @@ public class SimulationScene {
    */
   public void setCell(int rowCount, int row, int col, String color) {
     SceneRenderer.drawCell(grid, rowCount, row, col, color);
+  }
+
+  /**
+   * Set the info text with the given information
+   *
+   * @param info the information to be displayed
+   */
+  public void setInfo(String info) {
+    infoText.setText(info);
   }
 
   /**

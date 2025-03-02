@@ -1,6 +1,5 @@
 package cellsociety.view.controller;
 
-import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.modelAPI.modelAPI;
 import cellsociety.view.scene.SceneUIWidget;
@@ -10,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import javax.management.ReflectionException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -24,12 +22,17 @@ public class SceneController {
   private final modelAPI myModelAPI;
   private final configAPI myConfigAPI;
   private final SimulationScene simulationScene;
+
   private boolean isLoaded;
   private boolean isPaused;
+
   private int numRows;
   private int numCols;
+  private int numIterations;
+
   private double updateInterval;
   private double timeSinceLastUpdate;
+
   private String configTitle;
 
   /**
@@ -39,26 +42,35 @@ public class SceneController {
    * @param scene the simulation scene to control
    */
   public SceneController(SimulationScene scene) {
+    // Initialize the model and configuration APIs.
+    // Connect the config API to the model API so that configuration updates propagate.
     myModelAPI = new modelAPI();
     myConfigAPI = new configAPI();
-    // Connect the config API to the model API so that configuration updates propagate.
     myConfigAPI.setModelAPI(myModelAPI);
+
     this.simulationScene = scene;
     this.isPaused = true;
+    this.isLoaded = false;
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
+    this.numIterations = 0;
   }
 
   /**
    * Updates the simulation by delegating to the model API and then refreshing the scene.
+   *
+   * @param elapsedTime the time elapsed since the last update
    */
-  public void update(double elasedTime) {
+  public void update(double elapsedTime) {
     if (!isPaused) {
-      timeSinceLastUpdate += elasedTime;
+      timeSinceLastUpdate += elapsedTime;
       if (timeSinceLastUpdate >= updateInterval) {
         myModelAPI.updateSimulation();
-        updateGrid();
+        updateViewGrid();
+        updateViewInfo();
+
         timeSinceLastUpdate = 0.0;
+        numIterations++;
       }
     }
   }
@@ -74,8 +86,8 @@ public class SceneController {
   public void loadConfig(String filename) {
     try {
       myConfigAPI.loadSimulation(filename);
-      myModelAPI.resetModel();
-      initGrid();
+      resetModel();
+      initViewGrid();
       resetParameters();
       isLoaded = true;
     } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | NullPointerException ex) {
@@ -123,11 +135,12 @@ public class SceneController {
     try {
       Map<String, String> simulationInfo = myConfigAPI.getSimulationInformation();
       configTitle = simulationInfo.get("title");
-      return String.format("Author: %s\nTitle: %s\nType: %s\nDescription: %s",
+      return String.format("Author: %s\nTitle: %s\nType: %s\nDescription: %s\n Iterations: %d",
           simulationInfo.get("author"),
           simulationInfo.get("title"),
           simulationInfo.get("type"),
-          simulationInfo.get("description"));
+          simulationInfo.get("description"),
+          numIterations);
     } catch (NullPointerException ex) {
       // TODO: Handle missing configuration appropriately.
     }
@@ -147,7 +160,10 @@ public class SceneController {
     try {
       myModelAPI.resetModel();
       resetParameters();
-      updateGrid();
+      updateViewGrid();
+
+      numIterations = 0;
+      updateViewInfo();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-resetModel").getValue(),
@@ -161,7 +177,10 @@ public class SceneController {
   public void resetGrid() {
     try {
       myModelAPI.resetGrid();
-      initGrid();
+      initViewGrid();
+
+      numIterations = 0;
+      updateViewInfo();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-resetGrid").getValue(),
@@ -259,7 +278,7 @@ public class SceneController {
    * the model API.
    */
   //TODO fix this
-  private void initGrid() throws NullPointerException {
+  private void initViewGrid() throws NullPointerException {
     numRows = myConfigAPI.getGridHeight();
     numCols = myConfigAPI.getGridWidth();
     simulationScene.setGrid(numRows, numCols);
@@ -270,10 +289,10 @@ public class SceneController {
     }
   }
 
-  private void updateGrid() {
+  private void updateViewGrid() {
     if (!isPaused) {
       if (numRows == 0 || numCols == 0) {
-        initGrid();
+        initViewGrid();
       }
       for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -282,6 +301,13 @@ public class SceneController {
       }
     }
   }
+
+  private void updateViewInfo() {
+    if (isLoaded) {
+      simulationScene.setInfo(getConfigInformation());
+    }
+  }
+
 
   private int getTickSpeed() {
     return (int) (10 / updateInterval / SPEED_MULTIPLIER);
