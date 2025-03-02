@@ -67,9 +67,10 @@ public class Docker {
    * @param title the title of the floating window
    * @param content the content of the floating window
    * @param dockPosition the default dock position of the floating window
+   * @param targetWindow the target window to dock the floating window. If null, the floating window will be docked to the main stage
    * @return the floating window
    */
-  public DWindow createDWindow(StringProperty title, Node content, DockPosition dockPosition) {
+  public DWindow createDWindow(StringProperty title, Node content, DockPosition dockPosition, DWindow targetWindow) {
     Stage floatingStage = new Stage();
     floatingStage.initStyle(StageStyle.UTILITY);
     TabPane floatingTabPane = createTabPane(title, content);
@@ -78,9 +79,13 @@ public class Docker {
     floatingWindows.add(dWindow);
 
     // Initial dock check
-    if (dockPosition != null && dockPosition != DockPosition.NONE) {
+    if (dockPosition != null && dockPosition != DockPosition.NONE && dockPosition != DockPosition.CENTER && targetWindow == null) {
       dWindow.floatingStage.setOpacity(0);
       dockTab(dWindow, null, dockPosition);
+    } else if (dockPosition != DockPosition.NONE && targetWindow != null) {
+      dWindow.floatingStage.setOpacity(0);
+      Tab targetTab = (Tab) targetWindow.floatingTabPane.getTabs().getFirst().getUserData();
+      dockTab(dWindow, targetTab.getTabPane(), dockPosition);
     }
 
     return dWindow;

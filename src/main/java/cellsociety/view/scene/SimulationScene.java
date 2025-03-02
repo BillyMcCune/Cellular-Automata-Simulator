@@ -9,6 +9,7 @@ import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import cellsociety.view.controller.ThemeController.UIComponent;
 import cellsociety.view.controller.SceneController;
+import cellsociety.view.docking.DWindow;
 import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
 import cellsociety.view.renderer.drawer.GridDrawer;
@@ -95,11 +96,11 @@ public class SimulationScene {
     VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
-    docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP);
-    docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel, DockPosition.TOP);
-    docker.createDWindow(LanguageController.getStringProperty("log-window"), logPanel, DockPosition.TOP);
-    docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT);
-    docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT);
+    docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP, null);
+    docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT, null);
+    DWindow parameterWindow = docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT, null);
+    DWindow logWindow = docker.createDWindow(LanguageController.getStringProperty("log-window"), logPanel, DockPosition.BOTTOM, parameterWindow);
+    docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel, DockPosition.CENTER, logWindow);
     docker.reformat();
   }
 
