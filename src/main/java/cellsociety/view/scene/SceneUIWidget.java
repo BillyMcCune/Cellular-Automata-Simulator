@@ -330,13 +330,14 @@ public class SceneUIWidget {
       double contentWidth = miniContent.prefWidth(-1);
       double contentHeight = miniContent.prefHeight(-1);
       Insets insets = miniMapPane.getPadding();
+      Insets borderInsets = miniMapPane.getBorder().getInsets();
 
       double scaleX = (miniMapPane.getWidth() - insets.getLeft() - insets.getRight()) / contentWidth;
       double scaleY = (miniMapPane.getHeight() - insets.getTop() - insets.getBottom()) / contentHeight;
       double minScale = Math.min(scaleX, scaleY);
 
-      double offsetX = (miniMapPane.getWidth() - contentWidth) / 2;
-      double offsetY = (miniMapPane.getHeight() - contentHeight) / 2;
+      double offsetX = (miniMapPane.getWidth() - contentWidth + borderInsets.getLeft() + borderInsets.getRight()) / 2;
+      double offsetY = (miniMapPane.getHeight() - contentHeight + borderInsets.getTop() + borderInsets.getBottom()) / 2;
 
       miniContent.setScaleX(minScale);
       miniContent.setScaleY(minScale);
@@ -585,7 +586,7 @@ public class SceneUIWidget {
    * @return an HBox containing the language and theme selectors
    */
   public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
-
+    // TODO: REMOVE DULICATED CODE
     HBox languageContainer = new HBox(10);
     languageContainer.setAlignment(Pos.CENTER);
     Label languageLabel = new Label();
