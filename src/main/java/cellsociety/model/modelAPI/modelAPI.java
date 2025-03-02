@@ -9,12 +9,17 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -500,4 +505,58 @@ public class modelAPI {
     double max = (double) maxMethod.invoke(gameLogic, paramName);
     return new double[]{ min, max };
   }
+
+  public Map<String,String> getCellTypesAndDefaultColors(String SimulationType) {
+    Map<String,String> possibleStates = new HashMap<>();
+    try (InputStream input = new FileInputStream("CellColor.properties")) {
+      Properties defaultColors = new Properties();
+      defaultColors.load(input);
+      for (String key : defaultColors.stringPropertyNames()) {
+        possibleStates.put(key, defaultColors.getProperty(key));
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading default cell colors: " + e.getMessage());
+    }
+    return possibleStates;
+  }
+
+  public void setNewColorPreference(String stateName, String newColor) {
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(stateName, newColor);
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+  public String getColorFromPreferences(String stateName) {
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      return simulationStyle.getProperty(stateName, getDefaultColorByState(stateName));
+    } catch (IOException e) {
+      System.err.println("Error reading simulation style: " + e.getMessage());
+      return getDefaultColorByState(stateName);
+    }
+  }
+
+  public String getDefaultColorByState(String stateName) {
+    try (InputStream input = new FileInputStream("CellColor.properties")) {
+      Properties defaultColors = new Properties();
+      defaultColors.load(input);
+      return defaultColors.getProperty(stateName, "WHITE"); // fallback to WHITE
+    } catch (IOException e) {
+      System.err.println("Error reading default color for " + stateName + ": " + e.getMessage());
+      return "WHITE";
+    }
+}
 }
