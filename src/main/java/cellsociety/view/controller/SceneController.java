@@ -161,7 +161,7 @@ public class SceneController {
   public void resetGrid() {
     try {
       myModelAPI.resetGrid();
-      updateGrid();
+      initGrid();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-resetGrid").getValue(),

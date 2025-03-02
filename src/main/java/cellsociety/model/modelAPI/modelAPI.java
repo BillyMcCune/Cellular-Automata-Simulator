@@ -1,5 +1,6 @@
 package cellsociety.model.modelAPI;
 
+import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ParameterRecord;
@@ -87,10 +88,11 @@ public class modelAPI {
 
       // Dynamically load the Logic class.
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
-
       // Initialize the internal grid using the configuration.
-      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
+      List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
+      grid = new Grid<>(gridCopy, cellFactory, neighborCalculator);
+      System.out.println(configInfo.myGrid());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -98,6 +100,14 @@ public class modelAPI {
              InstantiationException | IllegalAccessException e) {
       throw new ClassNotFoundException("error-resetGrid", e);
     }
+  }
+
+  private List<List<CellRecord>> deepCopyGrid(List<List<CellRecord>> grid) {
+    List<List<CellRecord>> copy = new ArrayList<>();
+    for (List<CellRecord> row : grid) {
+      copy.add(new ArrayList<>(row));
+    }
+    return copy;
   }
 
   /**
