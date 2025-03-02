@@ -16,7 +16,6 @@ import cellsociety.view.renderer.drawer.GridDrawer;
 import cellsociety.view.renderer.SceneRenderer;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import javafx.animation.KeyFrame;
@@ -43,10 +42,6 @@ public class SimulationScene {
   public static final double DEFAULT_WIDTH = 1300;
   public static final double DEFAULT_HEIGHT = 700;
 
-  public static final double MAX_SPEED = 100;
-  public static final double MIN_SPEED = 0;
-  public static final double SPEED_MULTIPLIER = 3;
-
   public static final double NEW_SIMULATION_OFFSETX = 50;
   public static final double NEW_SIMULATION_OFFSETY = 50;
 
@@ -65,8 +60,6 @@ public class SimulationScene {
   private final SceneController controller;
 
   private int framesPerSecond;
-  private double updateInterval;
-  private double timeSinceLastUpdate;
   private boolean doShowBorder = true;
 
   /**
@@ -80,8 +73,6 @@ public class SimulationScene {
     this.primaryStage = primaryStage;
     this.docker = new Docker(primaryStage);
     this.controller = new SceneController(this);
-    this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
-    this.timeSinceLastUpdate = 0.0;
 
     // Set the default style and language
     updateUIStyle(Theme.DAY);
@@ -121,7 +112,7 @@ public class SimulationScene {
       gameLoop.setCycleCount(Timeline.INDEFINITE);
       gameLoop.getKeyFrames().add(
           new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond),
-              e -> step(1.0 / framesPerSecond)));
+              e -> controller.update(1.0 / framesPerSecond)));
       gameLoop.play();
     };
 
@@ -306,15 +297,11 @@ public class SimulationScene {
   private void startPauseCallback() {
     // Start or pause the simulation
     if (!controller.isLoaded()) {
+      Log.warn("Simulation is not loaded. Aborting start.");
       return;
     }
 
     toggleStartPauseButton(!controller.isPaused());
-  }
-
-  private void speedChangeCallback(double speed) {
-    // Change the speed of the simulation
-    updateInterval = 10 / (speed * SPEED_MULTIPLIER);
   }
 
   private void selectDropDownCallback() {
@@ -364,17 +351,11 @@ public class SimulationScene {
       // Load the config file
       controller.loadConfig(filename);
 
-      // TODO: Move this into the controller
-      // Clear the parameter box except for the speed
-      parameterBox.getChildren().clear();
-      setParameter(MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), "speed-label","speed-tooltip", this::speedChangeCallback);
-
       // Reset the simulation
       controller.resetModel();
 
-      // Update the UI Text
-      primaryStage.setTitle(controller.getConfigTitle());
-      infoText.setText(controller.getConfigInformation());
+      // Update the Title Text
+      primaryStage.setTitle(controller.getSimulationTitle());
 
       // Center the grid
       if (grid.getOpacity() == 0) {
@@ -410,6 +391,7 @@ public class SimulationScene {
   }
 
   private void flipCallback() {
+    // Flip the grid
     double scaleX = grid.getScaleX();
     double scaleY = grid.getScaleY();
 
@@ -458,23 +440,27 @@ public class SimulationScene {
    * Set the cell at the given dx and column with the given state
    * @param row the dx of the cell
    * @param col the column of the cell
-   * @param state the state of the cell
+   * @param color the state of the cell
    */
-  public void setCell(int rowCount, int row, int col, Enum<?> state) {
-    SceneRenderer.drawCell(grid, rowCount, row, col, state);
-    SceneRenderer.drawCell(miniGrid, rowCount, row, col, state);
+  public void setCell(int rowCount, int row, int col, String color) {
+    SceneRenderer.drawCell(grid, rowCount, row, col, color);
+    SceneRenderer.drawCell(miniGrid, rowCount, row, col, color);
   }
 
   /**
-   * Set the cell at the given dx and column with the cell's properties
+   * Set the info text with the given information
    *
-   * @param row           the dx of the cell
-   * @param col           the column of the cell
-   * @param state         the state of the cell
-   * @param allProperties the properties of the cell
+   * @param info the information to be displayed
    */
-  public void setParameters(int row, int col, Enum<?> state, Map<String, Double> allProperties) {
-    SceneRenderer.drawParameters(grid, row, col, state, allProperties);
+  public void setInfo(String info) {
+    infoText.setText(info);
+  }
+
+  /**
+   * Clear all the parameters in the parameter box
+   */
+  public void clearParameters() {
+    parameterBox.getChildren().clear();
   }
 
   /**
@@ -501,14 +487,6 @@ public class SimulationScene {
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
   }
 
-  /**
-   * Get the tick speed of the simulation
-   * @return the tick speed of the simulation
-   */
-  public int getTickSpeed() {
-    return (int) (10 / updateInterval / SPEED_MULTIPLIER);
-  }
-
   /* PRIVATE UI HELPER METHODS */
 
   private static Text processAnsiCodes(String message) {
@@ -528,14 +506,6 @@ public class SimulationScene {
       return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
     } else {
       return createTextNode.apply(message, "default");
-    }
-  }
-
-  private void step(double elapsedTime) {
-    timeSinceLastUpdate += elapsedTime;
-    if (timeSinceLastUpdate >= updateInterval) {
-      controller.update();
-      timeSinceLastUpdate = 0.0;
     }
   }
 

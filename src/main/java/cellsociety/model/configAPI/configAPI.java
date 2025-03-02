@@ -5,7 +5,6 @@ import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.data.cells.Cell;
 import cellsociety.model.modelAPI.modelAPI;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +27,8 @@ public class configAPI {
   private List<List<Integer>> myGridStates;
   private List<List<Map<String,Double>>> myGridProperties;
 
+
+  public configAPI(){}
   /**
    * Retrieves a list of available configuration file names.
    *
@@ -37,6 +38,7 @@ public class configAPI {
     configReader = new ConfigReader();
     return configReader.getFileNames();
   }
+
 
   public void setModelAPI(modelAPI modelAPI) {
     myModelAPI = modelAPI;
@@ -51,13 +53,16 @@ public class configAPI {
    * @throws SAXException                 if a SAX parsing error occurs - check configReader for
    *                                      more information regarding load simulation errors
    */
+  //TODO implement error
   public void loadSimulation(String fileName)
       throws ParserConfigurationException, IOException, SAXException {
     try {
+      configReader = new ConfigReader();
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
+        System.out.println(configInfo);
         isLoaded = true;
-        myModelAPI.setConfiginfo(configInfo);
+        myModelAPI.setConfigInfo(configInfo);
       }
     } catch (ParserConfigurationException e) {
       throw new ParserConfigurationException(e.getMessage());
@@ -65,6 +70,8 @@ public class configAPI {
       throw new SAXException(e.getMessage());
     } catch (IOException e) {
       throw new IOException(e.getMessage());
+    } catch (NullPointerException e) {
+      throw new NullPointerException( e.getMessage());
     }
   }
 
@@ -174,15 +181,30 @@ public class configAPI {
     }
   }
 
-
-  public Map<String, String> getSimulationStyles() {
-    return new HashMap<>();
+//TODO implement error throw
+  public void setSimulationInformation(Map<String, String> simulationDetails) {
+    try{
+      ConfigInfo tempConfigInfo = new ConfigInfo(
+          configInfo.myType(),
+          configInfo.myCellShapeType(),
+          configInfo.myGridEdgeType(),
+          configInfo.myneighborArrangementType(),
+          simulationDetails.get("title"),
+          simulationDetails.get("author"),
+          simulationDetails.get("description"),
+          configInfo.myGridWidth(),
+          configInfo.myGridHeight(),
+          configInfo.myTickSpeed(),
+          configInfo.myGrid(),
+          configInfo.myParameters(),
+          configInfo.acceptedStates(),
+          configInfo.myFileName()
+      );
+      configInfo = tempConfigInfo;
+    } catch (NullPointerException e) {
+      throw new NullPointerException("error-missing-simulation-info");
+    }
   }
-
-  public void setSimulationStyles(Map<String, String> simulationStyles) {
-
-  }
-
 
   public double getConfigSpeed() {
     try {

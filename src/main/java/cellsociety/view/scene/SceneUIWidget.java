@@ -223,6 +223,7 @@ public class SceneUIWidget {
     // Add text listener
     textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode().toString().equals("ENTER")) {
+        // TODO: Handle invalid input
         String newValue = textField.getText();
         callback.accept(newValue);
       }
@@ -231,6 +232,7 @@ public class SceneUIWidget {
     // Add text focus listener
     textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) { // When focus is lost
+        // TODO: Handle invalid input
         String textValue = textField.getText();
         callback.accept(textValue);
       }
