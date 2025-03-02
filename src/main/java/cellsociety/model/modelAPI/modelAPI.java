@@ -571,4 +571,14 @@ public class modelAPI {
       return "WHITE";
     }
 }
+  public void setNeighborArrangement(){}
+  public List<String> getPossibleNeighborArrangements(){}
+  public void setEdgePolicy(){}
+  public List<String> getPossibleEdgePolicies(){}
+  public void setCellShape(){}
+  public List<String> getPossibleCellShapes(){}
+  public void setGridOutlinePreference(){}
+  public boolean getGridOutlinePreference(){}
+
 }
+
