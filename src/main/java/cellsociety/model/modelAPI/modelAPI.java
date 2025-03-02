@@ -52,7 +52,6 @@ public class modelAPI {
 
   // Load the color mapping from the properties file once (assumes the file is in your resources folder).
   private static final Properties COLOR_MAPPING = new Properties();
-
   static {
     try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/CellColor.properties")) {
       COLOR_MAPPING.load(in);
@@ -67,6 +66,16 @@ public class modelAPI {
     this.configInfo = configInfo;
     this.myParameterRecord = configInfo.myParameters();
   }
+  private static final Properties USER_DEFINED_COLOR_MAPPING = new Properties();
+
+  static {
+    try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
+      USER_DEFINED_COLOR_MAPPING .load(in);
+    } catch (IOException ex) {
+      throw new RuntimeException("error-getting-user-defined-color-mapping");
+    }
+  }
+
 
   /**
    * Updates the simulation by invoking the game logic update method.
@@ -214,12 +223,12 @@ public class modelAPI {
    * current state. If that color is WHITE, the method will check if any of the cell’s property
    * values (if nonzero) have an associated color.
    */
-  public String getCellColor(int row, int col) {
+  public String getCellColor(int row, int col, boolean wantDefaultColor) {
     if (col >= grid.getNumCols() || row >= grid.getNumRows()) {
       return null;
     }
     Cell<?> cell = grid.getCell(row, col);
-    String stateColor = getStateColor(cell);
+    String stateColor = getStateColor(cell,wantDefaultColor);
     if (!"WHITE".equalsIgnoreCase(stateColor)) {
       return stateColor;
     }
@@ -231,7 +240,7 @@ public class modelAPI {
    * Determines the color from the cell's current state. It uses the cell's state (for example,
    * "AntState.EMPTY" or "FireState.BURNING") as a key in the properties file.
    */
-  private String getStateColor(Cell<?> cell) {
+  private String getStateColor(Cell<?> cell, boolean wantDefaultColor) {
     // Get the state value (e.g., "TREE" or "BURNING")
     String stateValue = cell.getCurrentState().toString();
     // Get the simple name of the cell state class (e.g., "FireState")
@@ -239,6 +248,9 @@ public class modelAPI {
     // Construct the full key (e.g., "FireState.TREE")
     String key = statePrefix + "." + stateValue;
     // If the mapping is not found, default to "WHITE"
+    if (!wantDefaultColor) {
+      return USER_DEFINED_COLOR_MAPPING.getProperty(key, "WHITE");
+    }
     return COLOR_MAPPING.getProperty(key, "WHITE");
   }
 
