@@ -42,10 +42,6 @@ public class SimulationScene {
   public static final double DEFAULT_WIDTH = 1200;
   public static final double DEFAULT_HEIGHT = 700;
 
-  public static final double MAX_SPEED = 100;
-  public static final double MIN_SPEED = 0;
-  public static final double SPEED_MULTIPLIER = 3;
-
   public static final double NEW_SIMULATION_OFFSETX = 50;
   public static final double NEW_SIMULATION_OFFSETY = 50;
 
@@ -63,8 +59,6 @@ public class SimulationScene {
   private final SceneController controller;
 
   private int framesPerSecond;
-  private double updateInterval;
-  private double timeSinceLastUpdate;
   private boolean doShowBorder = true;
 
   /**
@@ -78,8 +72,6 @@ public class SimulationScene {
     this.primaryStage = primaryStage;
     this.docker = new Docker(primaryStage);
     this.controller = new SceneController(this);
-    this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
-    this.timeSinceLastUpdate = 0.0;
 
     // Set the default style and language
     updateUIStyle(Theme.DAY);
@@ -119,7 +111,7 @@ public class SimulationScene {
       gameLoop.setCycleCount(Timeline.INDEFINITE);
       gameLoop.getKeyFrames().add(
           new KeyFrame(javafx.util.Duration.seconds(1.0 / framesPerSecond),
-              e -> step(1.0 / framesPerSecond)));
+              e -> controller.update(1.0 / framesPerSecond)));
       gameLoop.play();
     };
 
@@ -300,16 +292,11 @@ public class SimulationScene {
   private void startPauseCallback() {
     // Start or pause the simulation
     if (!controller.isLoaded()) {
-      System.out.println("Simulation is not loaded. Aborting start.");
+      Log.warn("Simulation is not loaded. Aborting start.");
       return;
     }
 
     toggleStartPauseButton(!controller.isPaused());
-  }
-
-  private void speedChangeCallback(double speed) {
-    // Change the speed of the simulation
-    updateInterval = 10 / (speed * SPEED_MULTIPLIER);
   }
 
   private void selectDropDownCallback() {
@@ -359,11 +346,6 @@ public class SimulationScene {
       // Load the config file
       controller.loadConfig(filename);
 
-      // TODO: Move this into the controller
-      // Clear the parameter box except for the speed
-      parameterBox.getChildren().clear();
-      setParameter(MIN_SPEED, MAX_SPEED, controller.getConfigSpeed(), "speed-label","speed-tooltip", this::speedChangeCallback);
-
       // Reset the simulation
       controller.resetModel();
 
@@ -404,6 +386,7 @@ public class SimulationScene {
   }
 
   private void flipCallback() {
+    // Flip the grid
     double scaleX = grid.getScaleX();
     double scaleY = grid.getScaleY();
 
@@ -458,6 +441,13 @@ public class SimulationScene {
   }
 
   /**
+   * Clear all the parameters in the parameter box
+   */
+  public void clearParameters() {
+    parameterBox.getChildren().clear();
+  }
+
+  /**
    * Set the parameter with the given label, min, max, default value, tooltip, and callback
    * @param labelKey the label key for the StringProperty of the parameter
    * @param min the minimum value of the parameter
@@ -467,9 +457,7 @@ public class SimulationScene {
    * @param callback the callback function of the parameter
    */
   public void setParameter(double min, double max, double defaultValue, String labelKey, String tooltipKey, Consumer<Double> callback) {
-    System.out.println(min + " " + max + " " + defaultValue);
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
-    System.out.println(parameterBox.getChildren().size());
   }
 
   /**
@@ -480,16 +468,7 @@ public class SimulationScene {
    * @param callback the callback function of the parameter
    */
   public void setParameter(String defaultValue, String labelKey, String tooltipKey, Consumer<String> callback) {
-    System.out.println("setting parameter" + defaultValue + " " + labelKey + " " + tooltipKey);
     parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
-  }
-
-  /**
-   * Get the tick speed of the simulation
-   * @return the tick speed of the simulation
-   */
-  public int getTickSpeed() {
-    return (int) (10 / updateInterval / SPEED_MULTIPLIER);
   }
 
   /* PRIVATE UI HELPER METHODS */
@@ -511,14 +490,6 @@ public class SimulationScene {
       return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
     } else {
       return createTextNode.apply(message, "default");
-    }
-  }
-
-  private void step(double elapsedTime) {
-    timeSinceLastUpdate += elapsedTime;
-    if (timeSinceLastUpdate >= updateInterval) {
-      controller.update();
-      timeSinceLastUpdate = 0.0;
     }
   }
 

@@ -14,7 +14,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 public class SceneController {
+  // Constants
+  public static final double MAX_SPEED = 100;
+  public static final double MIN_SPEED = 0;
+  public static final double SPEED_MULTIPLIER = 3;
 
+  // Instance variables
   private modelAPI myModelAPI;
   private configAPI myConfigAPI;
   private final SimulationScene simulationScene;
@@ -22,6 +27,8 @@ public class SceneController {
   private boolean isPaused;
   private int numRows;
   private int numCols;
+  private double updateInterval;
+  private double timeSinceLastUpdate;
   private String configTitle;
 
   /**
@@ -37,15 +44,21 @@ public class SceneController {
     myConfigAPI.setModelAPI(myModelAPI);
     this.simulationScene = scene;
     this.isPaused = true;
+    this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
+    this.timeSinceLastUpdate = 0.0;
   }
 
   /**
    * Updates the simulation by delegating to the model API and then refreshing the scene.
    */
-  public void update() {
+  public void update(double elasedTime) {
     if (!isPaused) {
-      myModelAPI.updateSimulation();
-      updateGrid();
+      timeSinceLastUpdate += elasedTime;
+      if (timeSinceLastUpdate >= updateInterval) {
+        myModelAPI.updateSimulation();
+        updateGrid();
+        timeSinceLastUpdate = 0.0;
+      }
     }
   }
 
@@ -62,8 +75,8 @@ public class SceneController {
       myConfigAPI.loadSimulation(filename);
       myModelAPI.resetModel();
       initGrid();
-      isLoaded = true;
       resetParameters();
+      isLoaded = true;
     } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException | InvocationTargetException |IllegalAccessException ex) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-loadConfig").getValue(),
@@ -127,20 +140,6 @@ public class SceneController {
     return configTitle;
   }
 
-  /**
-   * Retrieves the simulation tick speed from the configuration.
-   *
-   * @return the simulation speed
-   */
-  public double getConfigSpeed() {
-    try {
-      return myConfigAPI.getConfigSpeed();
-    } catch (NullPointerException ex) {
-      // TODO: Handle missing configuration appropriately.
-    }
-    return 0;
-  }
-
   /* MODEL APIS */
 
   /**
@@ -184,9 +183,17 @@ public class SceneController {
    */
   public void resetParameters()
       throws Exception {
-    // First, update the model's parameter record.
+    // Update the model's parameter record.
     myModelAPI.resetParameters();
 
+    // clear the parameters in the simulation UI
+    simulationScene.clearParameters();
+
+    // Update the speed parameter.
+    simulationScene.setParameter(MIN_SPEED, MAX_SPEED, myConfigAPI.getConfigSpeed(), "speed-label", "speed-tooltip", speed -> {
+      // Change the speed of the simulation
+      updateInterval = 10 / (speed * SPEED_MULTIPLIER);
+    });
 
 
     // Update double parameters.
@@ -283,6 +290,8 @@ public class SceneController {
     }
   }
 
-
+  private int getTickSpeed() {
+    return (int) (10 / updateInterval / SPEED_MULTIPLIER);
+  }
 
 }
