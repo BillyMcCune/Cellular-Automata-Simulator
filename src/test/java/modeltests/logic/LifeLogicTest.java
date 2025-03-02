@@ -6,6 +6,7 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.LifeState;
 import cellsociety.model.logic.LifeLogic;
@@ -27,7 +28,7 @@ public class LifeLogicTest {
   };
 
   private final NeighborCalculator<LifeState> dummyNeighborCalculator =
-      new NeighborCalculator<LifeState>("square", "moore", false) {
+      new NeighborCalculator<LifeState>(GridShape.SQUARE, NeighborType.MOORE, false) {
   };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

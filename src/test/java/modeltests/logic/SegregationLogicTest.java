@@ -28,7 +28,7 @@ public class SegregationLogicTest {
   };
 
   private final NeighborCalculator<SegregationState> dummyNeighborCalculator =
-      new NeighborCalculator<SegregationState>("square", "moore", false) {
+      new NeighborCalculator<SegregationState>(GridShape.SQUARE, NeighborType.MOORE, false) {
       };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {

@@ -28,7 +28,7 @@ public class AntLogicTest {
   };
 
   private final NeighborCalculator<AntState> dummyNeighborCalculator =
-      new NeighborCalculator<AntState>("square", "moore", true) {
+      new NeighborCalculator<AntState>(GridShape.SQUARE, NeighborType.MOORE, true) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

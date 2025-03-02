@@ -27,7 +27,7 @@ public class FireLogicTest {
   };
 
   private final NeighborCalculator<FireState> dummyNeighborCalculator =
-      new NeighborCalculator<FireState>("square", "moore", false) {
+      new NeighborCalculator<FireState>(GridShape.SQUARE, NeighborType.MOORE, false) {
       };
 
 

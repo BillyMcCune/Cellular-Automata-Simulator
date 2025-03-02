@@ -1,5 +1,8 @@
 package cellsociety.model.data.neighbors;
 
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.states.State;
 
 /**
@@ -14,6 +17,6 @@ public class FireNeighborCalculator<T extends Enum<T> & State> extends NeighborC
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public FireNeighborCalculator() {
-    super("square", "neumann", false);
+    super(GridShape.SQUARE, NeighborType.NEUMANN, BoundaryType.STANDARD);
   }
 }

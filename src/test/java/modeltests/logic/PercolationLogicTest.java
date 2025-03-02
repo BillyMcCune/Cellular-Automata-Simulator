@@ -28,7 +28,7 @@ public class PercolationLogicTest {
   };
 
   private final NeighborCalculator<PercolationState> dummyNeighborCalculator =
-      new NeighborCalculator<PercolationState>("square", "moore", false) {
+      new NeighborCalculator<PercolationState>(GridShape.SQUARE, NeighborType.MOORE, false) {
       };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {

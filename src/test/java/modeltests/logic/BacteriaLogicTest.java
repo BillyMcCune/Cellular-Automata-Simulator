@@ -27,7 +27,7 @@ public class BacteriaLogicTest {
   };
 
   private final NeighborCalculator<BacteriaState> dummyNeighborCalculator =
-      new NeighborCalculator<BacteriaState>("square", "moore", false) {
+      new NeighborCalculator<BacteriaState>(GridShape.SQUARE, NeighborType.MOORE, false) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

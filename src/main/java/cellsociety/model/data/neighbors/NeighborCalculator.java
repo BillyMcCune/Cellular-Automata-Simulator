@@ -2,6 +2,9 @@ package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.states.State;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,168 +12,139 @@ import java.util.*;
 
 /**
  * A BFS-based universal NeighborCalculator that:
- *   - Loads neighbor definitions from a CellDirection.properties file
+ *   - Loads neighbor definitions from a CellNeighbor.properties file
  *   - Derives a single "canonical" set of neighbors for each shape+neighborSet (e.g. "TRI_MOORE")
- *   - For each newly visited cell, we re-check orientation and possibly flip the neighbors
- *     (for hex or tri).
- *   - We can gather all cells up to 'steps' distance away in BFS order.
- *   - We store expansions by distance, i.e. expansions[d] = set of all cells at distance d.
- *     (Or you can flatten them all into one set/list.)
+ *   - For each newly visited cell, we re-check orientation (for hex or tri) to possibly flip offsets
+ *   - Gathers cells up to some BFS distance, either as a cumulative set or ring at exactly distance d
  */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
 
   private static final String PROPERTY_FILE = "cellsociety/property/CellNeighbor.properties";
   private static final Map<String, List<Direction>> NEIGHBOR_MAP = loadNeighborProperties();
 
-  private final String shape;
-  private final String neighborSet;
-  private final boolean isTorus;
+  private final GridShape shape;
+  private final NeighborType neighborType;
+  private final BoundaryType boundary;
 
-  /**
-   * Constructs a BFS-based neighbor calculator.
-   *
-   * @param shape e.g. "SQUARE","HEX","TRI"
-   * @param neighborSet e.g. "MOORE","NEUMANN"
-   * @param isTorus true if the grid is toroidal
-   */
-  public NeighborCalculator(String shape, String neighborSet, boolean isTorus) {
-    this.shape = shape.toUpperCase().trim();
-    this.neighborSet = neighborSet.toUpperCase().trim();
-    this.isTorus = isTorus;
+  public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary) {
+    this.shape = shape;
+    this.neighborType = neighborType;
+    this.boundary = boundary;
   }
 
   public List<Direction> getDirections() {
-    String baseKey = shape + "_" + neighborSet;
+    String baseKey = shape + "_" + neighborType;
     return NEIGHBOR_MAP.get(baseKey);
   }
 
-  /**
-   * Returns all cells up to distance 'steps' from (row,col), inclusive.
-   * Distance is measured in BFS steps. For each newly visited cell, we re-check orientation
-   * (for hex or tri) to get the correct neighbor set. The BFS ensures we collect the correct ring
-   * of neighbors even if orientation changes from cell to cell.
-   *
-   * @return The cells in the area within steps
-   */
   public Set<Cell<T>> getNeighbors(Grid<T> grid, int startRow, int startCol, int steps) {
+    List<Set<Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, steps);
     Set<Cell<T>> expansions = new HashSet<>();
-    Queue<BFSNode> queue = new ArrayDeque<>();
-    Set<String> visited = new HashSet<>();
-    queue.add(new BFSNode(startRow, startCol, 0));
-    visited.add(startRow + "," + startCol);
+    for (int dist = 1; dist <= steps && dist < expansionsByDist.size(); dist++) {
+      expansions.addAll(expansionsByDist.get(dist));
+    }
+    return expansions;
+  }
 
-    int numRows = grid.getNumRows();
-    int numCols = grid.getNumCols();
+  public Set<Cell<T>> getNeighborsAtDistance(Grid<T> grid, int startRow, int startCol, int distTarget) {
+    List<Set<Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, distTarget);
+    if (distTarget < expansionsByDist.size()) {
+      return expansionsByDist.get(distTarget);
+    }
+    return Collections.emptySet();
+  }
+
+  private List<Set<Cell<T>>> bfsExpansions(Grid<T> grid, int startRow, int startCol, int maxDist) {
+    List<Set<Cell<T>>> expansions = initializeExpansionSets(maxDist);
+    Queue<BFSNode> queue = initializeBFSQueue(startRow, startCol);
+    Set<String> visited = initializeVisitedSet(startRow, startCol);
 
     while (!queue.isEmpty()) {
       BFSNode node = queue.poll();
-      int r = node.row;
-      int c = node.col;
-      int dist = node.dist;
-      if (dist > 0) {
-        expansions.add(grid.getCell(r, c));
-      }
-      if (dist == steps) {
-        continue;
-      }
+      processNode(grid, node, maxDist, startRow, startCol, expansions);
 
-      String baseKey = shape + "_" + neighborSet;
-      List<Direction> baseOffsets = NEIGHBOR_MAP.get(baseKey);
-      if (baseOffsets == null) {
-        throw new IllegalArgumentException("No offset set found for key: " + baseKey);
-      }
-
-      boolean flipHex = shape.equals("HEX") && (r % 2 != 0);
-      boolean flipTri = shape.equals("TRI") && ((r + c) % 2 != 0);
-
-      for (Direction off : baseOffsets) {
-        int dy = off.dy();
-        int dx = off.dx();
-        if (flipHex || flipTri) {
-          dy = -dy;
-        }
-        int nr = r + dy;
-        int nc = c + dx;
-
-        if (isTorus) {
-          nr = (nr + numRows) % numRows;
-          nc = (nc + numCols) % numCols;
-        } else {
-          if (nr < 0 || nr >= numRows || nc < 0 || nc >= numCols) {
-            continue;
+      if (node.dist < maxDist) {
+        List<BFSNode> nextLayer = computeNextLayer(grid, node);
+        for (BFSNode next : nextLayer) {
+          String keyPos = next.row + "," + next.col;
+          if (!visited.contains(keyPos)) {
+            visited.add(keyPos);
+            queue.add(next);
           }
-        }
-        String keyPos = nr + "," + nc;
-        if (!visited.contains(keyPos)) {
-          visited.add(keyPos);
-          queue.add(new BFSNode(nr, nc, dist + 1));
         }
       }
     }
     return expansions;
   }
 
-  /**
-   * Returns the set of cells exactly at distance 'dist' from (row,col). This is the BFS ring.
-   */
-  public Set<Cell<T>> getNeighborsAtDistance(Grid<T> grid, int startRow, int startCol, int distTarget) {
-    Set<Cell<T>> ring = new HashSet<>();
+  private List<Set<Cell<T>>> initializeExpansionSets(int maxDist) {
+    List<Set<Cell<T>>> expansions = new ArrayList<>();
+    for (int d = 0; d <= maxDist; d++) {
+      expansions.add(new HashSet<>());
+    }
+    return expansions;
+  }
+
+  private Queue<BFSNode> initializeBFSQueue(int startRow, int startCol) {
     Queue<BFSNode> queue = new ArrayDeque<>();
-    Set<String> visited = new HashSet<>();
     queue.add(new BFSNode(startRow, startCol, 0));
+    return queue;
+  }
+
+  private Set<String> initializeVisitedSet(int startRow, int startCol) {
+    Set<String> visited = new HashSet<>();
     visited.add(startRow + "," + startCol);
+    return visited;
+  }
+
+  private void processNode(Grid<T> grid, BFSNode node, int maxDist,
+      int startRow, int startCol,
+      List<Set<Cell<T>>> expansions) {
+    int r = node.row;
+    int c = node.col;
+    int dist = node.dist;
+    if (dist <= maxDist && !(r == startRow && c == startCol) && dist > 0) {
+      expansions.get(dist).add(grid.getCell(r, c));
+    }
+  }
+
+  private List<BFSNode> computeNextLayer(Grid<T> grid, BFSNode node) {
+    String baseKey = shape + "_" + neighborType;
+    List<Direction> baseOffsets = NEIGHBOR_MAP.get(baseKey);
+    if (baseOffsets == null) {
+      throw new IllegalArgumentException("No offset set found for key: " + baseKey);
+    }
+
+    List<BFSNode> result = new ArrayList<>();
+    int r = node.row;
+    int c = node.col;
+    int dist = node.dist;
+    boolean flipHex = shape.equals(GridShape.HEX) && (r % 2 != 0);
+    boolean flipTri = shape.equals(GridShape.TRI) && ((r + c) % 2 != 0);
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
 
-    while (!queue.isEmpty()) {
-      BFSNode node = queue.poll();
-      int r = node.row;
-      int c = node.col;
-      int dist = node.dist;
-
-      if (dist == distTarget && !(r==startRow && c==startCol)) {
-        ring.add(grid.getCell(r, c));
+    for (Direction off : baseOffsets) {
+      int dy = off.dy();
+      int dx = off.dx();
+      if (flipHex || flipTri) {
+        dy = -dy;
       }
+      int nr = r + dy;
+      int nc = c + dx;
 
-      if (dist == distTarget) {
-        continue;
-      }
-
-      // same orientation logic
-      String baseKey = shape + "_" + neighborSet;
-      List<Direction> baseNeighbors = NEIGHBOR_MAP.get(baseKey);
-      if (baseNeighbors == null) {
-        throw new IllegalArgumentException("No neighbors set found for key: " + baseKey);
-      }
-      boolean flipHex = shape.equals("HEX") && (r % 2 != 0);
-      boolean flipTri = shape.equals("TRI") && ((r + c) % 2 != 0);
-
-      for (Direction off : baseNeighbors) {
-        int dy = off.dy();
-        int dx = off.dx();
-        if (flipHex || flipTri) {
-          dy = -dy;
-        }
-        int nr = r + dy;
-        int nc = c + dx;
-
-        if (isTorus) {
-          nr = (nr + numRows) % numRows;
-          nc = (nc + numCols) % numCols;
-        } else {
-          if (nr < 0 || nr >= numRows || nc < 0 || nc >= numCols) {
-            continue;
-          }
-        }
-        String keyPos = nr + "," + nc;
-        if (!visited.contains(keyPos)) {
-          visited.add(keyPos);
-          queue.add(new BFSNode(nr, nc, dist + 1));
+      if (boundary == BoundaryType.TORUS) {
+        nr = (nr + numRows) % numRows;
+        nc = (nc + numCols) % numCols;
+      } else {
+        if (nr < 0 || nr >= numRows || nc < 0 || nc >= numCols) {
+          continue;
         }
       }
+      result.add(new BFSNode(nr, nc, dist + 1));
     }
-    return ring;
+    return result;
   }
 
   private static Map<String, List<Direction>> loadNeighborProperties() {

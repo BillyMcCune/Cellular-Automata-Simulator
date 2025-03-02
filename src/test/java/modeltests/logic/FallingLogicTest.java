@@ -26,7 +26,7 @@ public class FallingLogicTest {
   };
 
   private final NeighborCalculator<FallingState> dummyNeighborCalculator =
-      new NeighborCalculator<FallingState>("square", "moore", false) {
+      new NeighborCalculator<FallingState>(GridShape.SQUARE, NeighborType.MOORE, false) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

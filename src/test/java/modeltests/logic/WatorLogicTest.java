@@ -24,7 +24,7 @@ public class WatorLogicTest {
 
 
   private final NeighborCalculator<WatorState> dummyNeighborCalculator =
-      new NeighborCalculator<WatorState>("square", "moore", true) {
+      new NeighborCalculator<WatorState>(GridShape.SQUARE, NeighborType.MOORE, true) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultState) {
