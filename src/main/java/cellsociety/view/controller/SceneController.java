@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import javax.management.ReflectionException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -77,12 +78,10 @@ public class SceneController {
       initGrid();
       resetParameters();
       isLoaded = true;
-    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException | InvocationTargetException |IllegalAccessException ex) {
+    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | NullPointerException ex) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-loadConfig").getValue(),
           ex.getMessage(), ex);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
     }
   }
 
@@ -94,7 +93,6 @@ public class SceneController {
   public void saveConfig(String path) {
     try {
       String savedFile = myConfigAPI.saveSimulation(path);
-      List<String> fileNames = myConfigAPI.getFileNames();
       String message = String.format(
           LanguageController.getStringProperty("success-saveConfigMessage").getValue(), path);
       SceneUIWidget.createSuccessSaveDialog(
@@ -179,7 +177,7 @@ public class SceneController {
    *
    */
   public void resetParameters()
-      throws Exception {
+      throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
     // Update the model's parameter record.
     myModelAPI.resetParameters();
 

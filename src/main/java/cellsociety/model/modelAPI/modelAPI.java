@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.function.Consumer;
-import javafx.scene.paint.Color;
 
 /**
  * @author Billy McCune
@@ -245,7 +244,7 @@ public class modelAPI {
     if (properties.containsKey(PROPERTY_TO_DETECT) && properties.get(PROPERTY_TO_DETECT) != 0) {
       int id = properties.get(PROPERTY_TO_DETECT).intValue();
       // Convert the generated Color to a hex string.
-      return toHexString(uniqueColorGenerator(id));
+      return uniqueColorGenerator(id);
     }
 
     // Otherwise, use the state's prefix to check for any other property-based color.
@@ -264,18 +263,6 @@ public class modelAPI {
     return null;
   }
 
-  /**
-   * Converts a JavaFX Color object to a hex string (e.g., "#RRGGBB").
-   *
-   * @param color the JavaFX Color object.
-   * @return a hex string representation of the color.
-   */
-  private String toHexString(Color color) {
-    int r = (int) (color.getRed() * 255);
-    int g = (int) (color.getGreen() * 255);
-    int b = (int) (color.getBlue() * 255);
-    return String.format("#%02X%02X%02X", r, g, b);
-  }
 
   /**
    * Given a random id number, generates a random color. Uses a large prime number to ensure
@@ -285,14 +272,24 @@ public class modelAPI {
    * @param id The id number.
    * @return A random Color based off of the id.
    */
-  public static Color uniqueColorGenerator(int id) {
+  public static String uniqueColorGenerator(int id) {
     long scrambled = (GOLDEN_RATIO_HASH_MULTIPLIER * id) & 0xffffffffL;
-    double hue = scrambled % 360;
-    // Randomly generate values for saturation and brightness, with range 0.5 - 1
-    double sat = 0.5 + ((scrambled >> 8) % 50) / 100.0;
-    double bright = 0.5 + ((scrambled >> 16) % 50) / 100.0;
-    return Color.hsb(hue, sat, bright);
+
+    // Convert to HSB
+    float hue = (scrambled % 360) / 360f;
+    float sat = 0.5f + ((scrambled >> 8) % 50) / 100f;
+    float bright = 0.5f + ((scrambled >> 16) % 50) / 100f;
+
+    // Convert to RGB
+    int rgb = java.awt.Color.HSBtoRGB(hue, sat, bright);
+    int r = (rgb >> 16) & 0xFF;
+    int g = (rgb >> 8) & 0xFF;
+    int b = rgb & 0xFF;
+
+    // Return the color as a hex string
+    return String.format("#%02X%02X%02X", r, g, b);
   }
+
 
   public void setCellShape(String cellShape) {
     // Not implemented.
@@ -304,7 +301,10 @@ public class modelAPI {
    * getMinParam, and getMaxParam methods are used to obtain the default and bounds values,
    * which are then stored in the parameter record.
    *
-   * @throws Exception if a required method is not found or cannot be invoked.
+   * @throws IllegalArgumentException if the game logic is not initialized.
+   * @throws NullPointerException     if the game logic is not initialized.
+   * @throws IllegalStateException    if the game logic is not initialized.
+   * @throws NoSuchMethodException    if a required method is not found.
    */
   public void resetParameters()
       throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -321,16 +321,11 @@ public class modelAPI {
       // Derive the parameter name from the setter method.
       String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
-
-      // Retrieve the corresponding getter and bound methods.
+      // Retrieve the corresponding getter method.
       Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
-      Method minMethod = logicClass.getMethod("getMinParam", String.class);
-      Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
       Class<?> paramType = setterMethod.getParameterTypes()[0];
 
       if (paramType == double.class) {
-        double min = (double) minMethod.invoke(gameLogic, paramName);
-        double max = (double) maxMethod.invoke(gameLogic, paramName);
         double defaultValue = (double) getterMethod.invoke(gameLogic);
         // Update the parameter record for double parameters.
         myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
@@ -437,7 +432,7 @@ public class modelAPI {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
       return newVal -> {
         try {
-          setterMethod.invoke(gameLogic, newVal.doubleValue());
+          setterMethod.invoke(gameLogic, newVal);
         } catch (InvocationTargetException e) {
           throw new RuntimeException("error-invalidParameterMessage");
         } catch (IllegalAccessException e) {
@@ -455,8 +450,7 @@ public class modelAPI {
    * @return a Consumer<String> that calls setStringParameter(paramName, newValue)
    * @throws NoSuchElementException if the corresponding setter is not found.
    */
-  public Consumer<String> getStringParameterConsumer(String paramName)
-      throws NoSuchMethodException {
+  public Consumer<String> getStringParameterConsumer(String paramName) {
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
     try {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
@@ -480,9 +474,12 @@ public class modelAPI {
    *
    * @param paramName the name of the parameter (e.g., "probCatch")
    * @return a double array where index 0 is the minimum value and index 1 is the maximum value
-   * @throws Exception if the underlying methods cannot be found or invoked.
+   * @throws NoSuchMethodException if the corresponding getter is not found.
+   * @throws InvocationTargetException if the method cannot be invoked.
+   * @throws IllegalAccessException if the method cannot be accessed.
    */
-  public double[] getParameterBounds(String paramName) throws Exception {
+  public double[] getParameterBounds(String paramName)
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic is not initialized.");
     }
