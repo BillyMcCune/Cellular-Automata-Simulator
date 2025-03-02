@@ -8,12 +8,17 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Properties;
+import javafx.scene.paint.Color;
 
 /**
  * @author Billy McCune
@@ -35,7 +40,24 @@ public class modelAPI {
   // Instance variables
   private boolean isLoaded;
 
-  public void setConfiginfo(ConfigInfo configInfo) {
+  //crazy color stuff:
+    private static final String PROPERTY_TO_DETECT = "coloredId";
+    private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
+
+  // Load the color mapping from the properties file once (assumes the file is in your resources folder).
+  private static final Properties COLOR_MAPPING = new Properties();
+
+  static {
+    try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/CellColor.properties")) {
+      COLOR_MAPPING.load(in);
+    } catch (IOException ex) {
+      throw new RuntimeException("error-getting-color-mapping");
+    }
+  }
+
+  public modelAPI() {}
+
+  public void setConfigInfo(ConfigInfo configInfo) {
     this.configInfo = configInfo;
     this.parameterRecord = configInfo.myParameters();
   }
@@ -96,9 +118,8 @@ public class modelAPI {
   }
 
   /**
-   * Sets a double parameter in the simulation.
-   * This method updates the parameter record and uses reflection to invoke the corresponding setter
-   * on the game logic.
+   * Sets a double parameter in the simulation. This method updates the parameter record and uses
+   * reflection to invoke the corresponding setter on the game logic.
    *
    * @param paramName the parameter name (e.g., "probCatch")
    * @param value     the new double value
@@ -121,14 +142,13 @@ public class modelAPI {
       // Invoke the setter on the game logic.
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      System.err.println("Failed to set double parameter '" + paramName + "': " + e.getMessage());
+      throw new NoSuchElementException(e);
     }
   }
 
   /**
-   * Sets a string parameter in the simulation.
-   * This method updates the parameter record and uses reflection to invoke the corresponding setter
-   * on the game logic.
+   * Sets a string parameter in the simulation. This method updates the parameter record and uses
+   * reflection to invoke the corresponding setter on the game logic.
    *
    * @param paramName the parameter name (e.g., "probCatch")
    * @param value     the new string value
@@ -169,8 +189,103 @@ public class modelAPI {
     }
   }
 
-  public String getCellColor(int row, int col) {
+  /**
+   * Returns the color for the cell at (x, y). First, the color is determined from the cell's
+   * current state. If that color is WHITE, the method will check if any of the cell’s property
+   * values (if nonzero) have an associated color.
+   */
+  public String getCellColor(int x, int y) {
+    if (x >= grid.getNumCols() || y >= grid.getNumRows()) {
+      return null;
+    }
+    Cell<?> cell = grid.getCell(x, y);
+    String stateColor = getStateColor(cell);
+    if (!"WHITE".equalsIgnoreCase(stateColor)) {
+      return stateColor;
+    }
+    String propertyColor = getPropertyColor(cell);
+    return propertyColor != null ? propertyColor : stateColor;
+  }
+
+  /**
+   * Determines the color from the cell's current state. It uses the cell's state (for example,
+   * "AntState.EMPTY" or "FireState.BURNING") as a key in the properties file.
+   */
+  private String getStateColor(Cell<?> cell) {
+    // Get the state value (e.g., "TREE" or "BURNING")
+    String stateValue = cell.getCurrentState().toString();
+    // Get the simple name of the cell state class (e.g., "FireState")
+    String statePrefix = cell.getCurrentState().getClass().getSimpleName();
+    // Construct the full key (e.g., "FireState.TREE")
+    String key = statePrefix + "." + stateValue;
+    // If the mapping is not found, default to "WHITE"
+    return COLOR_MAPPING.getProperty(key, "WHITE");
+  }
+
+  /**
+   * Checks the cell's properties for a non-white color override.
+   * <p>
+   * First, it checks if the cell has the "coloredId" property. If so, it uses the id value to
+   * generate a unique color. If not, it iterates through the remaining properties using a prefix-
+   * based lookup.
+   *
+   * @param cell the cell whose properties are checked.
+   * @return the first non-white color found from the properties; returns null if none exists.
+   */
+  private String getPropertyColor(Cell<?> cell) {
+    Map<String, Double> properties = cell.getAllProperties();
+
+    // Check if the special "coloredId" property exists.
+    if (properties.containsKey(PROPERTY_TO_DETECT) && properties.get(PROPERTY_TO_DETECT) != 0) {
+      int id = properties.get(PROPERTY_TO_DETECT).intValue();
+      // Convert the generated Color to a hex string.
+      return toHexString(uniqueColorGenerator(id));
+    }
+
+    // Otherwise, use the state's prefix to check for any other property-based color.
+    String stateString = cell.getCurrentState().toString();
+    String prefix = stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
+    for (Map.Entry<String, Double> entry : properties.entrySet()) {
+      if (entry.getValue() != 0) {
+        // Construct key like "AntState.searchingEntities"
+        String propertyKey = prefix + "." + entry.getKey();
+        String color = COLOR_MAPPING.getProperty(propertyKey);
+        if (color != null && !"WHITE".equalsIgnoreCase(color)) {
+          return color;
+        }
+      }
+    }
     return null;
+  }
+
+  /**
+   * Converts a JavaFX Color object to a hex string (e.g., "#RRGGBB").
+   *
+   * @param color the JavaFX Color object.
+   * @return a hex string representation of the color.
+   */
+  private String toHexString(Color color) {
+    int r = (int) (color.getRed() * 255);
+    int g = (int) (color.getGreen() * 255);
+    int b = (int) (color.getBlue() * 255);
+    return String.format("#%02X%02X%02X", r, g, b);
+  }
+
+  /**
+   * Given a random id number, generates a random color. Uses a large prime number to ensure
+   * scrambling and very few overlapping colors, while ensuring an id is the same color every single
+   * time through simulations.
+   *
+   * @param id The id number.
+   * @return A random Color based off of the id.
+   */
+  public static Color uniqueColorGenerator(int id) {
+    long scrambled = (GOLDEN_RATIO_HASH_MULTIPLIER * id) & 0xffffffffL;
+    double hue = scrambled % 360;
+    // Randomly generate values for saturation and brightness, with range 0.5 - 1
+    double sat = 0.5 + ((scrambled >> 8) % 50) / 100.0;
+    double bright = 0.5 + ((scrambled >> 16) % 50) / 100.0;
+    return Color.hsb(hue, sat, bright);
   }
 
   public void setCellShape(String cellShape) {
@@ -185,7 +300,8 @@ public class modelAPI {
    * @throws IllegalAccessException    if the currently executing method does not have access.
    * @throws NoSuchMethodException     if a required getter method is not found.
    */
-  public void resetParameters() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+  public void resetParameters()
+      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic has not been initialized.");
     }
@@ -274,7 +390,8 @@ public class modelAPI {
   /**
    * Retrieves the properties of the cells in the grid.
    *
-   * @return a 2D list where each inner list contains a map of cell properties (property name to value).
+   * @return a 2D list where each inner list contains a map of cell properties (property name to
+   * value).
    */
   public List<List<Map<String, Double>>> getCellProperties() {
     List<List<Map<String, Double>>> cellProperties = new ArrayList<>();

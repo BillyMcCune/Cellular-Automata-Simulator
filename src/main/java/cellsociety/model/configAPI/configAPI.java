@@ -27,6 +27,8 @@ public class configAPI {
   private List<List<Integer>> myGridStates;
   private List<List<Map<String,Double>>> myGridProperties;
 
+
+  public configAPI(){}
   /**
    * Retrieves a list of available configuration file names.
    *
@@ -58,8 +60,9 @@ public class configAPI {
       configReader = new ConfigReader();
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
+        System.out.println(configInfo);
         isLoaded = true;
-        myModelAPI.setConfiginfo(configInfo);
+        myModelAPI.setConfigInfo(configInfo);
       }
     } catch (ParserConfigurationException e) {
       throw new ParserConfigurationException(e.getMessage());
