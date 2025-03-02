@@ -196,15 +196,15 @@ public class modelAPI {
   }
 
   /**
-   * Returns the color for the cell at (x, y). First, the color is determined from the cell's
+   * Returns the color for the cell at (row, col). First, the color is determined from the cell's
    * current state. If that color is WHITE, the method will check if any of the cell’s property
    * values (if nonzero) have an associated color.
    */
-  public String getCellColor(int x, int y) {
-    if (x >= grid.getNumCols() || y >= grid.getNumRows()) {
+  public String getCellColor(int row, int col) {
+    if (col >= grid.getNumCols() || row >= grid.getNumRows()) {
       return null;
     }
-    Cell<?> cell = grid.getCell(x, y);
+    Cell<?> cell = grid.getCell(row, col);
     String stateColor = getStateColor(cell);
     if (!"WHITE".equalsIgnoreCase(stateColor)) {
       return stateColor;

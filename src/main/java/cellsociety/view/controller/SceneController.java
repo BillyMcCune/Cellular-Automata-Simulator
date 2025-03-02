@@ -20,8 +20,8 @@ public class SceneController {
   public static final double SPEED_MULTIPLIER = 3;
 
   // Instance variables
-  private modelAPI myModelAPI;
-  private configAPI myConfigAPI;
+  private final modelAPI myModelAPI;
+  private final configAPI myConfigAPI;
   private final SimulationScene simulationScene;
   private boolean isLoaded;
   private boolean isPaused;
@@ -177,9 +177,6 @@ public class SceneController {
    * the parameter record based on the current gameLogic), and then iterates over the
    * double and string parameters to register callbacks in the UI.
    *
-   * @throws InvocationTargetException
-   * @throws IllegalAccessException
-   * @throws NoSuchMethodException
    */
   public void resetParameters()
       throws Exception {
@@ -230,8 +227,6 @@ public class SceneController {
   }
 
 
-
-
   /* CONTROLLER APIS */
 
   /**
@@ -266,7 +261,7 @@ public class SceneController {
    * the model API.
    */
   //TODO fix this
-  private void initGrid() {
+  private void initGrid() throws NullPointerException {
     numRows = myConfigAPI.getGridHeight();
     numCols = myConfigAPI.getGridWidth();
     simulationScene.setGrid(numRows, numCols);
