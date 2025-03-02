@@ -300,6 +300,7 @@ public class SimulationScene {
   private void startPauseCallback() {
     // Start or pause the simulation
     if (!controller.isLoaded()) {
+      System.out.println("Simulation is not loaded. Aborting start.");
       return;
     }
 
@@ -367,7 +368,7 @@ public class SimulationScene {
       controller.resetModel();
 
       // Update the UI Text
-      primaryStage.setTitle(controller.getConfigTitle());
+      primaryStage.setTitle(controller.getSimulationTitle());
       infoText.setText(controller.getConfigInformation());
 
       // Center the grid
@@ -450,23 +451,23 @@ public class SimulationScene {
    * Set the cell at the given dx and column with the given state
    * @param row the dx of the cell
    * @param col the column of the cell
-   * @param state the state of the cell
+   * @param color the state of the cell
    */
-  public void setCell(int rowCount, int row, int col, Enum<?> state) {
-    SceneRenderer.drawCell(grid, rowCount, row, col, state);
+  public void setCell(int rowCount, int row, int col, String color) {
+    SceneRenderer.drawCell(grid, rowCount, row, col, color);
   }
 
-  /**
-   * Set the cell at the given dx and column with the cell's properties
-   *
-   * @param row           the dx of the cell
-   * @param col           the column of the cell
-   * @param state         the state of the cell
-   * @param allProperties the properties of the cell
-   */
-  public void setParameters(int row, int col, Enum<?> state, Map<String, Double> allProperties) {
-    SceneRenderer.drawParameters(grid, row, col, state, allProperties);
-  }
+//  /**
+//   * Set the cell at the given dx and column with the cell's properties
+//   *
+//   * @param row           the dx of the cell
+//   * @param col           the column of the cell
+//   * @param state         the state of the cell
+//   * @param allProperties the properties of the cell
+//   */
+//  public void setParameters(int row, int col, Enum<?> state, Map<String, Double> allProperties) {
+//    SceneRenderer.drawParameters(grid, row, col, state, allProperties);
+//  }
 
   /**
    * Set the parameter with the given label, min, max, default value, tooltip, and callback

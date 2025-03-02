@@ -1,8 +1,8 @@
 package cellsociety.view.controller;
 
+import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.modelAPI.modelAPI;
-import cellsociety.model.logic.Logic;
 import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
@@ -12,15 +12,20 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 public class SceneController {
+
   private modelAPI myModelAPI;
   private configAPI myConfigAPI;
   private final SimulationScene simulationScene;
   private boolean isLoaded;
   private boolean isPaused;
+  private int numRows;
+  private int numCols;
+  private String configTitle;
 
   /**
-   * Constructor for the SceneController.
-   * Creates the model and configuration APIs and links them together.
+   * Constructor for the SceneController. Creates the model and configuration APIs and links them
+   * together.
+   *
    * @param scene the simulation scene to control
    */
   public SceneController(SimulationScene scene) {
@@ -36,15 +41,18 @@ public class SceneController {
    * Updates the simulation by delegating to the model API and then refreshing the scene.
    */
   public void update() {
-    myModelAPI.updateSimulation();
-    initGrid();
+    if (!isPaused) {
+      myModelAPI.updateSimulation();
+      updateGrid();
+    }
   }
 
   /* CONFIGURATION IO APIS */
 
   /**
-   * Loads a configuration file using configAPI.
-   * On success, resets the model and refreshes the scene.
+   * Loads a configuration file using configAPI. On success, resets the model and refreshes the
+   * scene.
+   *
    * @param filename the configuration file to load
    */
   public void loadConfig(String filename) {
@@ -52,19 +60,18 @@ public class SceneController {
       myConfigAPI.loadSimulation(filename);
       myModelAPI.resetModel();
       initGrid();
-    } catch (ParserConfigurationException | IOException | SAXException ex) {
+      isLoaded = true;
+      updateParameterPanel();
+    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException ex) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-loadConfig").getValue(),
           ex.getMessage(), ex);
-    } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(
-          LanguageController.getStringProperty("error-loadConfig").getValue(),
-          e.getMessage(), e);
     }
   }
 
   /**
    * Saves the current simulation configuration using configAPI.
+   *
    * @param path the path to save the configuration file
    */
   public void saveConfig(String path) {
@@ -85,6 +92,7 @@ public class SceneController {
 
   /**
    * Retrieves a list of all available configuration file names.
+   *
    * @return a list of configuration file names
    */
   public List<String> getAllConfigFileNames() {
@@ -93,11 +101,13 @@ public class SceneController {
 
   /**
    * Retrieves simulation information from the configuration.
+   *
    * @return a formatted string containing author, title, type, and description.
    */
   public String getConfigInformation() {
     try {
       Map<String, String> simulationInfo = myConfigAPI.getSimulationInformation();
+      configTitle = simulationInfo.get("title");
       return String.format("Author: %s\nTitle: %s\nType: %s\nDescription: %s",
           simulationInfo.get("author"),
           simulationInfo.get("title"),
@@ -109,8 +119,13 @@ public class SceneController {
     return "";
   }
 
+  public String getSimulationTitle() {
+    return configTitle;
+  }
+
   /**
    * Retrieves the simulation tick speed from the configuration.
+   *
    * @return the simulation speed
    */
   public double getConfigSpeed() {
@@ -130,7 +145,7 @@ public class SceneController {
   public void resetModel() {
     try {
       myModelAPI.resetModel();
-      simulationScene.refresh();
+      updateGrid();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-resetModel").getValue(),
@@ -144,7 +159,7 @@ public class SceneController {
   public void resetGrid() {
     try {
       myModelAPI.resetGrid();
-      simulationScene.refresh();
+      updateGrid();
     } catch (Exception e) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-resetGrid").getValue(),
@@ -169,6 +184,7 @@ public class SceneController {
 
   /**
    * Starts or pauses the simulation.
+   *
    * @param isPaused true to pause the simulation, false to start it
    */
   public void setStartPause(boolean isPaused) {
@@ -177,6 +193,7 @@ public class SceneController {
 
   /**
    * Indicates whether the simulation is loaded.
+   *
    * @return true if loaded, false otherwise
    */
   public boolean isLoaded() {
@@ -185,31 +202,86 @@ public class SceneController {
 
   /**
    * Indicates whether the simulation is paused.
+   *
    * @return true if paused, false otherwise
    */
   public boolean isPaused() {
-    return isPaused;
+    return this.isPaused;
   }
 
   /**
-   * Initializes the grid on the simulation scene by retrieving the cell states and properties
-   * from the model API.
+   * Initializes the grid on the simulation scene by retrieving the cell states and properties from
+   * the model API.
    */
+  //TODO fix this
   private void initGrid() {
-    List<List<Integer>> cellStates = myModelAPI.getCellStates();
-    List<List<Map<String, Double>>> cellProperties = myModelAPI.getCellProperties();
-    if (cellStates == null || cellStates.isEmpty()) {
-      return;
-    }
-    int numRows = cellStates.size();
-    int numCols = cellStates.get(0).size();
+    numRows = myConfigAPI.getGridHeight();
+    numCols = myConfigAPI.getGridWidth();
     simulationScene.setGrid(numRows, numCols);
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numCols; j++) {
-        simulationScene.setCell(numCols, i, j, cellStates.get(i).get(j));
-        simulationScene.setParameters(i, j, cellStates.get(i).get(j), cellProperties.get(i).get(j));
+        simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j));
       }
     }
   }
-}
+
+  private void updateGrid() {
+    if (!isPaused) {
+      if (numRows == 0 || numCols == 0) {
+        initGrid();
+      }
+      for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+          simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j));
+        }
+      }
+    }
+  }
+
+  /**
+   * Updates the parameter panel by retrieving parameters from modelAPI.
+   * For double parameters, we assume a default range (e.g. 0 to 100) and create a slider.
+   * For string parameters, we create a text field.
+   */
+  public void updateParameterPanel() {
+    // Clear the existing controls.
+    parameterBox.getChildren().clear();
+
+    // Retrieve double parameters from the model.
+    Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
+    for (Map.Entry<String, Double> entry : doubleParams.entrySet()) {
+      String paramName = entry.getKey();
+      double defaultValue = entry.getValue();
+      // Define default min and max values for the slider.
+      double min = 0;
+      double max = 100;
+      // Create a slider UI widget using SceneUIWidget.createRangeUI.
+      // Adjust label and tooltip keys as needed.
+      parameterBox.getChildren().add(
+          SceneUIWidget.createRangeUI(
+              min, max, defaultValue,
+              LanguageController.getStringProperty(paramName),
+              LanguageController.getStringProperty(paramName + "-tooltip"),
+              newVal -> myModelAPI.setDoubleParameter(paramName, newVal)
+          )
+      );
+    }
+
+    // Retrieve string parameters from the model.
+    Map<String, String> stringParams = myModelAPI.getStringParameters();
+    for (Map.Entry<String, String> entry : stringParams.entrySet()) {
+      String paramName = entry.getKey();
+      String defaultValue = entry.getValue();
+      // Create a text field UI widget.
+      parameterBox.getChildren().add(
+          SceneUIWidget.createRangeUI(
+              defaultValue,
+              LanguageController.getStringProperty(paramName),
+              LanguageController.getStringProperty(paramName + "-tooltip"),
+              newVal -> myModelAPI.setStringParameter(paramName, newVal)
+          )
+      );
+    }
+  }
+
 }
