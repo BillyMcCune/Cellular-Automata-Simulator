@@ -46,8 +46,7 @@ public class RaycastTest {
       }
       raw.add(row);
     }
-    DummyNeighborCalculator neighborCalculator = new DummyNeighborCalculator(shape, NeighborType.NEUMANN, boundary);
-    return new Grid<>(raw, FACTORY, neighborCalculator);
+    return new Grid<>(raw, FACTORY, shape, NeighborType.NEUMANN, boundary);
   }
 
   @BeforeEach

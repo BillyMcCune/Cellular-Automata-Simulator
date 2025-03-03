@@ -27,10 +27,6 @@ public class FallingLogicTest {
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  private final NeighborCalculator<FallingState> dummyNeighborCalculator =
-      new NeighborCalculator<FallingState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
-      };
-
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {
     List<List<Integer>> data = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -60,7 +56,7 @@ public class FallingLogicTest {
   private Grid<FallingState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<FallingState> factory = new CellFactory<>(FallingState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

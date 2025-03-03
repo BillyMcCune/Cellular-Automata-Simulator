@@ -27,11 +27,6 @@ public class FireLogicTest {
       {-1, 0}, {0, -1}, {0, 1}, {1, 0}
   };
 
-  private final NeighborCalculator<FireState> dummyNeighborCalculator =
-      new NeighborCalculator<FireState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
-      };
-
-
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
     List<List<Integer>> rawGrid = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -61,7 +56,7 @@ public class FireLogicTest {
   private Grid<FireState> createGrid(List<List<Integer>> rawData) {
     CellFactory<FireState> factory = new CellFactory<>(FireState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
   }
 
   private ParameterRecord createEmptyParameterRecord() {

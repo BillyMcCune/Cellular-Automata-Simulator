@@ -52,13 +52,6 @@ public class GridTest {
     }
   }
 
-  private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
-    public DummyNeighborCalculator() {
-      super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
-    }
-  }
-
-
 
   private List<List<CellRecord>> createRawGrid(int rows, int cols, int defaultState) {
     List<List<CellRecord>> raw = new ArrayList<>();
@@ -76,8 +69,7 @@ public class GridTest {
 
   private Grid<TestState> createGrid(List<List<CellRecord>> raw) {
     DummyCellFactory factory = new DummyCellFactory();
-    DummyNeighborCalculator neighborCalc = new DummyNeighborCalculator();
-    return new Grid<>(raw, factory, neighborCalc);
+    return new Grid<>(raw, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
   }
 
   @Test
@@ -147,7 +139,7 @@ public class GridTest {
   @Test
   public void Grid_Constructor_NullRawGrid_ReturnsZeroDimensions() {
     DummyCellFactory factory = new DummyCellFactory();
-    Grid<TestState> grid = new Grid<>(null, factory, new DummyNeighborCalculator());
+    Grid<TestState> grid = createGrid(null);
     assertEquals(0, grid.getNumRows());
     assertEquals(0, grid.getNumCols());
   }
@@ -156,7 +148,7 @@ public class GridTest {
   public void Grid_Constructor_EmptyRawGrid_ReturnsZeroDimensions() {
     DummyCellFactory factory = new DummyCellFactory();
     List<List<CellRecord>> raw = new ArrayList<>();
-    Grid<TestState> grid = new Grid<>(raw, factory, new DummyNeighborCalculator());
+    Grid<TestState> grid = createGrid(raw);
     assertEquals(0, grid.getNumRows());
     assertEquals(0, grid.getNumCols());
   }

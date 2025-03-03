@@ -30,10 +30,6 @@ public class AntLogicTest {
       {-1, 0}, {1, 0}, {0, -1}, {0, 1}
   };
 
-  private final NeighborCalculator<AntState> dummyNeighborCalculator =
-      new NeighborCalculator<AntState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS) {
-      };
-
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {
     List<List<Integer>> data = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -66,7 +62,7 @@ public class AntLogicTest {
   private Grid<AntState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<AntState> factory = new CellFactory<>(AntState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS);
   }
 
   private ParameterRecord createDefaultParameterRecord() {
@@ -134,7 +130,7 @@ public class AntLogicTest {
     cell.setProperty("homePheromone", 100.0);
     cell.setProperty("foodPheromone", 100.0);
     logic.update();
-    double expected = 100.0 * (1 - logic.getEvaporationRate()/100.0);
+    double expected = 100.0 * (1 - logic.getEvaporationRate() / 100.0);
     assertTrue(cell.getProperty("homePheromone") <= expected);
     assertTrue(cell.getProperty("foodPheromone") <= expected);
   }

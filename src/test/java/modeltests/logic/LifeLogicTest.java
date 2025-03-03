@@ -23,16 +23,6 @@ import org.junit.jupiter.api.Test;
  */
 public class LifeLogicTest {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
-
-  private final NeighborCalculator<LifeState> dummyNeighborCalculator =
-      new NeighborCalculator<LifeState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
-  };
-
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {
     List<List<Integer>> data = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -62,7 +52,7 @@ public class LifeLogicTest {
   private Grid<LifeState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<LifeState> factory = new CellFactory<>(LifeState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

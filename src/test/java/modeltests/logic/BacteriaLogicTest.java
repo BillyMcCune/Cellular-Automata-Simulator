@@ -20,16 +20,6 @@ import org.junit.jupiter.api.Test;
 
 public class BacteriaLogicTest {
 
-  private static final int[][] EIGHT_DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
-
-  private final NeighborCalculator<BacteriaState> dummyNeighborCalculator =
-      new NeighborCalculator<BacteriaState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
-      };
-
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {
     List<List<Integer>> data = new ArrayList<>();
     for (int r = 0; r < rows; r++) {
@@ -59,7 +49,7 @@ public class BacteriaLogicTest {
   private Grid<BacteriaState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<BacteriaState> factory = new CellFactory<>(BacteriaState.class);
     List<List<CellRecord>> recordGrid = createCellRecordGrid(rawData);
-    return new Grid<>(recordGrid, factory, dummyNeighborCalculator);
+    return new Grid<>(recordGrid, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS);
   }
 
   private ParameterRecord createParams(double beatingThreshold, double numStates) {
@@ -81,7 +71,7 @@ public class BacteriaLogicTest {
   }
 
   @Test
-  public void updateSingleCell_OneNeighbor_BelowThreshold_NoChange() {
+  public void updateSingleCell_OneNeighbor_BelowThreshold_CellChanges() {
     List<List<Integer>> data = new ArrayList<>();
     data.add(List.of(0, 1)); // (0,0) => 0, (0,1) => 1
     Grid<BacteriaState> grid = createGridFromData(data);
@@ -89,7 +79,7 @@ public class BacteriaLogicTest {
     BacteriaLogic logic = new BacteriaLogic(grid, params);
 
     logic.update();
-    assertEquals(0.0, grid.getCell(0, 0).getProperty("coloredId"));
+    assertEquals(1.0, grid.getCell(0, 0).getProperty("coloredId"));
     assertEquals(1.0, grid.getCell(0, 1).getProperty("coloredId"));
   }
 

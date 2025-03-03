@@ -25,11 +25,6 @@ import org.junit.jupiter.api.Test;
  */
 public class WatorLogicTest {
 
-
-  private final NeighborCalculator<WatorState> dummyNeighborCalculator =
-      new NeighborCalculator<WatorState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS) {
-      };
-
   private List<List<Integer>> createGridData(int rows, int cols, int defaultState) {
     List<List<Integer>> data = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -60,7 +55,7 @@ public class WatorLogicTest {
   private Grid<WatorState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<WatorState> factory = new CellFactory<>(WatorState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

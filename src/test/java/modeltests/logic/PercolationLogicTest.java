@@ -23,16 +23,6 @@ import org.junit.jupiter.api.Test;
  */
 public class PercolationLogicTest {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
-
-  private final NeighborCalculator<PercolationState> dummyNeighborCalculator =
-      new NeighborCalculator<PercolationState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
-      };
-
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
     List<List<Integer>> rawGrid = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -62,7 +52,7 @@ public class PercolationLogicTest {
   private Grid<PercolationState> createGrid(List<List<Integer>> rawData) {
     CellFactory<PercolationState> factory = new CellFactory<>(PercolationState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
   }
 
   private ParameterRecord createEmptyParameterRecord() {

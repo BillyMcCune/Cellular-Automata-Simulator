@@ -141,7 +141,7 @@ public class ConfigAPITest {
         }
         raw.add(row);
       }
-      grid = new Grid<>(raw, new DummyCellFactory(), new DummyNeighborCalculator());
+      grid = new Grid<>(raw, new DummyCellFactory(), GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
       doubleParams = new HashMap<>();
       doubleParams.put("param1", 1.0);
       stringParams = new HashMap<>();

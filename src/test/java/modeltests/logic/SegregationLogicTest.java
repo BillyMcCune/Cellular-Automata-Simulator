@@ -23,16 +23,6 @@ import org.junit.jupiter.api.Test;
  */
 public class SegregationLogicTest {
 
-  private static final int[][] DIRECTIONS = {
-      {-1, -1}, {-1, 0}, {-1, 1},
-      {0, -1}, {0, 1},
-      {1, -1}, {1, 0}, {1, 1}
-  };
-
-  private final NeighborCalculator<SegregationState> dummyNeighborCalculator =
-      new NeighborCalculator<SegregationState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
-      };
-
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
     List<List<Integer>> raw = new ArrayList<>();
     for (int i = 0; i < rows; i++) {
@@ -62,7 +52,7 @@ public class SegregationLogicTest {
   private Grid<SegregationState> createGrid(List<List<Integer>> rawData) {
     CellFactory<SegregationState> factory = new CellFactory<>(SegregationState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, dummyNeighborCalculator);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
   }
 
   private ParameterRecord createEmptyParameterRecord() {
