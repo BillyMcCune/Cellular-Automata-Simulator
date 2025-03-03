@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 /**
  * @author Billy McCune
  */
-public class modelAPI {
+public class ModelApi {
 
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
   private static final String STATE_PACKAGE = "cellsociety.model.data.states";
@@ -64,7 +64,7 @@ public class modelAPI {
   private static final Properties COLOR_MAPPING = new Properties();
 
   static {
-    try (InputStream in = modelAPI.class.getResourceAsStream(
+    try (InputStream in = ModelApi.class.getResourceAsStream(
         "/cellsociety/property/CellColor.properties")) {
       COLOR_MAPPING.load(in);
     } catch (IOException ex) {
@@ -72,7 +72,7 @@ public class modelAPI {
     }
   }
 
-  public modelAPI() {
+  public ModelApi() {
   }
 
   public void setConfigInfo(ConfigInfo configInfo) {
@@ -83,7 +83,7 @@ public class modelAPI {
   private static final Properties USER_STYLE_PREFERENCES = new Properties();
 
   static {
-    try (InputStream in = modelAPI.class.getResourceAsStream(
+    try (InputStream in = ModelApi.class.getResourceAsStream(
         "/cellsociety/property/SimulationStyle.properties")) {
       USER_STYLE_PREFERENCES.load(in);
     } catch (IOException ex) {
@@ -501,13 +501,13 @@ public class modelAPI {
   }
 
   /**
-   * Returns the minimum and maximum bounds for a given parameter.
+   * Retrieves the minimum and maximum bounds for a given parameter from the game logic.
    *
-   * @param paramName the name of the parameter (e.g., "probCatch")
+   * @param paramName the parameter name (e.g., "probCatch")
    * @return a double array where index 0 is the minimum value and index 1 is the maximum value
-   * @throws NoSuchMethodException     if the corresponding getter is not found.
-   * @throws InvocationTargetException if the method cannot be invoked.
-   * @throws IllegalAccessException    if the method cannot be accessed.
+   * @throws NoSuchMethodException     if the corresponding getter methods are not found
+   * @throws InvocationTargetException if a getter method cannot be invoked
+   * @throws IllegalAccessException    if a getter method cannot be accessed
    */
   public double[] getParameterBounds(String paramName)
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -522,6 +522,13 @@ public class modelAPI {
     return new double[]{min, max};
   }
 
+  /**
+   * Retrieves the mapping of cell types to their default colors from a properties file.
+   *
+   * @param SimulationType the simulation type identifier
+   * @return a map of cell type keys to their default color values
+   * @throws NoSuchElementException if the properties file cannot be read
+   */
   public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {
     Map<String, String> possibleStates = new HashMap<>();
     try (InputStream input = new FileInputStream("CellColor.properties")) {
@@ -536,6 +543,13 @@ public class modelAPI {
     return possibleStates;
   }
 
+  /**
+   * Sets a new color preference for a given cell state.
+   *
+   * @param stateName the state name for which to set the new color
+   * @param newColor  the new color value (hex string)
+   * @throws NoSuchElementException if the color preference cannot be updated due to an I/O error
+   */
   public void setNewColorPreference(String stateName, String newColor) {
     try {
       Properties simulationStyle = new Properties();
@@ -554,6 +568,12 @@ public class modelAPI {
     }
   }
 
+  /**
+   * Retrieves the color preference for a given cell state from user-defined settings.
+   *
+   * @param stateName the cell state name
+   * @return the color value as a hex string, or the default color if not set
+   */
   public String getColorFromPreferences(String stateName) {
     try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
       Properties simulationStyle = new Properties();
@@ -564,6 +584,13 @@ public class modelAPI {
     }
   }
 
+  /**
+   * Retrieves the default color for a given cell state from the properties file.
+   *
+   * @param stateName the cell state name
+   * @return the default color as a hex string, or "WHITE" if not defined
+   * @throws NoSuchElementException if the properties file cannot be read
+   */
   public String getDefaultColorByState(String stateName) {
     try (InputStream input = new FileInputStream("CellColor.properties")) {
       Properties defaultColors = new Properties();
@@ -574,6 +601,13 @@ public class modelAPI {
     }
   }
 
+  /**
+   * Sets the neighbor arrangement preference.
+   *
+   * @param neighborArrangement the new neighbor arrangement value
+   * @throws NoSuchElementException if the neighbor arrangement cannot be updated due to an I/O
+   *                                error
+   */
   public void setNeighborArrangement(String neighborArrangement) {
     try {
       Properties simulationStyle = new Properties();
@@ -594,6 +628,12 @@ public class modelAPI {
   }
 
 
+  /**
+   * Sets the edge policy for the simulation.
+   *
+   * @param edgePolicy the new edge policy value
+   * @throws NoSuchElementException if the edge policy cannot be updated due to an I/O error
+   */
   public void setEdgePolicy(String edgePolicy) {
     try {
       Properties simulationStyle = new Properties();
@@ -614,6 +654,12 @@ public class modelAPI {
   }
 
 
+  /**
+   * Sets the cell shape preference.
+   *
+   * @param cellShape the new cell shape value (e.g., "SQUARE", "HEXAGON")
+   * @throws NoSuchElementException if the cell shape cannot be updated due to an I/O error
+   */
   public void setCellShape(String cellShape) {
     try {
       Properties simulationStyle = new Properties();
@@ -634,6 +680,12 @@ public class modelAPI {
     }
   }
 
+  /**
+   * Sets the grid outline preference.
+   *
+   * @param wantsGridOutline true if the grid outline should be displayed, false otherwise
+   * @throws NoSuchElementException if the preference cannot be updated due to an I/O error
+   */
   public void setGridOutlinePreference(boolean wantsGridOutline) {
     try {
       Properties simulationStyle = new Properties();
@@ -652,6 +704,12 @@ public class modelAPI {
     }
   }
 
+  /**
+   * Retrieves a list of possible neighbor arrangements defined in the simulation style properties.
+   *
+   * @return a list of possible neighbor arrangement values
+   * @throws NoSuchElementException if the properties file cannot be read
+   */
   public List<String> getPossibleNeighborArrangements() {
     List<String> arrangements = new ArrayList<>();
     try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
@@ -673,6 +731,12 @@ public class modelAPI {
     return arrangements;
   }
 
+  /**
+   * Retrieves a list of possible edge policies defined in the simulation style properties.
+   *
+   * @return a list of possible edge policy values
+   * @throws NoSuchElementException if the properties file cannot be read
+   */
   public List<String> getPossibleEdgePolicies() {
     List<String> edgePolicies = new ArrayList<>();
     try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
@@ -692,6 +756,12 @@ public class modelAPI {
     return edgePolicies;
   }
 
+  /**
+   * Retrieves a list of possible cell shapes defined in the simulation style properties.
+   *
+   * @return a list of possible cell shape values
+   * @throws NoSuchElementException if the properties file cannot be read
+   */
   public List<String> getPossibleCellShapes() {
     List<String> cellShapes = new ArrayList<>();
     try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
