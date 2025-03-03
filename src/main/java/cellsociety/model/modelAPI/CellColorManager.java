@@ -2,8 +2,8 @@ package cellsociety.model.modelAPI;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
+import java.awt.Color;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.util.Properties;
 public class CellColorManager {
 
   private Grid<?> grid;
-  //crazy color stuff:
+  // Special property for generating unique colors:
   private static final String PROPERTY_TO_DETECT = "coloredId";
   private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
 
@@ -25,6 +25,9 @@ public class CellColorManager {
   static {
     try (InputStream in = ModelApi.class.getResourceAsStream(
         "/cellsociety/property/SimulationStyle.properties")) {
+      if (in == null) {
+        throw new RuntimeException("SimulationStyle.properties resource not found");
+      }
       USER_STYLE_PREFERENCES.load(in);
     } catch (IOException ex) {
       throw new RuntimeException("error-getting-user-defined-color-mapping");
@@ -37,6 +40,9 @@ public class CellColorManager {
   static {
     try (InputStream in = ModelApi.class.getResourceAsStream(
         "/cellsociety/property/CellColor.properties")) {
+      if (in == null) {
+        throw new RuntimeException("CellColor.properties resource not found");
+      }
       COLOR_MAPPING.load(in);
     } catch (IOException ex) {
       throw new RuntimeException("error-getting-color-mapping");
@@ -103,14 +109,12 @@ public class CellColorManager {
     // Check if the special "coloredId" property exists.
     if (properties.containsKey(PROPERTY_TO_DETECT) && properties.get(PROPERTY_TO_DETECT) != 0) {
       int id = properties.get(PROPERTY_TO_DETECT).intValue();
-      // Convert the generated Color to a hex string.
       return uniqueColorGenerator(id);
     }
 
     // Otherwise, use the state's prefix to check for any other property-based color.
     String stateString = cell.getCurrentState().toString();
-    String prefix =
-        stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
+    String prefix = stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
     for (Map.Entry<String, Double> entry : properties.entrySet()) {
       if (entry.getValue() != 0) {
         // Construct key like "AntState.searchingEntities"
@@ -125,12 +129,10 @@ public class CellColorManager {
   }
 
   /**
-   * Given a random id number, generates a random color. Uses a large prime number to ensure
-   * scrambling and very few overlapping colors, while ensuring an id is the same color every single
-   * time through simulations.
+   * Given an id number, generates a consistent unique color.
    *
    * @param id The id number.
-   * @return A random Color based off of the id.
+   * @return A hex string representing a color.
    */
   private static String uniqueColorGenerator(int id) {
     long scrambled = (GOLDEN_RATIO_HASH_MULTIPLIER * id) & 0xffffffffL;
@@ -140,35 +142,47 @@ public class CellColorManager {
     float sat = 0.5f + ((scrambled >> 8) % 50) / 100f;
     float bright = 0.5f + ((scrambled >> 16) % 50) / 100f;
 
-    // Convert to RGB
-    int rgb = java.awt.Color.HSBtoRGB(hue, sat, bright);
+    int rgb = Color.HSBtoRGB(hue, sat, bright);
     int r = (rgb >> 16) & 0xFF;
     int g = (rgb >> 8) & 0xFF;
     int b = rgb & 0xFF;
-
-    // Return the color as a hex string
     return String.format("#%02X%02X%02X", r, g, b);
   }
 
   /**
-   * Retrieves the mapping of cell types to their default colors from a properties file.
+   * Retrieves the mapping of cell types to their default colors from the bundled properties file.
+   * Only keys starting with simulationType + "." will be returned.
    *
-   * @param SimulationType the simulation type identifier
-   * @return a map of cell type keys to their default color values
+   * @param simulationType the simulation type identifier (the prefix before the dot in the state name)
+   * @return a map of cell type keys to their default color values; returns an empty map if none match
    * @throws NoSuchElementException if the properties file cannot be read
    */
-  public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {
+  public Map<String, String> getCellTypesAndDefaultColors(String simulationType) {
     Map<String, String> possibleStates = new HashMap<>();
-    try (InputStream input = new FileInputStream("CellColor.properties")) {
+    try (InputStream input = getClass().getResourceAsStream("/cellsociety/property/CellColor.properties")) {
+      if (input == null) {
+        throw new NoSuchElementException("error-getCellTypesAndDefaultColors: resource not found");
+      }
       Properties defaultColors = new Properties();
       defaultColors.load(input);
+      String prefix = createSimulationPrefixForSearchingColor(simulationType);
       for (String key : defaultColors.stringPropertyNames()) {
-        possibleStates.put(key, defaultColors.getProperty(key));
+        if (key.startsWith(prefix)) {
+          possibleStates.put(key, defaultColors.getProperty(key));
+        }
       }
     } catch (IOException e) {
       throw new NoSuchElementException("error-getCellTypesAndDefaultColors");
     }
     return possibleStates;
+  }
+
+  private String createSimulationPrefixForSearchingColor(String simulationType) {
+    if (simulationType == null) {
+      return "null";
+    }
+    simulationType = simulationType.substring(0,1).toUpperCase() + simulationType.substring(1).toLowerCase();
+    return simulationType + "State" + ".";
   }
 
   /**
@@ -181,15 +195,18 @@ public class CellColorManager {
   public void setNewColorPreference(String stateName, String newColor) {
     try {
       Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
+      // Load existing preferences from the SimulationStyle resource
+      try (InputStream in = getClass().getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
+        if (in == null) {
+          throw new NoSuchElementException("error-setNewColorPreference: SimulationStyle resource not found");
         }
+        simulationStyle.load(in);
       }
       simulationStyle.setProperty(stateName, newColor);
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
+      // Save updated preferences to the working directory
+      File file = new File("SimulationStyle.properties");
+      try (OutputStream out = new FileOutputStream(file)) {
+        simulationStyle.store(out, "User-defined cell colors");
       }
     } catch (IOException e) {
       throw new NoSuchElementException("error-setNewColorPreference");
@@ -203,7 +220,10 @@ public class CellColorManager {
    * @return the color value as a hex string, or the default color if not set
    */
   public String getColorFromPreferences(String stateName) {
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+    try (InputStream input = getClass().getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
+      if (input == null) {
+        return getDefaultColorByState(stateName);
+      }
       Properties simulationStyle = new Properties();
       simulationStyle.load(input);
       return simulationStyle.getProperty(stateName, getDefaultColorByState(stateName));
@@ -213,14 +233,17 @@ public class CellColorManager {
   }
 
   /**
-   * Retrieves the default color for a given cell state from the properties file.
+   * Retrieves the default color for a given cell state from the bundled properties file.
    *
    * @param stateName the cell state name
    * @return the default color as a hex string, or "WHITE" if not defined
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public String getDefaultColorByState(String stateName) {
-    try (InputStream input = new FileInputStream("CellColor.properties")) {
+    try (InputStream input = getClass().getResourceAsStream("/cellsociety/property/CellColor.properties")) {
+      if (input == null) {
+        throw new NoSuchElementException("error-getDefaultColorByState: resource not found");
+      }
       Properties defaultColors = new Properties();
       defaultColors.load(input);
       return defaultColors.getProperty(stateName, "WHITE"); // fallback to WHITE

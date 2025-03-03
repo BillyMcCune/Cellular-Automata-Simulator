@@ -25,8 +25,7 @@ import java.util.Properties;
  */
 public class StyleManager {
 
-
-  //Style Property names:
+  // Style property keys:
   private final String gridOutlineProperty = "GRIDOUTLINE.PREFERENCE";
   private final String edgePolicyProperty = "EDGEPOLICY.PREFERENCE";
   private final String neighborArrangementProperty = "NEIGHBORARRANGEMENT.PREFERENCE";
@@ -34,35 +33,66 @@ public class StyleManager {
 
   private NeighborCalculator<?> myNeighborCalculator;
 
-
   public StyleManager(NeighborCalculator neighborCalculator) {
     this.myNeighborCalculator = neighborCalculator;
+  }
+
+  /**
+   * Loads the simulation style properties. If a file named "SimulationStyle.properties" exists
+   * in the working directory, it is loaded from there. Otherwise, the default properties bundled
+   * in the classpath at "/cellsociety/property/SimulationStyle.properties" are loaded.
+   *
+   * @return the loaded Properties object
+   * @throws NoSuchElementException if the properties cannot be loaded
+   */
+  private Properties loadProperties() {
+    Properties simulationStyle = new Properties();
+    File file = new File("SimulationStyle.properties");
+    if (file.exists()) {
+      try (InputStream input = new FileInputStream(file)) {
+        simulationStyle.load(input);
+      } catch (IOException e) {
+        throw new NoSuchElementException("error-loading properties file from file system");
+      }
+    } else {
+      try (InputStream input = getClass().getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
+        if (input == null) {
+          throw new NoSuchElementException("error-loading properties file from resource");
+        }
+        simulationStyle.load(input);
+      } catch (IOException e) {
+        throw new NoSuchElementException("error-loading properties file from resource");
+      }
+    }
+    return simulationStyle;
+  }
+
+  /**
+   * Saves the simulation style properties to a file named "SimulationStyle.properties" in the working directory.
+   *
+   * @param simulationStyle the Properties object to save
+   * @throws NoSuchElementException if the properties cannot be saved
+   */
+  private void saveProperties(Properties simulationStyle) {
+    File file = new File("SimulationStyle.properties");
+    try (OutputStream output = new FileOutputStream(file)) {
+      simulationStyle.store(output, "User-defined cell colors");
+    } catch (IOException e) {
+      throw new NoSuchElementException("error-saving properties file");
+    }
   }
 
   /**
    * Sets the neighbor arrangement preference.
    *
    * @param neighborArrangement the new neighbor arrangement value
-   * @throws NoSuchElementException if the neighbor arrangement cannot be updated due to an I/O
-   *                                error
+   * @throws NoSuchElementException if the neighbor arrangement cannot be updated due to an I/O error
    */
   public void setNeighborArrangement(String neighborArrangement) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
-      myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangement));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setNeighborArrangement");
-    }
+    Properties simulationStyle = loadProperties();
+    simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
+    myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangement));
+    saveProperties(simulationStyle);
   }
 
   /**
@@ -73,21 +103,14 @@ public class StyleManager {
    */
   public List<String> getPossibleNeighborArrangements() {
     List<String> arrangements = new ArrayList<>();
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      for (String key : simulationStyle.stringPropertyNames()) {
-        // Exclude the preference key and any blank values.
-        if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals(
-            "NEIGHBORARRANGEMENT.PREFERENCE")) {
-          String value = simulationStyle.getProperty(key);
-          if (value != null && !value.trim().isEmpty()) {
-            arrangements.add(value.trim());
-          }
+    Properties simulationStyle = loadProperties();
+    for (String key : simulationStyle.stringPropertyNames()) {
+      if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals("NEIGHBORARRANGEMENT.PREFERENCE")) {
+        String value = simulationStyle.getProperty(key);
+        if (value != null && !value.trim().isEmpty()) {
+          arrangements.add(value.trim());
         }
       }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getPossibleNeighborArrangements");
     }
     return arrangements;
   }
@@ -99,22 +122,10 @@ public class StyleManager {
    * @throws NoSuchElementException if the edge policy cannot be updated due to an I/O error
    */
   public void setEdgePolicy(String edgePolicy) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
-      myNeighborCalculator.setEdgeType(EdgeType.valueOf(edgePolicy));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setEdgePolicy");
-    }
+    Properties simulationStyle = loadProperties();
+    simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
+    myNeighborCalculator.setEdgeType(EdgeType.valueOf(edgePolicy));
+    saveProperties(simulationStyle);
   }
 
   /**
@@ -125,23 +136,17 @@ public class StyleManager {
    */
   public List<String> getPossibleEdgePolicies() {
     List<String> edgePolicies = new ArrayList<>();
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      for (String key : simulationStyle.stringPropertyNames()) {
-        if (key.startsWith("EDGEPOLICY.") && !key.equals("EDGEPOLICY.PREFERENCE")) {
-          String value = simulationStyle.getProperty(key);
-          if (value != null && !value.trim().isEmpty()) {
-            edgePolicies.add(value.trim());
-          }
+    Properties simulationStyle = loadProperties();
+    for (String key : simulationStyle.stringPropertyNames()) {
+      if (key.startsWith("EDGEPOLICY.") && !key.equals("EDGEPOLICY.PREFERENCE")) {
+        String value = simulationStyle.getProperty(key);
+        if (value != null && !value.trim().isEmpty()) {
+          edgePolicies.add(value.trim());
         }
       }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getPossibleEdgePolicies");
     }
     return edgePolicies;
   }
-
 
   /**
    * Sets the cell shape preference.
@@ -150,23 +155,11 @@ public class StyleManager {
    * @throws NoSuchElementException if the cell shape cannot be updated due to an I/O error
    */
   public void setCellShape(String cellShape) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(cellShapeProperty, cellShape);
-      cellShape = cellShape.toUpperCase();
-      myNeighborCalculator.setShape(GridShape.valueOf(cellShape));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setCellShape");
-    }
+    Properties simulationStyle = loadProperties();
+    simulationStyle.setProperty(cellShapeProperty, cellShape);
+    cellShape = cellShape.toUpperCase();
+    myNeighborCalculator.setShape(GridShape.valueOf(cellShape));
+    saveProperties(simulationStyle);
   }
 
   /**
@@ -176,21 +169,9 @@ public class StyleManager {
    * @throws NoSuchElementException if the preference cannot be updated due to an I/O error
    */
   public void setGridOutlinePreference(boolean wantsGridOutline) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(gridOutlineProperty, String.valueOf(wantsGridOutline));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setGridOutlinePreference");
-    }
+    Properties simulationStyle = loadProperties();
+    simulationStyle.setProperty(gridOutlineProperty, String.valueOf(wantsGridOutline));
+    saveProperties(simulationStyle);
   }
 
   /**
@@ -201,22 +182,15 @@ public class StyleManager {
    */
   public List<String> getPossibleCellShapes() {
     List<String> cellShapes = new ArrayList<>();
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      for (String key : simulationStyle.stringPropertyNames()) {
-        if (key.startsWith("CELLSHAPE.") && !key.equals("CELLSHAPE.PREFERENCE")) {
-          String value = simulationStyle.getProperty(key);
-          if (value != null && !value.trim().isEmpty()) {
-            cellShapes.add(value.trim());
-          }
+    Properties simulationStyle = loadProperties();
+    for (String key : simulationStyle.stringPropertyNames()) {
+      if (key.startsWith("CELLSHAPE.") && !key.equals("CELLSHAPE.PREFERENCE")) {
+        String value = simulationStyle.getProperty(key);
+        if (value != null && !value.trim().isEmpty()) {
+          cellShapes.add(value.trim());
         }
       }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getPossibleCellShapes");
     }
     return cellShapes;
   }
-
 }
-
