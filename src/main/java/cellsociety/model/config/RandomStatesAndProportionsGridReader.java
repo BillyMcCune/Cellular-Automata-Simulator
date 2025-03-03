@@ -51,42 +51,95 @@ public class RandomStatesAndProportionsGridReader {
   // --- Helpers for total states ---
 
   private static Map<Integer, Integer> parseInitialStates(Element root, Set<Integer> acceptedStates, int totalCells) {
-    Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
+    Element initialStatesElement = getInitialStatesElement(root);
     Map<Integer, Integer> stateCounts = new HashMap<>();
     NodeList stateNodes = initialStatesElement.getChildNodes();
     int specifiedSum = 0;
+
     for (int i = 0; i < stateNodes.getLength(); i++) {
       Node node = stateNodes.item(i);
       if (node.getNodeType() != Node.ELEMENT_NODE) {
         continue;
       }
       Element stateElement = (Element) node;
-      String tagName = stateElement.getTagName();
-      if (!tagName.startsWith("state")) {
-        continue;
-      }
-      String numberPart = tagName.substring("state".length());
-      int state;
-      try {
-        state = Integer.parseInt(numberPart);
-      } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("error-invalidStateTag," + numberPart);
-      }
-      if (!acceptedStates.contains(state)) {
-        throw new IllegalArgumentException("error-stateIsNotInAcceptedStates," + state);
-      }
-      int count;
-      try {
-        count = Integer.parseInt(stateElement.getTextContent().trim());
-      } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("error-invalidCellCountForState," + state);
-      }
-      stateCounts.put(state, count);
-      specifiedSum += count;
+      // Process each state element and add its count to the map.
+      specifiedSum += processStateElement(stateElement, acceptedStates, stateCounts);
     }
+
+    validateTotalSum(specifiedSum, totalCells, stateCounts, acceptedStates);
+    return stateCounts;
+  }
+
+  /**
+   * Retrieves the <initialStates> element from the root.
+   */
+  private static Element getInitialStatesElement(Element root) {
+    Element initialStatesElement = (Element) root.getElementsByTagName("initialStates").item(0);
+    if (initialStatesElement == null) {
+      throw new IllegalArgumentException("error-missingInitialStates");
+    }
+    return initialStatesElement;
+  }
+
+  /**
+   * Processes a single state element by:
+   *  - Extracting the state number from the element's tag.
+   *  - Verifying the state is in the accepted set.
+   *  - Parsing the text content to get the count.
+   *  - Putting the (state, count) pair into the map.
+   * Returns the count for that state.
+   */
+  private static int processStateElement(Element stateElement, Set<Integer> acceptedStates, Map<Integer, Integer> stateCounts) {
+    String tagName = stateElement.getTagName();
+    if (!tagName.startsWith("state")) {
+      return 0; // Ignore any non-state elements.
+    }
+
+    String numberPart = tagName.substring("state".length());
+    int state = parseStateTag(numberPart);
+
+    if (!acceptedStates.contains(state)) {
+      throw new IllegalArgumentException("error-stateIsNotInAcceptedStates," + state);
+    }
+
+    int count = parseStateCount(stateElement, state);
+    stateCounts.put(state, count);
+    return count;
+  }
+
+  /**
+   * Parses the state number from the tag name.
+   */
+  private static int parseStateTag(String numberPart) {
+    try {
+      return Integer.parseInt(numberPart);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("error-invalidStateTag," + numberPart);
+    }
+  }
+
+  /**
+   * Parses the cell count for the given state element.
+   */
+  private static int parseStateCount(Element stateElement, int state) {
+    try {
+      return Integer.parseInt(stateElement.getTextContent().trim());
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("error-invalidCellCountForState," + state);
+    }
+  }
+
+  /**
+   * Validates the total sum of the specified counts.
+   * If the sum exceeds totalCells, an error is thrown.
+   * If state 0 is not specified, its count is computed as the remainder.
+   * Otherwise, if the sum does not equal totalCells, an error is thrown.
+   */
+  private static void validateTotalSum(int specifiedSum, int totalCells, Map<Integer, Integer> stateCounts, Set<Integer> acceptedStates) {
     if (specifiedSum > totalCells) {
       throw new IllegalArgumentException("error-TotalCellExceedsGridSize," + specifiedSum + "," + totalCells);
     }
+
     if (!stateCounts.containsKey(0)) {
       if (!acceptedStates.contains(0)) {
         throw new IllegalArgumentException("error-NoDefaultZeroInAcceptedStates");
@@ -96,8 +149,8 @@ public class RandomStatesAndProportionsGridReader {
     } else if (specifiedSum != totalCells) {
       throw new IllegalArgumentException("error-specifiedSumDoesNotEqualTotalSum," + totalCells);
     }
-    return stateCounts;
   }
+
 
   // --- Helpers for proportions ---
 

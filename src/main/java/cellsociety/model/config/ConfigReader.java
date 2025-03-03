@@ -18,6 +18,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class ConfigReader {
@@ -118,37 +120,64 @@ public class ConfigReader {
    * @throws IllegalArgumentException if parameter elements are missing required attributes or contain invalid values.
    */
   private ParameterRecord parseForParameters(Element root) {
-    Element parametersElement = (Element) root.getElementsByTagName("parameters").item(0);
+    Element parametersElement = getParametersElement(root);
     if (parametersElement == null) {
       return new ParameterRecord(new HashMap<>(), new HashMap<>());
     }
+
     Map<String, Double> doubleParams = new HashMap<>();
     Map<String, String> stringParams = new HashMap<>();
-    org.w3c.dom.NodeList paramNodes = parametersElement.getChildNodes();
+    NodeList paramNodes = parametersElement.getChildNodes();
+
     for (int i = 0; i < paramNodes.getLength(); i++) {
-      org.w3c.dom.Node node = paramNodes.item(i);
-      if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+      Node node = paramNodes.item(i);
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
         Element paramElement = (Element) node;
-        String tagName = paramElement.getTagName();
-        String name = paramElement.getAttribute("name");
-        if (name == null || name.isEmpty()) {
-          throw new IllegalArgumentException("error-missingParameterName");
-        }
-        String textContent = paramElement.getTextContent().trim();
-        if (tagName.equals("doubleParameter")) {
-          try {
-            double value = Double.parseDouble(textContent);
-            doubleParams.put(name, value);
-          } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("error-InvalidParameterValue," + name + "," + textContent);
-          }
-        } else if (tagName.equals("stringParameter")) {
-          stringParams.put(name, textContent);
-        }
+        processParameterElement(paramElement, doubleParams, stringParams);
       }
     }
     return new ParameterRecord(doubleParams, stringParams);
   }
+
+  /**
+   * Retrieves the <parameters> element from the given root element.
+   *
+   * @param root the root XML element.
+   * @return the <parameters> element or null if not present.
+   */
+  private Element getParametersElement(Element root) {
+    return (Element) root.getElementsByTagName("parameters").item(0);
+  }
+
+  /**
+   * Processes an individual parameter element by checking its tag and adding its content
+   * to the appropriate map.
+   *
+   * @param paramElement the parameter element.
+   * @param doubleParams the map for double parameters.
+   * @param stringParams the map for string parameters.
+   * @throws IllegalArgumentException if the parameter element is missing a name or contains invalid values.
+   */
+  private void processParameterElement(Element paramElement, Map<String, Double> doubleParams, Map<String, String> stringParams) {
+    String tagName = paramElement.getTagName();
+    String name = paramElement.getAttribute("name");
+    if (name == null || name.isEmpty()) {
+      throw new IllegalArgumentException("error-missingParameterName");
+    }
+    String textContent = paramElement.getTextContent().trim();
+
+    if (tagName.equals("doubleParameter")) {
+      try {
+        double value = Double.parseDouble(textContent);
+        doubleParams.put(name, value);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("error-InvalidParameterValue," + name + "," + textContent);
+      }
+    } else if (tagName.equals("stringParameter")) {
+      stringParams.put(name, textContent);
+    }
+  }
+
 
   /**
    * Retrieves the text content of the first occurrence of a given tag within an element.
