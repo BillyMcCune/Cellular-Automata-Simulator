@@ -6,6 +6,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.config.CellRecord;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.FireNeighborCalculator;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.FallingState;
@@ -27,7 +30,7 @@ public class FireLogicTest {
   };
 
   private final NeighborCalculator<FireState> dummyNeighborCalculator =
-      new NeighborCalculator<FireState>(GridShape.SQUARE, NeighborType.MOORE, false) {
+      new NeighborCalculator<FireState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
       };
 
 

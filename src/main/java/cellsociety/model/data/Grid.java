@@ -3,12 +3,10 @@ package cellsociety.model.data;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents a grid of cells for cellular automata models.
@@ -53,7 +51,7 @@ public class Grid<T extends Enum<T> & State> {
     grid.clear();
     if (rawGrid != null && !rawGrid.isEmpty()) {
       initializeGrid(rawGrid, factory);
-      reassignNeighbors();
+      assignNeighbors();
     }
   }
 
@@ -122,13 +120,13 @@ public class Grid<T extends Enum<T> & State> {
   }
 
   /**
-   * Reinitialize all neighbors according to any new changes that might have happened
-   * in the NeighborCalculator class
+   * Assigns neighbors for each Cell in the grid using the current NeighborCalculator.
    */
-  public void reassignNeighbors() {
-    if (grid.isEmpty()) {
-      return;
+  public void assignNeighbors() {
+    for (int row = 0; row < getNumRows(); row++) {
+      for (int col = 0; col < getNumCols(); col++) {
+        getCell(row, col).setNeighbors(neighborCalculator.getNeighbors(this, row, col));
+      }
     }
-    //TODO: reimplement with new parameters
   }
 }

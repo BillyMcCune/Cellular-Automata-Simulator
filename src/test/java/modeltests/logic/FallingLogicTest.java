@@ -6,6 +6,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.FallingState;
 import cellsociety.model.data.states.LifeState;
@@ -26,7 +29,7 @@ public class FallingLogicTest {
   };
 
   private final NeighborCalculator<FallingState> dummyNeighborCalculator =
-      new NeighborCalculator<FallingState>(GridShape.SQUARE, NeighborType.MOORE, false) {
+      new NeighborCalculator<FallingState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

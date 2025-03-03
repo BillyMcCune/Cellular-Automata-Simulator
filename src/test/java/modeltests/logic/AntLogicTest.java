@@ -7,6 +7,9 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.AntState;
 import cellsociety.model.data.states.PercolationState;
@@ -28,7 +31,7 @@ public class AntLogicTest {
   };
 
   private final NeighborCalculator<AntState> dummyNeighborCalculator =
-      new NeighborCalculator<AntState>(GridShape.SQUARE, NeighborType.MOORE, true) {
+      new NeighborCalculator<AntState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

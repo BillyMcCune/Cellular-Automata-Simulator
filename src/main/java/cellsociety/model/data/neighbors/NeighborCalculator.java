@@ -15,21 +15,27 @@ import java.util.*;
  *   - Loads neighbor definitions from a CellNeighbor.properties file
  *   - Derives a single "canonical" set of neighbors for each shape+neighborSet (e.g. "TRI_MOORE")
  *   - For each newly visited cell, we re-check orientation (for hex or tri) to possibly flip offsets
- *   - Gathers cells up to some BFS distance, either as a cumulative set or ring at exactly distance d
  */
 public abstract class NeighborCalculator<T extends Enum<T> & State> {
 
   private static final String PROPERTY_FILE = "cellsociety/property/CellNeighbor.properties";
   private static final Map<String, List<Direction>> NEIGHBOR_MAP = loadNeighborProperties();
 
-  private final GridShape shape;
-  private final NeighborType neighborType;
-  private final BoundaryType boundary;
+  private GridShape shape;
+  private NeighborType neighborType;
+  private BoundaryType boundary;
+  private int steps;
 
   public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary) {
     this.shape = shape;
     this.neighborType = neighborType;
     this.boundary = boundary;
+  }
+  public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary, int steps) {
+    this.shape = shape;
+    this.neighborType = neighborType;
+    this.boundary = boundary;
+    this.steps = steps;
   }
 
   public List<Direction> getDirections() {
@@ -37,33 +43,75 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return NEIGHBOR_MAP.get(baseKey);
   }
 
-  public Set<Cell<T>> getNeighbors(Grid<T> grid, int startRow, int startCol, int steps) {
-    List<Set<Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, steps);
-    Set<Cell<T>> expansions = new HashSet<>();
-    for (int dist = 1; dist <= steps && dist < expansionsByDist.size(); dist++) {
-      expansions.addAll(expansionsByDist.get(dist));
-    }
-    return expansions;
+  public void setShape(GridShape shape) {
+    this.shape = shape;
   }
 
-  public Set<Cell<T>> getNeighborsAtDistance(Grid<T> grid, int startRow, int startCol, int distTarget) {
-    List<Set<Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, distTarget);
+  public void setNeighborType(NeighborType neighborType) {
+    this.neighborType = neighborType;
+  }
+
+  public void setBoundary(BoundaryType boundary) {
+    this.boundary = boundary;
+  }
+
+  public void setSteps(int steps) {
+    this.steps = steps;
+  }
+
+  /**
+   * Returns all neighbors (accumulated from BFS expansions) up to distance 'steps' from (row,col)
+   * as a Map<Direction,Cell<T>>.
+   *   - Direction holds the final (dy, dx) offset from the original cell.
+   *   - BFS ensures each cell is unique in the result (because we mark visited).
+   */
+  public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int startRow, int startCol) {
+    List<Map<Direction, Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, steps);
+    Map<Direction, Cell<T>> allNeighbors = new HashMap<>();
+    // Combine all expansions from distance=1 up to distance=steps
+    for (int dist = 1; dist <= steps && dist < expansionsByDist.size(); dist++) {
+      allNeighbors.putAll(expansionsByDist.get(dist));
+    }
+    return allNeighbors;
+  }
+
+  /**
+   * Returns the ring (exact BFS distance) of cells at distance 'distTarget' from (row,col),
+   * as a Map<Direction,Cell<T>>.
+   */
+  public Map<Direction, Cell<T>> getNeighborsAtDistance(
+      Grid<T> grid, int startRow, int startCol, int distTarget) {
+    List<Map<Direction, Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, distTarget);
     if (distTarget < expansionsByDist.size()) {
       return expansionsByDist.get(distTarget);
     }
-    return Collections.emptySet();
+    return Collections.emptyMap();
   }
 
-  private List<Set<Cell<T>>> bfsExpansions(Grid<T> grid, int startRow, int startCol, int maxDist) {
-    List<Set<Cell<T>>> expansions = initializeExpansionSets(maxDist);
-    Queue<BFSNode> queue = initializeBFSQueue(startRow, startCol);
-    Set<String> visited = initializeVisitedSet(startRow, startCol);
+  /**
+   * Perform BFS expansions (up to maxDist) from the (startRow,startCol).
+   * Returns a List of Maps (index = distance), each map of Direction => Cell<T>.
+   */
+  private List<Map<Direction, Cell<T>>> bfsExpansions(Grid<T> grid, int startRow, int startCol, int maxDist) {
+    List<Map<Direction, Cell<T>>> expansionsByDist = initializeExpansionMaps(maxDist);
+
+    Queue<BFSNode> queue = new ArrayDeque<>();
+    queue.add(new BFSNode(startRow, startCol, 0, new Direction(0, 0)));
+
+    Set<String> visited = new HashSet<>();
+    visited.add(startRow + "," + startCol);
 
     while (!queue.isEmpty()) {
       BFSNode node = queue.poll();
-      processNode(grid, node, maxDist, startRow, startCol, expansions);
+      int r = node.row;
+      int c = node.col;
+      int dist = node.dist;
 
-      if (node.dist < maxDist) {
+      if (dist <= maxDist && dist > 0) {
+        expansionsByDist.get(dist).put(node.offsetFromOriginal, grid.getCell(r, c));
+      }
+
+      if (dist < maxDist) {
         List<BFSNode> nextLayer = computeNextLayer(grid, node);
         for (BFSNode next : nextLayer) {
           String keyPos = next.row + "," + next.col;
@@ -74,53 +122,36 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
         }
       }
     }
-    return expansions;
+    return expansionsByDist;
   }
 
-  private List<Set<Cell<T>>> initializeExpansionSets(int maxDist) {
-    List<Set<Cell<T>>> expansions = new ArrayList<>();
+  private List<Map<Direction, Cell<T>>> initializeExpansionMaps(int maxDist) {
+    List<Map<Direction, Cell<T>>> expansions = new ArrayList<>();
     for (int d = 0; d <= maxDist; d++) {
-      expansions.add(new HashSet<>());
+      expansions.add(new HashMap<>());
     }
     return expansions;
   }
 
-  private Queue<BFSNode> initializeBFSQueue(int startRow, int startCol) {
-    Queue<BFSNode> queue = new ArrayDeque<>();
-    queue.add(new BFSNode(startRow, startCol, 0));
-    return queue;
-  }
-
-  private Set<String> initializeVisitedSet(int startRow, int startCol) {
-    Set<String> visited = new HashSet<>();
-    visited.add(startRow + "," + startCol);
-    return visited;
-  }
-
-  private void processNode(Grid<T> grid, BFSNode node, int maxDist,
-      int startRow, int startCol,
-      List<Set<Cell<T>>> expansions) {
-    int r = node.row;
-    int c = node.col;
-    int dist = node.dist;
-    if (dist <= maxDist && !(r == startRow && c == startCol) && dist > 0) {
-      expansions.get(dist).add(grid.getCell(r, c));
-    }
-  }
-
+  /**
+   * Given a BFSNode, compute all "next" BFSNodes for its neighbors, carrying forward
+   * the sum of offsets so that each BFSNode knows how far from original (row,col) it is.
+   */
   private List<BFSNode> computeNextLayer(Grid<T> grid, BFSNode node) {
+    List<BFSNode> result = new ArrayList<>();
     String baseKey = shape + "_" + neighborType;
     List<Direction> baseOffsets = NEIGHBOR_MAP.get(baseKey);
     if (baseOffsets == null) {
       throw new IllegalArgumentException("No offset set found for key: " + baseKey);
     }
 
-    List<BFSNode> result = new ArrayList<>();
     int r = node.row;
     int c = node.col;
     int dist = node.dist;
-    boolean flipHex = shape.equals(GridShape.HEX) && (r % 2 != 0);
-    boolean flipTri = shape.equals(GridShape.TRI) && ((r + c) % 2 != 0);
+    Direction nodeOffset = node.offsetFromOriginal;
+
+    boolean flipHex = (shape == GridShape.HEX && (c % 2 != 0));
+    boolean flipTri = (shape == GridShape.TRI && ((r + c) % 2 != 0));
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
@@ -142,11 +173,16 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
           continue;
         }
       }
-      result.add(new BFSNode(nr, nc, dist + 1));
+
+      Direction newOffset = new Direction(nodeOffset.dy() + dy, nodeOffset.dx() + dx);
+      result.add(new BFSNode(nr, nc, dist + 1, newOffset));
     }
     return result;
   }
 
+  /**
+   * Load neighbor definitions from CellNeighbor.properties into a static map.
+   */
   private static Map<String, List<Direction>> loadNeighborProperties() {
     Map<String, List<Direction>> map = new HashMap<>();
     Properties props = new Properties();
@@ -178,10 +214,19 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return dirs;
   }
 
+  /**
+   * Our BFS node now also tracks the cumulative offsetFromOriginal to help
+   * identify how far (row/col) the node is from the start cell.
+   */
   protected static class BFSNode {
     int row, col, dist;
-    BFSNode(int r, int c, int d) {
-      row = r; col = c; dist = d;
+    Direction offsetFromOriginal;
+
+    BFSNode(int r, int c, int d, Direction offset) {
+      row = r;
+      col = c;
+      dist = d;
+      offsetFromOriginal = offset;
     }
   }
 }
