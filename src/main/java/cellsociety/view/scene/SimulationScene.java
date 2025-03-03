@@ -82,14 +82,14 @@ public class SimulationScene {
     Pane gridParent = createGrid();
     VBox.setVgrow(gridParent, Priority.ALWAYS);
     ScrollPane controls = createControls();
-    ScrollPane stylePanel = createStylePanel();
+    ScrollPane stylePanel = createStylesPanel();
     ScrollPane infoLabel = createInfoPanel();
     ScrollPane parameterPanel = createParameterPanel();
     ScrollPane logPanel = createLogPanel();
 
     // Create a floating window for each component
     docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP, null);
-    docker.createDWindow(LanguageController.getStringProperty("style-window"), stylePanel, DockPosition.BOTTOM, null);
+    docker.createDWindow(LanguageController.getStringProperty("styles-window"), stylePanel, DockPosition.BOTTOM, null);
     docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT, null);
     DWindow parameterWindow = docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT, null);
     DWindow logWindow = docker.createDWindow(LanguageController.getStringProperty("log-window"), logPanel, DockPosition.BOTTOM, parameterWindow);
@@ -175,6 +175,7 @@ public class SimulationScene {
     Button loadButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("load-button"), e -> loadCallback(selectType.getValue()));
     Button saveButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("save-button"), e -> saveCallback(directoryField.getText()));
     Button directoryButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("directory-button"), e -> directorySelectCallback());
+    Button flipButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("flip-button"), e -> flipCallback());
 
     // Set button sizes
     directoryButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH * 0.8);
@@ -202,23 +203,35 @@ public class SimulationScene {
     loadButton.getStyleClass().add("load-button");
     saveButton.getStyleClass().add("save-button");
     directoryButton.getStyleClass().add("directory-button");
+    flipButton.getStyleClass().add("flip-button");
+
+    // Create checkbox
+    CheckBox showBorderCheckBox = new CheckBox();
+    showBorderCheckBox.textProperty().bind(LanguageController.getStringProperty("checkbox-text"));
+    showBorderCheckBox.getStyleClass().add("border-checkbox");
+    showBorderCheckBox.setOnAction(e -> toggleBorderCallback(showBorderCheckBox.isSelected()));
+    showBorderCheckBox.setSelected(doShowBorder);
 
     // HBox formatting for each dx
     HBox row1 = new HBox(10, startPauseButton, resetButton, newButton);
     row1.setAlignment(Pos.CENTER);
     row1.setPadding(new Insets(5));
 
-    HBox row2 = new HBox(10, loadButton, selectType);
+    HBox row2 = new HBox(10, flipButton, showBorderCheckBox);
     row2.setAlignment(Pos.CENTER);
     row2.setPadding(new Insets(5));
 
-    HBox row3 = new HBox(10, saveButton, directoryField, directoryButton);
+    HBox row3 = new HBox(10, loadButton, selectType);
     row3.setAlignment(Pos.CENTER);
     row3.setPadding(new Insets(5));
 
+    HBox row4 = new HBox(10, saveButton, directoryField, directoryButton);
+    row4.setAlignment(Pos.CENTER);
+    row4.setPadding(new Insets(5));
+
     // Create sections
-    BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("operations-section"), row1);
-    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("io-section"), row2, row3);
+    BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("operations-section"), row1, row2);
+    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("io-section"), row3, row4);
 
     // Main VBox containing all sections
     VBox controlsBox = new VBox(10, section1, section2);
@@ -237,39 +250,38 @@ public class SimulationScene {
   //       - Cell Shape
   //       - Edge Type
   //       - Neighbor Type
-  private ScrollPane createStylePanel() {
-    // Flip button
-    Button flipButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("flip-button"), e -> flipCallback());
-    flipButton.getStyleClass().add("flip-button");
+  // TODO: Implement Tool Tips
+  private ScrollPane createStylesPanel() {
+    // Color selectors
+    // TODO: Create a list that can be dynamically updated
+    //       - Cell Color
 
-    // Create checkbox
-    CheckBox showBorderCheckBox = new CheckBox();
-    showBorderCheckBox.textProperty().bind(LanguageController.getStringProperty("checkbox-text"));
-    showBorderCheckBox.getStyleClass().add("border-checkbox");
-    showBorderCheckBox.setOnAction(e -> toggleBorderCallback(showBorderCheckBox.isSelected()));
-    showBorderCheckBox.setSelected(doShowBorder);
-
-    HBox row4 = new HBox(10, flipButton, showBorderCheckBox);
-    row4.setAlignment(Pos.CENTER);
-    row4.setPadding(new Insets(5));
-
-    BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("grid-section"), row4);
-    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("themelang-section"), SceneUIWidget.createThemeLanguageSelectorUI(
-        LanguageController.getStringProperty("welcome-language"),
+    // Theme and Language selectors
+    HBox themeLanguageSelectors = SceneUIWidget.createThemeLanguageSelectorUI(
         LanguageController.getStringProperty("welcome-theme"),
+        LanguageController.getStringProperty("welcome-language"),
         this::splashScreenLanguageCallback,
         this::splashScreenThemeCallback
-    ));
+    );
+
+    // Grid Style selectors
+    // TODO: Implement the grid style selectors
+    //       - Cell Shape
+    //       - Edge Type
+    //       - Neighbor Type
+
+    // Create sections
+    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("themelang-section"), themeLanguageSelectors);
 
     // Main VBox containing all sections
-    VBox styleBox = new VBox(10, section1, section2);
+    VBox styleBox = new VBox(10, section2);
     styleBox.setAlignment(Pos.CENTER);
-    styleBox.getStyleClass().add("controls-box");
+    styleBox.getStyleClass().add("styles-box");
     styleBox.setPadding(new Insets(10));
     styleBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(styleBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(styleBox, LanguageController.getStringProperty("style-panel"));
+    return SceneUIWidget.createContainerUI(styleBox, LanguageController.getStringProperty("styles-panel"));
   }
 
   private ScrollPane createInfoPanel() {

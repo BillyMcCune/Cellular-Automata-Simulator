@@ -216,6 +216,7 @@
   -fx-font-size: 14px;
   -fx-text-fill: #ffffff;
   -fx-alignment: center;
+  -fx-font-weight: bold;
 }
 
 .drop-down-box {

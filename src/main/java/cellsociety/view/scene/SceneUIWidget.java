@@ -259,7 +259,7 @@ public class SceneUIWidget {
    */
   // TODO: add css file for the new label
   public static HBox createColorSelectorUI(String defaultColor, StringProperty label, StringProperty tooltip, Consumer<String> callback) {
-    // Create the label with tooltip
+    // Create label and tooltip
     Label labelComponent = new Label();
     labelComponent.textProperty().bind(label);
     labelComponent.getStyleClass().add("color-label");
@@ -269,21 +269,30 @@ public class SceneUIWidget {
     tooltipComponent.textProperty().bind(tooltip);
     labelComponent.setTooltip(tooltipComponent);
 
-    // Create the color picker
+    // Create ColorPicker with full background as color indicator
     ColorPicker colorPicker = new ColorPicker(Color.web(defaultColor));
     colorPicker.getStyleClass().add("color-picker");
+    colorPicker.setStyle("-fx-background-color: " + String.format("rgb(%d, %d, %d)",
+        (int) (colorPicker.getValue().getRed() * 255),
+        (int) (colorPicker.getValue().getGreen() * 255),
+        (int) (colorPicker.getValue().getBlue() * 255)) + ";");
 
-    // Update text field when color picker changes
+    // Update background color on color change
     colorPicker.setOnAction(event -> {
-      callback.accept(colorPicker.getValue().toString());
+      Color selectedColor = colorPicker.getValue();
+      colorPicker.setStyle("-fx-background-color: " + String.format("rgb(%d, %d, %d)",
+          (int) (selectedColor.getRed() * 255),
+          (int) (selectedColor.getGreen() * 255),
+          (int) (selectedColor.getBlue() * 255)) + ";");
+      callback.accept(selectedColor.toString());
     });
 
-    // Create an HBox control
+    // Create HBox layout
     HBox colorSelector = new HBox(5, labelComponent, colorPicker);
     colorSelector.setAlignment(Pos.CENTER);
     colorSelector.getStyleClass().add("color-selector");
 
-    // Call the callback with the default value
+    // Call callback with default color
     callback.accept(defaultColor);
 
     return colorSelector;

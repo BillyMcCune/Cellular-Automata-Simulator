@@ -148,9 +148,16 @@ public class SceneController {
     return "";
   }
 
+  /**
+   * Retrieves the title of the simulation from the configuration.
+   *
+   * @return the title of the simulation
+   */
   public String getSimulationTitle() {
     return configTitle;
   }
+
+
 
   /* MODEL APIS */
 

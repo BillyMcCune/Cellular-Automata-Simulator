@@ -212,6 +212,7 @@
   -fx-font-size: 14px;
   -fx-text-fill: #333333;  /* Dark text for light background */
   -fx-alignment: center;
+  -fx-font-weight: bold;
 }
 
 .drop-down-box {

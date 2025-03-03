@@ -228,6 +228,7 @@
   -fx-font-size: 14px;
   -fx-text-fill: linear-gradient(to bottom, #e8e8e8, #b3b3b3); /* Subtle gradient with light gray */
   -fx-alignment: center;
+  -fx-font-weight: bold;
 }
 
 .drop-down-box {
