@@ -6,6 +6,9 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
@@ -50,15 +53,12 @@ public class GridTest {
   }
 
   private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
-    private static final int[][] DIRECTIONS = {
-        {-1, -1}, {-1, 0}, {-1, 1},
-        {0, -1}, {0, 1},
-        {1, -1}, {1, 0}, {1, 1}
-    };
     public DummyNeighborCalculator() {
-      super(DIRECTIONS);
+      super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
     }
   }
+
+
 
   private List<List<CellRecord>> createRawGrid(int rows, int cols, int defaultState) {
     List<List<CellRecord>> raw = new ArrayList<>();

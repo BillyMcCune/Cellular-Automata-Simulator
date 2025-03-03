@@ -1,5 +1,8 @@
 package cellsociety.model.data.neighbors;
 
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.states.State;
 import java.util.List;
 
@@ -17,6 +20,6 @@ public class SegregationNeighborCalculator<T extends Enum<T> & State> extends
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public SegregationNeighborCalculator() {
-    super(NeighborCalculator.MOORE);
+    super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
   }
 }

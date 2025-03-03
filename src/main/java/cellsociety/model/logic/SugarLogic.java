@@ -117,8 +117,8 @@ public class SugarLogic extends Logic<SugarState> {
     checkBounds(vision, min, max);
     this.vision = vision;
     // TODO: Map string to everything else instead inside the neighbor calc thing
-    ((SugarNeighborCalculator<SugarState>) grid.getNeighborCalculator()).setVision((int) vision);
-    grid.reassignNeighbors();
+    //((SugarNeighborCalculator<SugarState>) grid.getNeighborCalculator()).setVision((int) vision);
+    grid.assignNeighbors();
   }
 
   /**

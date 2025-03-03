@@ -113,7 +113,7 @@ public class modelAPI {
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
       grid = new Grid<>(gridCopy, cellFactory, neighborCalculator);
-      System.out.println(configInfo.myGrid());
+      //System.out.println(configInfo.myGrid());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -142,7 +142,7 @@ public class modelAPI {
       if (myParameterRecord == null) {
         myParameterRecord = configInfo.myParameters();
       }
-      System.out.println(myParameterRecord.myDoubleParameters());
+      //System.out.println(myParameterRecord.myDoubleParameters());
       return myParameterRecord.myDoubleParameters();
     } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
@@ -167,12 +167,12 @@ public class modelAPI {
 
     myParameterRecord.myDoubleParameters().put(paramName, value);
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    System.out.println(setterName);
+    //System.out.println(setterName);
     try {
       // Find the setter method that accepts a double.
       Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
       // Invoke the setter on the game logic.
-      System.out.println(value);
+      //System.out.println(value);
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       System.out.println("error with setter");
@@ -197,7 +197,7 @@ public class modelAPI {
 
     // Construct the setter method name (e.g., "setLabel" for "label").
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    System.out.println(setterName);
+    //System.out.println(setterName);
     try {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
       setterMethod.invoke(gameLogic, value);
@@ -359,12 +359,12 @@ public class modelAPI {
         double defaultValue = (double) getterMethod.invoke(gameLogic);
         // Update the parameter record for double parameters.
         myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
-        System.out.println(myParameterRecord.myDoubleParameters());
+        //System.out.println(myParameterRecord.myDoubleParameters());
       } else if (paramType == String.class) {
         String defaultValue = (String) getterMethod.invoke(gameLogic);
         // Update the parameter record for string parameters.
         myParameterRecord.myStringParameters().put(paramName, defaultValue);
-        System.out.println(myParameterRecord.myStringParameters());
+        //System.out.println(myParameterRecord.myStringParameters());
       }
     }
   }

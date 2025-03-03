@@ -60,7 +60,7 @@ public class configAPI {
       configReader = new ConfigReader();
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
-        System.out.println(configInfo);
+        //System.out.println(configInfo);
         isLoaded = true;
         myModelAPI.setConfigInfo(configInfo);
       }
