@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.function.Consumer;
-import java.util.logging.StreamHandler;
 
 /**
  * @author Billy McCune
@@ -669,7 +668,7 @@ public class modelAPI {
         }
       }
     } catch (IOException e) {
-     throw new NoSuchElementException("error-getPossibleNeighborArrangements");
+      throw new NoSuchElementException("error-getPossibleNeighborArrangements");
     }
     return arrangements;
   }

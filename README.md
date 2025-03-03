@@ -30,6 +30,26 @@ This project implements a cellular automata simulator.
 
  * Interesting data files:
 
+Here's the list of error throwing data files that you can use to test our error throwing:
+-Note each file name has the specific error that is throw:
+ErrorParamMissingName.xml, 
+ErrorTooManyTotalStates.xml,
+ErrorInvalidValue.xml,
+ErrorMultipleGridConfigurationElements.xml,
+ErrorInvalidValueInDoubleParam.xml,
+ErrorInvalidCellState.xml,  
+ErrorGridBounds.xml, 
+ErrorCellMissingStateAttribute.xml,
+ErrorMissingTitleParameter.xml,
+ErrorProportionsExceedLimit.xml, 
+ErrorEmptyInitialCells.xml,
+ErrorInvalidAcceptedStateValue.xml, 
+ErrorFileFormat.xml, 
+ErrorInvalidProportionValue.xml, 
+ErrorEmptyRow.xml, 
+ErrorAcceptedStatesEmpty.xml,
+
+
  * Key/Mouse inputs:
 
 
@@ -41,6 +61,11 @@ This project implements a cellular automata simulator.
  * Known Bugs:
 
  * Features implemented:
+
+    * Simulation Features:
+    * UI Features:
+    * Configuration Features:
+
 
  * Features unimplemented:
 
