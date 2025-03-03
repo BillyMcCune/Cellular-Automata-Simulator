@@ -158,7 +158,7 @@ public class configAPI {
    * @return the grid width.
    * @throws NumberFormatException if the configuration information is not loaded.
    */
-  public int getGridWidth() {
+  public int getGridWidth() throws NullPointerException {
     try {
       return configInfo.myGridWidth();
     } catch (NullPointerException e) {
@@ -172,7 +172,7 @@ public class configAPI {
    * @return the grid height
    * @throws NumberFormatException if the configuration information is not loaded
    */
-  public int getGridHeight() {
+  public int getGridHeight() throws NullPointerException{
     try {
       return configInfo.myGridHeight();
     } catch (NullPointerException e) {
@@ -186,7 +186,7 @@ public class configAPI {
    * @return a map containing simulation details.
    * @throws NullPointerException if the configuration information is not loaded.
    */
-  public Map<String, String> getSimulationInformation() {
+  public Map<String, String> getSimulationInformation() throws NullPointerException {
     try {
       HashMap<String, String> simulationDetails = new HashMap<>();
       simulationDetails.put("author", configInfo.myAuthor());
@@ -206,7 +206,7 @@ public class configAPI {
    *                          description.
    * @throws NullPointerException if the current configuration information is not loaded.
    */
-  public void setSimulationInformation(Map<String, String> simulationDetails) {
+  public void setSimulationInformation(Map<String, String> simulationDetails) throws NullPointerException {
     try {
       ConfigInfo tempConfigInfo = new ConfigInfo(
           configInfo.myType(),
@@ -237,7 +237,7 @@ public class configAPI {
    * @return the simulation tick speed.
    * @throws NumberFormatException if the configuration information is not loaded.
    */
-  public double getConfigSpeed() {
+  public double getConfigSpeed() throws NullPointerException {
     try {
       return configInfo.myTickSpeed();
     } catch (NullPointerException e) {

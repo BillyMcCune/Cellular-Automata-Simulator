@@ -1,5 +1,6 @@
 package cellsociety.model.config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class GridReader {
 
@@ -23,7 +25,7 @@ public class GridReader {
    * @return a 2D list of {@code CellRecord} representing the initial grid
    * @throws ParserConfigurationException if multiple grid configuration elements are found or if the grid configuration is missing
    */
-  public static List<List<CellRecord>> readInitialGrid(Element root) throws ParserConfigurationException {
+  public static List<List<CellRecord>> readInitialGrid(Element root) throws ParserConfigurationException, IllegalArgumentException {
     int initialCellsCount = root.getElementsByTagName("initialCells").getLength();
     int initialStatesCount = root.getElementsByTagName("initialStates").getLength();
     int initialProportionsCount = root.getElementsByTagName("initialProportions").getLength();
@@ -55,7 +57,7 @@ public class GridReader {
    * @return a set of accepted state integers
    * @throws IllegalArgumentException if the accepted states element is missing or empty, or if an accepted state cannot be parsed as an integer
    */
-  public static Set<Integer> readAcceptedStates(Element root) {
+  public static Set<Integer> readAcceptedStates(Element root) throws IllegalArgumentException {
     Element acceptedStatesElement = (Element) root.getElementsByTagName("acceptedStates").item(0);
     if (acceptedStatesElement == null) {
       throw new IllegalArgumentException("error-MissingAcceptedState");
@@ -83,7 +85,7 @@ public class GridReader {
    * @return a 2D list of {@code CellRecord} representing the grid
    * @throws IllegalArgumentException if there are no rows or if any row is empty
    */
-  private static List<List<CellRecord>> parseInitialCells(Element root) {
+  private static List<List<CellRecord>> parseInitialCells(Element root) throws IllegalArgumentException {
     Element initialCellsElement = getInitialCellsElement(root);
     NodeList rowNodes = initialCellsElement.getElementsByTagName("row");
     if (rowNodes == null || rowNodes.getLength() == 0) {
@@ -113,7 +115,7 @@ public class GridReader {
    * @return the <initialCells> element
    * @throws IllegalArgumentException if the <initialCells> element is missing
    */
-  private static Element getInitialCellsElement(Element root) {
+  private static Element getInitialCellsElement(Element root) throws IllegalArgumentException {
     Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
     if (initialCellsElement == null) {
       throw new IllegalArgumentException("error-missingInitialCells");
@@ -152,7 +154,7 @@ public class GridReader {
    * @return a {@code CellRecord} object representing the cell
    * @throws IllegalArgumentException if the "state" attribute is missing or invalid
    */
-  private static CellRecord parseCell(Element cellElement, int rowIndex, int colIndex) {
+  private static CellRecord parseCell(Element cellElement, int rowIndex, int colIndex) throws IllegalArgumentException {
     String stateStr = cellElement.getAttribute("state");
     if (stateStr == null || stateStr.isEmpty()) {
       throw new IllegalArgumentException("error-missingCellState," + rowIndex + "," + colIndex);
@@ -177,7 +179,7 @@ public class GridReader {
    * @return a map of property names to their double values
    * @throws IllegalArgumentException if any property value cannot be parsed as a double
    */
-  private static Map<String, Double> parseCellProperties(Element cellElement, int rowIndex, int colIndex) {
+  private static Map<String, Double> parseCellProperties(Element cellElement, int rowIndex, int colIndex) throws IllegalArgumentException {
     Map<String, Double> properties = new HashMap<>();
     for (int k = 0; k < cellElement.getAttributes().getLength(); k++) {
       Node attr = cellElement.getAttributes().item(k);
@@ -203,7 +205,7 @@ public class GridReader {
    * @return the text content of the tag
    * @throws IllegalArgumentException if the tag does not exist
    */
-  private static String getTextValue(Element e, String tagName) {
+  private static String getTextValue(Element e, String tagName) throws IllegalArgumentException {
     NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();

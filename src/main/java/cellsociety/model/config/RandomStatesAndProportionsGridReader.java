@@ -1,5 +1,6 @@
 package cellsociety.model.config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,15 +31,19 @@ public class RandomStatesAndProportionsGridReader {
    * @throws IllegalArgumentException if any parsing error occurs
    */
   public static List<List<CellRecord>> createCellsByRandomTotalStates(Element root) {
-    int width = Integer.parseInt(getTextValue(root, "width"));
-    int height = Integer.parseInt(getTextValue(root, "height"));
-    int totalCells = width * height;
+    try {
+      int width = Integer.parseInt(getTextValue(root, "width"));
+      int height = Integer.parseInt(getTextValue(root, "height"));
+      int totalCells = width * height;
 
-    // Reuse GridReader's method to read accepted states.
-    Set<Integer> acceptedStates = GridReader.readAcceptedStates(root);
-    Map<Integer, Integer> stateCounts = parseInitialStates(root, acceptedStates, totalCells);
-    List<Integer> randomizedStates = generateRandomizedStateList(stateCounts, totalCells);
-    return createGrid(randomizedStates, width, height);
+      // Reuse GridReader's method to read accepted states.
+      Set<Integer> acceptedStates = GridReader.readAcceptedStates(root);
+      Map<Integer, Integer> stateCounts = parseInitialStates(root, acceptedStates, totalCells);
+      List<Integer> randomizedStates = generateRandomizedStateList(stateCounts, totalCells);
+      return createGrid(randomizedStates, width, height);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**
@@ -50,14 +55,18 @@ public class RandomStatesAndProportionsGridReader {
    * @throws IllegalArgumentException if any parsing or validation error occurs
    */
   public static List<List<CellRecord>> createCellsByRandomProportions(Element root) {
-    int width = Integer.parseInt(getTextValue(root, "width"));
-    int height = Integer.parseInt(getTextValue(root, "height"));
-    int totalCells = width * height;
+    try {
+      int width = Integer.parseInt(getTextValue(root, "width"));
+      int height = Integer.parseInt(getTextValue(root, "height"));
+      int totalCells = width * height;
 
-    Set<Integer> acceptedStates = GridReader.readAcceptedStates(root);
-    Map<Integer, Integer> stateCounts = parseInitialProportions(root, acceptedStates, totalCells);
-    List<Integer> randomizedStates = generateRandomizedStateList(stateCounts, totalCells);
-    return createGrid(randomizedStates, width, height);
+      Set<Integer> acceptedStates = GridReader.readAcceptedStates(root);
+      Map<Integer, Integer> stateCounts = parseInitialProportions(root, acceptedStates, totalCells);
+      List<Integer> randomizedStates = generateRandomizedStateList(stateCounts, totalCells);
+      return createGrid(randomizedStates, width, height);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**
@@ -71,23 +80,27 @@ public class RandomStatesAndProportionsGridReader {
    */
   private static Map<Integer, Integer> parseInitialStates(Element root, Set<Integer> acceptedStates,
       int totalCells) {
-    Element initialStatesElement = getInitialStatesElement(root);
-    Map<Integer, Integer> stateCounts = new HashMap<>();
-    NodeList stateNodes = initialStatesElement.getChildNodes();
-    int specifiedSum = 0;
+    try {
+      Element initialStatesElement = getInitialStatesElement(root);
+      Map<Integer, Integer> stateCounts = new HashMap<>();
+      NodeList stateNodes = initialStatesElement.getChildNodes();
+      int specifiedSum = 0;
 
-    for (int i = 0; i < stateNodes.getLength(); i++) {
-      Node node = stateNodes.item(i);
-      if (node.getNodeType() != Node.ELEMENT_NODE) {
-        continue;
+      for (int i = 0; i < stateNodes.getLength(); i++) {
+        Node node = stateNodes.item(i);
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
+          continue;
+        }
+        Element stateElement = (Element) node;
+        // Process each state element and add its count to the map.
+        specifiedSum += processStateElement(stateElement, acceptedStates, stateCounts);
       }
-      Element stateElement = (Element) node;
-      // Process each state element and add its count to the map.
-      specifiedSum += processStateElement(stateElement, acceptedStates, stateCounts);
-    }
 
-    validateTotalSum(specifiedSum, totalCells, stateCounts, acceptedStates);
-    return stateCounts;
+      validateTotalSum(specifiedSum, totalCells, stateCounts, acceptedStates);
+      return stateCounts;
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**
@@ -116,7 +129,7 @@ public class RandomStatesAndProportionsGridReader {
    *                                  count cannot be parsed
    */
   private static int processStateElement(Element stateElement, Set<Integer> acceptedStates,
-      Map<Integer, Integer> stateCounts) {
+      Map<Integer, Integer> stateCounts) throws IllegalArgumentException {
     String tagName = stateElement.getTagName();
     if (!tagName.startsWith("state")) {
       return 0; // Ignore any non-state elements.
@@ -179,7 +192,7 @@ public class RandomStatesAndProportionsGridReader {
    * @throws IllegalArgumentException if validation fails
    */
   private static void validateTotalSum(int specifiedSum, int totalCells,
-      Map<Integer, Integer> stateCounts, Set<Integer> acceptedStates) {
+      Map<Integer, Integer> stateCounts, Set<Integer> acceptedStates) throws IllegalArgumentException {
     if (specifiedSum > totalCells) {
       throw new IllegalArgumentException(
           "error-TotalCellExceedsGridSize," + specifiedSum + "," + totalCells);
@@ -207,7 +220,7 @@ public class RandomStatesAndProportionsGridReader {
    * @throws IllegalArgumentException if any proportion value is invalid or if validation fails
    */
   private static Map<Integer, Integer> parseInitialProportions(Element root,
-      Set<Integer> acceptedStates, int totalCells) {
+      Set<Integer> acceptedStates, int totalCells) throws IllegalArgumentException {
     List<String> errorMessages = new ArrayList<>();
     Element proportionsElement = (Element) root.getElementsByTagName("initialProportions").item(0);
     Map<Integer, Double> proportions = new HashMap<>();
@@ -326,7 +339,7 @@ public class RandomStatesAndProportionsGridReader {
    *                               cells
    */
   private static Map<Integer, Integer> computeStateCounts(Map<Integer, Double> proportions,
-      int totalCells) {
+      int totalCells) throws IllegalArgumentException {
     Map<Integer, Integer> stateCounts = new HashMap<>();
     int sumCounts = 0;
     for (Map.Entry<Integer, Double> entry : proportions.entrySet()) {
@@ -357,7 +370,7 @@ public class RandomStatesAndProportionsGridReader {
    *                               cells
    */
   private static List<Integer> generateRandomizedStateList(Map<Integer, Integer> stateCounts,
-      int totalCells) {
+      int totalCells) throws IllegalArgumentException {
     List<Integer> statesList = new ArrayList<>();
     for (Map.Entry<Integer, Integer> entry : stateCounts.entrySet()) {
       int state = entry.getKey();
@@ -405,7 +418,7 @@ public class RandomStatesAndProportionsGridReader {
    * @return the text content of the tag
    * @throws IllegalArgumentException if the tag does not exist
    */
-  private static String getTextValue(Element e, String tagName) {
+  private static String getTextValue(Element e, String tagName) throws IllegalArgumentException {
     NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();

@@ -241,7 +241,7 @@ public class ConfigWriter {
    * @return a File object representing the output file
    * @throws ParserConfigurationException if the output file cannot be created
    */
-  private File createOutputFile(String path) throws ParserConfigurationException {
+  private File createOutputFile(String path) throws ParserConfigurationException, IllegalArgumentException {
     try {
       String baseFilename = generateBaseFilename();
       String fileExtension = ".xml";
@@ -334,7 +334,7 @@ public class ConfigWriter {
    * @param outputFile the file to validate
    * @throws IllegalArgumentException if the output file is null
    */
-  private void validateOutputFile(File outputFile) {
+  private void validateOutputFile(File outputFile) throws IllegalArgumentException {
     if (outputFile == null) {
       Log.error("Output file is null. Cannot save XML.");
       throw new IllegalArgumentException("error-outputFileNull");

@@ -205,7 +205,7 @@ public class ConfigReader {
    * @return the text content of the tag.
    * @throws IllegalArgumentException if the tag does not exist.
    */
-  private String getTextValue(Element e, String tagName) {
+  private String getTextValue(Element e, String tagName) throws IllegalArgumentException {
     org.w3c.dom.NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
       return nodeList.item(0).getTextContent();
@@ -217,7 +217,7 @@ public class ConfigReader {
   /**
    * Creates a mapping from file names to configuration files found in the designated folder.
    */
-  private void createListOfConfigFiles() {
+  private void createListOfConfigFiles() throws IllegalArgumentException, IllegalStateException {
     try {
       File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
       File[] fileList = folder.listFiles();
