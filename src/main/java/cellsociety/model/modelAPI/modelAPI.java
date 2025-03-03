@@ -62,24 +62,29 @@ public class modelAPI {
 
   // Load the color mapping from the properties file once (assumes the file is in your resources folder).
   private static final Properties COLOR_MAPPING = new Properties();
+
   static {
-    try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/CellColor.properties")) {
+    try (InputStream in = modelAPI.class.getResourceAsStream(
+        "/cellsociety/property/CellColor.properties")) {
       COLOR_MAPPING.load(in);
     } catch (IOException ex) {
       throw new RuntimeException("error-getting-color-mapping");
     }
   }
 
-  public modelAPI() {}
+  public modelAPI() {
+  }
 
   public void setConfigInfo(ConfigInfo configInfo) {
     this.configInfo = configInfo;
     this.myParameterRecord = configInfo.myParameters();
   }
+
   private static final Properties USER_STYLE_PREFERENCES = new Properties();
 
   static {
-    try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
+    try (InputStream in = modelAPI.class.getResourceAsStream(
+        "/cellsociety/property/SimulationStyle.properties")) {
       USER_STYLE_PREFERENCES.load(in);
     } catch (IOException ex) {
       throw new RuntimeException("error-getting-user-defined-color-mapping");
@@ -116,7 +121,6 @@ public class modelAPI {
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
       grid = new Grid<>(gridCopy, cellFactory, myNeighborCalculator);
-      //System.out.println(configInfo.myGrid());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -145,7 +149,6 @@ public class modelAPI {
       if (myParameterRecord == null) {
         myParameterRecord = configInfo.myParameters();
       }
-      //System.out.println(myParameterRecord.myDoubleParameters());
       return myParameterRecord.myDoubleParameters();
     } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
@@ -170,15 +173,12 @@ public class modelAPI {
 
     myParameterRecord.myDoubleParameters().put(paramName, value);
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    //System.out.println(setterName);
     try {
       // Find the setter method that accepts a double.
       Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
       // Invoke the setter on the game logic.
-      //System.out.println(value);
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      System.out.println("error with setter");
       throw new NoSuchElementException(e);
     }
   }
@@ -200,13 +200,11 @@ public class modelAPI {
 
     // Construct the setter method name (e.g., "setLabel" for "label").
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    //System.out.println(setterName);
     try {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
              NullPointerException e) {
-      System.out.println("error with setter");
       throw new NumberFormatException("error-configInfo-NULL");
     }
   }
@@ -238,7 +236,7 @@ public class modelAPI {
       return null;
     }
     Cell<?> cell = grid.getCell(row, col);
-    String stateColor = getStateColor(cell,wantDefaultColor);
+    String stateColor = getStateColor(cell, wantDefaultColor);
     if (!"WHITE".equalsIgnoreCase(stateColor)) {
       return stateColor;
     }
@@ -286,7 +284,8 @@ public class modelAPI {
 
     // Otherwise, use the state's prefix to check for any other property-based color.
     String stateString = cell.getCurrentState().toString();
-    String prefix = stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
+    String prefix =
+        stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
     for (Map.Entry<String, Double> entry : properties.entrySet()) {
       if (entry.getValue() != 0) {
         // Construct key like "AntState.searchingEntities"
@@ -329,10 +328,10 @@ public class modelAPI {
 
 
   /**
-   * Resets the simulation parameters by iterating over the public setter methods
-   * of the currently loaded gameLogic. For each setter, the corresponding getter,
-   * getMinParam, and getMaxParam methods are used to obtain the default and bounds values,
-   * which are then stored in the parameter record.
+   * Resets the simulation parameters by iterating over the public setter methods of the currently
+   * loaded gameLogic. For each setter, the corresponding getter, getMinParam, and getMaxParam
+   * methods are used to obtain the default and bounds values, which are then stored in the
+   * parameter record.
    *
    * @throws IllegalArgumentException if the game logic is not initialized.
    * @throws NullPointerException     if the game logic is not initialized.
@@ -362,12 +361,10 @@ public class modelAPI {
         double defaultValue = (double) getterMethod.invoke(gameLogic);
         // Update the parameter record for double parameters.
         myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
-        //System.out.println(myParameterRecord.myDoubleParameters());
       } else if (paramType == String.class) {
         String defaultValue = (String) getterMethod.invoke(gameLogic);
         // Update the parameter record for string parameters.
         myParameterRecord.myStringParameters().put(paramName, defaultValue);
-        //System.out.println(myParameterRecord.myStringParameters());
       }
     }
   }
@@ -470,7 +467,8 @@ public class modelAPI {
           throw new RuntimeException("error-invalidParameterMessage");
         } catch (IllegalAccessException e) {
           throw new RuntimeException("error-setParameter");
-        }};
+        }
+      };
     } catch (NoSuchMethodException e) {
       throw new NoSuchElementException("error-invalidParameterMessage");
     }
@@ -507,9 +505,9 @@ public class modelAPI {
    *
    * @param paramName the name of the parameter (e.g., "probCatch")
    * @return a double array where index 0 is the minimum value and index 1 is the maximum value
-   * @throws NoSuchMethodException if the corresponding getter is not found.
+   * @throws NoSuchMethodException     if the corresponding getter is not found.
    * @throws InvocationTargetException if the method cannot be invoked.
-   * @throws IllegalAccessException if the method cannot be accessed.
+   * @throws IllegalAccessException    if the method cannot be accessed.
    */
   public double[] getParameterBounds(String paramName)
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -521,11 +519,11 @@ public class modelAPI {
     Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
     double min = (double) minMethod.invoke(gameLogic, paramName);
     double max = (double) maxMethod.invoke(gameLogic, paramName);
-    return new double[]{ min, max };
+    return new double[]{min, max};
   }
 
-  public Map<String,String> getCellTypesAndDefaultColors(String SimulationType) {
-    Map<String,String> possibleStates = new HashMap<>();
+  public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {
+    Map<String, String> possibleStates = new HashMap<>();
     try (InputStream input = new FileInputStream("CellColor.properties")) {
       Properties defaultColors = new Properties();
       defaultColors.load(input);
@@ -576,7 +574,8 @@ public class modelAPI {
       System.err.println("Error reading default color for " + stateName + ": " + e.getMessage());
       return "WHITE";
     }
-}
+  }
+
   public void setNeighborArrangement(String neighborArrangement) {
     try {
       Properties simulationStyle = new Properties();
@@ -587,7 +586,6 @@ public class modelAPI {
         }
       }
       simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
-      System.out.println(neighborArrangement);
       myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangement));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
@@ -598,7 +596,7 @@ public class modelAPI {
   }
 
 
-  public void setEdgePolicy(String edgePolicy){
+  public void setEdgePolicy(String edgePolicy) {
     try {
       Properties simulationStyle = new Properties();
       File file = new File("SimulationStyle.properties");
@@ -618,7 +616,7 @@ public class modelAPI {
   }
 
 
-  public void setCellShape(String cellShape){
+  public void setCellShape(String cellShape) {
     try {
       Properties simulationStyle = new Properties();
       File file = new File("SimulationStyle.properties");
@@ -628,7 +626,7 @@ public class modelAPI {
         }
       }
       simulationStyle.setProperty(cellShapeProperty, cellShape);
-     cellShape =  cellShape.toUpperCase();
+      cellShape = cellShape.toUpperCase();
       myNeighborCalculator.setShape(GridShape.valueOf(cellShape));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
@@ -638,7 +636,7 @@ public class modelAPI {
     }
   }
 
-  public void setGridOutlinePreference(boolean wantsGridOutline){
+  public void setGridOutlinePreference(boolean wantsGridOutline) {
     try {
       Properties simulationStyle = new Properties();
       File file = new File("SimulationStyle.properties");
@@ -663,7 +661,8 @@ public class modelAPI {
       simulationStyle.load(input);
       for (String key : simulationStyle.stringPropertyNames()) {
         // Exclude the preference key and any blank values.
-        if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals("NEIGHBORARRANGEMENT.PREFERENCE")) {
+        if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals(
+            "NEIGHBORARRANGEMENT.PREFERENCE")) {
           String value = simulationStyle.getProperty(key);
           if (value != null && !value.trim().isEmpty()) {
             arrangements.add(value.trim());

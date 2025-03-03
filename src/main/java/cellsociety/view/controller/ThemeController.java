@@ -1,6 +1,5 @@
 package cellsociety.view.controller;
 
-import cellsociety.logging.Log;
 import cellsociety.view.scene.SceneUIWidget;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,8 @@ public class ThemeController {
 
   /**
    * Get the theme sheet for the given theme and component.
-   * @param theme the theme
+   *
+   * @param theme     the theme
    * @param component the component
    * @return the theme sheet
    */

@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 public class SceneController {
+
   // Constants
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
@@ -90,7 +91,8 @@ public class SceneController {
       initViewGrid();
       resetParameters();
       isLoaded = true;
-    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | NullPointerException ex) {
+    } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException |
+             InvocationTargetException | IllegalAccessException | NullPointerException ex) {
       SceneUIWidget.createErrorDialog(
           LanguageController.getStringProperty("error-loadConfig").getValue(),
           ex.getMessage(), ex);
@@ -195,11 +197,10 @@ public class SceneController {
   }
 
   /**
-   * Updates the simulation parameters in the UI by retrieving the parameter values
-   * from modelAPI. This method calls the model's resetParameters method (which updates
-   * the parameter record based on the current gameLogic), and then iterates over the
-   * double and string parameters to register callbacks in the UI.
-   *
+   * Updates the simulation parameters in the UI by retrieving the parameter values from modelAPI.
+   * This method calls the model's resetParameters method (which updates the parameter record based
+   * on the current gameLogic), and then iterates over the double and string parameters to register
+   * callbacks in the UI.
    */
   public void resetParameters()
       throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -210,11 +211,11 @@ public class SceneController {
     simulationScene.clearParameters();
 
     // Update the speed parameter.
-    simulationScene.setParameter(MIN_SPEED, MAX_SPEED, myConfigAPI.getConfigSpeed(), "speed-label", "speed-tooltip", speed -> {
-      // Change the speed of the simulation
-      updateInterval = 10 / (speed * SPEED_MULTIPLIER);
-    });
-
+    simulationScene.setParameter(MIN_SPEED, MAX_SPEED, myConfigAPI.getConfigSpeed(), "speed-label",
+        "speed-tooltip", speed -> {
+          // Change the speed of the simulation
+          updateInterval = 10 / (speed * SPEED_MULTIPLIER);
+        });
 
     // Update double parameters.
     Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();

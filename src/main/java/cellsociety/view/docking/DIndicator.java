@@ -18,6 +18,7 @@ import javafx.stage.StageStyle;
  * @author Hsuan-Kai Liao
  */
 public class DIndicator {
+
   // Constants
   private static final int DOCK_INDICATOR_WIDTH = 35;
   private static final int DOCK_INDICATOR_HEIGHT = 35;
@@ -31,6 +32,7 @@ public class DIndicator {
 
   /**
    * Constructs a dock indicator with the given docker.
+   *
    * @param docker the docker that the dock indicator is associated with
    */
   DIndicator(Docker docker) {
@@ -51,89 +53,6 @@ public class DIndicator {
   }
 
   /* PACKAGE-PRIVATE METHODS */
-
-  void showDockIndicator(double mouseX, double mouseY) {
-    TabPane tp = docker.findTabPaneUnderMouse(mouseX, mouseY);
-    if (tp == null) {
-      // Check if the mouse is outside the bounds of the mainStage
-      if (docker.isMouseInsideMainScene(mouseX, mouseY)) {
-        hideDockIndicator();
-        return;
-      } else {
-        // Get the midpoints of the edges of the mainStage
-        Point2D[] edgeMidpoints = getStageEdgeMidpoints(docker.mainStage);
-        Map.Entry<Docker.DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
-        indicatorPosition = nearestEdgeMidpoint.getKey();
-        updateIndicatorPosition(nearestEdgeMidpoint.getValue(), indicatorPosition, false);
-
-        // Set the style of the dock indicator
-        indicatorStage.setOpacity(1);
-      }
-    } else {
-      // Get the midpoints of the edges of the TabPane
-      Point2D[] edgeMidpoints = getTabPaneEdgeMidpoints(tp);
-      Map.Entry<Docker.DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints, mouseX, mouseY);
-      indicatorPosition = nearestEdgeMidpoint.getKey();
-      updateIndicatorPosition(nearestEdgeMidpoint.getValue(), indicatorPosition, true);
-
-      // Set the style of the dock indicator
-      indicatorStage.setOpacity(1);
-    }
-
-    // Show the dock indicator
-    if (!indicatorStage.isShowing()) {
-      indicatorStage.show();
-    }
-  }
-
-  void hideDockIndicator() {
-    indicatorStage.setOpacity(0);
-    indicatorStage.setX(-DOCK_INDICATOR_WIDTH);
-    indicatorStage.setY(-DOCK_INDICATOR_HEIGHT);
-  }
-
-  void updateIndicatorPosition(Point2D nearestEdgeMidpoint, Docker.DockPosition dockPosition, boolean inOrOutShift) {
-    if (nearestEdgeMidpoint == null) return;
-
-    double newX = nearestEdgeMidpoint.getX();
-    double newY = nearestEdgeMidpoint.getY();
-
-    double shift = inOrOutShift ? INDICATOR_INNER_SHIFT_OFFSET : -INDICATOR_OUTER_SHIFT_OFFSET;
-
-    switch (dockPosition) {
-      case LEFT:
-        newX += shift;
-        break;
-      case RIGHT:
-        newX -= shift;
-        break;
-      case TOP:
-        newY += shift;
-        if (!inOrOutShift) {
-          newY += docker.mainStage.getHeight() - docker.mainStage.getScene().getHeight();
-        }
-        break;
-      case BOTTOM:
-        newY -= shift;
-        break;
-    }
-
-    // Update the position of the dock indicator
-    indicatorStage.setX(newX - indicatorStage.getWidth() / 2);
-    indicatorStage.setY(newY - indicatorStage.getHeight() / 2);
-  }
-
-  boolean isMouseInsideIndicator(double mouseX, double mouseY) {
-    double indicatorX = indicatorStage.getX();
-    double indicatorY = indicatorStage.getY();
-    double indicatorWidth = indicatorStage.getWidth();
-    double indicatorHeight = indicatorStage.getHeight();
-
-    return mouseX >= indicatorX && mouseX <= indicatorX + indicatorWidth &&
-        mouseY >= indicatorY && mouseY <= indicatorY + indicatorHeight;
-  }
-
-  /* HELPER METHODS */
 
   static private Point2D[] getTabPaneEdgeMidpoints(TabPane tabPane) {
     Bounds bounds = tabPane.localToScreen(tabPane.getBoundsInLocal());
@@ -175,7 +94,8 @@ public class DIndicator {
     };
   }
 
-  static private Map.Entry<Docker.DockPosition, Point2D> getClosestEdge(Point2D[] midpoints, double mouseX, double mouseY) {
+  static private Map.Entry<Docker.DockPosition, Point2D> getClosestEdge(Point2D[] midpoints,
+      double mouseX, double mouseY) {
     Map<Docker.DockPosition, Point2D> edges = new HashMap<>();
     edges.put(Docker.DockPosition.LEFT, midpoints[0]);   // Left center
     edges.put(Docker.DockPosition.RIGHT, midpoints[1]);  // Right center
@@ -201,5 +121,93 @@ public class DIndicator {
     }
 
     return new AbstractMap.SimpleEntry<>(closestEdge, closestPoint);
+  }
+
+  void showDockIndicator(double mouseX, double mouseY) {
+    TabPane tp = docker.findTabPaneUnderMouse(mouseX, mouseY);
+    if (tp == null) {
+      // Check if the mouse is outside the bounds of the mainStage
+      if (docker.isMouseInsideMainScene(mouseX, mouseY)) {
+        hideDockIndicator();
+        return;
+      } else {
+        // Get the midpoints of the edges of the mainStage
+        Point2D[] edgeMidpoints = getStageEdgeMidpoints(docker.mainStage);
+        Map.Entry<Docker.DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints,
+            mouseX, mouseY);
+        indicatorPosition = nearestEdgeMidpoint.getKey();
+        updateIndicatorPosition(nearestEdgeMidpoint.getValue(), indicatorPosition, false);
+
+        // Set the style of the dock indicator
+        indicatorStage.setOpacity(1);
+      }
+    } else {
+      // Get the midpoints of the edges of the TabPane
+      Point2D[] edgeMidpoints = getTabPaneEdgeMidpoints(tp);
+      Map.Entry<Docker.DockPosition, Point2D> nearestEdgeMidpoint = getClosestEdge(edgeMidpoints,
+          mouseX, mouseY);
+      indicatorPosition = nearestEdgeMidpoint.getKey();
+      updateIndicatorPosition(nearestEdgeMidpoint.getValue(), indicatorPosition, true);
+
+      // Set the style of the dock indicator
+      indicatorStage.setOpacity(1);
+    }
+
+    // Show the dock indicator
+    if (!indicatorStage.isShowing()) {
+      indicatorStage.show();
+    }
+  }
+
+  /* HELPER METHODS */
+
+  void hideDockIndicator() {
+    indicatorStage.setOpacity(0);
+    indicatorStage.setX(-DOCK_INDICATOR_WIDTH);
+    indicatorStage.setY(-DOCK_INDICATOR_HEIGHT);
+  }
+
+  void updateIndicatorPosition(Point2D nearestEdgeMidpoint, Docker.DockPosition dockPosition,
+      boolean inOrOutShift) {
+    if (nearestEdgeMidpoint == null) {
+      return;
+    }
+
+    double newX = nearestEdgeMidpoint.getX();
+    double newY = nearestEdgeMidpoint.getY();
+
+    double shift = inOrOutShift ? INDICATOR_INNER_SHIFT_OFFSET : -INDICATOR_OUTER_SHIFT_OFFSET;
+
+    switch (dockPosition) {
+      case LEFT:
+        newX += shift;
+        break;
+      case RIGHT:
+        newX -= shift;
+        break;
+      case TOP:
+        newY += shift;
+        if (!inOrOutShift) {
+          newY += docker.mainStage.getHeight() - docker.mainStage.getScene().getHeight();
+        }
+        break;
+      case BOTTOM:
+        newY -= shift;
+        break;
+    }
+
+    // Update the position of the dock indicator
+    indicatorStage.setX(newX - indicatorStage.getWidth() / 2);
+    indicatorStage.setY(newY - indicatorStage.getHeight() / 2);
+  }
+
+  boolean isMouseInsideIndicator(double mouseX, double mouseY) {
+    double indicatorX = indicatorStage.getX();
+    double indicatorY = indicatorStage.getY();
+    double indicatorWidth = indicatorStage.getWidth();
+    double indicatorHeight = indicatorStage.getHeight();
+
+    return mouseX >= indicatorX && mouseX <= indicatorX + indicatorWidth &&
+        mouseY >= indicatorY && mouseY <= indicatorY + indicatorHeight;
   }
 }

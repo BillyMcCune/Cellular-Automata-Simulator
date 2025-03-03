@@ -25,10 +25,12 @@ public class configAPI {
   private boolean isLoaded;
   private modelAPI myModelAPI;
   private List<List<Integer>> myGridStates;
-  private List<List<Map<String,Double>>> myGridProperties;
+  private List<List<Map<String, Double>>> myGridProperties;
 
 
-  public configAPI(){}
+  public configAPI() {
+  }
+
   /**
    * Retrieves a list of available configuration file names.
    *
@@ -53,14 +55,12 @@ public class configAPI {
    * @throws SAXException                 if a SAX parsing error occurs - check configReader for
    *                                      more information regarding load simulation errors
    */
-  //TODO implement error
   public void loadSimulation(String fileName)
       throws ParserConfigurationException, IOException, SAXException {
     try {
       configReader = new ConfigReader();
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
-        //System.out.println(configInfo);
         isLoaded = true;
         myModelAPI.setConfigInfo(configInfo);
       }
@@ -71,7 +71,7 @@ public class configAPI {
     } catch (IOException e) {
       throw new IOException(e.getMessage());
     } catch (NullPointerException e) {
-      throw new NullPointerException( e.getMessage());
+      throw new NullPointerException(e.getMessage());
     }
   }
 
@@ -181,9 +181,9 @@ public class configAPI {
     }
   }
 
-//TODO implement error throw
+  //TODO implement error throw
   public void setSimulationInformation(Map<String, String> simulationDetails) {
-    try{
+    try {
       ConfigInfo tempConfigInfo = new ConfigInfo(
           configInfo.myType(),
           configInfo.myCellShapeType(),

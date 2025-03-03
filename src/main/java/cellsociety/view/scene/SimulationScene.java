@@ -5,15 +5,15 @@ import static java.lang.Math.abs;
 import cellsociety.logging.Log;
 import cellsociety.view.controller.LanguageController;
 import cellsociety.view.controller.LanguageController.Language;
+import cellsociety.view.controller.SceneController;
 import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import cellsociety.view.controller.ThemeController.UIComponent;
-import cellsociety.view.controller.SceneController;
 import cellsociety.view.docking.DWindow;
 import cellsociety.view.docking.Docker;
 import cellsociety.view.docking.Docker.DockPosition;
-import cellsociety.view.renderer.drawer.GridDrawer;
 import cellsociety.view.renderer.SceneRenderer;
+import cellsociety.view.renderer.drawer.GridDrawer;
 import java.io.File;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -23,8 +23,18 @@ import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -32,19 +42,24 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 /**
- * The SimulationScene class represents the main scene of the application where the simulation is displayed.
- * This is a pure UI class that is responsible for setting up the JavaFX scene and updating the UI components.
+ * The SimulationScene class represents the main scene of the application where the simulation is
+ * displayed. This is a pure UI class that is responsible for setting up the JavaFX scene and
+ * updating the UI components.
  *
  * @author Hsuan-Kai Liao
  */
 public class SimulationScene {
+
   // Constants
   public static final double DEFAULT_WIDTH = 1300;
   public static final double DEFAULT_HEIGHT = 800;
 
   public static final double NEW_SIMULATION_OFFSETX = 50;
   public static final double NEW_SIMULATION_OFFSETY = 50;
-
+  // Instance variables
+  private final Stage primaryStage;
+  private final Docker docker;
+  private final SceneController controller;
   // UI components
   private Button startPauseButton;
   private Pane grid;
@@ -53,17 +68,12 @@ public class SimulationScene {
   private ComboBox<String> selectType;
   private TextField directoryField;
   private Label infoText;
-
-  // Instance variables
-  private final Stage primaryStage;
-  private final Docker docker;
-  private final SceneController controller;
-
   private int framesPerSecond;
   private boolean doShowBorder = true;
 
   /**
    * Constructor for the SimulationScene class
+   *
    * @param primaryStage the primary stage of the application
    */
   public SimulationScene(Stage primaryStage) {
@@ -88,17 +98,47 @@ public class SimulationScene {
     ScrollPane logPanel = createLogPanel();
 
     // Create a floating window for each component
-    docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP, null);
-    docker.createDWindow(LanguageController.getStringProperty("styles-window"), stylePanel, DockPosition.BOTTOM, null);
-    docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT, null);
-    DWindow parameterWindow = docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT, null);
-    DWindow logWindow = docker.createDWindow(LanguageController.getStringProperty("log-window"), logPanel, DockPosition.BOTTOM, parameterWindow);
-    docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel, DockPosition.CENTER, logWindow);
+    docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls,
+        DockPosition.TOP, null);
+    docker.createDWindow(LanguageController.getStringProperty("styles-window"), stylePanel,
+        DockPosition.BOTTOM, null);
+    docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent,
+        DockPosition.RIGHT, null);
+    DWindow parameterWindow = docker.createDWindow(
+        LanguageController.getStringProperty("parameters-window"), parameterPanel,
+        DockPosition.RIGHT, null);
+    DWindow logWindow = docker.createDWindow(LanguageController.getStringProperty("log-window"),
+        logPanel, DockPosition.BOTTOM, parameterWindow);
+    docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel,
+        DockPosition.CENTER, logWindow);
     docker.reformat();
   }
 
+  private static Text processAnsiCodes(String message) {
+    BiFunction<String, String, Text> createTextNode = (text, colorStyle) -> {
+      Text textNode = new Text(text + "\n");
+      textNode.getStyleClass().add("log-text-" + colorStyle);
+      return textNode;
+    };
+
+    if (message.startsWith(Log.ERROR_COLOR)) {
+      return createTextNode.apply(message.substring(Log.ERROR_COLOR.length()), "error");
+    } else if (message.startsWith(Log.WARN_COLOR)) {
+      return createTextNode.apply(message.substring(Log.WARN_COLOR.length()), "warn");
+    } else if (message.startsWith(Log.INFO_COLOR)) {
+      return createTextNode.apply(message.substring(Log.INFO_COLOR.length()), "info");
+    } else if (message.startsWith(Log.TRACE_COLOR)) {
+      return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
+    } else {
+      return createTextNode.apply(message, "default");
+    }
+  }
+
+  /* PRIVATE UI SETUP METHODS */
+
   /**
    * Start the simulation scene with the given frames per second
+   *
    * @param framesPerSecond the number of frames per second
    */
   public void start(int framesPerSecond, boolean showSplashScreen) {
@@ -121,19 +161,20 @@ public class SimulationScene {
     // Create the splash screen
     if (showSplashScreen) {
       SceneUIWidget.createSplashScreen(
-        LanguageController.getStringProperty("welcome-title"),
-        LanguageController.getStringProperty("welcome-button"),
-        LanguageController.getStringProperty("welcome-language"),
-        LanguageController.getStringProperty("welcome-theme"),
-        this::splashScreenLanguageCallback,
-        this::splashScreenThemeCallback,
-        () -> {
-          // Log the welcome
-          Log.info("Welcome to Cell Society! This simulation is made by Jacob You, Hsuan-Kai Liao, and Billy McCune.");
+          LanguageController.getStringProperty("welcome-title"),
+          LanguageController.getStringProperty("welcome-button"),
+          LanguageController.getStringProperty("welcome-language"),
+          LanguageController.getStringProperty("welcome-theme"),
+          this::splashScreenLanguageCallback,
+          this::splashScreenThemeCallback,
+          () -> {
+            // Log the welcome
+            Log.info(
+                "Welcome to Cell Society! This simulation is made by Jacob You, Hsuan-Kai Liao, and Billy McCune.");
 
-          // Run the simulation
-          startSimulationCallback.run();
-        }
+            // Run the simulation
+            startSimulationCallback.run();
+          }
       );
     } else {
       // Run the simulation
@@ -142,8 +183,6 @@ public class SimulationScene {
       startSimulationCallback.run();
     }
   }
-
-  /* PRIVATE UI SETUP METHODS */
 
   private Pane createGrid() {
     grid = new Pane();
@@ -164,18 +203,28 @@ public class SimulationScene {
     parameterBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(parameterBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(parameterBox, LanguageController.getStringProperty("parameter-panel"));
+    return SceneUIWidget.createContainerUI(parameterBox,
+        LanguageController.getStringProperty("parameter-panel"));
   }
 
   private ScrollPane createControls() {
     // Create buttons
-    startPauseButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("start-button"), e -> startPauseCallback());
-    Button resetButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("reset-button"), e -> resetCallback());
-    Button newButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("new-button"), e -> newSimulationCallback());
-    Button loadButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("load-button"), e -> loadCallback(selectType.getValue()));
-    Button saveButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("save-button"), e -> saveCallback(directoryField.getText()));
-    Button directoryButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("directory-button"), e -> directorySelectCallback());
-    Button flipButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("flip-button"), e -> flipCallback());
+    startPauseButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("start-button"), e -> startPauseCallback());
+    Button resetButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("reset-button"), e -> resetCallback());
+    Button newButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("new-button"), e -> newSimulationCallback());
+    Button loadButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("load-button"),
+        e -> loadCallback(selectType.getValue()));
+    Button saveButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("save-button"),
+        e -> saveCallback(directoryField.getText()));
+    Button directoryButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("directory-button"), e -> directorySelectCallback());
+    Button flipButton = SceneUIWidget.createButtonUI(
+        LanguageController.getStringProperty("flip-button"), e -> flipCallback());
 
     // Set button sizes
     directoryButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH * 0.8);
@@ -230,8 +279,10 @@ public class SimulationScene {
     row4.setPadding(new Insets(5));
 
     // Create sections
-    BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("operations-section"), row1, row2);
-    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("io-section"), row3, row4);
+    BorderPane section1 = SceneUIWidget.createSectionUI(
+        LanguageController.getStringProperty("operations-section"), row1, row2);
+    BorderPane section2 = SceneUIWidget.createSectionUI(
+        LanguageController.getStringProperty("io-section"), row3, row4);
 
     // Main VBox containing all sections
     VBox controlsBox = new VBox(10, section1, section2);
@@ -241,7 +292,8 @@ public class SimulationScene {
     controlsBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(controlsBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(controlsBox, LanguageController.getStringProperty("controls-panel"));
+    return SceneUIWidget.createContainerUI(controlsBox,
+        LanguageController.getStringProperty("controls-panel"));
   }
 
   // TODO: Implement the style panel with the following style change
@@ -271,7 +323,8 @@ public class SimulationScene {
     //       - Neighbor Type
 
     // Create sections
-    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("themelang-section"), themeLanguageSelectors);
+    BorderPane section2 = SceneUIWidget.createSectionUI(
+        LanguageController.getStringProperty("themelang-section"), themeLanguageSelectors);
 
     // Main VBox containing all sections
     VBox styleBox = new VBox(10, section2);
@@ -281,7 +334,8 @@ public class SimulationScene {
     styleBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(styleBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(styleBox, LanguageController.getStringProperty("styles-panel"));
+    return SceneUIWidget.createContainerUI(styleBox,
+        LanguageController.getStringProperty("styles-panel"));
   }
 
   private ScrollPane createInfoPanel() {
@@ -300,8 +354,11 @@ public class SimulationScene {
     infoBox.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(infoBox, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(infoBox, LanguageController.getStringProperty("info-panel"));
+    return SceneUIWidget.createContainerUI(infoBox,
+        LanguageController.getStringProperty("info-panel"));
   }
+
+  /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
 
   private ScrollPane createLogPanel() {
     // Create the log text area
@@ -320,10 +377,9 @@ public class SimulationScene {
     logContainer.setMinHeight(Region.USE_COMPUTED_SIZE);
     VBox.setVgrow(logContainer, Priority.ALWAYS);
 
-    return SceneUIWidget.createContainerUI(logContainer, LanguageController.getStringProperty("log-panel"));
+    return SceneUIWidget.createContainerUI(logContainer,
+        LanguageController.getStringProperty("log-panel"));
   }
-
-  /* HANDLE ALL THE UI CALLBACK FUNCTIONS HERE */
 
   private void startPauseCallback() {
     // Start or pause the simulation
@@ -451,14 +507,15 @@ public class SimulationScene {
   private void splashScreenThemeCallback(Theme theme) {
     updateUIStyle(theme);
   }
+  /* PUBLIC UI SETS METHOD */
 
   private void splashScreenLanguageCallback(Language language) {
     updateUILang(language);
   }
-  /* PUBLIC UI SETS METHOD */
 
   /**
    * Set the grid with the given number of rows and columns
+   *
    * @param numOfRows the number of rows in the grid
    * @param numOfCols the number of columns in the grid
    */
@@ -469,8 +526,9 @@ public class SimulationScene {
 
   /**
    * Set the cell at the given dx and column with the given state
-   * @param row the dx of the cell
-   * @param col the column of the cell
+   *
+   * @param row   the dx of the cell
+   * @param col   the column of the cell
    * @param color the state of the cell
    */
   public void setCell(int rowCount, int row, int col, String color) {
@@ -496,48 +554,36 @@ public class SimulationScene {
 
   /**
    * Set the parameter with the given label, min, max, default value, tooltip, and callback
-   * @param labelKey the label key for the StringProperty of the parameter
-   * @param min the minimum value of the parameter
-   * @param max the maximum value of the parameter
+   *
+   * @param labelKey     the label key for the StringProperty of the parameter
+   * @param min          the minimum value of the parameter
+   * @param max          the maximum value of the parameter
    * @param defaultValue the default value of the parameter
-   * @param tooltipKey the tooltip key for the StringProperty of the parameter
-   * @param callback the callback function of the parameter
+   * @param tooltipKey   the tooltip key for the StringProperty of the parameter
+   * @param callback     the callback function of the parameter
    */
-  public void setParameter(double min, double max, double defaultValue, String labelKey, String tooltipKey, Consumer<Double> callback) {
-    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
-  }
-
-  /**
-   * Set the parameter with the given default value, label, tooltip, and callback
-   * @param defaultValue the default value of the parameter
-   * @param labelKey the label key for the StringProperty of the parameter
-   * @param tooltipKey the tooltip key for the StringProperty of the parameter
-   * @param callback the callback function of the parameter
-   */
-  public void setParameter(String defaultValue, String labelKey, String tooltipKey, Consumer<String> callback) {
-    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey), LanguageController.getStringProperty(tooltipKey), callback));
+  public void setParameter(double min, double max, double defaultValue, String labelKey,
+      String tooltipKey, Consumer<Double> callback) {
+    parameterBox.getChildren().add(SceneUIWidget.createRangeUI(min, max, defaultValue,
+        LanguageController.getStringProperty(labelKey),
+        LanguageController.getStringProperty(tooltipKey), callback));
   }
 
   /* PRIVATE UI HELPER METHODS */
 
-  private static Text processAnsiCodes(String message) {
-    BiFunction<String, String, Text> createTextNode = (text, colorStyle) -> {
-      Text textNode = new Text(text + "\n");
-      textNode.getStyleClass().add("log-text-" + colorStyle);
-      return textNode;
-    };
-
-    if (message.startsWith(Log.ERROR_COLOR)) {
-      return createTextNode.apply(message.substring(Log.ERROR_COLOR.length()), "error");
-    } else if (message.startsWith(Log.WARN_COLOR)) {
-      return createTextNode.apply(message.substring(Log.WARN_COLOR.length()), "warn");
-    } else if (message.startsWith(Log.INFO_COLOR)) {
-      return createTextNode.apply(message.substring(Log.INFO_COLOR.length()), "info");
-    } else if (message.startsWith(Log.TRACE_COLOR)) {
-      return createTextNode.apply(message.substring(Log.TRACE_COLOR.length()), "trace");
-    } else {
-      return createTextNode.apply(message, "default");
-    }
+  /**
+   * Set the parameter with the given default value, label, tooltip, and callback
+   *
+   * @param defaultValue the default value of the parameter
+   * @param labelKey     the label key for the StringProperty of the parameter
+   * @param tooltipKey   the tooltip key for the StringProperty of the parameter
+   * @param callback     the callback function of the parameter
+   */
+  public void setParameter(String defaultValue, String labelKey, String tooltipKey,
+      Consumer<String> callback) {
+    parameterBox.getChildren().add(
+        SceneUIWidget.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey),
+            LanguageController.getStringProperty(tooltipKey), callback));
   }
 
   private void toggleStartPauseButton(boolean isPause) {
