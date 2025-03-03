@@ -7,26 +7,15 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
-import cellsociety.model.data.constants.GridShape;
-import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 /**
@@ -42,18 +31,13 @@ public class ModelApi {
 
   ParameterManager myParameterManager;
   CellColorManager myCellColorManager;
+  StyleManager myStyleManager;
 
   // Model
   private Grid<?> grid;
   private CellFactory<?> cellFactory;
   private Logic<?> gameLogic;
   private NeighborCalculator<?> myNeighborCalculator;
-
-  //Style Property names:
-  private final String gridOutlineProperty = "GRIDOUTLINE.PREFERENCE";
-  private final String edgePolicyProperty = "EDGEPOLICY.PREFERENCE";
-  private final String neighborArrangementProperty = "NEIGHBORARRANGEMENT.PREFERENCE";
-  private final String cellShapeProperty = "CELLSHAPE.PREFERENCE";
 
 
   public ModelApi() {
@@ -227,7 +211,7 @@ public class ModelApi {
    */
   public void resetParameters()
       throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    myParameterManager = new ParameterManager(gameLogic,myParameterRecord);
+    myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
     myParameterManager.resetParameters();
   }
 
@@ -260,7 +244,7 @@ public class ModelApi {
 
       // Reset simulation parameters using the new backend logic.
       resetParameters();
-      if(myCellColorManager == null) {
+      if (myCellColorManager == null) {
         myCellColorManager = new CellColorManager(grid);
       }
       myCellColorManager.setGrid(grid);
@@ -368,7 +352,7 @@ public class ModelApi {
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {
-    if (myCellColorManager== null) {
+    if (myCellColorManager == null) {
       myCellColorManager = new CellColorManager(grid);
     }
     return myCellColorManager.getCellTypesAndDefaultColors(SimulationType);
@@ -382,7 +366,7 @@ public class ModelApi {
    * @throws NoSuchElementException if the color preference cannot be updated due to an I/O error
    */
   public void setNewColorPreference(String stateName, String newColor) {
-    if (myCellColorManager== null) {
+    if (myCellColorManager == null) {
       myCellColorManager = new CellColorManager(grid);
     }
     myCellColorManager.setNewColorPreference(stateName, newColor);
@@ -423,22 +407,10 @@ public class ModelApi {
    *                                error
    */
   public void setNeighborArrangement(String neighborArrangement) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
-      myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangement));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setNeighborArrangement");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
+    myStyleManager.setNeighborArrangement(neighborArrangement);
   }
 
 
@@ -449,22 +421,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the edge policy cannot be updated due to an I/O error
    */
   public void setEdgePolicy(String edgePolicy) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
-      myNeighborCalculator.setBoundary(BoundaryType.valueOf(edgePolicy));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setEdgePolicy");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
+    myStyleManager.setEdgePolicy(edgePolicy);
   }
 
 
@@ -475,23 +435,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the cell shape cannot be updated due to an I/O error
    */
   public void setCellShape(String cellShape) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(cellShapeProperty, cellShape);
-      cellShape = cellShape.toUpperCase();
-      myNeighborCalculator.setShape(GridShape.valueOf(cellShape));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setCellShape");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
+    myStyleManager.setCellShape(cellShape);
   }
 
   /**
@@ -501,21 +448,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the preference cannot be updated due to an I/O error
    */
   public void setGridOutlinePreference(boolean wantsGridOutline) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(gridOutlineProperty, String.valueOf(wantsGridOutline));
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setGridOutlinePreference");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
+    myStyleManager.setGridOutlinePreference(wantsGridOutline);
   }
 
   /**
@@ -525,24 +461,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public List<String> getPossibleNeighborArrangements() {
-    List<String> arrangements = new ArrayList<>();
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      for (String key : simulationStyle.stringPropertyNames()) {
-        // Exclude the preference key and any blank values.
-        if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals(
-            "NEIGHBORARRANGEMENT.PREFERENCE")) {
-          String value = simulationStyle.getProperty(key);
-          if (value != null && !value.trim().isEmpty()) {
-            arrangements.add(value.trim());
-          }
-        }
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getPossibleNeighborArrangements");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
-    return arrangements;
+    return myStyleManager.getPossibleNeighborArrangements();
   }
 
   /**
@@ -552,22 +474,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public List<String> getPossibleEdgePolicies() {
-    List<String> edgePolicies = new ArrayList<>();
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      for (String key : simulationStyle.stringPropertyNames()) {
-        if (key.startsWith("EDGEPOLICY.") && !key.equals("EDGEPOLICY.PREFERENCE")) {
-          String value = simulationStyle.getProperty(key);
-          if (value != null && !value.trim().isEmpty()) {
-            edgePolicies.add(value.trim());
-          }
-        }
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getPossibleEdgePolicies");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
-    return edgePolicies;
+    return myStyleManager.getPossibleEdgePolicies();
   }
 
   /**
@@ -577,23 +487,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public List<String> getPossibleCellShapes() {
-    List<String> cellShapes = new ArrayList<>();
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      for (String key : simulationStyle.stringPropertyNames()) {
-        if (key.startsWith("CELLSHAPE.") && !key.equals("CELLSHAPE.PREFERENCE")) {
-          String value = simulationStyle.getProperty(key);
-          if (value != null && !value.trim().isEmpty()) {
-            cellShapes.add(value.trim());
-          }
-        }
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getPossibleCellShapes");
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
     }
-    return cellShapes;
+    return myStyleManager.getPossibleCellShapes();
   }
-
 }
 
