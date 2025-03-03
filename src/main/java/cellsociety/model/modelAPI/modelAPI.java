@@ -51,10 +51,10 @@ public class modelAPI {
   private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
 
   //Style Property names:
-  private final String gridOutlineProperty = "";
-  private final String edgePolicyProperty = "";
-  private final String neighborArrangementProperty = "";
-  private final String cellShapeProperty = "";
+  private final String gridOutlineProperty = "GRIDOUTLINE.PREFERENCE";
+  private final String edgePolicyProperty = "EDGEPOLICY.PREFERENCE";
+  private final String neighborArrangementProperty = "NEIGHBORARRANGEMENT.PREFERENCE";
+  private final String cellShapeProperty = "CELLSHAPE.PREFERENCE";
 
 
   // Load the color mapping from the properties file once (assumes the file is in your resources folder).
@@ -591,9 +591,7 @@ public class modelAPI {
       System.err.println("Error saving new color preference: " + e.getMessage());
     }
   }
-  public List<String> getPossibleNeighborArrangements(){
-    return null;
-  }
+
 
   public void setEdgePolicy(String edgePolicy){
     try {
@@ -613,9 +611,6 @@ public class modelAPI {
     }
   }
 
-  public List<String> getPossibleEdgePolicies(){
-      return null;
-  }
 
   public void setCellShape(String cellShape){
     try {
@@ -633,10 +628,6 @@ public class modelAPI {
     } catch (IOException e) {
       System.err.println("Error saving new color preference: " + e.getMessage());
     }
-  }
-
-  public List<String> getPossibleCellShapes(){
-    return null;
   }
 
   public void setGridOutlinePreference(boolean wantsGridOutline){
@@ -657,8 +648,62 @@ public class modelAPI {
     }
   }
 
-  public boolean getGridOutlinePreference(){
-      return false;
+  public List<String> getPossibleNeighborArrangements() {
+    List<String> arrangements = new ArrayList<>();
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      for (String key : simulationStyle.stringPropertyNames()) {
+        // Exclude the preference key and any blank values.
+        if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals("NEIGHBORARRANGEMENT.PREFERENCE")) {
+          String value = simulationStyle.getProperty(key);
+          if (value != null && !value.trim().isEmpty()) {
+            arrangements.add(value.trim());
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading neighbor arrangements: " + e.getMessage());
+    }
+    return arrangements;
+  }
+
+  public List<String> getPossibleEdgePolicies() {
+    List<String> edgePolicies = new ArrayList<>();
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      for (String key : simulationStyle.stringPropertyNames()) {
+        if (key.startsWith("EDGEPOLICY.") && !key.equals("EDGEPOLICY.PREFERENCE")) {
+          String value = simulationStyle.getProperty(key);
+          if (value != null && !value.trim().isEmpty()) {
+            edgePolicies.add(value.trim());
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading edge policies: " + e.getMessage());
+    }
+    return edgePolicies;
+  }
+
+  public List<String> getPossibleCellShapes() {
+    List<String> cellShapes = new ArrayList<>();
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      for (String key : simulationStyle.stringPropertyNames()) {
+        if (key.startsWith("CELLSHAPE.") && !key.equals("CELLSHAPE.PREFERENCE")) {
+          String value = simulationStyle.getProperty(key);
+          if (value != null && !value.trim().isEmpty()) {
+            cellShapes.add(value.trim());
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading cell shapes: " + e.getMessage());
+    }
+    return cellShapes;
   }
 
 }
