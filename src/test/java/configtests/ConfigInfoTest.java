@@ -42,6 +42,7 @@ public class ConfigInfoTest {
         cellShapeType.SQUARE,
         gridEdgeType.BASE,
         neighborArrangementType.MOORE,
+        1,
         "Test Simulation",
         "Test Author",
         "Test Description",
@@ -94,6 +95,7 @@ public class ConfigInfoTest {
         config1.myCellShapeType(),
         config1.myGridEdgeType(),
         neighborArrangementType.MOORE,
+        1,
         "Different Title",// change title
         config1.myAuthor(),
         config1.myDescription(),
@@ -145,6 +147,7 @@ public class ConfigInfoTest {
         cellShapeType.SQUARE,
         gridEdgeType.BASE,
         neighborArrangementType.MOORE,
+        1,
         "Simulation",
         "Author",
         "Description",

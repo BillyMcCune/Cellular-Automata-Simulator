@@ -33,6 +33,7 @@ public record ConfigInfo(
     cellShapeType myCellShapeType,
     gridEdgeType myGridEdgeType,
     neighborArrangementType myneighborArrangementType,
+    Integer neighborRadius,
     String myTitle,
     String myAuthor,
     String myDescription,
@@ -56,7 +57,7 @@ public record ConfigInfo(
    * Enumeration of supported cell shape types.
    */
   public enum cellShapeType {
-    SQUARE, TRI, HEX
+    SQUARE, TRIANGLE, HEXAGON
   }
 
   /**

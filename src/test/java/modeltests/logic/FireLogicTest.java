@@ -6,10 +6,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.config.CellRecord;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.FireState;
 import cellsociety.model.logic.FireLogic;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class FireLogicTest {
   private Grid<FireState> createGrid(List<List<Integer>> rawData) {
     CellFactory<FireState> factory = new CellFactory<>(FireState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
   }
 
   private ParameterRecord createEmptyParameterRecord() {

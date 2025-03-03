@@ -7,7 +7,7 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.Direction;
@@ -32,12 +32,12 @@ public class RaycastTest {
   }
 
   private static class DummyNeighborCalculator extends NeighborCalculator<DummyState> {
-    public DummyNeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundaryType) {
-      super(shape, neighborType, boundaryType);
+    public DummyNeighborCalculator(GridShape shape, NeighborType neighborType, EdgeType edgeType) {
+      super(shape, neighborType, edgeType);
     }
   }
 
-  private Grid<DummyState> createGrid(int rows, int cols, GridShape shape, BoundaryType boundary) {
+  private Grid<DummyState> createGrid(int rows, int cols, GridShape shape, EdgeType boundary) {
     List<List<CellRecord>> raw = new ArrayList<>();
     for (int r = 0; r < rows; r++) {
       List<CellRecord> row = new ArrayList<>();
@@ -54,8 +54,8 @@ public class RaycastTest {
 
   @Test
   public void givenSquareGrid_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(5, 5, GridShape.SQUARE, BoundaryType.BASE);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.SQUARE, BoundaryType.BASE);
+    Grid<DummyState> grid = createGrid(5, 5, GridShape.SQUARE, EdgeType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.SQUARE, EdgeType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 2, 2, new Direction(-1, 0), 2);
 
     assertEquals(2, result.size());
@@ -65,8 +65,8 @@ public class RaycastTest {
 
   @Test
   public void givenSquareGrid_WhenRaycastingAllDirectionsTorus_ThenEachDirectionHasExpectedSteps() throws Exception {
-    Grid<DummyState> grid = createGrid(7, 7, GridShape.SQUARE, BoundaryType.TORUS);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.SQUARE, BoundaryType.TORUS);
+    Grid<DummyState> grid = createGrid(7, 7, GridShape.SQUARE, EdgeType.TORUS);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.SQUARE, EdgeType.TORUS);
     List<Direction> dirs = impl.getDefaultRawDirections(3, 3);
     assertEquals(4, dirs.size());
 
@@ -78,8 +78,8 @@ public class RaycastTest {
 
   @Test
   public void givenHexGridEvenRow_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.HEX, BoundaryType.BASE);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.HEX, BoundaryType.BASE);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.HEX, EdgeType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.HEX, EdgeType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 2, 2, new Direction(1, 1), 3);
 
     assertEquals(3, result.size());
@@ -90,8 +90,8 @@ public class RaycastTest {
 
   @Test
   public void givenHexGrid_WhenRaycastingAllDirectionsTorus_ThenEachDirectionHasExpectedSteps() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.HEX, BoundaryType.TORUS);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.HEX, BoundaryType.TORUS);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.HEX, EdgeType.TORUS);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.HEX, EdgeType.TORUS);
     List<Direction> dirs = impl.getDefaultRawDirections(5, 4);
     assertEquals(6, dirs.size());
 
@@ -103,8 +103,8 @@ public class RaycastTest {
 
   @Test
   public void givenTriangleGridUpFacing_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, BoundaryType.BASE);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.BASE);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, EdgeType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, EdgeType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 2, 2, new Direction(0, -1), 2);
 
     assertEquals(2, result.size());
@@ -114,8 +114,8 @@ public class RaycastTest {
 
   @Test
   public void givenTriangleGridDownFacing_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, BoundaryType.BASE);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.BASE);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, EdgeType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, EdgeType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 3, 2, new Direction(0, -1), 2);
 
     assertEquals(2, result.size());
@@ -125,8 +125,8 @@ public class RaycastTest {
 
   @Test
   public void givenTriangleGrid_WhenRaycastingAllDirectionsTorus_ThenEachDirectionHasExpectedSteps() throws Exception {
-    Grid<DummyState> grid = createGrid(10, 10, GridShape.TRI, BoundaryType.TORUS);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.TORUS);
+    Grid<DummyState> grid = createGrid(10, 10, GridShape.TRI, EdgeType.TORUS);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, EdgeType.TORUS);
     List<Direction> dirs = impl.getDefaultRawDirections(5, 5);
     assertEquals(6, dirs.size());
 

@@ -6,10 +6,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.LifeState;
 import cellsociety.model.logic.LifeLogic;
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class LifeLogicTest {
   private Grid<LifeState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<LifeState> factory = new CellFactory<>(LifeState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

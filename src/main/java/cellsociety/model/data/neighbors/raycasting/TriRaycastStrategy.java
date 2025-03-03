@@ -2,7 +2,7 @@ package cellsociety.model.data.neighbors.raycasting;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class TriRaycastStrategy<T extends Enum<T> & State>
   }
 
   @Override
-  public Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol, Direction rawDir, int steps, BoundaryType boundary) {
+  public Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol, Direction rawDir, int steps, EdgeType boundary) {
     Map<Direction, Cell<T>> result = new LinkedHashMap<>();
     int[] pos = new int[] { startRow, startCol };
     boolean startUp = ((startRow + startCol) % 2 == 0);

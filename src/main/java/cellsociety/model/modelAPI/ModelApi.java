@@ -7,12 +7,11 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ public class ModelApi {
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
-      grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getBoundaryType());
+      grid = new Grid<>(gridCopy, cellFactory, getDefaultGridShape(), getDefaultNeighborType(), getDefaultEdgeType());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -224,28 +223,13 @@ public class ModelApi {
    */
   public void resetModel() throws NoSuchMethodException {
     try {
-      String name = getSimulationName();
-
-      // Dynamically load the Logic and State classes.
-      Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
-      Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
-
-      // Dynamically create cell factory, grid, and logic.
-      Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
-      cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
-
-      grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(),
-          getBoundaryType());
-      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
-          .newInstance(grid, configInfo.myParameters());
-
-      // Reset simulation parameters using the new backend logic.
+      ModelHandler modelHandler = new ModelHandler(configInfo);
+      modelHandler.resetModel();
       resetParameters();
       if (myCellColorManager == null) {
         myCellColorManager = new CellColorManager(grid);
       }
       myCellColorManager.setGrid(grid);
-
     } catch (ClassNotFoundException | InvocationTargetException | InstantiationException |
              IllegalAccessException e) {
       throw new RuntimeException("error-resetModel", e);
@@ -490,16 +474,16 @@ public class ModelApi {
     return myStyleManager.getPossibleCellShapes();
   }
 
-  private GridShape getGridShape() {
+  private GridShape getDefaultGridShape() {
     return GridShape.valueOf(configInfo.myCellShapeType().name());
   }
 
-  private NeighborType getNeighborType() {
+  private NeighborType getDefaultNeighborType() {
     return NeighborType.valueOf(configInfo.myneighborArrangementType().name());
   }
 
-  private BoundaryType getBoundaryType() {
-    return BoundaryType.valueOf(configInfo.myGridEdgeType().name());
+  private EdgeType getDefaultEdgeType() {
+    return EdgeType.valueOf(configInfo.myGridEdgeType().name());
   }
 
   private String getSimulationName() {

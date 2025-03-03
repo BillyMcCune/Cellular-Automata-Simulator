@@ -126,6 +126,11 @@ public class ConfigWriter {
         xmlDocument.createTextNode(myConfigInfo.myneighborArrangementType().toString()));
     rootElement.appendChild(neighborArrangementElement);
 
+    Element neighborRadiusElement = xmlDocument.createElement("neighborRadius");
+    neighborRadiusElement.appendChild(
+        xmlDocument.createTextNode(myConfigInfo.neighborRadius().toString()));
+    rootElement.appendChild(neighborRadiusElement);
+
     Element titleElement = xmlDocument.createElement("title");
     titleElement.appendChild(xmlDocument.createTextNode(myConfigInfo.myTitle()));
     rootElement.appendChild(titleElement);

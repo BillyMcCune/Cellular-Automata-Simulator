@@ -2,10 +2,9 @@ package cellsociety.model.data.neighbors.raycasting;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.neighbors.Direction;
-import cellsociety.model.data.neighbors.raycasting.RaycastStrategy;
 import cellsociety.model.data.states.State;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -14,9 +13,9 @@ import java.util.Map;
 public class RaycastImplementor<T extends Enum<T> & State> {
 
   private GridShape shape;
-  private BoundaryType boundary;
+  private EdgeType boundary;
 
-  public RaycastImplementor(GridShape shape, BoundaryType boundary) {
+  public RaycastImplementor(GridShape shape, EdgeType boundary) {
     this.shape = shape;
     this.boundary = boundary;
   }
@@ -25,7 +24,7 @@ public class RaycastImplementor<T extends Enum<T> & State> {
     this.shape = shape;
   }
 
-  public void setBoundary(BoundaryType boundary) {
+  public void setBoundary(EdgeType boundary) {
     this.boundary = boundary;
   }
 

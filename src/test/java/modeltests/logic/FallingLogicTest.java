@@ -6,10 +6,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.FallingState;
 import cellsociety.model.logic.FallingLogic;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class FallingLogicTest {
   private Grid<FallingState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<FallingState> factory = new CellFactory<>(FallingState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

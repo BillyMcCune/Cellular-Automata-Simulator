@@ -3,7 +3,7 @@ package cellsociety.model.data;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.Direction;
@@ -45,7 +45,7 @@ public class Grid<T extends Enum<T> & State> {
   public Grid(List<List<CellRecord>> rawGrid, CellFactory<T> factory,
       GridShape shape,
       NeighborType neighborType,
-      BoundaryType boundary) {
+      EdgeType boundary) {
     this.neighborCalculator = new NeighborCalculator<T>(shape, neighborType, boundary);
     setGrid(rawGrid, factory);
   }

@@ -7,14 +7,11 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.AntState;
-import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.logic.AntLogic;
-import cellsociety.model.data.neighbors.Direction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +59,7 @@ public class AntLogicTest {
   private Grid<AntState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<AntState> factory = new CellFactory<>(AntState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.TORUS);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

@@ -6,10 +6,9 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.BacteriaState;
 import cellsociety.model.logic.BacteriaLogic;
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class BacteriaLogicTest {
   private Grid<BacteriaState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<BacteriaState> factory = new CellFactory<>(BacteriaState.class);
     List<List<CellRecord>> recordGrid = createCellRecordGrid(rawData);
-    return new Grid<>(recordGrid, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS);
+    return new Grid<>(recordGrid, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.TORUS);
   }
 
   private ParameterRecord createParams(double beatingThreshold, double numStates) {

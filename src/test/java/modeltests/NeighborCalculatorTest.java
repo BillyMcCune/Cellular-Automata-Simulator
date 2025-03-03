@@ -7,7 +7,7 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.Direction;
@@ -32,7 +32,7 @@ public class NeighborCalculatorTest {
     }
   }
 
-  private Grid<DummyState> createGrid(int rows, int cols, GridShape shape, NeighborType type, BoundaryType boundaryType) {
+  private Grid<DummyState> createGrid(int rows, int cols, GridShape shape, NeighborType type, EdgeType edgeType) {
     List<List<CellRecord>> raw = new ArrayList<>();
     for (int r = 0; r < rows; r++) {
       List<CellRecord> row = new ArrayList<>();
@@ -41,12 +41,12 @@ public class NeighborCalculatorTest {
       }
       raw.add(row);
     }
-    return new Grid<>(raw, FACTORY, shape, type, boundaryType);
+    return new Grid<>(raw, FACTORY, shape, type, edgeType);
   }
 
   @Test
   public void givenSquareMoore3x3_whenSteps1_thenCenterHas8() {
-    Grid<DummyState> g = createGrid(3, 3, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(3, 3, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 1, 1);
@@ -55,7 +55,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenSquareMoore5x5_whenSteps2_thenTotalCells24() {
-    Grid<DummyState> g = createGrid(5, 5, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(5, 5, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(2);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 2);
@@ -64,7 +64,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenSquareNeumann3x3_whenSteps1_thenCenterHas4() {
-    Grid<DummyState> g = createGrid(3, 3, GridShape.SQUARE, NeighborType.NEUMANN, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(3, 3, GridShape.SQUARE, NeighborType.NEUMANN, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 1, 1);
@@ -73,7 +73,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexMoore7x7_whenSteps2_then18Neighbors() {
-    Grid<DummyState> g = createGrid(7, 7, GridShape.HEX, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(7, 7, GridShape.HEX, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(2);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 3, 3);
@@ -82,7 +82,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore6x6_whenSteps1_then12Neighbors() {
-    Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 1, 3);
@@ -91,7 +91,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenSquareMoore3x3_whenSteps1_thenContainsExpectedDirections() {
-    Grid<DummyState> g = createGrid(3, 3, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(3, 3, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 1, 1);
@@ -109,7 +109,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexMoore5x5_whenEvenSteps1_thenContainsExpectedDirections() {
-    Grid<DummyState> g = createGrid(5, 5, GridShape.HEX, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(5, 5, GridShape.HEX, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 2);
@@ -126,7 +126,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
-    Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.MOORE, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.MOORE, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 3, 3);
@@ -145,7 +145,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriNeumann6x6_whenUpSteps1_thenContainsExpectedDirections() {
-    Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.NEUMANN, BoundaryType.BASE);
+    Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.NEUMANN, EdgeType.BASE);
     NeighborCalculator<DummyState> calc = g.getNeighborCalculator();
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 3);

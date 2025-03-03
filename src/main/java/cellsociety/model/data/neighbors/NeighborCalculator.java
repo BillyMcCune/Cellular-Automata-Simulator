@@ -1,12 +1,8 @@
 package cellsociety.model.data.neighbors;
 
-import cellsociety.model.config.ConfigInfo;
-import cellsociety.model.config.ConfigInfo.cellShapeType;
-import cellsociety.model.config.ConfigInfo.gridEdgeType;
-import cellsociety.model.config.ConfigInfo.neighborArrangementType;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.raycasting.RaycastImplementor;
@@ -27,21 +23,21 @@ public class NeighborCalculator<T extends Enum<T> & State> {
 
   private GridShape shape;
   private NeighborType neighborType;
-  private BoundaryType boundary;
+  private EdgeType edgeType;
   private int steps;
   private RaycastImplementor<T> raycastImplementor;
 
-  public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary) {
-    this(shape, neighborType, boundary, 1);
+  public NeighborCalculator(GridShape shape, NeighborType neighborType, EdgeType edgeType) {
+    this(shape, neighborType, edgeType, 1);
   }
 
-  public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary,
+  public NeighborCalculator(GridShape shape, NeighborType neighborType, EdgeType edgeType,
       int steps) {
     this.shape = shape;
     this.neighborType = neighborType;
-    this.boundary = boundary;
+    this.edgeType = edgeType;
     this.steps = steps;
-    this.raycastImplementor = new RaycastImplementor<>(this.shape, this.boundary);
+    this.raycastImplementor = new RaycastImplementor<>(this.shape, this.edgeType);
   }
 
 
@@ -62,16 +58,16 @@ public class NeighborCalculator<T extends Enum<T> & State> {
     this.neighborType = neighborType;
   }
 
-  public void setBoundary(BoundaryType boundary) {
-    this.boundary = boundary;
+  public void setEdgeType(EdgeType edgeType) {
+    this.edgeType = edgeType;
   }
 
   public GridShape getShape() {
     return shape;
   }
 
-  public BoundaryType getBoundary() {
-    return boundary;
+  public EdgeType getEdgeType() {
+    return edgeType;
   }
 
   public NeighborType getNeighborType() {
@@ -154,7 +150,7 @@ public class NeighborCalculator<T extends Enum<T> & State> {
         dy = -dy;
       }
       int nr = r + dy, nc = c + dx;
-      if (boundary == BoundaryType.TORUS) {
+      if (edgeType == EdgeType.TORUS) {
         nr = (nr + numRows) % numRows;
         nc = (nc + numCols) % numCols;
       } else {

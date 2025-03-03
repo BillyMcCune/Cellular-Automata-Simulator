@@ -6,14 +6,11 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
-import cellsociety.model.data.states.SegregationState;
 import cellsociety.model.data.states.WatorState;
 import cellsociety.model.logic.WatorLogic;
-import cellsociety.model.data.neighbors.Direction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +52,7 @@ public class WatorLogicTest {
   private Grid<WatorState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<WatorState> factory = new CellFactory<>(WatorState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS);
+    return new Grid<>(records, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.TORUS);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

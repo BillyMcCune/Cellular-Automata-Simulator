@@ -2,7 +2,7 @@ package cellsociety.model.data.neighbors.raycasting;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface RaycastStrategy<T extends Enum<T> & State> {
    * 'steps'. BoundaryType controls whether we wrap around.
    */
   Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol,
-      Direction rawDir, int steps, BoundaryType boundary);
+      Direction rawDir, int steps, EdgeType boundary);
 
   /**
    * Returns the default raw directions for this strategy given the starting cell.

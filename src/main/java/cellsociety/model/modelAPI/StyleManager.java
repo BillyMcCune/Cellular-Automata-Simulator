@@ -1,6 +1,6 @@
 package cellsociety.model.modelAPI;
 
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
@@ -108,7 +108,7 @@ public class StyleManager {
         }
       }
       simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
-      myNeighborCalculator.setBoundary(BoundaryType.valueOf(edgePolicy));
+      myNeighborCalculator.setEdgeType(EdgeType.valueOf(edgePolicy));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
       }

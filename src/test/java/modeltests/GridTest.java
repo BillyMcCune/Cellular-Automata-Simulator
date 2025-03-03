@@ -6,10 +6,9 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class GridTest {
 
   private Grid<TestState> createGrid(List<List<CellRecord>> raw) {
     DummyCellFactory factory = new DummyCellFactory();
-    return new Grid<>(raw, factory, GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+    return new Grid<>(raw, factory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
   }
 
   @Test

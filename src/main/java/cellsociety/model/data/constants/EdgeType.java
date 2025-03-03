@@ -1,6 +1,6 @@
 package cellsociety.model.data.constants;
 
-public enum BoundaryType {
+public enum EdgeType {
   BASE,
   TORUS,
   MIRROR;

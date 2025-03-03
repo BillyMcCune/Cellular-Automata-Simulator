@@ -2,10 +2,9 @@ package cellsociety.model.data.neighbors.raycasting;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
-import java.util.List;
 import java.util.Map;
 
 public final class RaycastStepHelper {
@@ -25,13 +24,13 @@ public final class RaycastStepHelper {
    * @return true if the move succeeded, false if we went out of bounds (STANDARD)
    */
   public static <T extends Enum<T> & State> boolean doSingleStep(Grid<T> grid,
-      BoundaryType boundary, int[] pos, int startRow, int startCol, Direction offset,
+      EdgeType boundary, int[] pos, int startRow, int startCol, Direction offset,
       Map<Direction, Cell<T>> result) {
     int nextRow = pos[0] + offset.dy();
     int nextCol = pos[1] + offset.dx();
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
-    if (boundary == BoundaryType.TORUS) {
+    if (boundary == EdgeType.TORUS) {
       nextRow = (nextRow + numRows) % numRows;
       nextCol = (nextCol + numCols) % numCols;
     } else {

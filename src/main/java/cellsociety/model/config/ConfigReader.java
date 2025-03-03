@@ -88,6 +88,7 @@ public class ConfigReader {
     int width = Integer.parseInt(getTextValue(root, "width"));
     int height = Integer.parseInt(getTextValue(root, "height"));
     int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
+    int neighborRadius = Integer.parseInt(getTextValue(root, "neighborRadius"));
 
     // Delegate grid parsing and validation to GridReader
     List<List<CellRecord>> initialGrid = GridReader.readInitialGrid(root);
@@ -101,6 +102,7 @@ public class ConfigReader {
         cellShapeType.valueOf(cellShape.toUpperCase()),
         gridEdgeType.valueOf(gridType.toUpperCase()),
         neighborArrangementType.valueOf(neighborArrangement.toUpperCase()),
+        neighborRadius,
         title,
         author,
         description,

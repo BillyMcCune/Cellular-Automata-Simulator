@@ -16,6 +16,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
+/**
+ * @author Billy McCune
+ */
 public class configAPI {
 
   private ConfigReader configReader;

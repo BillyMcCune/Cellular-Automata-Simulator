@@ -12,7 +12,7 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
@@ -68,7 +68,7 @@ public class ConfigAPITest {
    */
   public static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
     public DummyNeighborCalculator() {
-      super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+      super(GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
     }
   }
 
@@ -141,7 +141,7 @@ public class ConfigAPITest {
         }
         raw.add(row);
       }
-      grid = new Grid<>(raw, new DummyCellFactory(), GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
+      grid = new Grid<>(raw, new DummyCellFactory(), GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
       doubleParams = new HashMap<>();
       doubleParams.put("param1", 1.0);
       stringParams = new HashMap<>();
