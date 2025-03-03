@@ -6,6 +6,7 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SugarState;
 import cellsociety.model.data.neighbors.SugarNeighborCalculator;
 import cellsociety.model.data.neighbors.Direction;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class SugarLogic extends Logic<SugarState> {
   private double vision;
   private double sugarMetabolism;
   private double sugarGrowBackRate;
-  private int sugarGrowBackInterval;
+  private double sugarGrowBackInterval;
   private int tick;
 
   private final List<Cell<SugarState>> agentCells;
@@ -38,7 +39,8 @@ public class SugarLogic extends Logic<SugarState> {
    *                   and sugarGrowBackInterval
    * @throws IllegalArgumentException if any parameter is out of bounds
    */
-  public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters) {
+  public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters)
+      throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
     super(grid, parameters);
     neighborCalc = new SugarNeighborCalculator<>();
     setVision(getDoubleParamOrFallback("vision"));
@@ -111,14 +113,13 @@ public class SugarLogic extends Logic<SugarState> {
    * @param vision the new vision distance
    * @throws IllegalArgumentException if vision is out of valid range
    */
-  public void setVision(double vision) {
+  public void setVision(double vision)
+      throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
     double min = getMinParam("vision");
     double max = getMaxParam("vision");
     checkBounds(vision, min, max);
     this.vision = vision;
-    // TODO: Map string to everything else instead inside the neighbor calc thing
-    //((SugarNeighborCalculator<SugarState>) grid.getNeighborCalculator()).setVision((int) vision);
-    grid.assignNeighbors();
+    grid.assignAllRaycastNeighbors((int) vision);
   }
 
   /**
@@ -170,7 +171,7 @@ public class SugarLogic extends Logic<SugarState> {
    *
    * @return sugarGrowBackInterval
    */
-  public int getSugarGrowBackInterval() {
+  public double getSugarGrowBackInterval() {
     return sugarGrowBackInterval;
   }
 
@@ -180,7 +181,7 @@ public class SugarLogic extends Logic<SugarState> {
    * @param sugarGrowBackInterval new sugarGrowBackInterval
    * @throws IllegalArgumentException if out of valid range
    */
-  public void setSugarGrowBackInterval(int sugarGrowBackInterval) {
+  public void setSugarGrowBackInterval(double sugarGrowBackInterval) {
     double min = getMinParam("sugarGrowBackInterval");
     double max = getMaxParam("sugarGrowBackInterval");
     checkBounds(sugarGrowBackInterval, min, max);

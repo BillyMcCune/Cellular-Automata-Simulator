@@ -91,6 +91,7 @@ public class ParameterManager {
         }
       };
     } catch (NoSuchMethodException e) {
+      e.printStackTrace();
       throw new NoSuchElementException("error-invalidParameterMessage");
     }
   }

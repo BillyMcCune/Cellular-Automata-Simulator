@@ -8,7 +8,9 @@ import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a grid of cells for cellular automata models.
@@ -141,7 +143,17 @@ public class Grid<T extends Enum<T> & State> {
     }
   }
 
-  public void assignAllRaycastNeighbors() {
-
+  public void assignAllRaycastNeighbors(int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    for (int row = 0; row < getNumRows(); row++) {
+      for (int col = 0; col < getNumCols(); col++) {
+        Map<Direction, Map<Direction, Cell<T>>> allRays = neighborCalculator.raycastAllDirections(this, row, col, steps);
+        Map<Direction, Cell<T>> merged = new HashMap<>();
+        for (Map<Direction, Cell<T>> ray : allRays.values()) {
+          merged.putAll(ray);
+        }
+        getCell(row, col).setNeighbors(merged);
+      }
+    }
   }
 }
