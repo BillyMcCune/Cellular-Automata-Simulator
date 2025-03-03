@@ -8,10 +8,13 @@ import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,6 +23,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -36,6 +40,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -245,6 +250,46 @@ public class SceneUIWidget {
   }
 
   /**
+   * Create a color selector UI control with a label, a text field, and a color picker.
+   * @param defaultColor default color as a string (e.g., "#FF0000")
+   * @param label label text
+   * @param tooltip tooltip text
+   * @param callback callback function to be called when the color changes
+   * @return the color selector UI control HBox
+   */
+  // TODO: add css file for the new label
+  public static HBox createColorSelectorUI(String defaultColor, StringProperty label, StringProperty tooltip, Consumer<String> callback) {
+    // Create the label with tooltip
+    Label labelComponent = new Label();
+    labelComponent.textProperty().bind(label);
+    labelComponent.getStyleClass().add("color-label");
+    Tooltip tooltipComponent = new Tooltip();
+    tooltipComponent.setWrapText(true);
+    tooltipComponent.getStyleClass().add("color-tooltip");
+    tooltipComponent.textProperty().bind(tooltip);
+    labelComponent.setTooltip(tooltipComponent);
+
+    // Create the color picker
+    ColorPicker colorPicker = new ColorPicker(Color.web(defaultColor));
+    colorPicker.getStyleClass().add("color-picker");
+
+    // Update text field when color picker changes
+    colorPicker.setOnAction(event -> {
+      callback.accept(colorPicker.getValue().toString());
+    });
+
+    // Create an HBox control
+    HBox colorSelector = new HBox(5, labelComponent, colorPicker);
+    colorSelector.setAlignment(Pos.CENTER);
+    colorSelector.getStyleClass().add("color-selector");
+
+    // Call the callback with the default value
+    callback.accept(defaultColor);
+
+    return colorSelector;
+  }
+
+  /**
    * Create a draggable and zoom-able view UI control.
    *
    * @param content the content node to be displayed
@@ -372,7 +417,6 @@ public class SceneUIWidget {
     return scrollPane;
   }
 
-
   /**
    * Create a section UI with a title and rows.
    * @param title the title of the section
@@ -417,6 +461,46 @@ public class SceneUIWidget {
     button.setOnAction(actionHandler);
 
     return button;
+  }
+
+  /**
+   * Create a drop-down UI control with a label and tooltip.
+   * @param label label text
+   * @param itemsSupplier function that provides the latest collection of selectable items
+   * @param callback callback function to be called when selection changes
+   * @return the drop-down UI control HBox
+   */
+  public static HBox createDropDownUI(StringProperty label, Supplier<Collection<String>> itemsSupplier, Consumer<String> callback) {
+    // Create the label with tooltip
+    Label labelComponent = new Label();
+    labelComponent.textProperty().bind(label);
+    labelComponent.getStyleClass().add("drop-down-label");
+
+    // Create the drop-down
+    ComboBox<String> dropDown = new ComboBox<>();
+    dropDown.getItems().setAll(itemsSupplier.get());
+    dropDown.setPromptText("...");
+    dropDown.getStyleClass().add("drop-down-box");
+
+    // Create an HBox control
+    HBox dropDownControl = new HBox(5, labelComponent, dropDown);
+    dropDownControl.setAlignment(Pos.CENTER);
+    dropDownControl.getStyleClass().add("drop-down-control");
+
+    // Update items on click
+    dropDown.setOnMouseClicked(event -> {
+      dropDown.getItems().setAll(itemsSupplier.get());
+    });
+
+    // Add drop-down listener
+    dropDown.setOnAction(event -> {
+      String selectedValue = dropDown.getValue();
+      if (selectedValue != null) {
+        callback.accept(selectedValue);
+      }
+    });
+
+    return dropDownControl;
   }
 
   /* POP-UP SCREEN */
@@ -520,7 +604,7 @@ public class SceneUIWidget {
    * @param languageConsumer the consumer for the selected language
    * @param themeConsumer the consumer for the selected theme
    */
-  public static void createSplashScreen(Language defaultLanguage, Theme defaultTheme, StringProperty title, StringProperty buttonText, StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, Runnable startCallback) {
+  public static void createSplashScreen(StringProperty title, StringProperty buttonText, StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
     splashStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -547,11 +631,8 @@ public class SceneUIWidget {
         e -> {
           themeConsumer.accept(e);
           splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
-        },
-        defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1).toLowerCase(),
-        defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase()
+        }
     );
-
 
     // Create the Start button
     Button startButton = new Button();
@@ -583,59 +664,24 @@ public class SceneUIWidget {
    * @param themeText the theme label text property
    * @param languageConsumer the consumer for the selected language
    * @param themeConsumer the consumer for the selected theme
-   * @param defaultLanguage the default language to set in the dropdown
-   * @param defaultTheme the default theme to set in the dropdown
    * @return an HBox containing the language and theme selectors
    */
-  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
-    // TODO: REMOVE DULICATED CODE
-    HBox languageContainer = new HBox(10);
-    languageContainer.setAlignment(Pos.CENTER);
-    Label languageLabel = new Label();
-    languageLabel.textProperty().bind(languageText);
-    languageLabel.getStyleClass().add("splash-label");
-    ComboBox<String> languageComboBox = new ComboBox<>();
-    languageComboBox.setPrefWidth(BUTTON_WIDTH);
-    languageComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
-    languageComboBox.setMaxHeight(BUTTON_HEIGHT);
-    HBox.setHgrow(languageComboBox, Priority.ALWAYS);
-
-    languageComboBox.getItems().addAll(
-        Arrays.stream(LanguageController.Language.values())
-            .map(lang -> lang.name().substring(0, 1).toUpperCase() + lang.name().substring(1).toLowerCase())
-            .toList()
+  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer) {
+    HBox languageContainer = createDropDownUI(
+        languageText,
+        () -> Arrays.stream(Language.values())
+        .map(language -> language.name().substring(0, 1).toUpperCase() + language.name().substring(1).toLowerCase())
+        .toList(),
+        value -> languageConsumer.accept(Language.valueOf(value.toUpperCase()))
     );
-    languageComboBox.setValue(defaultLanguage);
-    languageComboBox.getStyleClass().add("splash-combo-box");
-    languageComboBox.setOnAction(event -> {
-      String selectedLanguage = languageComboBox.getValue();
-      languageConsumer.accept(Language.valueOf(selectedLanguage.toUpperCase()));
-    });
-    languageContainer.getChildren().addAll(languageLabel, languageComboBox);
 
-    HBox themeContainer = new HBox(10);
-    themeContainer.setAlignment(Pos.CENTER);
-    Label themeLabel = new Label();
-    themeLabel.textProperty().bind(themeText);
-    themeLabel.getStyleClass().add("splash-label");
-    ComboBox<String> themeComboBox = new ComboBox<>();
-    themeComboBox.setPrefWidth(BUTTON_WIDTH);
-    themeComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
-    themeComboBox.setMaxHeight(BUTTON_HEIGHT);
-    HBox.setHgrow(themeComboBox, Priority.ALWAYS);
-
-    themeComboBox.getItems().addAll(
-        Arrays.stream(ThemeController.Theme.values())
-            .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
-            .toList()
+    HBox themeContainer = createDropDownUI(
+        themeText,
+        () -> Arrays.stream(Theme.values())
+        .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
+        .toList(),
+        value -> themeConsumer.accept(Theme.valueOf(value.toUpperCase()))
     );
-    themeComboBox.setValue(defaultTheme);
-    themeComboBox.getStyleClass().add("splash-combo-box");
-    themeComboBox.setOnAction(event -> {
-      String selectedTheme = themeComboBox.getValue();
-      themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
-    });
-    themeContainer.getChildren().addAll(themeLabel, themeComboBox);
 
     HBox box = new HBox(10, languageContainer, themeContainer);
     box.setAlignment(Pos.CENTER);

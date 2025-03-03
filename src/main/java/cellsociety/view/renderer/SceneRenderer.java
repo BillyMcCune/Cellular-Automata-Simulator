@@ -16,6 +16,7 @@ import javafx.scene.shape.Shape;
 public class SceneRenderer {
 
   // Private: configure which GridDrawer to use (this can be made configurable if needed)
+  // TODO: make this not static so the multi-simulation can work properly
   private static Class<? extends GridDrawer> gridDrawerClass = SquareGridDrawer.class;
 
   /**

@@ -135,12 +135,13 @@ public class SceneController {
     try {
       Map<String, String> simulationInfo = myConfigAPI.getSimulationInformation();
       configTitle = simulationInfo.get("title");
-      return String.format("Author: %s\nTitle: %s\nType: %s\nDescription: %s\n Iterations: %d",
+      return String.format("Author: %s\nTitle: %s\nType: %s\nIterations: %d\nDescription: %s",
           simulationInfo.get("author"),
           simulationInfo.get("title"),
           simulationInfo.get("type"),
-          simulationInfo.get("description"),
-          numIterations);
+          numIterations,
+          simulationInfo.get("description")
+      );
     } catch (NullPointerException ex) {
       // TODO: Handle missing configuration appropriately.
     }
@@ -284,7 +285,8 @@ public class SceneController {
     simulationScene.setGrid(numRows, numCols);
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numCols; j++) {
-        simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j));
+        // TODO: Add support for wantDefaultColor.
+        simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j, true));
       }
     }
   }
@@ -296,7 +298,8 @@ public class SceneController {
       }
       for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
-          simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j));
+          // TODO: Add support for wantDefaultColor.
+          simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j, true));
         }
       }
     }

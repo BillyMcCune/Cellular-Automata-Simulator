@@ -183,32 +183,6 @@
   -fx-padding: 10px;
 }
 
-.splash-label {
-  -fx-font-size: 14px;
-  -fx-text-fill: #333333;  /* Dark text for light background */
-  -fx-alignment: center;
-}
-
-.splash-combo-box {
-  -fx-background-color: #f4f4f4; /* Lighter background */
-  -fx-border-color: #cccccc;
-  -fx-border-radius: 5px;
-}
-
-.splash-combo-box .button {
-  -fx-background-color: #f4f4f4;
-  -fx-border-color: #cccccc;
-}
-
-.splash-combo-box .list-cell {
-  -fx-background-color: #f4f4f4;
-  -fx-text-fill: #333333;  /* Dark text for list items */
-}
-
-.splash-combo-box .list-cell:hover {
-  -fx-background-color: #e0e0e0; /* Lighter hover effect */
-}
-
 .splash-start-button {
   -fx-background-color: linear-gradient(to bottom, #5a7cff, #4176d1); /* Lighter gradient for button */
   -fx-text-fill: #ffffff;
@@ -228,6 +202,36 @@
   -fx-background-color: linear-gradient(to bottom, #4176d1, #2c5ba2);
   -fx-scale-x: 0.98;
   -fx-scale-y: 0.98;  /* Scaling effect on press */
+}
+
+/* ==========================
+   DropDown Selector
+   ========================== */
+
+.drop-down-label {
+  -fx-font-size: 14px;
+  -fx-text-fill: #333333;  /* Dark text for light background */
+  -fx-alignment: center;
+}
+
+.drop-down-box {
+  -fx-background-color: #f4f4f4; /* Lighter background */
+  -fx-border-color: #cccccc;
+  -fx-border-radius: 5px;
+}
+
+.drop-down-box .button {
+  -fx-background-color: #f4f4f4;
+  -fx-border-color: #cccccc;
+}
+
+.drop-down-box .list-cell {
+  -fx-background-color: #f4f4f4;
+  -fx-text-fill: #333333;  /* Dark text for list items */
+}
+
+.drop-down-box .list-cell:hover {
+  -fx-background-color: #e0e0e0; /* Lighter hover effect */
 }
 
 /* ==========================

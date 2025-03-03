@@ -40,7 +40,7 @@ import javafx.stage.Stage;
 public class SimulationScene {
   // Constants
   public static final double DEFAULT_WIDTH = 1300;
-  public static final double DEFAULT_HEIGHT = 700;
+  public static final double DEFAULT_HEIGHT = 800;
 
   public static final double NEW_SIMULATION_OFFSETX = 50;
   public static final double NEW_SIMULATION_OFFSETY = 50;
@@ -80,14 +80,16 @@ public class SimulationScene {
 
     // Create the UI components
     Pane gridParent = createGrid();
+    VBox.setVgrow(gridParent, Priority.ALWAYS);
     ScrollPane controls = createControls();
+    ScrollPane stylePanel = createStylePanel();
     ScrollPane infoLabel = createInfoPanel();
     ScrollPane parameterPanel = createParameterPanel();
     ScrollPane logPanel = createLogPanel();
-    VBox.setVgrow(gridParent, Priority.ALWAYS);
 
     // Create a floating window for each component
     docker.createDWindow(LanguageController.getStringProperty("controls-window"), controls, DockPosition.TOP, null);
+    docker.createDWindow(LanguageController.getStringProperty("style-window"), stylePanel, DockPosition.BOTTOM, null);
     docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent, DockPosition.RIGHT, null);
     DWindow parameterWindow = docker.createDWindow(LanguageController.getStringProperty("parameters-window"), parameterPanel, DockPosition.RIGHT, null);
     DWindow logWindow = docker.createDWindow(LanguageController.getStringProperty("log-window"), logPanel, DockPosition.BOTTOM, parameterWindow);
@@ -119,8 +121,6 @@ public class SimulationScene {
     // Create the splash screen
     if (showSplashScreen) {
       SceneUIWidget.createSplashScreen(
-        Language.ENGLISH,
-        Theme.DAY,
         LanguageController.getStringProperty("welcome-title"),
         LanguageController.getStringProperty("welcome-button"),
         LanguageController.getStringProperty("welcome-language"),
@@ -175,14 +175,6 @@ public class SimulationScene {
     Button loadButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("load-button"), e -> loadCallback(selectType.getValue()));
     Button saveButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("save-button"), e -> saveCallback(directoryField.getText()));
     Button directoryButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("directory-button"), e -> directorySelectCallback());
-    Button flipButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("flip-button"), e -> flipCallback());
-
-    // Create checkbox
-    CheckBox showBorderCheckBox = new CheckBox();
-    showBorderCheckBox.textProperty().bind(LanguageController.getStringProperty("checkbox-text"));
-    showBorderCheckBox.getStyleClass().add("border-checkbox");
-    showBorderCheckBox.setOnAction(e -> toggleBorderCallback(showBorderCheckBox.isSelected()));
-    showBorderCheckBox.setSelected(doShowBorder);
 
     // Set button sizes
     directoryButton.setPrefWidth(SceneUIWidget.BUTTON_WIDTH * 0.8);
@@ -203,14 +195,13 @@ public class SimulationScene {
     directoryField.setMaxWidth(SceneUIWidget.MAX_BUTTON_WIDTH);
     directoryField.setPrefHeight(SceneUIWidget.BUTTON_HEIGHT);
 
-    // Style buttons
+    // Control buttons
     startPauseButton.getStyleClass().add("start-button");
     resetButton.getStyleClass().add("reset-button");
     newButton.getStyleClass().add("new-button");
     loadButton.getStyleClass().add("load-button");
     saveButton.getStyleClass().add("save-button");
     directoryButton.getStyleClass().add("directory-button");
-    flipButton.getStyleClass().add("flip-button");
 
     // HBox formatting for each dx
     HBox row1 = new HBox(10, startPauseButton, resetButton, newButton);
@@ -225,25 +216,12 @@ public class SimulationScene {
     row3.setAlignment(Pos.CENTER);
     row3.setPadding(new Insets(5));
 
-    HBox row4 = new HBox(10, flipButton, showBorderCheckBox);
-    row4.setAlignment(Pos.CENTER);
-    row4.setPadding(new Insets(5));
-
     // Create sections
     BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("operations-section"), row1);
     BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("io-section"), row2, row3);
-    BorderPane section3 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("grid-section"), row4);
-    BorderPane section4 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("themelang-section"), SceneUIWidget.createThemeLanguageSelectorUI(
-        LanguageController.getStringProperty("welcome-language"),
-        LanguageController.getStringProperty("welcome-theme"),
-        this::splashScreenLanguageCallback,
-        this::splashScreenThemeCallback,
-        "...",
-        "..."
-    ));
 
     // Main VBox containing all sections
-    VBox controlsBox = new VBox(10, section1, section2, section3, section4);
+    VBox controlsBox = new VBox(10, section1, section2);
     controlsBox.setAlignment(Pos.CENTER);
     controlsBox.getStyleClass().add("controls-box");
     controlsBox.setPadding(new Insets(10));
@@ -251,6 +229,47 @@ public class SimulationScene {
     VBox.setVgrow(controlsBox, Priority.ALWAYS);
 
     return SceneUIWidget.createContainerUI(controlsBox, LanguageController.getStringProperty("controls-panel"));
+  }
+
+  // TODO: Implement the style panel with the following style change
+  //       - Theme & Language
+  //       - Cell Color
+  //       - Cell Shape
+  //       - Edge Type
+  //       - Neighbor Type
+  private ScrollPane createStylePanel() {
+    // Flip button
+    Button flipButton = SceneUIWidget.createButtonUI(LanguageController.getStringProperty("flip-button"), e -> flipCallback());
+    flipButton.getStyleClass().add("flip-button");
+
+    // Create checkbox
+    CheckBox showBorderCheckBox = new CheckBox();
+    showBorderCheckBox.textProperty().bind(LanguageController.getStringProperty("checkbox-text"));
+    showBorderCheckBox.getStyleClass().add("border-checkbox");
+    showBorderCheckBox.setOnAction(e -> toggleBorderCallback(showBorderCheckBox.isSelected()));
+    showBorderCheckBox.setSelected(doShowBorder);
+
+    HBox row4 = new HBox(10, flipButton, showBorderCheckBox);
+    row4.setAlignment(Pos.CENTER);
+    row4.setPadding(new Insets(5));
+
+    BorderPane section1 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("grid-section"), row4);
+    BorderPane section2 = SceneUIWidget.createSectionUI(LanguageController.getStringProperty("themelang-section"), SceneUIWidget.createThemeLanguageSelectorUI(
+        LanguageController.getStringProperty("welcome-language"),
+        LanguageController.getStringProperty("welcome-theme"),
+        this::splashScreenLanguageCallback,
+        this::splashScreenThemeCallback
+    ));
+
+    // Main VBox containing all sections
+    VBox styleBox = new VBox(10, section1, section2);
+    styleBox.setAlignment(Pos.CENTER);
+    styleBox.getStyleClass().add("controls-box");
+    styleBox.setPadding(new Insets(10));
+    styleBox.setMinHeight(Region.USE_COMPUTED_SIZE);
+    VBox.setVgrow(styleBox, Priority.ALWAYS);
+
+    return SceneUIWidget.createContainerUI(styleBox, LanguageController.getStringProperty("style-panel"));
   }
 
   private ScrollPane createInfoPanel() {
