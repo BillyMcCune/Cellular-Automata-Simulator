@@ -107,9 +107,6 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
       int c = node.col;
       int dist = node.dist;
 
-      System.out.println(r + "," + c + "," + dist);
-      System.out.println(r + "," + c + "," + dist);
-
       if (dist <= maxDist && dist > 0) {
         expansionsByDist.get(dist).put(node.offsetFromOriginal, grid.getCell(r, c));
       }

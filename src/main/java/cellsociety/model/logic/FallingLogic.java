@@ -94,10 +94,24 @@ public class FallingLogic extends Logic<FallingState> {
   }
 
   private void moveWater(Cell<FallingState> cell) {
-    List<Cell<FallingState>> emptyNeighbors = getEmptyNeighbors(cell);
-    if (!emptyNeighbors.isEmpty()) {
-      int index = (int) (Math.random() * emptyNeighbors.size());
-      Cell<FallingState> target = emptyNeighbors.get(index);
+    // Identify each "downward" neighbor
+    Cell<FallingState> below = cell.getNeighbors().get(new Direction(1, 0));
+    Cell<FallingState> belowLeft = cell.getNeighbors().get(new Direction(1, -1));
+    Cell<FallingState> belowRight = cell.getNeighbors().get(new Direction(1, 1));
+
+    // Collect all empty downward neighbors into a list
+    List<Cell<FallingState>> possibleTargets = new ArrayList<>();
+    if (below != null && below.getCurrentState() == FallingState.EMPTY) {
+      possibleTargets.add(below);
+    }
+    if (belowLeft != null && belowLeft.getCurrentState() == FallingState.EMPTY) {
+      possibleTargets.add(belowLeft);
+    }
+    if (belowRight != null && belowRight.getCurrentState() == FallingState.EMPTY) {
+      possibleTargets.add(belowRight);
+    }
+    if (!possibleTargets.isEmpty()) {
+      Cell<FallingState> target = possibleTargets.get((int) (Math.random() * possibleTargets.size()));
       target.setNextState(FallingState.WATER);
       cell.setNextState(FallingState.EMPTY);
       waterCells.remove(cell);
@@ -106,6 +120,7 @@ public class FallingLogic extends Logic<FallingState> {
       }
     }
   }
+
 
   private List<Cell<FallingState>> getEmptyNeighbors(Cell<FallingState> cell) {
     List<Cell<FallingState>> empty = new ArrayList<>();
