@@ -43,7 +43,7 @@ public class ConfigReaderTest {
   @Test
   void getFileNames_ConfigDirectoryHasFiles_IsNotEmpty() {
     assertFalse(configReader.getFileNames().isEmpty());
-    System.out.println(configReader.getFileNames().size());
+    System.out.println(configReader.getFileNames());
   }
 
   @Test

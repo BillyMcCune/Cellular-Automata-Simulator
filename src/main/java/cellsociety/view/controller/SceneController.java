@@ -1,7 +1,7 @@
 package cellsociety.view.controller;
 
 import cellsociety.model.configAPI.configAPI;
-import cellsociety.model.modelAPI.modelAPI;
+import cellsociety.model.modelAPI.ModelApi;
 import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class SceneController {
   public static final double SPEED_MULTIPLIER = 3;
 
   // Instance variables
-  private final modelAPI myModelAPI;
+  private final ModelApi myModelApi;
   private final configAPI myConfigAPI;
   private final SimulationScene simulationScene;
 
@@ -45,9 +45,9 @@ public class SceneController {
   public SceneController(SimulationScene scene) {
     // Initialize the model and configuration APIs.
     // Connect the config API to the model API so that configuration updates propagate.
-    myModelAPI = new modelAPI();
+    myModelApi = new ModelApi();
     myConfigAPI = new configAPI();
-    myConfigAPI.setModelAPI(myModelAPI);
+    myConfigAPI.setModelAPI(myModelApi);
 
     this.simulationScene = scene;
     this.isPaused = true;
@@ -66,7 +66,7 @@ public class SceneController {
     if (!isPaused) {
       timeSinceLastUpdate += elapsedTime;
       if (timeSinceLastUpdate >= updateInterval) {
-        myModelAPI.updateSimulation();
+        myModelApi.updateSimulation();
         updateViewGrid();
         updateViewInfo();
 
@@ -166,7 +166,7 @@ public class SceneController {
    */
   public void resetModel() {
     try {
-      myModelAPI.resetModel();
+      myModelApi.resetModel();
       resetParameters();
       updateViewGrid();
 
@@ -184,7 +184,7 @@ public class SceneController {
    */
   public void resetGrid() {
     try {
-      myModelAPI.resetGrid();
+      myModelApi.resetGrid();
       initViewGrid();
 
       numIterations = 0;
@@ -205,7 +205,7 @@ public class SceneController {
   public void resetParameters()
       throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
     // Update the model's parameter record.
-    myModelAPI.resetParameters();
+    myModelApi.resetParameters();
 
     // clear the parameters in the simulation UI
     simulationScene.clearParameters();
@@ -218,17 +218,17 @@ public class SceneController {
         });
 
     // Update double parameters.
-    Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
+    Map<String, Double> doubleParams = myModelApi.getDoubleParameters();
     for (Map.Entry<String, Double> entry : doubleParams.entrySet()) {
       String paramName = entry.getKey();
       double defaultValue = entry.getValue();
-      double[] parameterBounds = myModelAPI.getParameterBounds(paramName);
+      double[] parameterBounds = myModelApi.getParameterBounds(paramName);
       // Retrieve min and max using the game logic's methods.
       double min = parameterBounds[0];
       double max = parameterBounds[1];
 
       // Obtain the consumer from modelAPI.
-      Consumer<Double> consumer = myModelAPI.getDoubleParameterConsumer(paramName);
+      Consumer<Double> consumer = myModelApi.getDoubleParameterConsumer(paramName);
 
       // Register the parameter in the simulation UI.
       simulationScene.setParameter(min, max, defaultValue,
@@ -236,13 +236,13 @@ public class SceneController {
     }
 
     // Update string parameters.
-    Map<String, String> stringParams = myModelAPI.getStringParameters();
+    Map<String, String> stringParams = myModelApi.getStringParameters();
     for (Map.Entry<String, String> entry : stringParams.entrySet()) {
       String paramName = entry.getKey();
       String defaultValue = entry.getValue();
 
       // Obtain the consumer from modelAPI.
-      Consumer<String> consumer = myModelAPI.getStringParameterConsumer(paramName);
+      Consumer<String> consumer = myModelApi.getStringParameterConsumer(paramName);
 
       // Register the parameter in the simulation UI.
       simulationScene.setParameter(defaultValue,
@@ -292,7 +292,7 @@ public class SceneController {
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numCols; j++) {
         // TODO: Add support for wantDefaultColor.
-        simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j, true));
+        simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, true));
       }
     }
   }
@@ -305,7 +305,7 @@ public class SceneController {
       for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
           // TODO: Add support for wantDefaultColor.
-          simulationScene.setCell(numCols, i, j, myModelAPI.getCellColor(i, j, true));
+          simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, true));
         }
       }
     }
