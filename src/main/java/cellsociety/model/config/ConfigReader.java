@@ -160,10 +160,7 @@ public class ConfigReader {
    */
   private void processParameterElement(Element paramElement, Map<String, Double> doubleParams, Map<String, String> stringParams) {
     String tagName = paramElement.getTagName();
-    String name = paramElement.getAttribute("name");
-    if (name == null || name.isEmpty()) {
-      throw new IllegalArgumentException("error-missingParameterName");
-    }
+    String name = getParameterName(paramElement);
     String textContent = paramElement.getTextContent().trim();
 
     if (tagName.equals("doubleParameter")) {
@@ -176,6 +173,14 @@ public class ConfigReader {
     } else if (tagName.equals("stringParameter")) {
       stringParams.put(name, textContent);
     }
+  }
+
+  private String getParameterName(Element paramElement) {
+      String name = paramElement.getAttribute("name");
+    if (name == null || name.isEmpty()) {
+      throw new IllegalArgumentException("error-missingParameterName");
+    }
+    return name;
   }
 
 

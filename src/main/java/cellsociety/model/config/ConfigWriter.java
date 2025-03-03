@@ -218,77 +218,75 @@ public class ConfigWriter {
     }
   }
 
-  /**
-   * Creates an output file for saving the XML document.
-   * <p>
-   * The file name is based on the configuration title with spaces removed and appended with "Save"
-   * and ".xml". If a file with the same name exists, a duplicate number is appended.
-   *
-   * @param path the directory path where the file should be saved
-   * @return a File object representing the output file
-   * @throws ParserConfigurationException if the output file cannot be created
-   */
   private File createOutputFile(String path) throws ParserConfigurationException {
     try {
-      String baseFilename = myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
+      String baseFilename = generateBaseFilename();
       String fileExtension = ".xml";
       File configDirectory = new File(path);
       LastFileSaved = baseFilename + fileExtension;
 
-      if (configDirectory.exists() && !configDirectory.isDirectory()) {
-        throw new ParserConfigurationException("error-notDirectory");
-      }
-      if (!configDirectory.exists() && !configDirectory.mkdirs()) {
-        throw new ParserConfigurationException("error-failedToCreateConfigDirectory" + "," + path);
-      }
-
-      File outputFile = new File(configDirectory, baseFilename + fileExtension);
-      int duplicateNumber = 1;
-      while (outputFile.exists()) {
-        outputFile = new File(configDirectory,
-            baseFilename + "_" + duplicateNumber + fileExtension);
-        duplicateNumber++;
-      }
-      return outputFile;
+      validateDirectory(configDirectory, path);
+      return generateUniqueOutputFile(configDirectory, baseFilename, fileExtension);
     } catch (NullPointerException e) {
       throw new ParserConfigurationException("error-couldNotCreateOutputFile");
     }
   }
 
-  /**
-   * Writes the XML Document to the specified output file.
-   *
-   * @param xmlDocument the XML document to write
-   * @param outputFile  the file to which the document will be written
-   * @throws Exception if an error occurs during file writing or XML transformation
-   */
+  private String generateBaseFilename() {
+    return myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
+  }
+
+  private void validateDirectory(File directory, String path) throws ParserConfigurationException {
+    if (directory.exists()) {
+      if (!directory.isDirectory()) {
+        throw new ParserConfigurationException("error-notDirectory");
+      }
+    } else if (!directory.mkdirs()) {
+      throw new ParserConfigurationException("error-failedToCreateConfigDirectory," + path);
+    }
+  }
+
+  private File generateUniqueOutputFile(File directory, String baseFilename, String fileExtension) {
+    File outputFile = new File(directory, baseFilename + fileExtension);
+    int duplicateNumber = 1;
+    while (outputFile.exists()) {
+      outputFile = new File(directory, baseFilename + "_" + duplicateNumber + fileExtension);
+      duplicateNumber++;
+    }
+    return outputFile;
+  }
+
+
   private void writeXMLDocument(Document xmlDocument, File outputFile)
       throws IOException, TransformerException {
+    validateOutputFile(outputFile);
+    Transformer transformer = createConfiguredTransformer();
+    DOMSource source = new DOMSource(xmlDocument);
+
+    try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+      StreamResult result = new StreamResult(fos);
+      transformer.transform(source, result);
+      Log.trace("Config saved to file: " + outputFile.getAbsolutePath());
+    } catch (IOException e) {
+      throw new IOException("error-writingXMLFile", e);
+    } catch (TransformerException e) {
+      throw new TransformerException("error-transformingXMLDocument", e);
+    }
+  }
+
+  private void validateOutputFile(File outputFile) {
     if (outputFile == null) {
+      Log.error("Output file is null. Cannot save XML.");
       throw new IllegalArgumentException("error-outputFileNull");
     }
-    try {
-      if (outputFile == null) {
-        Log.error("Output file is null. Cannot save XML.");
-        throw new IllegalArgumentException("error-outputFileNull");
-      }
-      TransformerFactory transformerFactory = TransformerFactory.newInstance();
-      Transformer transformer = transformerFactory.newTransformer();
-      DOMSource source = new DOMSource(xmlDocument);
+  }
 
-      transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
-      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-      try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-        StreamResult result = new StreamResult(fos);
-        transformer.transform(source, result);
-        Log.trace("Config saved to file: " + outputFile.getAbsolutePath());
-      }
-    } catch (IOException e) {
-      throw new IOException("error-writingXMLFile");
-    } catch (TransformerException e) {
-      throw new TransformerException("error-transformingXMLDocument");
-    }
+  private Transformer createConfiguredTransformer() throws TransformerException {
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+    return transformer;
   }
 }
 
