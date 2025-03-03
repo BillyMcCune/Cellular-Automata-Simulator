@@ -1,0 +1,30 @@
+# Creeping Death - Simplified
+# This program roams to infect enemies and clump with friendly species using a straightforward strategy.
+
+# --- Basic Infection Loop ---
+ifenemy 3
+go 5
+infect 5
+go 1
+
+# --- Scanning for Enemies ---
+ifenemy 1
+left 30
+ifenemy 1
+left 30
+ifenemy 1
+
+# --- Clumping Behavior ---
+ifsame 34
+left 20
+go 1
+
+# --- Forward Movement ---
+ifempty 4
+move 20
+go 1
+
+# --- Random Turn ---
+ifrandom 2
+left 90
+go 1
