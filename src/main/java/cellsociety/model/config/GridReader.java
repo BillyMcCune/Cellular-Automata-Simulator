@@ -15,12 +15,13 @@ import org.w3c.dom.NodeList;
 public class GridReader {
 
   /**
+   * @author Billy McCune
    * Reads the initial grid configuration from the XML root element. The method determines whether the grid
    * is specified using <code>initialCells</code>, <code>initialStates</code>, or <code>initialProportions</code>.
    *
-   * @param root the root XML element.
-   * @return a 2D list of {@code CellRecord} representing the initial grid.
-   * @throws ParserConfigurationException if multiple grid configuration elements are found or if the grid configuration is missing.
+   * @param root the root XML element
+   * @return a 2D list of {@code CellRecord} representing the initial grid
+   * @throws ParserConfigurationException if multiple grid configuration elements are found or if the grid configuration is missing
    */
   public static List<List<CellRecord>> readInitialGrid(Element root) throws ParserConfigurationException {
     int initialCellsCount = root.getElementsByTagName("initialCells").getLength();
@@ -50,8 +51,9 @@ public class GridReader {
   /**
    * Reads accepted states from the XML.
    *
-   * @param root the XML root element.
-   * @return a set of accepted state integers.
+   * @param root the XML root element
+   * @return a set of accepted state integers
+   * @throws IllegalArgumentException if the accepted states element is missing or empty, or if an accepted state cannot be parsed as an integer
    */
   public static Set<Integer> readAcceptedStates(Element root) {
     Element acceptedStatesElement = (Element) root.getElementsByTagName("acceptedStates").item(0);
@@ -74,8 +76,13 @@ public class GridReader {
     return acceptedStates;
   }
 
-  // --- Helper methods for parsing <initialCells> ---
-
+  /**
+   * Parses the grid defined by the <initialCells> element.
+   *
+   * @param root the XML root element
+   * @return a 2D list of {@code CellRecord} representing the grid
+   * @throws IllegalArgumentException if there are no rows or if any row is empty
+   */
   private static List<List<CellRecord>> parseInitialCells(Element root) {
     Element initialCellsElement = getInitialCellsElement(root);
     NodeList rowNodes = initialCellsElement.getElementsByTagName("row");
@@ -101,6 +108,10 @@ public class GridReader {
 
   /**
    * Retrieves the <initialCells> element from the root.
+   *
+   * @param root the XML root element
+   * @return the <initialCells> element
+   * @throws IllegalArgumentException if the <initialCells> element is missing
    */
   private static Element getInitialCellsElement(Element root) {
     Element initialCellsElement = (Element) root.getElementsByTagName("initialCells").item(0);
@@ -110,12 +121,13 @@ public class GridReader {
     return initialCellsElement;
   }
 
+
   /**
-   * Parses a single row element into a list of CellRecord objects.
+   * Parses a single row element into a list of {@code CellRecord} objects.
    *
-   * @param rowElement the <row> element.
-   * @param rowIndex   the index of the row (for error reporting).
-   * @return a list of CellRecord objects for that row.
+   * @param rowElement the <row> element
+   * @param rowIndex   the index of the row (for error reporting)
+   * @return a list of {@code CellRecord} objects for that row
    */
   private static List<CellRecord> parseRow(Element rowElement, int rowIndex) {
     NodeList cellNodes = rowElement.getElementsByTagName("cell");
@@ -132,12 +144,13 @@ public class GridReader {
   }
 
   /**
-   * Parses an individual cell element into a CellRecord.
+   * Parses an individual <cell> element into a {@code CellRecord}.
    *
-   * @param cellElement the <cell> element.
-   * @param rowIndex    the row index (for error reporting).
-   * @param colIndex    the column index (for error reporting).
-   * @return a CellRecord object representing the cell.
+   * @param cellElement the <cell> element
+   * @param rowIndex    the row index (for error reporting)
+   * @param colIndex    the column index (for error reporting)
+   * @return a {@code CellRecord} object representing the cell
+   * @throws IllegalArgumentException if the "state" attribute is missing or invalid
    */
   private static CellRecord parseCell(Element cellElement, int rowIndex, int colIndex) {
     String stateStr = cellElement.getAttribute("state");
@@ -154,13 +167,15 @@ public class GridReader {
     return new CellRecord(state, properties);
   }
 
+
   /**
-   * Parses the properties (non-state attributes) of a cell element.
+   * Parses the non-state attributes (properties) of a <cell> element.
    *
-   * @param cellElement the <cell> element.
-   * @param rowIndex    the row index.
-   * @param colIndex    the column index.
-   * @return a map of property names to their double values.
+   * @param cellElement the <cell> element
+   * @param rowIndex    the row index (for error reporting)
+   * @param colIndex    the column index (for error reporting)
+   * @return a map of property names to their double values
+   * @throws IllegalArgumentException if any property value cannot be parsed as a double
    */
   private static Map<String, Double> parseCellProperties(Element cellElement, int rowIndex, int colIndex) {
     Map<String, Double> properties = new HashMap<>();
@@ -180,6 +195,14 @@ public class GridReader {
     return properties;
   }
 
+  /**
+   * Retrieves the text content of the first occurrence of the specified tag within an element.
+   *
+   * @param e       the XML element
+   * @param tagName the tag name to search for
+   * @return the text content of the tag
+   * @throws IllegalArgumentException if the tag does not exist
+   */
   private static String getTextValue(Element e, String tagName) {
     NodeList nodeList = e.getElementsByTagName(tagName);
     if (nodeList.getLength() > 0) {
