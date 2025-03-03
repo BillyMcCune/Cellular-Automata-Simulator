@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.logging.StreamHandler;
 
 /**
  * @author Billy McCune
@@ -531,7 +532,7 @@ public class modelAPI {
         possibleStates.put(key, defaultColors.getProperty(key));
       }
     } catch (IOException e) {
-      System.err.println("Error reading default cell colors: " + e.getMessage());
+      throw new NoSuchElementException("error-getCellTypesAndDefaultColors");
     }
     return possibleStates;
   }
@@ -550,7 +551,7 @@ public class modelAPI {
         simulationStyle.store(output, "User-defined cell colors");
       }
     } catch (IOException e) {
-      System.err.println("Error saving new color preference: " + e.getMessage());
+      throw new NoSuchElementException("error-setNewColorPreference");
     }
   }
 
@@ -560,7 +561,6 @@ public class modelAPI {
       simulationStyle.load(input);
       return simulationStyle.getProperty(stateName, getDefaultColorByState(stateName));
     } catch (IOException e) {
-      System.err.println("Error reading simulation style: " + e.getMessage());
       return getDefaultColorByState(stateName);
     }
   }
@@ -571,8 +571,7 @@ public class modelAPI {
       defaultColors.load(input);
       return defaultColors.getProperty(stateName, "WHITE"); // fallback to WHITE
     } catch (IOException e) {
-      System.err.println("Error reading default color for " + stateName + ": " + e.getMessage());
-      return "WHITE";
+      throw new NoSuchElementException("error-getDefaultColorByState");
     }
   }
 
@@ -591,7 +590,7 @@ public class modelAPI {
         simulationStyle.store(output, "User-defined cell colors");
       }
     } catch (IOException e) {
-      System.err.println("Error saving new color preference: " + e.getMessage());
+      throw new NoSuchElementException("error-setNeighborArrangement");
     }
   }
 
@@ -611,7 +610,7 @@ public class modelAPI {
         simulationStyle.store(output, "User-defined cell colors");
       }
     } catch (IOException e) {
-      System.err.println("Error saving new color preference: " + e.getMessage());
+      throw new NoSuchElementException("error-setEdgePolicy");
     }
   }
 
@@ -632,7 +631,7 @@ public class modelAPI {
         simulationStyle.store(output, "User-defined cell colors");
       }
     } catch (IOException e) {
-      System.err.println("Error saving new color preference: " + e.getMessage());
+      throw new NoSuchElementException("error-setCellShape");
     }
   }
 
@@ -650,7 +649,7 @@ public class modelAPI {
         simulationStyle.store(output, "User-defined cell colors");
       }
     } catch (IOException e) {
-      System.err.println("Error saving new color preference: " + e.getMessage());
+      throw new NoSuchElementException("error-setGridOutlinePreference");
     }
   }
 
@@ -670,7 +669,7 @@ public class modelAPI {
         }
       }
     } catch (IOException e) {
-      System.err.println("Error reading neighbor arrangements: " + e.getMessage());
+     throw new NoSuchElementException("error-getPossibleNeighborArrangements");
     }
     return arrangements;
   }
@@ -689,7 +688,7 @@ public class modelAPI {
         }
       }
     } catch (IOException e) {
-      System.err.println("Error reading edge policies: " + e.getMessage());
+      throw new NoSuchElementException("error-getPossibleEdgePolicies");
     }
     return edgePolicies;
   }
@@ -708,7 +707,7 @@ public class modelAPI {
         }
       }
     } catch (IOException e) {
-      System.err.println("Error reading cell shapes: " + e.getMessage());
+      throw new NoSuchElementException("error-getPossibleCellShapes");
     }
     return cellShapes;
   }
