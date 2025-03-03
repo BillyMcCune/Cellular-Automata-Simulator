@@ -3,8 +3,10 @@ package cellsociety.model.data;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,5 +130,18 @@ public class Grid<T extends Enum<T> & State> {
         getCell(row, col).setNeighbors(neighborCalculator.getNeighbors(this, row, col));
       }
     }
+  }
+
+  public void assignRaycastNeighbors(Direction direction, int steps)
+      throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    for (int row = 0; row < getNumRows(); row++) {
+      for (int col = 0; col < getNumCols(); col++) {
+        getCell(row, col).setNeighbors(neighborCalculator.raycastDirection(this, row, col, direction, steps));
+      }
+    }
+  }
+
+  public void assignAllRaycastNeighbors() {
+
   }
 }

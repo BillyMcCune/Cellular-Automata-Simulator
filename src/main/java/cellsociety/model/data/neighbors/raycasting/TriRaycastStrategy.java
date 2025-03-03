@@ -4,11 +4,10 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.neighbors.Direction;
-import cellsociety.model.data.neighbors.raycasting.RaycastStepHelper;
-import cellsociety.model.data.neighbors.raycasting.RaycastStrategy;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,45 +44,34 @@ public class TriRaycastStrategy<T extends Enum<T> & State>
     DOWN_MAP.put(TriDirection.DOWN_LEFT,  new Direction(0, -1));
     DOWN_MAP.put(TriDirection.DOWN_RIGHT, new Direction(0, +1));
 
-    for (var e : UP_MAP.entrySet()) {
-      UP_REVERSE.put(e.getValue(), e.getKey());
+    for (var entry : UP_MAP.entrySet()) {
+      if (entry.getKey() != TriDirection.UP_LEFT && entry.getKey() != TriDirection.UP_RIGHT) {
+        UP_REVERSE.putIfAbsent(entry.getValue(), entry.getKey());
+      }
     }
-    for (var e : DOWN_MAP.entrySet()) {
-      DOWN_REVERSE.put(e.getValue(), e.getKey());
+    for (var entry : DOWN_MAP.entrySet()) {
+      if (entry.getKey() != TriDirection.DOWN_LEFT && entry.getKey() != TriDirection.DOWN_RIGHT) {
+        DOWN_REVERSE.putIfAbsent(entry.getValue(), entry.getKey());
+      }
     }
   }
 
   @Override
-  public List<Cell<T>> doRaycast(Grid<T> grid,
-      int startRow,
-      int startCol,
-      Direction rawDir,
-      int steps,
-      BoundaryType boundary) {
-    List<Cell<T>> path = new ArrayList<>();
-    int[] pos = new int[] {startRow, startCol};
-
+  public Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol, Direction rawDir, int steps, BoundaryType boundary) {
+    Map<Direction, Cell<T>> result = new LinkedHashMap<>();
+    int[] pos = new int[] { startRow, startCol };
     boolean startUp = ((startRow + startCol) % 2 == 0);
-
-    TriDirection baseDir = startUp
-        ? UP_REVERSE.get(rawDir)
-        : DOWN_REVERSE.get(rawDir);
-
-    if (baseDir == null) {
-      baseDir = startUp
-          ? DOWN_REVERSE.get(rawDir)
-          : UP_REVERSE.get(rawDir);
-    }
-
+    TriDirection baseDir = startUp ? UP_REVERSE.get(rawDir) : DOWN_REVERSE.get(rawDir);
     for (int i = 0; i < steps; i++) {
       boolean isUp = ((pos[0] + pos[1]) % 2 == 0);
       Direction offset = isUp ? UP_MAP.get(baseDir) : DOWN_MAP.get(baseDir);
-
-      boolean ok = RaycastStepHelper.doSingleStep(grid, boundary, pos, offset, path);
-      if (!ok) break;
+      boolean ok = RaycastStepHelper.doSingleStep(grid, boundary, pos, startRow, startCol, offset,
+          result);
+      if (!ok) {
+        break;
+      }
     }
-
-    return path;
+    return result;
   }
 
   @Override

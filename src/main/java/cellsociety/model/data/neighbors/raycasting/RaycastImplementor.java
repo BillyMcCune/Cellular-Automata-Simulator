@@ -9,6 +9,7 @@ import cellsociety.model.data.neighbors.raycasting.RaycastStrategy;
 import cellsociety.model.data.states.State;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 public class RaycastImplementor<T extends Enum<T> & State> {
 
@@ -39,7 +40,7 @@ public class RaycastImplementor<T extends Enum<T> & State> {
     return (RaycastStrategy<T>) clazz.getDeclaredConstructor().newInstance();
   }
 
-  public List<Cell<T>> raycast(Grid<T> grid,
+  public Map<Direction, Cell<T>> raycast(Grid<T> grid,
       int startRow,
       int startCol,
       Direction rawDir,

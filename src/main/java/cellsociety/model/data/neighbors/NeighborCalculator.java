@@ -164,8 +164,8 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     int dist = node.dist;
     Direction nodeOffset = node.offsetFromOriginal;
 
-    boolean flipHex = (shape == GridShape.HEXAGON && (c % 2 != 0));
-    boolean flipTri = (shape == GridShape.TRIANGLE && ((r + c) % 2 != 0));
+    boolean flipHex = (shape == GridShape.HEX && (c % 2 != 0));
+    boolean flipTri = (shape == GridShape.TRI && ((r + c) % 2 != 0));
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
@@ -244,24 +244,18 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     }
   }
 
-  public List<Cell<T>> raycastDirection(Grid<T> grid, int startRow, int startCol,
-      Direction rawDir, int steps)
-      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-      InstantiationException, IllegalAccessException {
-    RaycastImplementor<T> raycastHelper = new RaycastImplementor<>(shape, boundary);
-    return raycastHelper.raycast(grid, startRow, startCol, rawDir, steps);
+  public Map<Direction, Cell<T>> raycastDirection(Grid<T> grid, int startRow, int startCol, Direction rawDir, int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    RaycastImplementor<T> helper = new RaycastImplementor<>(shape, boundary);
+    return helper.raycast(grid, startRow, startCol, rawDir, steps);
   }
-
-  public Map<Direction, List<Cell<T>>> raycastAllDirections(Grid<T> grid,
-      int startRow, int startCol,
-      int steps)
-      throws ClassNotFoundException, NoSuchMethodException,
-      InvocationTargetException, InstantiationException, IllegalAccessException {
+  public Map<Direction, Map<Direction, Cell<T>>> raycastAllDirections(Grid<T> grid, int startRow, int startCol, int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     RaycastImplementor<T> helper = new RaycastImplementor<>(shape, boundary);
     List<Direction> defaultDirs = helper.getDefaultRawDirections(startRow, startCol);
-    Map<Direction, List<Cell<T>>> results = new HashMap<>();
+    Map<Direction, Map<Direction, Cell<T>>> results = new HashMap<>();
     for (Direction d : defaultDirs) {
-      List<Cell<T>> ray = helper.raycast(grid, startRow, startCol, d, steps);
+      Map<Direction, Cell<T>> ray = helper.raycast(grid, startRow, startCol, d, steps);
       results.put(d, ray);
     }
     return results;

@@ -4,16 +4,14 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.neighbors.Direction;
-import cellsociety.model.data.neighbors.raycasting.RaycastStrategy;
-import cellsociety.model.data.neighbors.raycasting.RaycastStepHelper;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @param <T>
  * @author Jacob You
  */
@@ -25,25 +23,26 @@ public class HexRaycastStrategy<T extends Enum<T> & State>
   }
 
   private static final Map<HexDirection, Direction> EVEN_MAP = Map.of(
-      HexDirection.UP,         new Direction(-1, 0),
-      HexDirection.DOWN,       new Direction(+1, 0),
-      HexDirection.UP_LEFT,    new Direction(0, -1),
-      HexDirection.UP_RIGHT,   new Direction(0, +1),
-      HexDirection.DOWN_LEFT,  new Direction(+1, -1),
+      HexDirection.UP, new Direction(-1, 0),
+      HexDirection.DOWN, new Direction(+1, 0),
+      HexDirection.UP_LEFT, new Direction(0, -1),
+      HexDirection.UP_RIGHT, new Direction(0, +1),
+      HexDirection.DOWN_LEFT, new Direction(+1, -1),
       HexDirection.DOWN_RIGHT, new Direction(+1, +1)
   );
 
   private static final Map<HexDirection, Direction> ODD_MAP = Map.of(
-      HexDirection.UP,         new Direction(-1, 0),
-      HexDirection.DOWN,       new Direction(+1, 0),
-      HexDirection.UP_LEFT,    new Direction(-1, -1),
-      HexDirection.UP_RIGHT,   new Direction(-1, +1),
-      HexDirection.DOWN_LEFT,  new Direction(0, -1),
+      HexDirection.UP, new Direction(-1, 0),
+      HexDirection.DOWN, new Direction(+1, 0),
+      HexDirection.UP_LEFT, new Direction(-1, -1),
+      HexDirection.UP_RIGHT, new Direction(-1, +1),
+      HexDirection.DOWN_LEFT, new Direction(0, -1),
       HexDirection.DOWN_RIGHT, new Direction(0, +1)
   );
 
   private static final Map<Direction, HexDirection> EVEN_REVERSE = new HashMap<>();
-  private static final Map<Direction, HexDirection> ODD_REVERSE  = new HashMap<>();
+  private static final Map<Direction, HexDirection> ODD_REVERSE = new HashMap<>();
+
   static {
     for (var e : EVEN_MAP.entrySet()) {
       EVEN_REVERSE.put(e.getValue(), e.getKey());
@@ -54,33 +53,22 @@ public class HexRaycastStrategy<T extends Enum<T> & State>
   }
 
   @Override
-  public List<Cell<T>> doRaycast(Grid<T> grid,
-      int startRow,
-      int startCol,
-      Direction rawDir,
-      int steps,
-      BoundaryType boundary) {
-    List<Cell<T>> path = new ArrayList<>();
-    int[] pos = new int[] {startRow, startCol};
-
-    boolean startEven = (startCol % 2 == 0);
-
-    HexDirection baseDir = startEven ? EVEN_REVERSE.get(rawDir) : ODD_REVERSE.get(rawDir);
-    if (baseDir == null) {
-      baseDir = startEven ? ODD_REVERSE.get(rawDir) : EVEN_REVERSE.get(rawDir);
-    }
-
+  public Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol,
+      Direction rawDir, int steps, BoundaryType boundary) {
+    Map<Direction, Cell<T>> result = new LinkedHashMap<>();
+    int[] pos = new int[]{startRow, startCol};
+    boolean isStartEven = (startCol % 2 == 0);
+    HexDirection baseDir = isStartEven ? EVEN_REVERSE.get(rawDir) : ODD_REVERSE.get(rawDir);
     for (int i = 0; i < steps; i++) {
       boolean isEven = (pos[1] % 2 == 0);
-      Direction offset = isEven
-          ? EVEN_MAP.get(baseDir)
-          : ODD_MAP.get(baseDir);
-
-      boolean ok = RaycastStepHelper.doSingleStep(grid, boundary, pos, offset, path);
-      if (!ok) break;
+      Direction offset = isEven ? EVEN_MAP.get(baseDir) : ODD_MAP.get(baseDir);
+      boolean ok = RaycastStepHelper.doSingleStep(grid, boundary, pos, startRow, startCol, offset,
+          result);
+      if (!ok) {
+        break;
+      }
     }
-
-    return path;
+    return result;
   }
 
   @Override

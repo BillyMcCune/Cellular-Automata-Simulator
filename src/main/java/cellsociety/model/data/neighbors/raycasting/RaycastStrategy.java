@@ -6,6 +6,7 @@ import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generic interface for "raycasting" in a particular shape (square, hex, triangle).
@@ -14,10 +15,10 @@ import java.util.List;
 public interface RaycastStrategy<T extends Enum<T> & State> {
 
   /**
-   * Performs a raycast starting at (startRow, startCol) using the supplied raw direction,
-   * for up to 'steps'. BoundaryType controls whether we wrap around.
+   * Performs a raycast starting at (startRow, startCol) using the supplied raw direction, for up to
+   * 'steps'. BoundaryType controls whether we wrap around.
    */
-  List<Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol,
+  Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol,
       Direction rawDir, int steps, BoundaryType boundary);
 
   /**
