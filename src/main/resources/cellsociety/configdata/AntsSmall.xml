@@ -1,51 +1,128 @@
 <?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>ANT</type>
+  
+  
   <title>Tiny Foraging Ants Simulation</title>
+  
+  
   <author>Jacob You</author>
+  
+  
   <description>
     A tiny grid with one nest containing ants and one food cell.
   </description>
+  
 
+  
   <parameters>
+    
+    
     <doubleParameter name="maxAnts">5</doubleParameter>
+    
+    
     <doubleParameter name="evaporationRate">10</doubleParameter>
+    
+    
     <doubleParameter name="maxHomePheromone">100</doubleParameter>
+    
+    
     <doubleParameter name="maxFoodPheromone">100</doubleParameter>
+    
+    
     <doubleParameter name="basePheromoneWeight">1</doubleParameter>
+    
+    
     <doubleParameter name="pheromoneSensitivity">2</doubleParameter>
+    
+    
     <doubleParameter name="pheromoneDiffusionDecay">1</doubleParameter>
+    
+  
   </parameters>
+  
 
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Moore</neighborArrangementType>
+  
 
 
+  
   <width>3</width>
+  
+  
   <height>3</height>
+  
+  
   <defaultSpeed>10</defaultSpeed>
+  
 
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1" searchingEntities="5"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="3"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
 
+  
   <acceptedStates>
     0 1 3
   </acceptedStates>
+  
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

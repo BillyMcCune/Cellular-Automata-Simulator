@@ -2,73 +2,174 @@
 <simulation>
   
   
+  
+  
   <type>PERCOLATION</type>
+  
+  
   
   
   <title>Default Percolation Simulation</title>
   
   
+  
+  
   <author>Billy</author>
+  
+  
   
   
   <description>A default version of the percolation simulation.</description>
   
   
+  
+  
   <parameters>
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Moore</neighborArrangementType>
+  
+  
   <width>5</width>
+  
+  
   
   
   <height>5</height>
   
   
+  
+  
   <defaultSpeed>10</defaultSpeed>
   
   
+  
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
+  
   <acceptedStates>
     0 1 2
   </acceptedStates>
   
+  
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

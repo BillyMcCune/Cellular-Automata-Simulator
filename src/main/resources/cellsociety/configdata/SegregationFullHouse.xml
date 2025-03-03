@@ -2,104 +2,259 @@
 <simulation>
   
   
+  
+  
   <type>SEGREGATION</type>
+  
+  
   
   
   <title>Full House Segregation Simulation</title>
   
   
+  
+  
   <author>Billy</author>
+  
+  
   
   
   <description>A version of the segregation simulation to test how the simulation deals with a full house of the two parties.</description>
   
   
+  
+  
   <parameters>
+    
 
 
+    
     <doubleParameter name="satisfiedThreshold">50</doubleParameter>
     
+    
+  
   
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Moore</neighborArrangementType>
+  
 
+  
   <width>10</width>
+  
+  
   
   
   <height>5</height>
   
   
+  
+  
   <defaultSpeed>1</defaultSpeed>
   
   
+  
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="2"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
+  
   <acceptedStates>
     0 1 2
   </acceptedStates>
   
+  
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

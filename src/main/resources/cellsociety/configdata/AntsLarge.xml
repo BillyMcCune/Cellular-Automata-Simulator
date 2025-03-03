@@ -1,73 +1,560 @@
 <?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>ANT</type>
+  
+  
   <title>Foraging Ants Simulation - Large Grid</title>
+  
+  
   <author>Jacob You</author>
+  
+  
   <description>
     A large-scale foraging ant simulation with multiple food sources and obstacles to observe pheromone trails.
   </description>
+  
 
+  
   <parameters>
+    
+    
     <doubleParameter name="maxAnts">10</doubleParameter>
+    
+    
     <doubleParameter name="evaporationRate">75</doubleParameter>
+    
+    
     <doubleParameter name="maxHomePheromone">10</doubleParameter>
+    
+    
     <doubleParameter name="maxFoodPheromone">10</doubleParameter>
+    
+    
     <doubleParameter name="basePheromoneWeight">1</doubleParameter>
+    
+    
     <doubleParameter name="pheromoneSensitivity">4</doubleParameter>
+    
+    
     <doubleParameter name="pheromoneDiffusionDecay">2</doubleParameter>
+    
+  
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Moore</neighborArrangementType>
+  
 
 
+  
   <width>20</width>
+  
+  
   <height>10</height>
+  
+  
   <defaultSpeed>10</defaultSpeed>
+  
 
+  
   <initialCells>
+    
+    
     <row>
-      <cell state="0"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
-      <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
-      <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
 
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="2" searchingEntities="10"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="2" searchingEntities="10"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
 
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="1"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
 
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
 
-    <!-- Additional food source -->
+    
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="3"/> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
 
-    <!-- Empty rows for ants to move freely -->
+    
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
-      <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/>
+      
+      
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+      
+    
     </row>
+    
 
+  
   </initialCells>
+  
 
+  
   <acceptedStates>
     0 1 2 3
   </acceptedStates>
+  
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

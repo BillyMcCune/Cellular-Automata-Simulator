@@ -2,126 +2,325 @@
 <simulation>
   
   
+  
+  
   <type>FIRE</type>
+  
+  
   
   
   <title>Lonely Tree</title>
   
   
+  
+  
   <author>Billy</author>
+  
+  
   
   
   <description>Just a lonely tree.</description>
   
   
+  
+  
   <parameters>
     
     
+    
+    
     <doubleParameter name="probCatch">50</doubleParameter>
+    
+    
     <doubleParameter name="probIgnite">5</doubleParameter>
+    
+    
     <doubleParameter name="probTree">10</doubleParameter>
     
+    
+  
   
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Neumann</neighborArrangementType>
+  
 
+  
   <width>8</width>
+  
+  
   
   
   <height>8</height>
   
   
+  
+  
   <defaultSpeed>10</defaultSpeed>
   
   
+  
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
+  
   <acceptedStates>
     0 1 2
   </acceptedStates>
   
+  
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

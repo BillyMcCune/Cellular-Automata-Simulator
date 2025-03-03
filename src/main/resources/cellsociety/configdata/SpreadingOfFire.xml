@@ -2,122 +2,321 @@
 <simulation>
   
   
+  
+  
   <type>FIRE</type>
+  
+  
   
   
   <title>Basic Fire</title>
   
   
+  
+  
   <author>Billy</author>
+  
+  
   
   
   <description>A basic fire in the spreading of fire simulation.</description>
   
   
+  
+  
   <parameters>
+    
+    
     <doubleParameter name="probCatch">50</doubleParameter>
+    
+    
     <doubleParameter name="probIgnite">5</doubleParameter>
+    
+    
     <doubleParameter name="probTree">10</doubleParameter>
+    
+  
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Neumann</neighborArrangementType>
   
+  
+  
   <width>8</width>
+  
+  
   
   
   <height>8</height>
   
   
+  
+  
   <defaultSpeed>10</defaultSpeed>
   
   
+  
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
+  
   <acceptedStates>
     0 1 2
   </acceptedStates>
   
+  
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

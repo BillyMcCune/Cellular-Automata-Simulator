@@ -2,80 +2,191 @@
 <simulation>
   
   
+  
+  
   <type>WATOR</type>
+  
+  
   
   
   <title>Single Fish Breeding Test</title>
   
   
+  
+  
   <author>Jacob You</author>
+  
+  
   
   
   <description>Tests whether a single fish breeds correctly after reaching its reproduction time.</description>
   
+  
 
+  
   <parameters>
+    
 
+    
     <doubleParameter name="sharkBaseEnergy">5</doubleParameter>
+    
+    
     <doubleParameter name="fishEnergyGain">2</doubleParameter>
+    
+    
     <doubleParameter name="sharkReproductionTime">3</doubleParameter>
+    
+    
     <doubleParameter name="fishReproductionTime">2</doubleParameter>
+    
+  
   
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Neumann</neighborArrangementType>
   
+  
+  
   <width>5</width>
+  
+  
   
   
   <height>5</height>
   
   
+  
+  
   <defaultSpeed>1</defaultSpeed>
   
   
+  
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="2"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+    
     <row>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+      
       <cell state="0"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
+  
   <acceptedStates>
     0 1 2
   </acceptedStates>
   
+  
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

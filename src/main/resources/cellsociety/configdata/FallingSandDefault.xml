@@ -1,48 +1,144 @@
 <?xml version="1.0" ?>
 <simulation>
+  
 
 
+  
   <type>FALLING</type>
+  
 
 
+  
   <title>Default Falling Sand</title>
+  
 
 
+  
   <author>Billy McCune</author>
+  
 
 
+  
   <description>Basic Falling Sand simulation.</description>
+  
 
 
+  
   <parameters>
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Custom</neighborArrangementType>
+  
 
+  
   <width>5</width>
+  
 
 
+  
   <height>5</height>
+  
 
 
+  
   <defaultSpeed>10</defaultSpeed>
+  
 
 
+  
   <initialCells>
+    
 
 
-    <row> <cell state="2"/> <cell state="3"/> <cell state="2"/> <cell state="2"/> <cell state="2"/></row>
-    <row><cell state="0"/> <cell state="2"/> <cell state="1"/> <cell state="0"/> <cell state="2"/></row>
-    <row><cell state="0"/> <cell state="0"/> <cell state="1"/> <cell state="0"/> <cell state="0"/></row>
-    <row> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
-    <row> <cell state="3"/> <cell state="3"/> <cell state="0"/> <cell state="0"/> <cell state="0"/> </row>
+    
+    <row>
+       
+      <cell state="2"/>
+       
+      <cell state="3"/>
+       
+      <cell state="2"/>
+       
+      <cell state="2"/>
+       
+      <cell state="2"/>
+    </row>
+    
+    
+    <row>
+      <cell state="0"/>
+       
+      <cell state="2"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="2"/>
+    </row>
+    
+    
+    <row>
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="1"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+    </row>
+    
+    
+    <row>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+    </row>
+    
+    
+    <row>
+       
+      <cell state="3"/>
+       
+      <cell state="3"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+      <cell state="0"/>
+       
+    </row>
+    
 
+  
   </initialCells>
+  
 
 
+  
   <acceptedStates>0 1 2 3</acceptedStates>
+  
 
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

@@ -2,50 +2,97 @@
 <simulation>
   
   
+  
+  
   <type>WATOR</type>
+  
+  
   
   
   <title>A very lonely fish</title>
   
   
+  
+  
   <author>Billy McCune</author>
+  
+  
   
   
   <description>Wa-Tor Test of One Lonely Fish</description>
   
   
+  
+  
   <parameters>
+    
 
 
+    
     <doubleParameter name="sharkBaseEnergy">5</doubleParameter>
+    
+    
     <doubleParameter name="fishEnergyGain">3</doubleParameter>
+    
+    
     <doubleParameter name="sharkReproductionTime">20</doubleParameter>
+    
+    
     <doubleParameter name="fishReproductionTime">1</doubleParameter>
+    
 
+  
   
   </parameters>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Neumann</neighborArrangementType>
   
+  
+  
   <width>1</width>
+  
+  
   
   
   <height>1</height>
   
   
+  
+  
   <defaultSpeed>1</defaultSpeed>
   
   
+  
+  
   <initialCells>
+    
+    
     <row>
+      
+      
       <cell state="1"/>
+      
+    
     </row>
+    
+  
   </initialCells>
+  
+  
   <acceptedStates>
     0 1 2
   </acceptedStates>
   
+  
 
+
+  <neighborRadius>1</neighborRadius>
 </simulation>

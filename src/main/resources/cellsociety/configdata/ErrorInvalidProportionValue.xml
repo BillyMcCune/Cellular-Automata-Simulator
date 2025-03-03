@@ -1,23 +1,56 @@
 <?xml version="1.0" ?>
 <simulation>
+  
+  
   <type>LIFE</type>
+  
+  
   <title>Random Proportions Test - Game of Life</title>
+  
+  
   <author>Example Author</author>
+  
+  
   <description>
     A 8x8 Game of Life configuration with 66% alive cells.
     This will result in approximately 40 percent alive cells (state 1) and 60 percent dead cells (state 0).
   </description>
-  <parameters></parameters>
+  
+  
+  <parameters/>
+  
 
+  
   <cellShapeType>Square</cellShapeType>
+  
+  
   <gridEdgeType>BASE</gridEdgeType>
+  
+  
   <neighborArrangementType>Moore</neighborArrangementType>
+  
 
+  
   <width>10</width>
+  
+  
   <height>10</height>
+  
+  
   <defaultSpeed>10</defaultSpeed>
+  
+  
   <initialProportions>
-    <state1>"not an Integer"</state1>
+    
+    
+    <state1>&quot;not an Integer&quot;</state1>
+    
+  
   </initialProportions>
+  
+  
   <acceptedStates>0 1</acceptedStates>
+  
+
+  <neighborRadius>1</neighborRadius>
 </simulation>
