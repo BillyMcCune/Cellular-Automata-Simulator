@@ -30,6 +30,7 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     this.shape = shape;
     this.neighborType = neighborType;
     this.boundary = boundary;
+    this.steps = 1;
   }
   public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary, int steps) {
     this.shape = shape;
@@ -68,7 +69,6 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int startRow, int startCol) {
     List<Map<Direction, Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, steps);
     Map<Direction, Cell<T>> allNeighbors = new HashMap<>();
-    // Combine all expansions from distance=1 up to distance=steps
     for (int dist = 1; dist <= steps && dist < expansionsByDist.size(); dist++) {
       allNeighbors.putAll(expansionsByDist.get(dist));
     }
@@ -106,6 +106,9 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
       int r = node.row;
       int c = node.col;
       int dist = node.dist;
+
+      System.out.println(r + "," + c + "," + dist);
+      System.out.println(r + "," + c + "," + dist);
 
       if (dist <= maxDist && dist > 0) {
         expansionsByDist.get(dist).put(node.offsetFromOriginal, grid.getCell(r, c));
@@ -215,7 +218,7 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
   }
 
   /**
-   * Our BFS node now also tracks the cumulative offsetFromOriginal to help
+   * Our BFS node now  tracks the cumulative offsetFromOriginal to help
    * identify how far (row/col) the node is from the start cell.
    */
   protected static class BFSNode {
