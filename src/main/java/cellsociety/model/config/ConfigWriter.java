@@ -43,11 +43,15 @@ public class ConfigWriter {
   }
 
   /**
-   * Saves the current configuration to an XML file at the given path.
+   * Saves the current configuration to an XML file at the given directory path.
    *
-   * @param myNewConfigInfo the configuration info to save
+   * @param myNewConfigInfo the configuration information to save
    * @param path            the directory where the XML file will be saved
-   * @throws Exception if an error occurs during saving
+   * @throws NullPointerException         if the configuration info or path is null
+   * @throws ParserConfigurationException if an error occurs creating the XML document or output
+   *                                      file
+   * @throws IOException                  if an I/O error occurs during file writing
+   * @throws TransformerException         if an error occurs during XML transformation
    */
   public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
       throws NullPointerException, ParserConfigurationException, IOException, TransformerException {
@@ -64,11 +68,12 @@ public class ConfigWriter {
     writeXMLDocument(xmlDocument, outputFile);
   }
 
+
   /**
    * Returns the name of the last file that was successfully saved.
    *
-   * @return the last file saved as a String
-   * @throws Error if no file has been saved yet
+   * @return the file name of the last saved configuration
+   * @throws NullPointerException if no file has been saved yet
    */
   public String getLastFileSaved() {
     if (LastFileSaved == null) {
@@ -165,9 +170,11 @@ public class ConfigWriter {
   }
 
   /**
-   * Adds parameter elements as children of the given parametersElement. For each double parameter,
-   * creates a <doubleParameter name="...">value</doubleParameter> element, and for each string
-   * parameter, creates a <stringParameter name="...">value</stringParameter> element.
+   * Adds parameter elements as children of the provided parameters element.
+   * <p>
+   * For each double parameter, creates a <code>&lt;doubleParameter
+   * name="...">value&lt;/doubleParameter&gt;</code> element; for each string parameter, creates a
+   * <code>&lt;stringParameter name="...">value&lt;/stringParameter&gt;</code> element.
    *
    * @param parametersElement the XML element to which parameter elements are added
    * @param params            the ParameterRecord holding the parameters
@@ -193,12 +200,14 @@ public class ConfigWriter {
   }
 
   /**
-   * Adds the grid (initial cells) to the document. Each dx in the grid becomes a <dx> element
-   * containing one or more <cell> elements. Each <cell> element has a required "state" attribute
-   * and additional properties if available.
+   * Adds initial cell (grid) elements to the XML document.
+   * <p>
+   * Each row in the grid becomes a <code>&lt;row&gt;</code> element containing one or more
+   * <code>&lt;cell&gt;</code> elements. Each <code>&lt;cell&gt;</code> element has a required
+   * "state" attribute and may have additional properties.
    *
-   * @param initialCellsElement the XML element to which rows are added
-   * @param grid                the grid of cells (List of List of CellRecord)
+   * @param initialCellsElement the XML element to which row elements are added
+   * @param grid                the grid of cells represented as a List of List of CellRecord
    * @param xmlDocument         the XML document being built
    */
   private void addInitialCellsElements(Element initialCellsElement,
@@ -218,6 +227,16 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Creates an output file for saving the XML document.
+   * <p>
+   * The file name is based on the configuration title (with spaces removed) appended with "Save"
+   * and ".xml". If a file with the same name exists, a duplicate number is appended.
+   *
+   * @param path the directory path where the file should be saved
+   * @return a File object representing the output file
+   * @throws ParserConfigurationException if the output file cannot be created
+   */
   private File createOutputFile(String path) throws ParserConfigurationException {
     try {
       String baseFilename = generateBaseFilename();
@@ -232,10 +251,24 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Generates a base filename from the configuration title.
+   *
+   * @return the base filename as a String (spaces removed, appended with "Save")
+   */
   private String generateBaseFilename() {
     return myConfigInfo.myTitle().replaceAll(" ", "") + "Save";
   }
 
+
+  /**
+   * Validates that the provided directory exists and is a directory, or attempts to create it.
+   *
+   * @param directory the directory File object
+   * @param path      the directory path as a String
+   * @throws ParserConfigurationException if the directory exists but is not a directory or cannot
+   *                                      be created
+   */
   private void validateDirectory(File directory, String path) throws ParserConfigurationException {
     if (directory.exists()) {
       if (!directory.isDirectory()) {
@@ -246,6 +279,15 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Generates a unique output file in the specified directory. If a file with the base name exists,
+   * appends a duplicate number.
+   *
+   * @param directory     the directory where the file should be created
+   * @param baseFilename  the base file name
+   * @param fileExtension the file extension (e.g., ".xml")
+   * @return a File object representing a unique output file
+   */
   private File generateUniqueOutputFile(File directory, String baseFilename, String fileExtension) {
     File outputFile = new File(directory, baseFilename + fileExtension);
     int duplicateNumber = 1;
@@ -257,6 +299,14 @@ public class ConfigWriter {
   }
 
 
+  /**
+   * Writes the XML Document to the specified output file.
+   *
+   * @param xmlDocument the XML document to write
+   * @param outputFile  the file to which the document will be written
+   * @throws IOException          if an error occurs during file writing
+   * @throws TransformerException if an error occurs during XML transformation
+   */
   private void writeXMLDocument(Document xmlDocument, File outputFile)
       throws IOException, TransformerException {
     validateOutputFile(outputFile);
@@ -274,6 +324,12 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Validates that the output file is not null.
+   *
+   * @param outputFile the file to validate
+   * @throws IllegalArgumentException if the output file is null
+   */
   private void validateOutputFile(File outputFile) {
     if (outputFile == null) {
       Log.error("Output file is null. Cannot save XML.");
@@ -281,6 +337,12 @@ public class ConfigWriter {
     }
   }
 
+  /**
+   * Creates and configures a Transformer for converting the XML Document to a file.
+   *
+   * @return a configured Transformer instance
+   * @throws TransformerException if an error occurs while creating or configuring the Transformer
+   */
   private Transformer createConfiguredTransformer() throws TransformerException {
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     Transformer transformer = transformerFactory.newTransformer();
