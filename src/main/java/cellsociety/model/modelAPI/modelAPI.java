@@ -47,12 +47,18 @@ public class modelAPI {
   private boolean isLoaded;
 
   //crazy color stuff:
-    private static final String PROPERTY_TO_DETECT = "coloredId";
-    private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
+  private static final String PROPERTY_TO_DETECT = "coloredId";
+  private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
+
+  //Style Property names:
+  private final String gridOutlineProperty = "";
+  private final String edgePolicyProperty = "";
+  private final String neighborArrangementProperty = "";
+  private final String cellShapeProperty = "";
+
 
   // Load the color mapping from the properties file once (assumes the file is in your resources folder).
   private static final Properties COLOR_MAPPING = new Properties();
-
   static {
     try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/CellColor.properties")) {
       COLOR_MAPPING.load(in);
@@ -67,6 +73,16 @@ public class modelAPI {
     this.configInfo = configInfo;
     this.myParameterRecord = configInfo.myParameters();
   }
+  private static final Properties USER_STYLE_PREFERENCES = new Properties();
+
+  static {
+    try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
+      USER_STYLE_PREFERENCES.load(in);
+    } catch (IOException ex) {
+      throw new RuntimeException("error-getting-user-defined-color-mapping");
+    }
+  }
+
 
   /**
    * Updates the simulation by invoking the game logic update method.
@@ -214,12 +230,12 @@ public class modelAPI {
    * current state. If that color is WHITE, the method will check if any of the cell’s property
    * values (if nonzero) have an associated color.
    */
-  public String getCellColor(int row, int col) {
+  public String getCellColor(int row, int col, boolean wantDefaultColor) {
     if (col >= grid.getNumCols() || row >= grid.getNumRows()) {
       return null;
     }
     Cell<?> cell = grid.getCell(row, col);
-    String stateColor = getStateColor(cell);
+    String stateColor = getStateColor(cell,wantDefaultColor);
     if (!"WHITE".equalsIgnoreCase(stateColor)) {
       return stateColor;
     }
@@ -231,7 +247,7 @@ public class modelAPI {
    * Determines the color from the cell's current state. It uses the cell's state (for example,
    * "AntState.EMPTY" or "FireState.BURNING") as a key in the properties file.
    */
-  private String getStateColor(Cell<?> cell) {
+  private String getStateColor(Cell<?> cell, boolean wantDefaultColor) {
     // Get the state value (e.g., "TREE" or "BURNING")
     String stateValue = cell.getCurrentState().toString();
     // Get the simple name of the cell state class (e.g., "FireState")
@@ -239,6 +255,9 @@ public class modelAPI {
     // Construct the full key (e.g., "FireState.TREE")
     String key = statePrefix + "." + stateValue;
     // If the mapping is not found, default to "WHITE"
+    if (!wantDefaultColor) {
+      return USER_STYLE_PREFERENCES.getProperty(key, "WHITE");
+    }
     return COLOR_MAPPING.getProperty(key, "WHITE");
   }
 
@@ -305,10 +324,6 @@ public class modelAPI {
     return String.format("#%02X%02X%02X", r, g, b);
   }
 
-
-  public void setCellShape(String cellShape) {
-    // Not implemented.
-  }
 
   /**
    * Resets the simulation parameters by iterating over the public setter methods
@@ -559,4 +574,92 @@ public class modelAPI {
       return "WHITE";
     }
 }
+  public void setNeighborArrangement(String neighborArrangement) {
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+  public List<String> getPossibleNeighborArrangements(){
+    return null;
+  }
+
+  public void setEdgePolicy(String edgePolicy){
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+  public List<String> getPossibleEdgePolicies(){
+      return null;
+  }
+
+  public void setCellShape(String cellShape){
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(cellShapeProperty, cellShape);
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+  public List<String> getPossibleCellShapes(){
+    return null;
+  }
+
+  public void setGridOutlinePreference(boolean wantsGridOutline){
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(gridOutlineProperty, String.valueOf(wantsGridOutline));
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+  public boolean getGridOutlinePreference(){
+      return false;
+  }
+
 }
+
