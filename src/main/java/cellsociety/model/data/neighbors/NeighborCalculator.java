@@ -5,9 +5,11 @@ import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
+import cellsociety.model.data.neighbors.raycasting.RaycastImplementor;
 import cellsociety.model.data.states.State;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -228,5 +230,28 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
       dist = d;
       offsetFromOriginal = offset;
     }
+  }
+
+  public List<Cell<T>> raycastDirection(Grid<T> grid, int startRow, int startCol,
+      Direction rawDir, int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+      InstantiationException, IllegalAccessException {
+    RaycastImplementor<T> raycastHelper = new RaycastImplementor<>(shape, boundary);
+    return raycastHelper.raycast(grid, startRow, startCol, rawDir, steps);
+  }
+
+  public Map<Direction, List<Cell<T>>> raycastAllDirections(Grid<T> grid,
+      int startRow, int startCol,
+      int steps)
+      throws ClassNotFoundException, NoSuchMethodException,
+      InvocationTargetException, InstantiationException, IllegalAccessException {
+    RaycastImplementor<T> helper = new RaycastImplementor<>(shape, boundary);
+    List<Direction> defaultDirs = helper.getDefaultRawDirections(startRow, startCol);
+    Map<Direction, List<Cell<T>>> results = new HashMap<>();
+    for (Direction d : defaultDirs) {
+      List<Cell<T>> ray = helper.raycast(grid, startRow, startCol, d, steps);
+      results.put(d, ray);
+    }
+    return results;
   }
 }
