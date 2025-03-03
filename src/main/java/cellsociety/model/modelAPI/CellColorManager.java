@@ -113,12 +113,11 @@ public class CellColorManager {
     }
 
     // Otherwise, use the state's prefix to check for any other property-based color.
-    String stateString = cell.getCurrentState().toString();
-    String prefix = stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
+    String statePrefix = cell.getCurrentState().getClass().getSimpleName();
     for (Map.Entry<String, Double> entry : properties.entrySet()) {
       if (entry.getValue() != 0) {
         // Construct key like "AntState.searchingEntities"
-        String propertyKey = prefix + "." + entry.getKey();
+        String propertyKey = statePrefix + "." + entry.getKey();
         String color = COLOR_MAPPING.getProperty(propertyKey);
         if (color != null && !"WHITE".equalsIgnoreCase(color)) {
           return color;
