@@ -4,7 +4,6 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SugarState;
-import cellsociety.model.data.neighbors.SugarNeighborCalculator;
 import cellsociety.model.data.neighbors.Direction;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ public class SugarLogic extends Logic<SugarState> {
 
   private final List<Cell<SugarState>> agentCells;
   private final List<Cell<SugarState>> patchCells;
-  private final SugarNeighborCalculator<SugarState> neighborCalc;
 
   /**
    * Constructs a SugarLogic instance. Agents move to the patch with the highest sugar within vision
@@ -42,7 +40,6 @@ public class SugarLogic extends Logic<SugarState> {
   public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters)
       throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
     super(grid, parameters);
-    neighborCalc = new SugarNeighborCalculator<>();
     setVision(getDoubleParamOrFallback("vision"));
     setSugarMetabolism(getDoubleParamOrFallback("sugarMetabolism"));
     setSugarGrowBackRate(getDoubleParamOrFallback("sugarGrowBackRate"));

@@ -55,8 +55,8 @@ public class RaycastTest {
 
   @Test
   public void givenSquareGrid_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(5, 5, GridShape.SQUARE, BoundaryType.STANDARD);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.SQUARE, BoundaryType.STANDARD);
+    Grid<DummyState> grid = createGrid(5, 5, GridShape.SQUARE, BoundaryType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.SQUARE, BoundaryType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 2, 2, new Direction(-1, 0), 2);
 
     assertEquals(2, result.size());
@@ -79,8 +79,8 @@ public class RaycastTest {
 
   @Test
   public void givenHexGridEvenRow_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.HEX, BoundaryType.STANDARD);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.HEX, BoundaryType.STANDARD);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.HEX, BoundaryType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.HEX, BoundaryType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 2, 2, new Direction(1, 1), 3);
 
     assertEquals(3, result.size());
@@ -104,8 +104,8 @@ public class RaycastTest {
 
   @Test
   public void givenTriangleGridUpFacing_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, BoundaryType.STANDARD);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.STANDARD);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, BoundaryType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 2, 2, new Direction(0, -1), 2);
 
     assertEquals(2, result.size());
@@ -115,8 +115,8 @@ public class RaycastTest {
 
   @Test
   public void givenTriangleGridDownFacing_WhenRaycastingSingleDirection_ThenReturnsExpectedCells() throws Exception {
-    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, BoundaryType.STANDARD);
-    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.STANDARD);
+    Grid<DummyState> grid = createGrid(6, 6, GridShape.TRI, BoundaryType.BASE);
+    RaycastImplementor<DummyState> impl = new RaycastImplementor<>(GridShape.TRI, BoundaryType.BASE);
     Map<Direction, Cell<DummyState>> result = impl.raycast(grid, 3, 2, new Direction(0, -1), 2);
 
     assertEquals(2, result.size());

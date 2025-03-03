@@ -30,7 +30,7 @@ public class LifeLogicTest {
   };
 
   private final NeighborCalculator<LifeState> dummyNeighborCalculator =
-      new NeighborCalculator<LifeState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      new NeighborCalculator<LifeState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
   };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

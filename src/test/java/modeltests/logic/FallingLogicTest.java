@@ -11,7 +11,6 @@ import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.FallingState;
-import cellsociety.model.data.states.LifeState;
 import cellsociety.model.logic.FallingLogic;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class FallingLogicTest {
   };
 
   private final NeighborCalculator<FallingState> dummyNeighborCalculator =
-      new NeighborCalculator<FallingState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      new NeighborCalculator<FallingState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

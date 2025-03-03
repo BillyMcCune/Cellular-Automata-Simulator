@@ -10,11 +10,9 @@ import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
-import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.data.states.SegregationState;
 import cellsociety.model.logic.SegregationLogic;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +30,7 @@ public class SegregationLogicTest {
   };
 
   private final NeighborCalculator<SegregationState> dummyNeighborCalculator =
-      new NeighborCalculator<SegregationState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      new NeighborCalculator<SegregationState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
       };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {

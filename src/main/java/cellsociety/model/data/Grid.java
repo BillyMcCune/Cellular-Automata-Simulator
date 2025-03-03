@@ -3,6 +3,9 @@ package cellsociety.model.data;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
@@ -35,11 +38,15 @@ public class Grid<T extends Enum<T> & State> {
    * @param rawGrid            a two-dimensional list of {@link CellRecord} representing the initial
    *                           states and properties of the cells
    * @param factory            the factory to create cells
-   * @param neighborCalculator the calculator method to assign neighbors
+   * @param shape              the grid shape for the grid
+   * @param neighborType       the type of neighbor assignment
+   * @param boundary           the type of edge implementation
    */
   public Grid(List<List<CellRecord>> rawGrid, CellFactory<T> factory,
-      NeighborCalculator<?> neighborCalculator) {
-    this.neighborCalculator = (NeighborCalculator<T>) neighborCalculator;
+      GridShape shape,
+      NeighborType neighborType,
+      BoundaryType boundary) {
+    this.neighborCalculator = new NeighborCalculator<T>(shape, neighborType, boundary);
     setGrid(rawGrid, factory);
   }
 

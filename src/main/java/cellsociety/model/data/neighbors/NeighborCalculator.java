@@ -1,5 +1,9 @@
 package cellsociety.model.data.neighbors;
 
+import cellsociety.model.config.ConfigInfo;
+import cellsociety.model.config.ConfigInfo.cellShapeType;
+import cellsociety.model.config.ConfigInfo.gridEdgeType;
+import cellsociety.model.config.ConfigInfo.neighborArrangementType;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.constants.BoundaryType;
@@ -13,12 +17,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * A BFS-based universal NeighborCalculator that:
- *   - Loads neighbor definitions from a CellNeighbor.properties file
- *   - Derives a single "canonical" set of neighbors for each shape+neighborSet (e.g. "TRI_MOORE")
- *   - For each newly visited cell, we re-check orientation (for hex or tri) to possibly flip offsets
+ * A unified NeighborCalculator that supports both BFS-based neighbor expansion and raycasting. Its
+ * behavior is configured via a ConfigInfo record.
  */
-public abstract class NeighborCalculator<T extends Enum<T> & State> {
+public class NeighborCalculator<T extends Enum<T> & State> {
 
   private static final String PROPERTY_FILE = "cellsociety/property/CellNeighbor.properties";
   private static final Map<String, List<Direction>> NEIGHBOR_MAP = loadNeighborProperties();
@@ -27,27 +29,41 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
   private NeighborType neighborType;
   private BoundaryType boundary;
   private int steps;
+  private RaycastImplementor<T> raycastImplementor;
 
   public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary) {
-    this.shape = shape;
-    this.neighborType = neighborType;
-    this.boundary = boundary;
-    this.steps = 1;
+    this(shape, neighborType, boundary, 1);
   }
-  public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary, int steps) {
+
+  public NeighborCalculator(GridShape shape, NeighborType neighborType, BoundaryType boundary,
+      int steps) {
     this.shape = shape;
     this.neighborType = neighborType;
     this.boundary = boundary;
     this.steps = steps;
+    this.raycastImplementor = new RaycastImplementor<>(this.shape, this.boundary);
   }
+
 
   public List<Direction> getDirections() {
     String baseKey = shape + "_" + neighborType;
     return NEIGHBOR_MAP.get(baseKey);
   }
 
+  public void setSteps(int steps) {
+    this.steps = steps;
+  }
+
   public void setShape(GridShape shape) {
     this.shape = shape;
+  }
+
+  public void setNeighborType(NeighborType neighborType) {
+    this.neighborType = neighborType;
+  }
+
+  public void setBoundary(BoundaryType boundary) {
+    this.boundary = boundary;
   }
 
   public GridShape getShape() {
@@ -58,28 +74,10 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return boundary;
   }
 
-  public void setNeighborType(NeighborType neighborType) {
-    this.neighborType = neighborType;
-  }
-
   public NeighborType getNeighborType() {
     return neighborType;
   }
 
-  public void setBoundary(BoundaryType boundary) {
-    this.boundary = boundary;
-  }
-
-  public void setSteps(int steps) {
-    this.steps = steps;
-  }
-
-  /**
-   * Returns all neighbors (accumulated from BFS expansions) up to distance 'steps' from (row,col)
-   * as a Map<Direction,Cell<T>>.
-   *   - Direction holds the final (dy, dx) offset from the original cell.
-   *   - BFS ensures each cell is unique in the result (because we mark visited).
-   */
   public Map<Direction, Cell<T>> getNeighbors(Grid<T> grid, int startRow, int startCol) {
     List<Map<Direction, Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, steps);
     Map<Direction, Cell<T>> allNeighbors = new HashMap<>();
@@ -102,83 +100,60 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     return Collections.emptyMap();
   }
 
-  /**
-   * Perform BFS expansions (up to maxDist) from the (startRow,startCol).
-   * Returns a List of Maps (index = distance), each map of Direction => Cell<T>.
-   */
-  private List<Map<Direction, Cell<T>>> bfsExpansions(Grid<T> grid, int startRow, int startCol, int maxDist) {
-    List<Map<Direction, Cell<T>>> expansionsByDist = initializeExpansionMaps(maxDist);
-
+  private List<Map<Direction, Cell<T>>> bfsExpansions(Grid<T> grid, int startRow, int startCol,
+      int maxDist) {
+    List<Map<Direction, Cell<T>>> expansions = new ArrayList<>();
+    for (int d = 0; d <= maxDist; d++) {
+      expansions.add(new HashMap<>());
+    }
     Queue<BFSNode> queue = new ArrayDeque<>();
     queue.add(new BFSNode(startRow, startCol, 0, new Direction(0, 0)));
-
     Set<String> visited = new HashSet<>();
     visited.add(startRow + "," + startCol);
 
     while (!queue.isEmpty()) {
       BFSNode node = queue.poll();
-      int r = node.row;
-      int c = node.col;
-      int dist = node.dist;
-
-      if (dist <= maxDist && dist > 0) {
-        expansionsByDist.get(dist).put(node.offsetFromOriginal, grid.getCell(r, c));
+      int r = node.row, c = node.col, d = node.dist;
+      if (d > 0 && d <= maxDist) {
+        expansions.get(d).put(node.offsetFromOriginal, grid.getCell(r, c));
       }
-
-      if (dist < maxDist) {
+      if (d < maxDist) {
         List<BFSNode> nextLayer = computeNextLayer(grid, node);
         for (BFSNode next : nextLayer) {
-          String keyPos = next.row + "," + next.col;
-          if (!visited.contains(keyPos)) {
-            visited.add(keyPos);
+          String key = next.row + "," + next.col;
+          if (!visited.contains(key)) {
+            visited.add(key);
             queue.add(next);
           }
         }
       }
     }
-    return expansionsByDist;
-  }
-
-  private List<Map<Direction, Cell<T>>> initializeExpansionMaps(int maxDist) {
-    List<Map<Direction, Cell<T>>> expansions = new ArrayList<>();
-    for (int d = 0; d <= maxDist; d++) {
-      expansions.add(new HashMap<>());
-    }
     return expansions;
   }
 
-  /**
-   * Given a BFSNode, compute all "next" BFSNodes for its neighbors, carrying forward
-   * the sum of offsets so that each BFSNode knows how far from original (row,col) it is.
-   */
   private List<BFSNode> computeNextLayer(Grid<T> grid, BFSNode node) {
     List<BFSNode> result = new ArrayList<>();
     String baseKey = shape + "_" + neighborType;
     List<Direction> baseOffsets = NEIGHBOR_MAP.get(baseKey);
     if (baseOffsets == null) {
-      throw new IllegalArgumentException("No offset set found for key: " + baseKey);
+      throw new IllegalArgumentException("No offsets found for key: " + baseKey);
     }
+    int r = node.row, c = node.col, d = node.dist;
+    Direction prevOffset = node.offsetFromOriginal;
+    int numRows = grid.getNumRows(), numCols = grid.getNumCols();
 
-    int r = node.row;
-    int c = node.col;
-    int dist = node.dist;
-    Direction nodeOffset = node.offsetFromOriginal;
-
-    boolean flipHex = (shape == GridShape.HEX && (c % 2 != 0));
-    boolean flipTri = (shape == GridShape.TRI && ((r + c) % 2 != 0));
-
-    int numRows = grid.getNumRows();
-    int numCols = grid.getNumCols();
-
+    boolean flip = false;
+    if (shape == GridShape.HEX) {
+      flip = (c % 2 != 0);
+    } else if (shape == GridShape.TRI) {
+      flip = ((r + c) % 2 != 0);
+    }
     for (Direction off : baseOffsets) {
-      int dy = off.dy();
-      int dx = off.dx();
-      if (flipHex || flipTri) {
+      int dy = off.dy(), dx = off.dx();
+      if (flip) {
         dy = -dy;
       }
-      int nr = r + dy;
-      int nc = c + dx;
-
+      int nr = r + dy, nc = c + dx;
       if (boundary == BoundaryType.TORUS) {
         nr = (nr + numRows) % numRows;
         nc = (nc + numCols) % numCols;
@@ -187,20 +162,47 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
           continue;
         }
       }
-
-      Direction newOffset = new Direction(nodeOffset.dy() + dy, nodeOffset.dx() + dx);
-      result.add(new BFSNode(nr, nc, dist + 1, newOffset));
+      Direction newOffset = new Direction(prevOffset.dy() + dy, prevOffset.dx() + dx);
+      result.add(new BFSNode(nr, nc, d + 1, newOffset));
     }
     return result;
   }
 
-  /**
-   * Load neighbor definitions from CellNeighbor.properties into a static map.
-   */
+  protected static class BFSNode {
+
+    int row, col, dist;
+    Direction offsetFromOriginal;
+
+    BFSNode(int r, int c, int d, Direction offset) {
+      row = r;
+      col = c;
+      dist = d;
+      offsetFromOriginal = offset;
+    }
+  }
+
+  public Map<Direction, Cell<T>> raycastDirection(Grid<T> grid, int startRow, int startCol,
+      Direction rawDir, int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    return raycastImplementor.raycast(grid, startRow, startCol, rawDir, steps);
+  }
+
+  public Map<Direction, Map<Direction, Cell<T>>> raycastAllDirections(Grid<T> grid, int startRow,
+      int startCol, int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    List<Direction> defaultDirs = raycastImplementor.getDefaultRawDirections(startRow, startCol);
+    Map<Direction, Map<Direction, Cell<T>>> results = new HashMap<>();
+    for (Direction d : defaultDirs) {
+      results.put(d, raycastImplementor.raycast(grid, startRow, startCol, d, steps));
+    }
+    return results;
+  }
+
   private static Map<String, List<Direction>> loadNeighborProperties() {
     Map<String, List<Direction>> map = new HashMap<>();
     Properties props = new Properties();
-    try (InputStream is = NeighborCalculator.class.getClassLoader().getResourceAsStream(PROPERTY_FILE)) {
+    try (InputStream is = NeighborCalculator.class.getClassLoader()
+        .getResourceAsStream(PROPERTY_FILE)) {
       if (is == null) {
         throw new IOException("Could not find " + PROPERTY_FILE + " in resources");
       }
@@ -211,7 +213,7 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
         map.put(key.toUpperCase().trim(), dirList);
       }
     } catch (IOException e) {
-      throw new RuntimeException("Failed to load neighbors from file: " + PROPERTY_FILE, e);
+      throw new RuntimeException("Failed to load neighbors from " + PROPERTY_FILE, e);
     }
     return map;
   }
@@ -226,38 +228,5 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
       dirs.add(new Direction(dy, dx));
     }
     return dirs;
-  }
-
-  /**
-   * Our BFS node now  tracks the cumulative offsetFromOriginal to help
-   * identify how far (row/col) the node is from the start cell.
-   */
-  protected static class BFSNode {
-    int row, col, dist;
-    Direction offsetFromOriginal;
-
-    BFSNode(int r, int c, int d, Direction offset) {
-      row = r;
-      col = c;
-      dist = d;
-      offsetFromOriginal = offset;
-    }
-  }
-
-  public Map<Direction, Cell<T>> raycastDirection(Grid<T> grid, int startRow, int startCol, Direction rawDir, int steps)
-      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-    RaycastImplementor<T> helper = new RaycastImplementor<>(shape, boundary);
-    return helper.raycast(grid, startRow, startCol, rawDir, steps);
-  }
-  public Map<Direction, Map<Direction, Cell<T>>> raycastAllDirections(Grid<T> grid, int startRow, int startCol, int steps)
-      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-    RaycastImplementor<T> helper = new RaycastImplementor<>(shape, boundary);
-    List<Direction> defaultDirs = helper.getDefaultRawDirections(startRow, startCol);
-    Map<Direction, Map<Direction, Cell<T>>> results = new HashMap<>();
-    for (Direction d : defaultDirs) {
-      Map<Direction, Cell<T>> ray = helper.raycast(grid, startRow, startCol, d, steps);
-      results.put(d, ray);
-    }
-    return results;
   }
 }

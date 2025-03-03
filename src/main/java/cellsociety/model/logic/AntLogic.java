@@ -3,7 +3,6 @@ package cellsociety.model.logic;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.neighbors.AntNeighborCalculator;
 import cellsociety.model.data.states.AntState;
 import cellsociety.model.data.neighbors.Direction;
 import java.util.ArrayList;

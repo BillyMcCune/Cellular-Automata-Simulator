@@ -6,6 +6,9 @@ import cellsociety.model.config.ConfigInfo.SimulationType;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
 import java.lang.reflect.Constructor;
@@ -30,7 +33,6 @@ public class ModelInitializer {
 
   private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
   private static final String STATE_PACKAGE = "cellsociety.model.data.states";
-  private static final String NEIGHBOR_PACKAGE = "cellsociety.model.data.neighbors";
 
   /**
    * Constructs a new ModelInitializer with the given configuration information.
@@ -55,24 +57,23 @@ public class ModelInitializer {
    */
   public Logic<?> initializeModel() throws ClassNotFoundException, NoSuchMethodException,
       InvocationTargetException, InstantiationException, IllegalAccessException {
-    SimulationType type = configInfo.myType();
-    String simulationName = formatSimulationName(type);
+    String name = getSimulationName();
 
-    // Dynamically load the Logic, State, and NeighborCalculator classes.
-    Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + simulationName + "Logic");
-    Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + simulationName + "State");
-    Class<?> neighborClass = Class.forName(NEIGHBOR_PACKAGE + "." + simulationName + "NeighborCalculator");
+    // Dynamically load the Logic and State classes.
+    Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
+    Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
 
-    // Instantiate the cell factory using the state class.
+    // Dynamically create cell factory, grid, and logic.
     Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
     cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
 
-    // Instantiate the neighbor calculator.
-    neighborCalculator = (NeighborCalculator<?>) neighborClass.getDeclaredConstructor().newInstance();
+    grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(), getBoundaryType());
+    gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
+        .newInstance(grid, configInfo.myParameters());
 
     // Create a deep copy of the grid from the configuration.
     List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
-    grid = new Grid<>(gridCopy, cellFactory, neighborCalculator);
+    grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getBoundaryType());
 
     // Instantiate the game logic using the grid and parameter record.
     gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
@@ -105,6 +106,23 @@ public class ModelInitializer {
   private String formatSimulationName(SimulationType type) {
     String name = type.name().toLowerCase();
     return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+  }
+
+  private GridShape getGridShape() {
+    return GridShape.valueOf(configInfo.myCellShapeType().name());
+  }
+
+  private NeighborType getNeighborType() {
+    return NeighborType.valueOf(configInfo.myneighborArrangementType().name());
+  }
+
+  private BoundaryType getBoundaryType() {
+    return BoundaryType.valueOf(configInfo.myGridEdgeType().name());
+  }
+
+  private String getSimulationName() {
+    SimulationType type = configInfo.myType();
+    return type.name().charAt(0) + type.name().substring(1).toLowerCase();
   }
 }
 

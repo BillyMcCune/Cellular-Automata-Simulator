@@ -56,21 +56,21 @@ public record ConfigInfo(
    * Enumeration of supported cell shape types.
    */
   public enum cellShapeType {
-    SQUARE, TRIANGLE, HEXAGON
+    SQUARE, TRI, HEX
   }
 
   /**
    * Enumeration of the supported grid Edge Type
    */
   public enum gridEdgeType {
-    BASE, TOROIDAL, MIRROR
+    BASE, TORUS, MIRROR
   }
 
   /**
    * Enumeration of the supported neighbor Arrangement Types
    */
   public enum neighborArrangementType {
-    MOORE, NEUMANN, EXTENDEDMOORE, CUSTOM
+    MOORE, NEUMANN
   }
 
 }

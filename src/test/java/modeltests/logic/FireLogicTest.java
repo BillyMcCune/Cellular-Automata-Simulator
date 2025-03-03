@@ -9,9 +9,7 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.FireNeighborCalculator;
 import cellsociety.model.data.neighbors.NeighborCalculator;
-import cellsociety.model.data.states.FallingState;
 import cellsociety.model.data.states.FireState;
 import cellsociety.model.logic.FireLogic;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ public class FireLogicTest {
   };
 
   private final NeighborCalculator<FireState> dummyNeighborCalculator =
-      new NeighborCalculator<FireState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      new NeighborCalculator<FireState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
       };
 
 

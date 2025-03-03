@@ -68,7 +68,7 @@ public class ConfigAPITest {
    */
   public static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
     public DummyNeighborCalculator() {
-      super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
+      super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE);
     }
   }
 

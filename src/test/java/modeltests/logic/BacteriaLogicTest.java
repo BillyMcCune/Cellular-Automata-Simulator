@@ -5,15 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
-import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.BacteriaState;
-import cellsociety.model.data.states.LifeState;
 import cellsociety.model.logic.BacteriaLogic;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +27,7 @@ public class BacteriaLogicTest {
   };
 
   private final NeighborCalculator<BacteriaState> dummyNeighborCalculator =
-      new NeighborCalculator<BacteriaState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      new NeighborCalculator<BacteriaState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
       };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {

@@ -10,7 +10,6 @@ import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
-import cellsociety.model.data.states.LifeState;
 import cellsociety.model.data.states.PercolationState;
 import cellsociety.model.logic.PercolationLogic;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class PercolationLogicTest {
   };
 
   private final NeighborCalculator<PercolationState> dummyNeighborCalculator =
-      new NeighborCalculator<PercolationState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      new NeighborCalculator<PercolationState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.BASE) {
       };
 
   private List<List<Integer>> createRawGrid(int rows, int cols, int defaultValue) {
