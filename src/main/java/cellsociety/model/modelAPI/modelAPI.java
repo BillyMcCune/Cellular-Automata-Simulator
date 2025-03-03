@@ -7,6 +7,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
 import java.io.File;
@@ -41,7 +44,7 @@ public class modelAPI {
   private Grid<?> grid;
   private CellFactory<?> cellFactory;
   private Logic<?> gameLogic;
-  private NeighborCalculator<?> neighborCalculator;
+  private NeighborCalculator<?> myNeighborCalculator;
 
   // Instance variables
   private boolean isLoaded;
@@ -112,7 +115,7 @@ public class modelAPI {
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
-      grid = new Grid<>(gridCopy, cellFactory, neighborCalculator);
+      grid = new Grid<>(gridCopy, cellFactory, myNeighborCalculator);
       //System.out.println(configInfo.myGrid());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
@@ -390,9 +393,9 @@ public class modelAPI {
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
 
       Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
-      neighborCalculator = (NeighborCalculator<?>) neighborObject;
+      myNeighborCalculator = (NeighborCalculator<?>) neighborObject;
 
-      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
+      grid = new Grid<>(configInfo.myGrid(), cellFactory, myNeighborCalculator);
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());
 
@@ -584,6 +587,7 @@ public class modelAPI {
         }
       }
       simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
+      myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangementProperty));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
       }
@@ -603,6 +607,7 @@ public class modelAPI {
         }
       }
       simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
+      myNeighborCalculator.setBoundary(BoundaryType.valueOf(edgePolicy));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
       }
@@ -622,6 +627,8 @@ public class modelAPI {
         }
       }
       simulationStyle.setProperty(cellShapeProperty, cellShape);
+     cellShape =  cellShape.toUpperCase();
+      myNeighborCalculator.setShape(GridShape.valueOf(cellShape));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
       }
