@@ -40,18 +40,14 @@ public class ModelApi {
   private ParameterRecord myParameterRecord;
   private ConfigInfo configInfo;
 
+  ParameterManager myParameterManager;
+  CellColorManager myCellColorManager;
+
   // Model
   private Grid<?> grid;
   private CellFactory<?> cellFactory;
   private Logic<?> gameLogic;
   private NeighborCalculator<?> myNeighborCalculator;
-
-  // Instance variables
-  private boolean isLoaded;
-
-  //crazy color stuff:
-  private static final String PROPERTY_TO_DETECT = "coloredId";
-  private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
 
   //Style Property names:
   private final String gridOutlineProperty = "GRIDOUTLINE.PREFERENCE";
@@ -60,35 +56,12 @@ public class ModelApi {
   private final String cellShapeProperty = "CELLSHAPE.PREFERENCE";
 
 
-  // Load the color mapping from the properties file once (assumes the file is in your resources folder).
-  private static final Properties COLOR_MAPPING = new Properties();
-
-  static {
-    try (InputStream in = ModelApi.class.getResourceAsStream(
-        "/cellsociety/property/CellColor.properties")) {
-      COLOR_MAPPING.load(in);
-    } catch (IOException ex) {
-      throw new RuntimeException("error-getting-color-mapping");
-    }
-  }
-
   public ModelApi() {
   }
 
   public void setConfigInfo(ConfigInfo configInfo) {
     this.configInfo = configInfo;
     this.myParameterRecord = configInfo.myParameters();
-  }
-
-  private static final Properties USER_STYLE_PREFERENCES = new Properties();
-
-  static {
-    try (InputStream in = ModelApi.class.getResourceAsStream(
-        "/cellsociety/property/SimulationStyle.properties")) {
-      USER_STYLE_PREFERENCES.load(in);
-    } catch (IOException ex) {
-      throw new RuntimeException("error-getting-user-defined-color-mapping");
-    }
   }
 
 
@@ -100,6 +73,7 @@ public class ModelApi {
       return;
     }
     gameLogic.update();
+    myCellColorManager.setGrid(grid);
   }
 
   /**
@@ -124,6 +98,7 @@ public class ModelApi {
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
+      myCellColorManager.setGrid(grid);
     } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
              InstantiationException | IllegalAccessException e) {
       throw new ClassNotFoundException("error-resetGrid", e);
@@ -232,98 +207,10 @@ public class ModelApi {
    * values (if nonzero) have an associated color.
    */
   public String getCellColor(int row, int col, boolean wantDefaultColor) {
-    if (col >= grid.getNumCols() || row >= grid.getNumRows()) {
-      return null;
+    if (myCellColorManager == null) {
+      myCellColorManager = new CellColorManager(grid);
     }
-    Cell<?> cell = grid.getCell(row, col);
-    String stateColor = getStateColor(cell, wantDefaultColor);
-    if (!"WHITE".equalsIgnoreCase(stateColor)) {
-      return stateColor;
-    }
-    String propertyColor = getPropertyColor(cell);
-    return propertyColor != null ? propertyColor : stateColor;
-  }
-
-  /**
-   * Determines the color from the cell's current state. It uses the cell's state (for example,
-   * "AntState.EMPTY" or "FireState.BURNING") as a key in the properties file.
-   */
-  private String getStateColor(Cell<?> cell, boolean wantDefaultColor) {
-    // Get the state value (e.g., "TREE" or "BURNING")
-    String stateValue = cell.getCurrentState().toString();
-    // Get the simple name of the cell state class (e.g., "FireState")
-    String statePrefix = cell.getCurrentState().getClass().getSimpleName();
-    // Construct the full key (e.g., "FireState.TREE")
-    String key = statePrefix + "." + stateValue;
-    // If the mapping is not found, default to "WHITE"
-    if (!wantDefaultColor) {
-      return USER_STYLE_PREFERENCES.getProperty(key, "WHITE");
-    }
-    return COLOR_MAPPING.getProperty(key, "WHITE");
-  }
-
-  /**
-   * Checks the cell's properties for a non-white color override.
-   * <p>
-   * First, it checks if the cell has the "coloredId" property. If so, it uses the id value to
-   * generate a unique color. If not, it iterates through the remaining properties using a prefix-
-   * based lookup.
-   *
-   * @param cell the cell whose properties are checked.
-   * @return the first non-white color found from the properties; returns null if none exists.
-   */
-  private String getPropertyColor(Cell<?> cell) {
-    Map<String, Double> properties = cell.getAllProperties();
-
-    // Check if the special "coloredId" property exists.
-    if (properties.containsKey(PROPERTY_TO_DETECT) && properties.get(PROPERTY_TO_DETECT) != 0) {
-      int id = properties.get(PROPERTY_TO_DETECT).intValue();
-      // Convert the generated Color to a hex string.
-      return uniqueColorGenerator(id);
-    }
-
-    // Otherwise, use the state's prefix to check for any other property-based color.
-    String stateString = cell.getCurrentState().toString();
-    String prefix =
-        stateString.contains(".") ? stateString.substring(0, stateString.indexOf('.')) : "";
-    for (Map.Entry<String, Double> entry : properties.entrySet()) {
-      if (entry.getValue() != 0) {
-        // Construct key like "AntState.searchingEntities"
-        String propertyKey = prefix + "." + entry.getKey();
-        String color = COLOR_MAPPING.getProperty(propertyKey);
-        if (color != null && !"WHITE".equalsIgnoreCase(color)) {
-          return color;
-        }
-      }
-    }
-    return null;
-  }
-
-
-  /**
-   * Given a random id number, generates a random color. Uses a large prime number to ensure
-   * scrambling and very few overlapping colors, while ensuring an id is the same color every single
-   * time through simulations.
-   *
-   * @param id The id number.
-   * @return A random Color based off of the id.
-   */
-  public static String uniqueColorGenerator(int id) {
-    long scrambled = (GOLDEN_RATIO_HASH_MULTIPLIER * id) & 0xffffffffL;
-
-    // Convert to HSB
-    float hue = (scrambled % 360) / 360f;
-    float sat = 0.5f + ((scrambled >> 8) % 50) / 100f;
-    float bright = 0.5f + ((scrambled >> 16) % 50) / 100f;
-
-    // Convert to RGB
-    int rgb = java.awt.Color.HSBtoRGB(hue, sat, bright);
-    int r = (rgb >> 16) & 0xFF;
-    int g = (rgb >> 8) & 0xFF;
-    int b = rgb & 0xFF;
-
-    // Return the color as a hex string
-    return String.format("#%02X%02X%02X", r, g, b);
+    return myCellColorManager.getCellColor(row, col, wantDefaultColor);
   }
 
 
@@ -340,33 +227,8 @@ public class ModelApi {
    */
   public void resetParameters()
       throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    if (gameLogic == null) {
-      throw new IllegalStateException("Game logic is not initialized.");
-    }
-    Class<?> logicClass = gameLogic.getClass();
-    for (Method setterMethod : logicClass.getMethods()) {
-      String methodName = setterMethod.getName();
-      // Only consider public setter methods that start with "set" and take one parameter.
-      if (!methodName.startsWith("set") || setterMethod.getParameterCount() != 1) {
-        continue;
-      }
-      // Derive the parameter name from the setter method.
-      String paramName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
-
-      // Retrieve the corresponding getter method.
-      Method getterMethod = logicClass.getMethod("get" + methodName.substring(3));
-      Class<?> paramType = setterMethod.getParameterTypes()[0];
-
-      if (paramType == double.class) {
-        double defaultValue = (double) getterMethod.invoke(gameLogic);
-        // Update the parameter record for double parameters.
-        myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
-      } else if (paramType == String.class) {
-        String defaultValue = (String) getterMethod.invoke(gameLogic);
-        // Update the parameter record for string parameters.
-        myParameterRecord.myStringParameters().put(paramName, defaultValue);
-      }
-    }
+    myParameterManager = new ParameterManager(gameLogic,myParameterRecord);
+    myParameterManager.resetParameters();
   }
 
   /**
@@ -398,6 +260,10 @@ public class ModelApi {
 
       // Reset simulation parameters using the new backend logic.
       resetParameters();
+      if(myCellColorManager == null) {
+        myCellColorManager = new CellColorManager(grid);
+      }
+      myCellColorManager.setGrid(grid);
 
     } catch (ClassNotFoundException | InvocationTargetException | InstantiationException |
              IllegalAccessException e) {
@@ -457,21 +323,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the corresponding setter is not found.
    */
   public Consumer<Double> getDoubleParameterConsumer(String paramName) {
-    String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    try {
-      Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
-      return newVal -> {
-        try {
-          setterMethod.invoke(gameLogic, newVal);
-        } catch (InvocationTargetException e) {
-          throw new RuntimeException("error-invalidParameterMessage");
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException("error-setParameter");
-        }
-      };
-    } catch (NoSuchMethodException e) {
-      throw new NoSuchElementException("error-invalidParameterMessage");
+    if (myParameterManager == null) {
+      myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
     }
+    return myParameterManager.getDoubleParameterConsumer(paramName);
   }
 
   /**
@@ -482,22 +337,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the corresponding setter is not found.
    */
   public Consumer<String> getStringParameterConsumer(String paramName) {
-    String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    try {
-      Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
-      return newVal -> {
-        try {
-          setterMethod.invoke(gameLogic, newVal);
-
-        } catch (InvocationTargetException e) {
-          throw new RuntimeException("error-invalidParameterMessage");
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException("error-setParameter");
-        }
-      };
-    } catch (NoSuchMethodException e) {
-      throw new NoSuchElementException("error-invalidParameterMessage");
+    if (myParameterManager == null) {
+      myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
     }
+    return myParameterManager.getStringParameterConsumer(paramName);
   }
 
   /**
@@ -511,15 +354,10 @@ public class ModelApi {
    */
   public double[] getParameterBounds(String paramName)
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    if (gameLogic == null) {
-      throw new IllegalStateException("Game logic is not initialized.");
+    if (myParameterManager == null) {
+      myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
     }
-    Class<?> logicClass = gameLogic.getClass();
-    Method minMethod = logicClass.getMethod("getMinParam", String.class);
-    Method maxMethod = logicClass.getMethod("getMaxParam", String.class);
-    double min = (double) minMethod.invoke(gameLogic, paramName);
-    double max = (double) maxMethod.invoke(gameLogic, paramName);
-    return new double[]{min, max};
+    return myParameterManager.getParameterBounds(paramName);
   }
 
   /**
@@ -530,17 +368,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {
-    Map<String, String> possibleStates = new HashMap<>();
-    try (InputStream input = new FileInputStream("CellColor.properties")) {
-      Properties defaultColors = new Properties();
-      defaultColors.load(input);
-      for (String key : defaultColors.stringPropertyNames()) {
-        possibleStates.put(key, defaultColors.getProperty(key));
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getCellTypesAndDefaultColors");
+    if (myCellColorManager== null) {
+      myCellColorManager = new CellColorManager(grid);
     }
-    return possibleStates;
+    return myCellColorManager.getCellTypesAndDefaultColors(SimulationType);
   }
 
   /**
@@ -551,21 +382,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the color preference cannot be updated due to an I/O error
    */
   public void setNewColorPreference(String stateName, String newColor) {
-    try {
-      Properties simulationStyle = new Properties();
-      File file = new File("SimulationStyle.properties");
-      if (file.exists()) {
-        try (InputStream input = new FileInputStream(file)) {
-          simulationStyle.load(input);
-        }
-      }
-      simulationStyle.setProperty(stateName, newColor);
-      try (OutputStream output = new FileOutputStream(file)) {
-        simulationStyle.store(output, "User-defined cell colors");
-      }
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-setNewColorPreference");
+    if (myCellColorManager== null) {
+      myCellColorManager = new CellColorManager(grid);
     }
+    myCellColorManager.setNewColorPreference(stateName, newColor);
   }
 
   /**
@@ -575,13 +395,10 @@ public class ModelApi {
    * @return the color value as a hex string, or the default color if not set
    */
   public String getColorFromPreferences(String stateName) {
-    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
-      Properties simulationStyle = new Properties();
-      simulationStyle.load(input);
-      return simulationStyle.getProperty(stateName, getDefaultColorByState(stateName));
-    } catch (IOException e) {
-      return getDefaultColorByState(stateName);
+    if (myCellColorManager == null) {
+      myCellColorManager = new CellColorManager(grid);
     }
+    return myCellColorManager.getColorFromPreferences(stateName);
   }
 
   /**
@@ -592,13 +409,10 @@ public class ModelApi {
    * @throws NoSuchElementException if the properties file cannot be read
    */
   public String getDefaultColorByState(String stateName) {
-    try (InputStream input = new FileInputStream("CellColor.properties")) {
-      Properties defaultColors = new Properties();
-      defaultColors.load(input);
-      return defaultColors.getProperty(stateName, "WHITE"); // fallback to WHITE
-    } catch (IOException e) {
-      throw new NoSuchElementException("error-getDefaultColorByState");
+    if (myCellColorManager == null) {
+      myCellColorManager = new CellColorManager(grid);
     }
+    return myCellColorManager.getDefaultColorByState(stateName);
   }
 
   /**
