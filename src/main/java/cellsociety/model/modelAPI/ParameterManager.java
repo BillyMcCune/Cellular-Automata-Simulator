@@ -18,17 +18,17 @@ import java.util.function.Consumer;
 public class ParameterManager {
 
   private final Logic<?> gameLogic;
-  private final ParameterRecord parameterRecord;
+  private final ParameterRecord myParameterRecord;
 
   /**
    * Constructs a new ParameterManager with the specified game logic and parameter record.
    *
    * @param gameLogic       the game logic instance used by the simulation
-   * @param parameterRecord the parameter record containing simulation parameters
+   * @param myParameterRecord the parameter record containing simulation parameters
    */
-  public ParameterManager(Logic<?> gameLogic, ParameterRecord parameterRecord) {
+  public ParameterManager(Logic<?> gameLogic, ParameterRecord myParameterRecord) {
     this.gameLogic = gameLogic;
-    this.parameterRecord = parameterRecord;
+    this.myParameterRecord = myParameterRecord;
   }
 
   /**
@@ -62,10 +62,10 @@ public class ParameterManager {
 
       if (paramType == double.class) {
         double defaultValue = (double) getterMethod.invoke(gameLogic);
-        parameterRecord.myDoubleParameters().put(paramName, defaultValue);
+        myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
       } else if (paramType == String.class) {
         String defaultValue = (String) getterMethod.invoke(gameLogic);
-        parameterRecord.myStringParameters().put(paramName, defaultValue);
+        myParameterRecord.myStringParameters().put(paramName, defaultValue);
       }
     }
   }

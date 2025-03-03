@@ -12,6 +12,7 @@ import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class ModelApi {
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
-      grid = new Grid<>(gridCopy, cellFactory, getDefaultGridShape(), getDefaultNeighborType(), getDefaultEdgeType());
+      grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getBoundaryType());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -111,60 +112,6 @@ public class ModelApi {
       return myParameterRecord.myDoubleParameters();
     } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
-    }
-  }
-
-  /**
-   * Sets a double parameter in the simulation. This method updates the parameter record and uses
-   * reflection to invoke the corresponding setter on the game logic.
-   *
-   * @param paramName the parameter name (e.g., "probCatch")
-   * @param value     the new double value
-   * @throws IllegalStateException if the game logic has not been initialized.
-   */
-  public void setDoubleParameter(String paramName, Double value) {
-    if (gameLogic == null) {
-      throw new IllegalStateException("Game logic has not been initialized.");
-    }
-    if (myParameterRecord == null) {
-      myParameterRecord = configInfo.myParameters();
-    }
-
-    myParameterRecord.myDoubleParameters().put(paramName, value);
-    String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    try {
-      // Find the setter method that accepts a double.
-      Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
-      // Invoke the setter on the game logic.
-      setterMethod.invoke(gameLogic, value);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      throw new NoSuchElementException(e);
-    }
-  }
-
-  /**
-   * Sets a string parameter in the simulation. This method updates the parameter record and uses
-   * reflection to invoke the corresponding setter on the game logic.
-   *
-   * @param paramName the parameter name (e.g., "probCatch")
-   * @param value     the new string value
-   * @throws NumberFormatException if there is an error related to a null configuration.
-   */
-  public void setStringParameter(String paramName, String value) {
-    if (myParameterRecord == null) {
-      myParameterRecord = configInfo.myParameters();
-    }
-    // Update the parameter record.
-    myParameterRecord.myStringParameters().put(paramName, value);
-
-    // Construct the setter method name (e.g., "setLabel" for "label").
-    String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    try {
-      Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
-      setterMethod.invoke(gameLogic, value);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
-             NullPointerException e) {
-      throw new NumberFormatException("error-configInfo-NULL");
     }
   }
 
@@ -223,9 +170,20 @@ public class ModelApi {
    */
   public void resetModel() throws NoSuchMethodException {
     try {
-      ModelHandler modelHandler = new ModelHandler(configInfo);
-      modelHandler.resetModel();
-      resetParameters();
+      String name = getSimulationName();
+
+      // Dynamically load the Logic and State classes.
+      Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
+      Class<?> stateClass = Class.forName(STATE_PACKAGE + "." + name + "State");
+
+      // Dynamically create cell factory, grid, and logic.
+      Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
+      cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
+
+      grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(),
+          getBoundaryType());
+      gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
+          .newInstance(grid, configInfo.myParameters());
       if (myCellColorManager == null) {
         myCellColorManager = new CellColorManager(grid);
       }
@@ -474,15 +432,15 @@ public class ModelApi {
     return myStyleManager.getPossibleCellShapes();
   }
 
-  private GridShape getDefaultGridShape() {
+  private GridShape getGridShape() {
     return GridShape.valueOf(configInfo.myCellShapeType().name());
   }
 
-  private NeighborType getDefaultNeighborType() {
+  private NeighborType getNeighborType() {
     return NeighborType.valueOf(configInfo.myneighborArrangementType().name());
   }
 
-  private EdgeType getDefaultEdgeType() {
+  private EdgeType getBoundaryType() {
     return EdgeType.valueOf(configInfo.myGridEdgeType().name());
   }
 
