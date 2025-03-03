@@ -37,7 +37,6 @@ public class ConfigWriter {
   private ConfigInfo myConfigInfo;
   private Document myCurrentXmlDocument;
   private String LastFileSaved;
-  private String errorMessage;
 
   public ConfigWriter() {
   }

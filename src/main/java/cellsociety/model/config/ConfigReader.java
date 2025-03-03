@@ -36,7 +36,6 @@ public class ConfigReader {
   private static final String DATA_FILE_FOLDER = "/src/main/resources/cellsociety/configdata";
   private static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
   private final Map<String, File> fileMap = new HashMap<>();
-  private String errorMessage;
 
   /**
    * Loads and parses the configuration file data.
@@ -67,7 +66,7 @@ public class ConfigReader {
    * @throws SAXException                 if a SAX parsing error occurs.
    * @throws IOException                  if an I/O error occurs.
    */
-  public ConfigInfo getConfigInformation(File xmlFile, String fileName)
+  private ConfigInfo getConfigInformation(File xmlFile, String fileName)
       throws ParserConfigurationException, SAXException, IOException {
 
     if (xmlFile.length() == 0) {
@@ -218,7 +217,7 @@ public class ConfigReader {
   /**
    * Creates a mapping from file names to configuration files found in the designated folder.
    */
-  public void createListOfConfigFiles() {
+  private void createListOfConfigFiles() {
     try {
       File folder = new File(System.getProperty("user.dir") + DATA_FILE_FOLDER);
       File[] fileList = folder.listFiles();
