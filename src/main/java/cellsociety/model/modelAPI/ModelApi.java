@@ -14,7 +14,6 @@ import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +78,8 @@ public class ModelApi {
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
-      grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getBoundaryType());
+      grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getEdgeType());
+      myNeighborCalculator = grid.getNeighborCalculator();
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -181,7 +181,8 @@ public class ModelApi {
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
 
       grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(),
-          getBoundaryType());
+          getEdgeType());
+      myNeighborCalculator = grid.getNeighborCalculator();
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());
       if (myCellColorManager == null) {
@@ -440,7 +441,7 @@ public class ModelApi {
     return NeighborType.valueOf(configInfo.myneighborArrangementType().name());
   }
 
-  private EdgeType getBoundaryType() {
+  private EdgeType getEdgeType() {
     return EdgeType.valueOf(configInfo.myGridEdgeType().name());
   }
 
