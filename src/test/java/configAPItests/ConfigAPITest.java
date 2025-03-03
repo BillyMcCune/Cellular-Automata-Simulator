@@ -11,14 +11,13 @@ import cellsociety.model.config.ConfigInfo.neighborArrangementType;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.data.Grid;
-import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.constants.BoundaryType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
-import cellsociety.model.modelAPI.modelAPI;
+import cellsociety.model.modelAPI.ModelApi;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -67,7 +66,7 @@ public class ConfigAPITest {
   /**
    * DummyNeighborCalculator provides neighbor directions.
    */
-  private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
+  public static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
     public DummyNeighborCalculator() {
       super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
     }
@@ -124,14 +123,14 @@ public class ConfigAPITest {
    * for getCellStates() and getCellProperties().
    */
   @Nested
-  public class DummyModelAPI extends modelAPI {
+  public class DummyModelApi extends ModelApi {
 
     public ConfigInfo configInfoDummy; // For verification
     private Grid<TestState> grid;
     private Map<String, Double> doubleParams;
     private Map<String, String> stringParams;
 
-    public DummyModelAPI() {
+    public DummyModelApi() {
       // Create a dummy raw grid for a 2x2 grid.
       List<List<CellRecord>> raw = new ArrayList<>();
       for (int i = 0; i < 2; i++) {
@@ -368,7 +367,7 @@ public class ConfigAPITest {
       TestableConfigAPI api = new TestableConfigAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
-      DummyModelAPI dummyModel = new DummyModelAPI();
+      DummyModelApi dummyModel = new DummyModelApi();
       api.setModelAPI(dummyModel); // Set modelAPI via setter
       String filePath = "dummy/path/config.xml";
       String savedFile = api.saveSimulation(filePath);
@@ -380,7 +379,7 @@ public class ConfigAPITest {
     public void testLoadSimulation_Success()
         throws ParserConfigurationException, IOException, SAXException {
       configAPI api = new configAPI();
-      DummyModelAPI dummyModel = new DummyModelAPI();
+      DummyModelApi dummyModel = new DummyModelApi();
       api.setModelAPI(dummyModel); // Set modelAPI before loading
       // Inject DummyConfigReader so that readConfig returns a dummy config instead of reading a file.
       setPrivateField(api, "configReader", new DummyConfigReader());

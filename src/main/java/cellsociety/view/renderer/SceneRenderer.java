@@ -1,22 +1,21 @@
 package cellsociety.view.renderer;
 
 import cellsociety.view.renderer.drawer.GridDrawer;
-import cellsociety.view.renderer.drawer.HexagonGridDrawer;
 import cellsociety.view.renderer.drawer.SquareGridDrawer;
-import cellsociety.view.renderer.drawer.TriangleGridDrawer;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
 /**
- * The SceneRenderer class is responsible for drawing the grid and cells on screen.
- * It now relies on the model (modelAPI) to determine the appropriate cell color.
+ * The SceneRenderer class is responsible for drawing the grid and cells on screen. It now relies on
+ * the model (modelAPI) to determine the appropriate cell color.
  */
 public class SceneRenderer {
 
   // Private: configure which GridDrawer to use (this can be made configurable if needed)
-  private static Class<? extends GridDrawer> gridDrawerClass = SquareGridDrawer.class;
+  // TODO: make this not static so the multi-simulation can work properly
+  private static final Class<? extends GridDrawer> gridDrawerClass = SquareGridDrawer.class;
 
   /**
    * Draw the grid on the given pane with the given number of rows and columns.
@@ -30,9 +29,9 @@ public class SceneRenderer {
   }
 
   /**
-   * Draws a cell at the given position in the grid using the provided color.
-   * This method assumes that the caller (for example, modelAPI) has determined the
-   * appropriate color for the cell (e.g., via getCellColor).
+   * Draws a cell at the given position in the grid using the provided color. This method assumes
+   * that the caller (for example, modelAPI) has determined the appropriate color for the cell
+   * (e.g., via getCellColor).
    *
    * @param grid      The pane representing the grid.
    * @param rowCount  The number of columns in the grid (used to calculate index in a flat list).

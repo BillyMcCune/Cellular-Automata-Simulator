@@ -198,31 +198,6 @@
   -fx-padding: 10px;
 }
 
-.splash-label {
-  -fx-font-size: 14px;
-  -fx-text-fill: linear-gradient(to bottom, #e8e8e8, #b3b3b3); /* Subtle gradient with light gray */
-  -fx-alignment: center;
-}
-
-.splash-combo-box {
-  -fx-background-color: #2a2a2a; /* Dark base background */
-  -fx-border-color: #3f2a5b; /* Deep purple border */
-  -fx-border-radius: 5px;
-}
-
-.splash-combo-box .button {
-  -fx-background-color: #2a2a2a;
-  -fx-border-color: #3f2a5b;
-}
-
-.splash-combo-box .list-cell {
-  -fx-background-color: #2a2a2a;
-  -fx-text-fill: #ffffff;  /* Ensures text in the dropdown list is white */
-}
-
-.splash-combo-box .list-cell:hover {
-  -fx-background-color: #7f4c5e; /* Deep red for hover */
-}
 
 .splash-start-button {
   -fx-background-color: linear-gradient(to bottom, #5b3f7f, #3e2a5b); /* Deep purple gradient */
@@ -244,6 +219,38 @@
   -fx-scale-x: 0.98;
   -fx-scale-y: 0.98;  /* Scaling effect on press */
 }
+
+/* ==========================
+   DropDown Selector
+   ========================== */
+
+.drop-down-label {
+  -fx-font-size: 14px;
+  -fx-text-fill: linear-gradient(to bottom, #e8e8e8, #b3b3b3); /* Subtle gradient with light gray */
+  -fx-alignment: center;
+  -fx-font-weight: bold;
+}
+
+.drop-down-box {
+  -fx-background-color: #2a2a2a; /* Dark base background */
+  -fx-border-color: #3f2a5b; /* Deep purple border */
+  -fx-border-radius: 5px;
+}
+
+.drop-down-box .button {
+  -fx-background-color: #2a2a2a;
+  -fx-border-color: #3f2a5b;
+}
+
+.drop-down-box .list-cell {
+  -fx-background-color: #2a2a2a;
+  -fx-text-fill: #ffffff;  /* Ensures text in the dropdown list is white */
+}
+
+.drop-down-box .list-cell:hover {
+  -fx-background-color: #7f4c5e; /* Deep red for hover */
+}
+
 
 /* ==========================
    Checker Box

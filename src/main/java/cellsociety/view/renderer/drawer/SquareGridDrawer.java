@@ -1,12 +1,11 @@
 package cellsociety.view.renderer.drawer;
 
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 /**
  * A class that draws a square grid.

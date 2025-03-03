@@ -68,6 +68,14 @@
   -fx-border-radius: 6px;
 }
 
+.styles-box {
+  -fx-border-color: #3f2a5b;
+  -fx-padding: 8px;
+  -fx-background-color: linear-gradient(to bottom, #212121, #3e1f47);
+  -fx-border-radius: 6px;
+}
+
+
 .info-box {
   -fx-border-color: #3f2a5b;
   -fx-padding: 8px;

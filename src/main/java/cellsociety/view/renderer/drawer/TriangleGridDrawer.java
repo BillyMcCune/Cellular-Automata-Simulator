@@ -60,7 +60,9 @@ public class TriangleGridDrawer extends GridDrawer {
     for (int i = 0; i < numOfRows; i++) {
       double x = offsetX + totalWidth - (isOddCols ? sideLength / 2 : 0);
       double y = offsetY + i * height;
-      if (i % 2 == 1) x += isOddCols ? sideLength / 2 : -sideLength / 2;
+      if (i % 2 == 1) {
+        x += isOddCols ? sideLength / 2 : -sideLength / 2;
+      }
       addPoint.accept(x, y + height);
     }
 
@@ -81,7 +83,8 @@ public class TriangleGridDrawer extends GridDrawer {
 
   /* PRIVATE HELPER METHODS */
 
-  private void drawTriangle(Pane pane, int col, int row, double sideLength, double height, double offsetX, double offsetY, boolean isFacingUp) {
+  private void drawTriangle(Pane pane, int col, int row, double sideLength, double height,
+      double offsetX, double offsetY, boolean isFacingUp) {
     double x1, y1, x2, y2, x3, y3;
 
     if (isFacingUp) {

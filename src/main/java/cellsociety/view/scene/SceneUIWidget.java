@@ -1,15 +1,15 @@
 package cellsociety.view.scene;
 
 import cellsociety.logging.Log;
-import cellsociety.view.controller.LanguageController;
 import cellsociety.view.controller.LanguageController.Language;
-import cellsociety.view.controller.ThemeController;
 import cellsociety.view.controller.ThemeController.Theme;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
@@ -20,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -36,6 +37,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -46,6 +48,7 @@ import javafx.stage.Stage;
  * @author Hsuan-Kai Liao
  */
 public class SceneUIWidget {
+
   // UI constants
   public static final double MAX_ZOOM_RATE = 8.0;
   public static final double MIN_ZOOM_RATE = 0.2;
@@ -65,15 +68,17 @@ public class SceneUIWidget {
 
   /**
    * Create a range UI control with a slider and text field.
-   * @param min minimum value
-   * @param max maximum value
+   *
+   * @param min          minimum value
+   * @param max          maximum value
    * @param defaultValue default value
-   * @param label label text
-   * @param tooltip tooltip text
-   * @param callback callback function to be called when the value changes
+   * @param label        label text
+   * @param tooltip      tooltip text
+   * @param callback     callback function to be called when the value changes
    * @return the range UI control HBox
    */
-  public static HBox createRangeUI(double min, double max, double defaultValue, StringProperty label, StringProperty tooltip, Consumer<Double> callback) {
+  public static HBox createRangeUI(double min, double max, double defaultValue,
+      StringProperty label, StringProperty tooltip, Consumer<Double> callback) {
     // Create the slider
     Slider slider = new Slider(min, max, defaultValue);
     slider.setMaxWidth(Double.MAX_VALUE);
@@ -180,13 +185,15 @@ public class SceneUIWidget {
 
   /**
    * Create a range UI control with a text field.
+   *
    * @param defaultValue default value
-   * @param label label text
-   * @param tooltip tooltip text
-   * @param callback callback function to be called when the value changes
+   * @param label        label text
+   * @param tooltip      tooltip text
+   * @param callback     callback function to be called when the value changes
    * @return the range UI control HBox
    */
-  public static HBox createRangeUI(String defaultValue, StringProperty label, StringProperty tooltip, Consumer<String> callback) {
+  public static HBox createRangeUI(String defaultValue, StringProperty label,
+      StringProperty tooltip, Consumer<String> callback) {
     // Create the label with tooltip
     Label labelComponent = new Label(label + ": ");
     labelComponent.textProperty().bind(label);
@@ -242,6 +249,57 @@ public class SceneUIWidget {
     callback.accept(defaultValue);
 
     return rangeControl;
+  }
+
+  /**
+   * Create a color selector UI control with a label, a text field, and a color picker.
+   *
+   * @param defaultColor default color as a string (e.g., "#FF0000")
+   * @param label        label text
+   * @param tooltip      tooltip text
+   * @param callback     callback function to be called when the color changes
+   * @return the color selector UI control HBox
+   */
+  // TODO: add css file for the new label
+  public static HBox createColorSelectorUI(String defaultColor, StringProperty label,
+      StringProperty tooltip, Consumer<String> callback) {
+    // Create label and tooltip
+    Label labelComponent = new Label();
+    labelComponent.textProperty().bind(label);
+    labelComponent.getStyleClass().add("color-label");
+    Tooltip tooltipComponent = new Tooltip();
+    tooltipComponent.setWrapText(true);
+    tooltipComponent.getStyleClass().add("color-tooltip");
+    tooltipComponent.textProperty().bind(tooltip);
+    labelComponent.setTooltip(tooltipComponent);
+
+    // Create ColorPicker with full background as color indicator
+    ColorPicker colorPicker = new ColorPicker(Color.web(defaultColor));
+    colorPicker.getStyleClass().add("color-picker");
+    colorPicker.setStyle("-fx-background-color: " + String.format("rgb(%d, %d, %d)",
+        (int) (colorPicker.getValue().getRed() * 255),
+        (int) (colorPicker.getValue().getGreen() * 255),
+        (int) (colorPicker.getValue().getBlue() * 255)) + ";");
+
+    // Update background color on color change
+    colorPicker.setOnAction(event -> {
+      Color selectedColor = colorPicker.getValue();
+      colorPicker.setStyle("-fx-background-color: " + String.format("rgb(%d, %d, %d)",
+          (int) (selectedColor.getRed() * 255),
+          (int) (selectedColor.getGreen() * 255),
+          (int) (selectedColor.getBlue() * 255)) + ";");
+      callback.accept(selectedColor.toString());
+    });
+
+    // Create HBox layout
+    HBox colorSelector = new HBox(5, labelComponent, colorPicker);
+    colorSelector.setAlignment(Pos.CENTER);
+    colorSelector.getStyleClass().add("color-selector");
+
+    // Call callback with default color
+    callback.accept(defaultColor);
+
+    return colorSelector;
   }
 
   /**
@@ -334,12 +392,17 @@ public class SceneUIWidget {
       Insets insets = miniMapPane.getPadding();
       Insets borderInsets = miniMapPane.getBorder().getInsets();
 
-      double scaleX = (miniMapPane.getWidth() - insets.getLeft() - insets.getRight()) / contentWidth;
-      double scaleY = (miniMapPane.getHeight() - insets.getTop() - insets.getBottom()) / contentHeight;
+      double scaleX =
+          (miniMapPane.getWidth() - insets.getLeft() - insets.getRight()) / contentWidth;
+      double scaleY =
+          (miniMapPane.getHeight() - insets.getTop() - insets.getBottom()) / contentHeight;
       double minScale = Math.min(scaleX, scaleY);
 
-      double offsetX = (miniMapPane.getWidth() - contentWidth + borderInsets.getLeft() + borderInsets.getRight()) / 2;
-      double offsetY = (miniMapPane.getHeight() - contentHeight + borderInsets.getTop() + borderInsets.getBottom()) / 2;
+      double offsetX =
+          (miniMapPane.getWidth() - contentWidth + borderInsets.getLeft() + borderInsets.getRight())
+              / 2;
+      double offsetY = (miniMapPane.getHeight() - contentHeight + borderInsets.getTop()
+          + borderInsets.getBottom()) / 2;
 
       miniContent.setScaleX(minScale);
       miniContent.setScaleY(minScale);
@@ -351,8 +414,9 @@ public class SceneUIWidget {
 
   /**
    * Create a container UI with a title and content.
+   *
    * @param content the content of the container
-   * @param title the title of the container
+   * @param title   the title of the container
    * @return the container UI control
    */
   public static ScrollPane createContainerUI(Node content, StringProperty title) {
@@ -372,11 +436,11 @@ public class SceneUIWidget {
     return scrollPane;
   }
 
-
   /**
    * Create a section UI with a title and rows.
+   *
    * @param title the title of the section
-   * @param rows the rows of the section
+   * @param rows  the rows of the section
    * @return the section UI control
    */
   public static BorderPane createSectionUI(StringProperty title, Node... rows) {
@@ -401,11 +465,13 @@ public class SceneUIWidget {
 
   /**
    * Create a button UI with a text and action handler.
-   * @param text the text of the button
+   *
+   * @param text          the text of the button
    * @param actionHandler the action handler of the button
    * @return the button UI control
    */
-  public static Button createButtonUI(StringProperty text, EventHandler<ActionEvent> actionHandler) {
+  public static Button createButtonUI(StringProperty text,
+      EventHandler<ActionEvent> actionHandler) {
     Button button = new Button();
     button.textProperty().bind(text);
     button.setPrefWidth(BUTTON_WIDTH);
@@ -419,10 +485,53 @@ public class SceneUIWidget {
     return button;
   }
 
+  /**
+   * Create a drop-down UI control with a label and tooltip.
+   *
+   * @param label         label text
+   * @param itemsSupplier function that provides the latest collection of selectable items
+   * @param callback      callback function to be called when selection changes
+   * @return the drop-down UI control HBox
+   */
+  public static HBox createDropDownUI(StringProperty label,
+      Supplier<Collection<String>> itemsSupplier, Consumer<String> callback) {
+    // Create the label with tooltip
+    Label labelComponent = new Label();
+    labelComponent.textProperty().bind(label);
+    labelComponent.getStyleClass().add("drop-down-label");
+
+    // Create the drop-down
+    ComboBox<String> dropDown = new ComboBox<>();
+    dropDown.getItems().setAll(itemsSupplier.get());
+    dropDown.setPromptText("...");
+    dropDown.getStyleClass().add("drop-down-box");
+
+    // Create an HBox control
+    HBox dropDownControl = new HBox(5, labelComponent, dropDown);
+    dropDownControl.setAlignment(Pos.CENTER);
+    dropDownControl.getStyleClass().add("drop-down-control");
+
+    // Update items on click
+    dropDown.setOnMouseClicked(event -> {
+      dropDown.getItems().setAll(itemsSupplier.get());
+    });
+
+    // Add drop-down listener
+    dropDown.setOnAction(event -> {
+      String selectedValue = dropDown.getValue();
+      if (selectedValue != null) {
+        callback.accept(selectedValue);
+      }
+    });
+
+    return dropDownControl;
+  }
+
   /* POP-UP SCREEN */
 
   /**
    * Create a modal error dialog with a title, message, and exception details.
+   *
    * @param title   the title of the error dialog
    * @param message the message to display in the dialog
    * @param e       the exception to display (optional, can be null)
@@ -430,7 +539,8 @@ public class SceneUIWidget {
   public static void createErrorDialog(String title, String message, Exception e) {
     Stage errorStage = new Stage();
     errorStage.setTitle(title);
-    errorStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
+    errorStage.initModality(
+        Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
 
     // Title
     Label titleLabel = new Label(title);
@@ -482,14 +592,15 @@ public class SceneUIWidget {
   /**
    * Create a modal success dialog to inform the user that a file was successfully saved.
    *
-   * @param title     the title of the success dialog
-   * @param message   the main message to display (e.g., "File successfully saved!")
-   * @param fileName  the name of the file that was saved
+   * @param title    the title of the success dialog
+   * @param message  the main message to display (e.g., "File successfully saved!")
+   * @param fileName the name of the file that was saved
    */
   public static void createSuccessSaveDialog(String title, String message, String fileName) {
     Stage successStage = new Stage();
     successStage.setTitle(title);
-    successStage.initModality(Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
+    successStage.initModality(
+        Modality.APPLICATION_MODAL); // Must be closed before continuing interaction
 
     Label titleLabel = new Label(title);
     titleLabel.getStyleClass().add("success-title");
@@ -517,10 +628,13 @@ public class SceneUIWidget {
 
   /**
    * Create a splash screen with language and theme selection.
+   *
    * @param languageConsumer the consumer for the selected language
-   * @param themeConsumer the consumer for the selected theme
+   * @param themeConsumer    the consumer for the selected theme
    */
-  public static void createSplashScreen(Language defaultLanguage, Theme defaultTheme, StringProperty title, StringProperty buttonText, StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, Runnable startCallback) {
+  public static void createSplashScreen(StringProperty title, StringProperty buttonText,
+      StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer,
+      Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
     splashStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -547,11 +661,8 @@ public class SceneUIWidget {
         e -> {
           themeConsumer.accept(e);
           splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
-        },
-        defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1).toLowerCase(),
-        defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase()
+        }
     );
-
 
     // Create the Start button
     Button startButton = new Button();
@@ -579,63 +690,33 @@ public class SceneUIWidget {
 
   /**
    * Create the Language and Theme selector UI components.
-   * @param languageText the language label text property
-   * @param themeText the theme label text property
+   *
+   * @param languageText     the language label text property
+   * @param themeText        the theme label text property
    * @param languageConsumer the consumer for the selected language
-   * @param themeConsumer the consumer for the selected theme
-   * @param defaultLanguage the default language to set in the dropdown
-   * @param defaultTheme the default theme to set in the dropdown
+   * @param themeConsumer    the consumer for the selected theme
    * @return an HBox containing the language and theme selectors
    */
-  public static HBox createThemeLanguageSelectorUI(StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer, Consumer<Theme> themeConsumer, String defaultLanguage, String defaultTheme) {
-    // TODO: REMOVE DULICATED CODE
-    HBox languageContainer = new HBox(10);
-    languageContainer.setAlignment(Pos.CENTER);
-    Label languageLabel = new Label();
-    languageLabel.textProperty().bind(languageText);
-    languageLabel.getStyleClass().add("splash-label");
-    ComboBox<String> languageComboBox = new ComboBox<>();
-    languageComboBox.setPrefWidth(BUTTON_WIDTH);
-    languageComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
-    languageComboBox.setMaxHeight(BUTTON_HEIGHT);
-    HBox.setHgrow(languageComboBox, Priority.ALWAYS);
-
-    languageComboBox.getItems().addAll(
-        Arrays.stream(LanguageController.Language.values())
-            .map(lang -> lang.name().substring(0, 1).toUpperCase() + lang.name().substring(1).toLowerCase())
-            .toList()
+  public static HBox createThemeLanguageSelectorUI(StringProperty languageText,
+      StringProperty themeText, Consumer<Language> languageConsumer,
+      Consumer<Theme> themeConsumer) {
+    HBox languageContainer = createDropDownUI(
+        languageText,
+        () -> Arrays.stream(Language.values())
+            .map(language -> language.name().substring(0, 1).toUpperCase() + language.name()
+                .substring(1).toLowerCase())
+            .toList(),
+        value -> languageConsumer.accept(Language.valueOf(value.toUpperCase()))
     );
-    languageComboBox.setValue(defaultLanguage);
-    languageComboBox.getStyleClass().add("splash-combo-box");
-    languageComboBox.setOnAction(event -> {
-      String selectedLanguage = languageComboBox.getValue();
-      languageConsumer.accept(Language.valueOf(selectedLanguage.toUpperCase()));
-    });
-    languageContainer.getChildren().addAll(languageLabel, languageComboBox);
 
-    HBox themeContainer = new HBox(10);
-    themeContainer.setAlignment(Pos.CENTER);
-    Label themeLabel = new Label();
-    themeLabel.textProperty().bind(themeText);
-    themeLabel.getStyleClass().add("splash-label");
-    ComboBox<String> themeComboBox = new ComboBox<>();
-    themeComboBox.setPrefWidth(BUTTON_WIDTH);
-    themeComboBox.setMaxWidth(MAX_BUTTON_WIDTH);
-    themeComboBox.setMaxHeight(BUTTON_HEIGHT);
-    HBox.setHgrow(themeComboBox, Priority.ALWAYS);
-
-    themeComboBox.getItems().addAll(
-        Arrays.stream(ThemeController.Theme.values())
-            .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1).toLowerCase())
-            .toList()
+    HBox themeContainer = createDropDownUI(
+        themeText,
+        () -> Arrays.stream(Theme.values())
+            .map(theme -> theme.name().substring(0, 1).toUpperCase() + theme.name().substring(1)
+                .toLowerCase())
+            .toList(),
+        value -> themeConsumer.accept(Theme.valueOf(value.toUpperCase()))
     );
-    themeComboBox.setValue(defaultTheme);
-    themeComboBox.getStyleClass().add("splash-combo-box");
-    themeComboBox.setOnAction(event -> {
-      String selectedTheme = themeComboBox.getValue();
-      themeConsumer.accept(Theme.valueOf(selectedTheme.toUpperCase()));
-    });
-    themeContainer.getChildren().addAll(themeLabel, themeComboBox);
 
     HBox box = new HBox(10, languageContainer, themeContainer);
     box.setAlignment(Pos.CENTER);
@@ -648,6 +729,7 @@ public class SceneUIWidget {
 
   /**
    * Set a style sheet to the widget stages.
+   *
    * @param styleSheet the style sheet to add
    */
   public static void setWidgetStyleSheet(String styleSheet) {

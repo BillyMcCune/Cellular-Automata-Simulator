@@ -105,7 +105,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexMoore5x5_whenSteps1_then6Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEX, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEXAGON, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(5, 5, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> s = calc.getNeighbors(g, 2, 2);
@@ -114,7 +114,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexMoore7x7_whenSteps2_then18Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEX, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEXAGON, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(5, 5, calc);
     calc.setSteps(2);
     Map<Direction, Cell<DummyState>> s = calc.getNeighbors(g, 2, 2);
@@ -123,7 +123,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexNeumann5x5_whenSteps1_then2Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEX, NeighborType.NEUMANN, BoundaryType.TORUS);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEXAGON, NeighborType.NEUMANN, BoundaryType.TORUS);
     Grid<DummyState> g = createGrid(5, 5, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> s = calc.getNeighbors(g, 0, 0);
@@ -132,7 +132,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore6x6_whenSteps1Triangle_then12Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(6, 6, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> s = calc.getNeighbors(g, 1, 3);
@@ -141,7 +141,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore9x9_whenSteps2Triangle_then36Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(9, 9, calc);
     calc.setSteps(2);
     Map<Direction, Cell<DummyState>> s = calc.getNeighbors(g, 4, 4);
@@ -150,7 +150,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore6x6_whenRingDist1Triangle_thenRing6Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(6, 6, calc);
     Map<Direction, Cell<DummyState>> s = calc.getNeighborsAtDistance(g, 3, 3, 1);
     assertEquals(12, s.size());
@@ -158,7 +158,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore9x9_whenRingDist2Triangle_thenRing24Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(9, 9, calc);
     Map<Direction, Cell<DummyState>> s = calc.getNeighborsAtDistance(g, 4, 4, 2);
     assertEquals(24, s.size());
@@ -166,7 +166,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriNeumann6x6Torus_whenSteps1Triangle_then3Neighbors() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.NEUMANN, BoundaryType.TORUS);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.NEUMANN, BoundaryType.TORUS);
     Grid<DummyState> g = createGrid(6, 6, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> s = calc.getNeighbors(g, 2, 2);
@@ -210,7 +210,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexMoore5x5_whenEvenSteps1_thenContainsExpectedDirections() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEX, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEXAGON, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(5, 5, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 2);
@@ -227,7 +227,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexMoore6x6_whenOddSteps1_thenContainsExpectedDirections() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEX, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEXAGON, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(6, 6, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 3);
@@ -245,7 +245,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenHexNeumann5x5_whenSteps1_thenContainsExpectedDirections() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEX, NeighborType.NEUMANN, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.HEXAGON, NeighborType.NEUMANN, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(5, 5, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 2);
@@ -261,7 +261,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.MOORE, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.MOORE, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(6, 6, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 3, 3);
@@ -280,7 +280,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriNeumann6x6_whenDownSteps1_thenContainsExpectedDirections() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.NEUMANN, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.NEUMANN, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(6, 6, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 3, 3);
@@ -296,7 +296,7 @@ public class NeighborCalculatorTest {
 
   @Test
   public void givenTriNeumann6x6_whenUpSteps1_thenContainsExpectedDirections() {
-    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRI, NeighborType.NEUMANN, BoundaryType.STANDARD);
+    DummyNeighborCalculator calc = new DummyNeighborCalculator(GridShape.TRIANGLE, NeighborType.NEUMANN, BoundaryType.STANDARD);
     Grid<DummyState> g = createGrid(6, 6, calc);
     calc.setSteps(1);
     Map<Direction, Cell<DummyState>> neighbors = calc.getNeighbors(g, 2, 3);

@@ -15,15 +15,17 @@ import java.util.Set;
  *                       {@link CellRecord}
  * @param myParameters   simulation-specific parameters encapsulated in a {@link ParameterRecord}
  * @param acceptedStates the set of accepted cell states for the simulation
- * @param myFileName     the file name from which the configuration was loaded
- * @author Billy McCune Immutable record representing simulation configuration information.
- * <p>
- * This record encapsulates all data required to configure a simulation including simulation type,
- * title, author, description, grid dimensions, tick speed, initial grid state, simulation-specific
- * parameters, accepted cell states, and the source file name.
- * <p>
- * Note: This record is immutable and does not support setters or the singleton pattern. All fields
- * must be provided at construction.
+ * @param myFileName     the file name from which the configuration was loaded Immutable record
+ *                       representing simulation configuration information.
+ *                       <p>
+ *                       This record encapsulates all data required to configure a simulation
+ *                       including simulation type, title, author, description, grid dimensions,
+ *                       tick speed, initial grid state, simulation-specific parameters, accepted
+ *                       cell states, and the source file name.
+ *                       <p>
+ *                       Note: This record is immutable and does not support setters or the
+ *                       singleton pattern. All fields must be provided at construction.
+ * @author Billy McCune
  */
 
 public record ConfigInfo(
@@ -64,6 +66,9 @@ public record ConfigInfo(
     BASE, TOROIDAL, MIRROR
   }
 
+  /**
+   * Enumeration of the supported neighbor Arrangement Types
+   */
   public enum neighborArrangementType {
     MOORE, NEUMANN, EXTENDEDMOORE, CUSTOM
   }

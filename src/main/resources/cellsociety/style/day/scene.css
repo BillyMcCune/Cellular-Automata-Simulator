@@ -68,6 +68,13 @@
   -fx-border-radius: 6px;
 }
 
+.styles-box {
+  -fx-border-color: #cccccc;
+  -fx-padding: 8px;
+  -fx-background-color: #ffffff;
+  -fx-border-radius: 6px;
+}
+
 .info-box {
   -fx-border-color: #cccccc;
   -fx-padding: 8px;

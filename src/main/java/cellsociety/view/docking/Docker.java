@@ -23,33 +23,22 @@ import javafx.stage.StageStyle;
  * @author Hsuan-Kai Liao
  */
 public class Docker {
+
   // Constants
   private static final int DOCK_OUTSIDE_OFFSET = 10;
-
-  // Instance variables
-  private final List<SplitPane> splitPanes = new ArrayList<>();
-  private final List<DWindow> floatingWindows = new ArrayList<>();
-  private DWindow undockNewWindow = null;
-
   // Docker attributes
   final DIndicator dockIndicator;
   final Stage mainStage;
-
+  // Instance variables
+  private final List<SplitPane> splitPanes = new ArrayList<>();
+  private final List<DWindow> floatingWindows = new ArrayList<>();
   // Docker settings
   boolean isWindowOpaqueOnDragging = false;
+  private DWindow undockNewWindow = null;
 
   /**
-   * The position of the docking.
-   */
-  public enum DockPosition {
-    NONE, LEFT, RIGHT, TOP, BOTTOM, CENTER
-  }
-
-  /* APIS BELOW */
-
-  /**
-   * Creates a new Docker with the specified main stage and dimensions.
-   * After creating a Docker, users should NOT modify the scene of the main stage.
+   * Creates a new Docker with the specified main stage and dimensions. After creating a Docker,
+   * users should NOT modify the scene of the main stage.
    *
    * @param mainStage the main stage of the docking system
    */
@@ -61,16 +50,20 @@ public class Docker {
     initializeEventHandlers();
   }
 
+  /* APIS BELOW */
+
   /**
    * Creates a floating window with the specified title and content.
    *
-   * @param title the title of the floating window
-   * @param content the content of the floating window
+   * @param title        the title of the floating window
+   * @param content      the content of the floating window
    * @param dockPosition the default dock position of the floating window
-   * @param targetWindow the target window to dock the floating window. If null, the floating window will be docked to the main stage
+   * @param targetWindow the target window to dock the floating window. If null, the floating window
+   *                     will be docked to the main stage
    * @return the floating window
    */
-  public DWindow createDWindow(StringProperty title, Node content, DockPosition dockPosition, DWindow targetWindow) {
+  public DWindow createDWindow(StringProperty title, Node content, DockPosition dockPosition,
+      DWindow targetWindow) {
     Stage floatingStage = new Stage();
     floatingStage.initStyle(StageStyle.UTILITY);
     TabPane floatingTabPane = createTabPane(title, content);
@@ -79,7 +72,8 @@ public class Docker {
     floatingWindows.add(dWindow);
 
     // Initial dock check
-    if (dockPosition != null && dockPosition != DockPosition.NONE && dockPosition != DockPosition.CENTER && targetWindow == null) {
+    if (dockPosition != null && dockPosition != DockPosition.NONE
+        && dockPosition != DockPosition.CENTER && targetWindow == null) {
       dWindow.floatingStage.setOpacity(0);
       dockTab(dWindow, null, dockPosition);
     } else if (dockPosition != DockPosition.NONE && targetWindow != null) {
@@ -141,7 +135,9 @@ public class Docker {
       @Override
       public void accept(SplitPane splitPane) {
         int size = splitPane.getItems().size();
-        if (size < 2) return;
+        if (size < 2) {
+          return;
+        }
 
         double[] positions = new double[size - 1];
         for (int i = 0; i < positions.length; i++) {
@@ -163,13 +159,11 @@ public class Docker {
     recursiveReformat.accept(mainSplitPane);
   }
 
-  /* SETTINGS */
-
   public void setWindowOpaqueOnDragging(boolean isOpaque) {
     this.isWindowOpaqueOnDragging = isOpaque;
   }
 
-  /* DOCKING CORE */
+  /* SETTINGS */
 
   void dockTab(DWindow dWindow, TabPane destTabPane, DockPosition dockPosition) {
     // Add the floating TabPane to the target TabPane
@@ -183,6 +177,8 @@ public class Docker {
       dWindow.onDockEvent.handle(null);
     }
   }
+
+  /* DOCKING CORE */
 
   void undockTab(DWindow dWindow) {
     TabPane floatingTabPane = dWindow.floatingTabPane;
@@ -217,8 +213,6 @@ public class Docker {
     dWindow.isDocked = false;
   }
 
-  /* PACKAGE-PRIVATE METHODS */
-
   boolean isMouseInsideMainScene(double mouseX, double mouseY) {
     double sceneX = mainStage.getScene().getWindow().getX();
     double sceneY = mainStage.getScene().getWindow().getY();
@@ -226,9 +220,13 @@ public class Docker {
     double sceneHeight = mainStage.getScene().getHeight();
     double decorationBarHeight = mainStage.getHeight() - sceneHeight;
 
-    return mouseX >= sceneX + DOCK_OUTSIDE_OFFSET && mouseX <= sceneX - DOCK_OUTSIDE_OFFSET + sceneWidth &&
-        mouseY >= sceneY + DOCK_OUTSIDE_OFFSET + decorationBarHeight && mouseY <= sceneY - DOCK_OUTSIDE_OFFSET + sceneHeight;
+    return mouseX >= sceneX + DOCK_OUTSIDE_OFFSET
+        && mouseX <= sceneX - DOCK_OUTSIDE_OFFSET + sceneWidth &&
+        mouseY >= sceneY + DOCK_OUTSIDE_OFFSET + decorationBarHeight
+        && mouseY <= sceneY - DOCK_OUTSIDE_OFFSET + sceneHeight;
   }
+
+  /* PACKAGE-PRIVATE METHODS */
 
   TabPane findTabPaneUnderMouse(double mouseX, double mouseY) {
     for (SplitPane splitPane : splitPanes) {
@@ -248,15 +246,14 @@ public class Docker {
     floatingWindows.remove(dWindow);
   }
 
-  /* On Dock Action */
-
   private void addTabToDocker(TabPane srcTabPane, TabPane destTabPane, DockPosition dockPosition) {
     // Invalid dock position
     assert dockPosition != DockPosition.NONE && dockPosition != null;
 
     // Get splitPanes
     SplitPane targetSplitPane = findParentSplitPane(destTabPane);
-    targetSplitPane = (destTabPane == null) ? (SplitPane) mainStage.getScene().getRoot() : targetSplitPane == null ? new SplitPane() : targetSplitPane;
+    targetSplitPane = (destTabPane == null) ? (SplitPane) mainStage.getScene().getRoot()
+        : targetSplitPane == null ? new SplitPane() : targetSplitPane;
     targetSplitPane.getStyleClass().add("dock-split-pane");
 
     Tab newTab = CreateCorrespondingTab(srcTabPane);
@@ -272,6 +269,8 @@ public class Docker {
       dockToOther(destTabPane, dockPosition, newTab, targetSplitPane);
     }
   }
+
+  /* On Dock Action */
 
   private void dockToOther(TabPane destTabPane, DockPosition dockPosition, Tab newTab,
       SplitPane targetSplitPane) {
@@ -312,7 +311,8 @@ public class Docker {
     }
   }
 
-  private void undirectInsertTab(TabPane destTabPane, SplitPane targetSplitPane, boolean isHorizontal, TabPane newTabPane, boolean shouldFrontInsert,
+  private void undirectInsertTab(TabPane destTabPane, SplitPane targetSplitPane,
+      boolean isHorizontal, TabPane newTabPane, boolean shouldFrontInsert,
       int index, double[] originalPositions) {
     // Create a new SplitPane if the target SplitPane is not empty
     SplitPane newSplitPane = new SplitPane();
@@ -396,8 +396,6 @@ public class Docker {
     return newTab;
   }
 
-  /* On Undock Action */
-
   private void removeTabFromDocker(Tab tab) {
     for (SplitPane splitPane : splitPanes) {
       for (Node node : splitPane.getItems()) {
@@ -408,6 +406,8 @@ public class Docker {
       }
     }
   }
+
+  /* On Undock Action */
 
   private void removeTabPaneFromDocker(TabPane tabPane) {
     for (SplitPane splitPane : splitPanes) {
@@ -466,7 +466,8 @@ public class Docker {
             Node child = childSplitPane.getItems().getFirst();
 
             // If the child is a SplitPane with the same orientation, merge them
-            if (child instanceof SplitPane grandChildSplitPane && grandChildSplitPane.getOrientation() == parentSplitPane.getOrientation()) {
+            if (child instanceof SplitPane grandChildSplitPane
+                && grandChildSplitPane.getOrientation() == parentSplitPane.getOrientation()) {
               // Get the original divider positions
               double[] parentDividerPositions = parentSplitPane.getDividerPositions();
               double[] childDividerPositions = grandChildSplitPane.getDividerPositions();
@@ -474,7 +475,9 @@ public class Docker {
               // Calculate the total size of the grandchild SplitPane
               int leftIndex = index - 1;
               double leftPos = (leftIndex >= 0) ? parentDividerPositions[leftIndex] : 0.0;
-              double rightPos = (index < parentDividerPositions.length) ? parentDividerPositions[leftIndex + 1] : 1.0;
+              double rightPos =
+                  (index < parentDividerPositions.length) ? parentDividerPositions[leftIndex + 1]
+                      : 1.0;
               double totalSize = rightPos - leftPos;
 
               // Remove the child SplitPane and add the grandchild SplitPane
@@ -498,7 +501,8 @@ public class Docker {
               index += grandChildSplitPane.getItems().size();
 
               // Set the new divider positions
-              parentSplitPane.setDividerPositions(newDividers.stream().mapToDouble(Double::doubleValue).toArray());
+              parentSplitPane.setDividerPositions(
+                  newDividers.stream().mapToDouble(Double::doubleValue).toArray());
 
               // Add the grandchild SplitPane to the empty list
               emptySplitPanes.add(childSplitPane);
@@ -524,7 +528,8 @@ public class Docker {
     recursiveCollapse.accept(mainSplitPane);
 
     // Promote the child SplitPane if the main SplitPane has only one child
-    if (mainSplitPane.getItems().size() == 1 && mainSplitPane.getItems().getFirst() instanceof SplitPane childSplitPane) {
+    if (mainSplitPane.getItems().size() == 1 && mainSplitPane.getItems()
+        .getFirst() instanceof SplitPane childSplitPane) {
       mainSplitPane.setOrientation(childSplitPane.getOrientation());
       mainSplitPane.getItems().setAll(childSplitPane.getItems());
       mainSplitPane.setDividerPositions(childSplitPane.getDividerPositions());
@@ -533,14 +538,14 @@ public class Docker {
     }
   }
 
-  /* HELPER METHODS */
-
   private void initializeSplitPane() {
     SplitPane splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
     splitPane.getStyleClass().add("dock-split-pane");
     splitPanes.add(splitPane);
   }
+
+  /* HELPER METHODS */
 
   private void initializeScene() {
     Scene mainScene = new Scene(new SplitPane(), mainStage.getWidth(), mainStage.getHeight());
@@ -590,7 +595,8 @@ public class Docker {
     dWindow.floatingStage.hide();
   }
 
-  private void setupFloatingWindow(TabPane floatingTabPane, Stage floatingWindow, TabPane targetTabPane) {
+  private void setupFloatingWindow(TabPane floatingTabPane, Stage floatingWindow,
+      TabPane targetTabPane) {
     if (floatingTabPane.getScene() == null) {
       Scene newScene = new Scene(floatingTabPane);
       newScene.getStylesheets().setAll(mainStage.getScene().getStylesheets());
@@ -624,5 +630,12 @@ public class Docker {
       }
     }
     return null;
+  }
+
+  /**
+   * The position of the docking.
+   */
+  public enum DockPosition {
+    NONE, LEFT, RIGHT, TOP, BOTTOM, CENTER
   }
 }

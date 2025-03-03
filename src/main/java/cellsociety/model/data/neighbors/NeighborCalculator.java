@@ -50,8 +50,20 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     this.shape = shape;
   }
 
+  public GridShape getShape() {
+    return shape;
+  }
+
+  public BoundaryType getBoundary() {
+    return boundary;
+  }
+
   public void setNeighborType(NeighborType neighborType) {
     this.neighborType = neighborType;
+  }
+
+  public NeighborType getNeighborType() {
+    return neighborType;
   }
 
   public void setBoundary(BoundaryType boundary) {
@@ -152,8 +164,8 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     int dist = node.dist;
     Direction nodeOffset = node.offsetFromOriginal;
 
-    boolean flipHex = (shape == GridShape.HEX && (c % 2 != 0));
-    boolean flipTri = (shape == GridShape.TRI && ((r + c) % 2 != 0));
+    boolean flipHex = (shape == GridShape.HEXAGON && (c % 2 != 0));
+    boolean flipTri = (shape == GridShape.TRIANGLE && ((r + c) % 2 != 0));
 
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();

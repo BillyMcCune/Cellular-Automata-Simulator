@@ -15,41 +15,39 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- * The floating window of the docking system.
- * Users can modify the floating window's size, position, and content.
- * The UI style of the floating window is corresponding to the default style of the docker's mainStage.
+ * The floating window of the docking system. Users can modify the floating window's size, position,
+ * and content. The UI style of the floating window is corresponding to the default style of the
+ * docker's mainStage.
  *
  * @author Hsuan-Kai Liao
  */
 public class DWindow {
+
   // Constants
   private static final double DEFAULT_FLOATING_WIDTH = 250;
   private static final double DEFAULT_FLOATING_HEIGHT = 200;
   private static final double DEFAULT_FLOATING_OPACITY = 0.5;
   private static final int UNDOCK_MINIMUM_DISTANCE = 20;
-
-  // Dragging attributes
-  double xOffset = 0;
-  double yOffset = 0;
-  private Point2D dragStartPoint = null;
-
   // Docking attributes
   final Docker docker;
   final Stage floatingStage;
   final TabPane floatingTabPane;
+  // Dragging attributes
+  double xOffset = 0;
+  double yOffset = 0;
   boolean isDocked = false;
-
-  // Listeners
-  private EventHandler<WindowEvent> onCloseEvent;
   EventHandler<ActionEvent> onDockEvent;
   EventHandler<ActionEvent> onUndockEvent;
-
+  private Point2D dragStartPoint = null;
+  // Listeners
+  private EventHandler<WindowEvent> onCloseEvent;
   // Settings
   private boolean isDockOnClose = true;
 
   /**
    * Constructs a floating window with the given stage and tab pane.
-   * @param floatingStage the stage of the floating window
+   *
+   * @param floatingStage   the stage of the floating window
    * @param floatingTabPane the tab pane of the floating window that contains the content
    */
   DWindow(Stage floatingStage, TabPane floatingTabPane, Docker docker) {
@@ -64,27 +62,65 @@ public class DWindow {
 
   /* API BELOW */
 
-  public double getWidth() { return floatingStage.getWidth(); }
-  public double getHeight() { return floatingStage.getHeight(); }
+  public double getWidth() {
+    return floatingStage.getWidth();
+  }
 
-  public void setWidth(double width) { floatingStage.setWidth(width); }
-  public void setHeight(double height) { floatingStage.setHeight(height); }
+  public void setWidth(double width) {
+    floatingStage.setWidth(width);
+  }
 
-  public double getX() { return floatingStage.getX(); }
-  public double getY() { return floatingStage.getY(); }
+  public double getHeight() {
+    return floatingStage.getHeight();
+  }
 
-  public void setX(double x) { floatingStage.setX(x); }
-  public void setY(double y) { floatingStage.setY(y); }
+  public void setHeight(double height) {
+    floatingStage.setHeight(height);
+  }
 
-  public Node getContent() { return floatingTabPane.getTabs().getFirst().getContent(); }
-  public void setContent(Node content) { floatingTabPane.getTabs().getFirst().setContent(content); }
+  public double getX() {
+    return floatingStage.getX();
+  }
 
-  public void setOnClose(EventHandler<WindowEvent> event) { this.onCloseEvent = event; }
-  public void setOnDockEvent(EventHandler<ActionEvent> onDockEvent) { this.onDockEvent = onDockEvent; }
-  public void setOnUndockEvent(EventHandler<ActionEvent> onUndockEvent) { this.onUndockEvent = onUndockEvent; }
+  public void setX(double x) {
+    floatingStage.setX(x);
+  }
 
-  public void setDockOnClose(boolean isDockOnClose) { this.isDockOnClose = isDockOnClose; }
-  public boolean isDockOnClose() { return isDockOnClose; }
+  public double getY() {
+    return floatingStage.getY();
+  }
+
+  public void setY(double y) {
+    floatingStage.setY(y);
+  }
+
+  public Node getContent() {
+    return floatingTabPane.getTabs().getFirst().getContent();
+  }
+
+  public void setContent(Node content) {
+    floatingTabPane.getTabs().getFirst().setContent(content);
+  }
+
+  public void setOnClose(EventHandler<WindowEvent> event) {
+    this.onCloseEvent = event;
+  }
+
+  public void setOnDockEvent(EventHandler<ActionEvent> onDockEvent) {
+    this.onDockEvent = onDockEvent;
+  }
+
+  public void setOnUndockEvent(EventHandler<ActionEvent> onUndockEvent) {
+    this.onUndockEvent = onUndockEvent;
+  }
+
+  public boolean isDockOnClose() {
+    return isDockOnClose;
+  }
+
+  public void setDockOnClose(boolean isDockOnClose) {
+    this.isDockOnClose = isDockOnClose;
+  }
 
   /* CALLBACKS BELOW */
 
@@ -117,7 +153,8 @@ public class DWindow {
     double mouseY = event.getScreenY();
 
     double dragDistance = calculateDragDistance(mouseX, mouseY);
-    double decorationBarHeight = docker.mainStage.getHeight() - docker.mainStage.getScene().getHeight();
+    double decorationBarHeight =
+        docker.mainStage.getHeight() - docker.mainStage.getScene().getHeight();
 
     floatingStage.setX(mouseX - xOffset);
     floatingStage.setY(mouseY - yOffset - decorationBarHeight);
@@ -161,7 +198,8 @@ public class DWindow {
   }
 
   private void initializeScene() {
-    Scene floatingScene = new Scene(floatingTabPane, DEFAULT_FLOATING_WIDTH, DEFAULT_FLOATING_HEIGHT);
+    Scene floatingScene = new Scene(floatingTabPane, DEFAULT_FLOATING_WIDTH,
+        DEFAULT_FLOATING_HEIGHT);
     floatingStage.setScene(floatingScene);
     floatingScene.getRoot().applyCss();
   }
