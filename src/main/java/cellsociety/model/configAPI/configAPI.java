@@ -5,7 +5,7 @@ import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigReader;
 import cellsociety.model.config.ConfigWriter;
 import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.modelAPI.modelAPI;
+import cellsociety.model.modelAPI.ModelApi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class configAPI {
   private ConfigInfo configInfo;
   private ParameterRecord parameterRecord;
   private boolean isLoaded;
-  private modelAPI myModelAPI;
+  private ModelApi myModelApi;
   private List<List<Integer>> myGridStates;
   private List<List<Map<String, Double>>> myGridProperties;
 
@@ -41,9 +41,13 @@ public class configAPI {
     return configReader.getFileNames();
   }
 
-
-  public void setModelAPI(modelAPI modelAPI) {
-    myModelAPI = modelAPI;
+  /**
+   * Sets the modelAPI instance used by this API.
+   *
+   * @param modelAPI the modelAPI instance to set.
+   */
+  public void setModelAPI(ModelApi modelAPI) {
+    myModelApi = modelAPI;
   }
 
   /**
@@ -62,7 +66,7 @@ public class configAPI {
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
         isLoaded = true;
-        myModelAPI.setConfigInfo(configInfo);
+        myModelApi.setConfigInfo(configInfo);
       }
     } catch (ParserConfigurationException e) {
       throw new ParserConfigurationException(e.getMessage());
@@ -78,18 +82,22 @@ public class configAPI {
   /**
    * Saves the current simulation configuration to the specified file path.
    *
-   * @param FilePath the file path where the configuration should be saved
-   * @return the file name of the simulation that was saved
-   * @throws ParserConfigurationException if a parser configuration error occurs
-   * @throws IOException                  if an I/O error occurs
-   * @throws TransformerException         if an error occurs during transformation
+   * <p>
+   * This method gathers grid states and properties from the modelAPI, constructs a new ConfigInfo,
+   * and then uses ConfigWriter to save the configuration.
+   *
+   * @param FilePath the file path where the configuration should be saved.
+   * @return the file name of the simulation that was saved.
+   * @throws ParserConfigurationException if a parser configuration error occurs.
+   * @throws IOException                  if an I/O error occurs.
+   * @throws TransformerException         if an error occurs during XML transformation.
    */
   public String saveSimulation(String FilePath)
       throws ParserConfigurationException, IOException, TransformerException {
     configWriter = new ConfigWriter();
     //Save the grid dataGrid<?>
-    myGridStates = myModelAPI.getCellStates();
-    myGridProperties = myModelAPI.getCellProperties();
+    myGridStates = myModelApi.getCellStates();
+    myGridProperties = myModelApi.getCellProperties();
     List<List<CellRecord>> gridData = new ArrayList<>();
     for (int i = 0; i < myGridStates.size(); i++) {
       List<CellRecord> row = new ArrayList<>();
@@ -99,8 +107,8 @@ public class configAPI {
       gridData.add(row);
     }
 
-    Map<String, Double> doubleParams = myModelAPI.getDoubleParameters();
-    Map<String, String> stringParams = myModelAPI.getStringParameters();
+    Map<String, Double> doubleParams = myModelApi.getDoubleParameters();
+    Map<String, String> stringParams = myModelApi.getStringParameters();
 
     ParameterRecord parameters = new ParameterRecord(doubleParams, stringParams);
 
@@ -129,8 +137,8 @@ public class configAPI {
   /**
    * Retrieves the accepted simulation states.
    *
-   * @return a of accepted state integers
-   * @throws NullPointerException if the configuration information is not loaded
+   * @return a set of accepted state integers.
+   * @throws NullPointerException if the configuration information is not loaded.
    */
   public Set<Integer> getAcceptedStates() {
     try {
@@ -143,8 +151,8 @@ public class configAPI {
   /**
    * Retrieves the grid width from the configuration.
    *
-   * @return the grid width
-   * @throws NumberFormatException if the configuration information is not loaded
+   * @return the grid width.
+   * @throws NumberFormatException if the configuration information is not loaded.
    */
   public int getGridWidth() {
     try {
@@ -168,6 +176,12 @@ public class configAPI {
     }
   }
 
+  /**
+   * Retrieves simulation information such as author, title, type, and description.
+   *
+   * @return a map containing simulation details.
+   * @throws NullPointerException if the configuration information is not loaded.
+   */
   public Map<String, String> getSimulationInformation() {
     try {
       HashMap<String, String> simulationDetails = new HashMap<>();
@@ -181,7 +195,13 @@ public class configAPI {
     }
   }
 
-  //TODO implement error throw
+  /**
+   * Sets simulation information using the provided details.
+   *
+   * @param simulationDetails a map containing simulation details such as title, author, and
+   *                          description.
+   * @throws NullPointerException if the current configuration information is not loaded.
+   */
   public void setSimulationInformation(Map<String, String> simulationDetails) {
     try {
       ConfigInfo tempConfigInfo = new ConfigInfo(
@@ -206,6 +226,12 @@ public class configAPI {
     }
   }
 
+  /**
+   * Retrieves the simulation tick speed from the configuration.
+   *
+   * @return the simulation tick speed.
+   * @throws NumberFormatException if the configuration information is not loaded.
+   */
   public double getConfigSpeed() {
     try {
       return configInfo.myTickSpeed();
