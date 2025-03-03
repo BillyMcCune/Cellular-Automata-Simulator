@@ -7,6 +7,9 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.logic.Logic;
 import java.io.File;
@@ -41,14 +44,21 @@ public class modelAPI {
   private Grid<?> grid;
   private CellFactory<?> cellFactory;
   private Logic<?> gameLogic;
-  private NeighborCalculator<?> neighborCalculator;
+  private NeighborCalculator<?> myNeighborCalculator;
 
   // Instance variables
   private boolean isLoaded;
 
   //crazy color stuff:
-    private static final String PROPERTY_TO_DETECT = "coloredId";
-    private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
+  private static final String PROPERTY_TO_DETECT = "coloredId";
+  private static final long GOLDEN_RATIO_HASH_MULTIPLIER = 2654435761L;
+
+  //Style Property names:
+  private final String gridOutlineProperty = "GRIDOUTLINE.PREFERENCE";
+  private final String edgePolicyProperty = "EDGEPOLICY.PREFERENCE";
+  private final String neighborArrangementProperty = "NEIGHBORARRANGEMENT.PREFERENCE";
+  private final String cellShapeProperty = "CELLSHAPE.PREFERENCE";
+
 
   // Load the color mapping from the properties file once (assumes the file is in your resources folder).
   private static final Properties COLOR_MAPPING = new Properties();
@@ -66,11 +76,11 @@ public class modelAPI {
     this.configInfo = configInfo;
     this.myParameterRecord = configInfo.myParameters();
   }
-  private static final Properties USER_DEFINED_COLOR_MAPPING = new Properties();
+  private static final Properties USER_STYLE_PREFERENCES = new Properties();
 
   static {
     try (InputStream in = modelAPI.class.getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {
-      USER_DEFINED_COLOR_MAPPING .load(in);
+      USER_STYLE_PREFERENCES.load(in);
     } catch (IOException ex) {
       throw new RuntimeException("error-getting-user-defined-color-mapping");
     }
@@ -105,8 +115,8 @@ public class modelAPI {
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
 
-      grid = new Grid<>(gridCopy, cellFactory, neighborCalculator);
-      System.out.println(configInfo.myGrid());
+      grid = new Grid<>(gridCopy, cellFactory, myNeighborCalculator);
+      //System.out.println(configInfo.myGrid());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -135,7 +145,7 @@ public class modelAPI {
       if (myParameterRecord == null) {
         myParameterRecord = configInfo.myParameters();
       }
-      System.out.println(myParameterRecord.myDoubleParameters());
+      //System.out.println(myParameterRecord.myDoubleParameters());
       return myParameterRecord.myDoubleParameters();
     } catch (NullPointerException e) {
       throw new NullPointerException("error-configInfo-NULL");
@@ -160,12 +170,12 @@ public class modelAPI {
 
     myParameterRecord.myDoubleParameters().put(paramName, value);
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    System.out.println(setterName);
+    //System.out.println(setterName);
     try {
       // Find the setter method that accepts a double.
       Method setterMethod = gameLogic.getClass().getMethod(setterName, double.class);
       // Invoke the setter on the game logic.
-      System.out.println(value);
+      //System.out.println(value);
       setterMethod.invoke(gameLogic, value);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       System.out.println("error with setter");
@@ -190,7 +200,7 @@ public class modelAPI {
 
     // Construct the setter method name (e.g., "setLabel" for "label").
     String setterName = "set" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
-    System.out.println(setterName);
+    //System.out.println(setterName);
     try {
       Method setterMethod = gameLogic.getClass().getMethod(setterName, String.class);
       setterMethod.invoke(gameLogic, value);
@@ -249,7 +259,7 @@ public class modelAPI {
     String key = statePrefix + "." + stateValue;
     // If the mapping is not found, default to "WHITE"
     if (!wantDefaultColor) {
-      return USER_DEFINED_COLOR_MAPPING.getProperty(key, "WHITE");
+      return USER_STYLE_PREFERENCES.getProperty(key, "WHITE");
     }
     return COLOR_MAPPING.getProperty(key, "WHITE");
   }
@@ -318,10 +328,6 @@ public class modelAPI {
   }
 
 
-  public void setCellShape(String cellShape) {
-    // Not implemented.
-  }
-
   /**
    * Resets the simulation parameters by iterating over the public setter methods
    * of the currently loaded gameLogic. For each setter, the corresponding getter,
@@ -356,12 +362,12 @@ public class modelAPI {
         double defaultValue = (double) getterMethod.invoke(gameLogic);
         // Update the parameter record for double parameters.
         myParameterRecord.myDoubleParameters().put(paramName, defaultValue);
-        System.out.println(myParameterRecord.myDoubleParameters());
+        //System.out.println(myParameterRecord.myDoubleParameters());
       } else if (paramType == String.class) {
         String defaultValue = (String) getterMethod.invoke(gameLogic);
         // Update the parameter record for string parameters.
         myParameterRecord.myStringParameters().put(paramName, defaultValue);
-        System.out.println(myParameterRecord.myStringParameters());
+        //System.out.println(myParameterRecord.myStringParameters());
       }
     }
   }
@@ -387,9 +393,9 @@ public class modelAPI {
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
 
       Object neighborObject = neighborClass.getDeclaredConstructor().newInstance();
-      neighborCalculator = (NeighborCalculator<?>) neighborObject;
+      myNeighborCalculator = (NeighborCalculator<?>) neighborObject;
 
-      grid = new Grid<>(configInfo.myGrid(), cellFactory, neighborCalculator);
+      grid = new Grid<>(configInfo.myGrid(), cellFactory, myNeighborCalculator);
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());
 
@@ -571,4 +577,142 @@ public class modelAPI {
       return "WHITE";
     }
 }
+  public void setNeighborArrangement(String neighborArrangement) {
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
+      System.out.println(neighborArrangement);
+      myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangement));
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+
+  public void setEdgePolicy(String edgePolicy){
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(edgePolicyProperty, edgePolicy);
+      myNeighborCalculator.setBoundary(BoundaryType.valueOf(edgePolicy));
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+
+  public void setCellShape(String cellShape){
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(cellShapeProperty, cellShape);
+     cellShape =  cellShape.toUpperCase();
+      myNeighborCalculator.setShape(GridShape.valueOf(cellShape));
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+  public void setGridOutlinePreference(boolean wantsGridOutline){
+    try {
+      Properties simulationStyle = new Properties();
+      File file = new File("SimulationStyle.properties");
+      if (file.exists()) {
+        try (InputStream input = new FileInputStream(file)) {
+          simulationStyle.load(input);
+        }
+      }
+      simulationStyle.setProperty(gridOutlineProperty, String.valueOf(wantsGridOutline));
+      try (OutputStream output = new FileOutputStream(file)) {
+        simulationStyle.store(output, "User-defined cell colors");
+      }
+    } catch (IOException e) {
+      System.err.println("Error saving new color preference: " + e.getMessage());
+    }
+  }
+
+  public List<String> getPossibleNeighborArrangements() {
+    List<String> arrangements = new ArrayList<>();
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      for (String key : simulationStyle.stringPropertyNames()) {
+        // Exclude the preference key and any blank values.
+        if (key.startsWith("NEIGHBORARRANGEMENT.") && !key.equals("NEIGHBORARRANGEMENT.PREFERENCE")) {
+          String value = simulationStyle.getProperty(key);
+          if (value != null && !value.trim().isEmpty()) {
+            arrangements.add(value.trim());
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading neighbor arrangements: " + e.getMessage());
+    }
+    return arrangements;
+  }
+
+  public List<String> getPossibleEdgePolicies() {
+    List<String> edgePolicies = new ArrayList<>();
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      for (String key : simulationStyle.stringPropertyNames()) {
+        if (key.startsWith("EDGEPOLICY.") && !key.equals("EDGEPOLICY.PREFERENCE")) {
+          String value = simulationStyle.getProperty(key);
+          if (value != null && !value.trim().isEmpty()) {
+            edgePolicies.add(value.trim());
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading edge policies: " + e.getMessage());
+    }
+    return edgePolicies;
+  }
+
+  public List<String> getPossibleCellShapes() {
+    List<String> cellShapes = new ArrayList<>();
+    try (InputStream input = new FileInputStream("SimulationStyle.properties")) {
+      Properties simulationStyle = new Properties();
+      simulationStyle.load(input);
+      for (String key : simulationStyle.stringPropertyNames()) {
+        if (key.startsWith("CELLSHAPE.") && !key.equals("CELLSHAPE.PREFERENCE")) {
+          String value = simulationStyle.getProperty(key);
+          if (value != null && !value.trim().isEmpty()) {
+            cellShapes.add(value.trim());
+          }
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error reading cell shapes: " + e.getMessage());
+    }
+    return cellShapes;
+  }
+
 }
+

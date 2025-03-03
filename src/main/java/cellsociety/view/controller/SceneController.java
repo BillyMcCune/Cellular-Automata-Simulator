@@ -157,8 +157,6 @@ public class SceneController {
     return configTitle;
   }
 
-
-
   /* MODEL APIS */
 
   /**

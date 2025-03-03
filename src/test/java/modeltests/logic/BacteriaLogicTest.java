@@ -7,9 +7,13 @@ import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.BacteriaState;
+import cellsociety.model.data.states.LifeState;
 import cellsociety.model.logic.BacteriaLogic;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,24 +29,9 @@ public class BacteriaLogicTest {
       {1, -1}, {1, 0}, {1, 1}
   };
 
-  private final NeighborCalculator<BacteriaState> dummyNeighborCalculator = new NeighborCalculator<BacteriaState>(
-      EIGHT_DIRECTIONS) {
-    @Override
-    public Map<Direction, Cell<BacteriaState>> calculateStandardNeighbors(Grid<BacteriaState> grid, int row,
-        int col) {
-      Map<Direction, Cell<BacteriaState>> neighbors = new HashMap<>();
-      int numRows = grid.getNumRows();
-      int numCols = grid.getNumCols();
-      for (int[] d : EIGHT_DIRECTIONS) {
-        int newRow = (row + d[0] + numRows) % numRows;
-        int newCol = (col + d[1] + numCols) % numCols;
-        if (newRow >= 0 && newRow < numRows && newCol >= 0 && newCol < numCols) {
-          neighbors.put(new Direction(d[0], d[1]), grid.getCell(newRow, newCol));
-        }
-      }
-      return neighbors;
-    }
-  };
+  private final NeighborCalculator<BacteriaState> dummyNeighborCalculator =
+      new NeighborCalculator<BacteriaState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD) {
+      };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultValue) {
     List<List<Integer>> data = new ArrayList<>();

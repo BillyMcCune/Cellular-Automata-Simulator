@@ -6,7 +6,11 @@ import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
+import cellsociety.model.data.states.SegregationState;
 import cellsociety.model.data.states.WatorState;
 import cellsociety.model.logic.WatorLogic;
 import cellsociety.model.data.neighbors.Direction;
@@ -21,25 +25,10 @@ import org.junit.jupiter.api.Test;
  */
 public class WatorLogicTest {
 
-  private static final int[][] ORTHOGONAL_DIRECTIONS = {
-      {-1, 0}, {0, 1}, {1, 0}, {0, -1}
-  };
 
-  private final NeighborCalculator<WatorState> neighborCalc = new NeighborCalculator<WatorState>(ORTHOGONAL_DIRECTIONS) {
-    @Override
-    public Map<Direction, Cell<WatorState>> calculateStandardNeighbors(Grid<WatorState> grid, int row, int col) {
-      Map<Direction, cellsociety.model.data.cells.Cell<WatorState>> neighbors = new HashMap<>();
-      int numRows = grid.getNumRows();
-      int numCols = grid.getNumCols();
-      for (int[] d : ORTHOGONAL_DIRECTIONS) {
-        int newRow = (row + d[0] + numRows) % numRows;
-        int newCol = (col + d[1] + numCols) % numCols;
-        Direction dir = new Direction(d[0], d[1]);
-        neighbors.put(dir, grid.getCell(newRow, newCol));
-      }
-      return neighbors;
-    }
-  };
+  private final NeighborCalculator<WatorState> dummyNeighborCalculator =
+      new NeighborCalculator<WatorState>(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.TORUS) {
+      };
 
   private List<List<Integer>> createGridData(int rows, int cols, int defaultState) {
     List<List<Integer>> data = new ArrayList<>();
@@ -71,7 +60,7 @@ public class WatorLogicTest {
   private Grid<WatorState> createGridFromData(List<List<Integer>> rawData) {
     CellFactory<WatorState> factory = new CellFactory<>(WatorState.class);
     List<List<CellRecord>> records = createCellRecordGrid(rawData);
-    return new Grid<>(records, factory, neighborCalc);
+    return new Grid<>(records, factory, dummyNeighborCalculator);
   }
 
   private ParameterRecord createDefaultParameterRecord() {

@@ -13,6 +13,9 @@ import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
 import cellsociety.model.modelAPI.modelAPI;
@@ -64,13 +67,10 @@ public class ConfigAPITest {
   /**
    * DummyNeighborCalculator provides neighbor directions.
    */
-  private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
-    private static final int[][] DIRECTIONS = {
-        {-1, -1}, {-1, 0}, {-1, 1},
-        {0, -1},          {0, 1},
-        {1, -1},  {1, 0}, {1, 1}
-    };
-    public DummyNeighborCalculator() { super(DIRECTIONS); }
+  public static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
+    public DummyNeighborCalculator() {
+      super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
+    }
   }
 
   /**
@@ -149,7 +149,6 @@ public class ConfigAPITest {
       stringParams.put("param2", "value2");
     }
 
-    @Override
     public void setConfiginfo(ConfigInfo configInfo) {
       this.configInfoDummy = configInfo;
     }

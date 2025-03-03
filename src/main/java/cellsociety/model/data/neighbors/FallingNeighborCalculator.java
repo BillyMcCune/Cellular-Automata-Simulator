@@ -2,6 +2,9 @@ package cellsociety.model.data.neighbors;
 
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.constants.BoundaryType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.states.State;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,6 @@ public class FallingNeighborCalculator<T extends Enum<T> & State> extends Neighb
    * Creates a specific NeighborCalculator with the specified directions.
    */
   public FallingNeighborCalculator() {
-    super(FALLING_DIRECTIONS);
+    super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
   }
 }
