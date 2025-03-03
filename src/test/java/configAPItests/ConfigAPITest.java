@@ -67,7 +67,7 @@ public class ConfigAPITest {
   /**
    * DummyNeighborCalculator provides neighbor directions.
    */
-  private static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
+  public static class DummyNeighborCalculator extends NeighborCalculator<TestState> {
     public DummyNeighborCalculator() {
       super(GridShape.SQUARE, NeighborType.MOORE, BoundaryType.STANDARD);
     }

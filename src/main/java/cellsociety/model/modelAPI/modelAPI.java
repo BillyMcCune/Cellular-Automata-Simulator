@@ -587,7 +587,8 @@ public class modelAPI {
         }
       }
       simulationStyle.setProperty(neighborArrangementProperty, neighborArrangement);
-      myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangementProperty));
+      System.out.println(neighborArrangement);
+      myNeighborCalculator.setNeighborType(NeighborType.valueOf(neighborArrangement));
       try (OutputStream output = new FileOutputStream(file)) {
         simulationStyle.store(output, "User-defined cell colors");
       }

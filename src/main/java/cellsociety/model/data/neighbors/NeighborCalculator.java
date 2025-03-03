@@ -48,8 +48,20 @@ public abstract class NeighborCalculator<T extends Enum<T> & State> {
     this.shape = shape;
   }
 
+  public GridShape getShape() {
+    return shape;
+  }
+
+  public BoundaryType getBoundary() {
+    return boundary;
+  }
+
   public void setNeighborType(NeighborType neighborType) {
     this.neighborType = neighborType;
+  }
+
+  public NeighborType getNeighborType() {
+    return neighborType;
   }
 
   public void setBoundary(BoundaryType boundary) {
