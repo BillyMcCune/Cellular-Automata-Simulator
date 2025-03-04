@@ -7,12 +7,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -30,6 +32,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextFormatter.Change;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,7 +50,7 @@ import javafx.stage.Stage;
  *
  * @author Hsuan-Kai Liao
  */
-public class SceneUIWidget {
+public class SceneUIWidgetFactory {
 
   // UI constants
   public static final double MAX_ZOOM_RATE = 8.0;
@@ -55,6 +58,8 @@ public class SceneUIWidget {
   public static final double BUTTON_WIDTH = 100;
   public static final double BUTTON_HEIGHT = 35;
   public static final double MAX_BUTTON_WIDTH = 200;
+  public static final double DROPDOWN_WIDTH = 100;
+  public static final double DROPDOWN_HEIGHT = 35;
 
   // Error Stage
   private static final double DEFAULT_SPLASH_WIDTH = 400;
@@ -260,7 +265,6 @@ public class SceneUIWidget {
    * @param callback     callback function to be called when the color changes
    * @return the color selector UI control HBox
    */
-  // TODO: add css file for the new label
   public static HBox createColorSelectorUI(String defaultColor, StringProperty label,
       StringProperty tooltip, Consumer<String> callback) {
     // Create label and tooltip
@@ -276,31 +280,87 @@ public class SceneUIWidget {
     // Create ColorPicker with full background as color indicator
     ColorPicker colorPicker = new ColorPicker(Color.web(defaultColor));
     colorPicker.getStyleClass().add("color-picker");
-    colorPicker.setStyle("-fx-background-color: " + String.format("rgb(%d, %d, %d)",
-        (int) (colorPicker.getValue().getRed() * 255),
-        (int) (colorPicker.getValue().getGreen() * 255),
-        (int) (colorPicker.getValue().getBlue() * 255)) + ";");
+    double red = colorPicker.getValue().getRed() * 255;
+    double green = colorPicker.getValue().getGreen() * 255;
+    double blue = colorPicker.getValue().getBlue() * 255;
+    colorPicker.setStyle("-fx-background-color: rgb(" + (int) red + ", " + (int) green + ", " + (int) blue + "); ");
 
-    // Update background color on color change
-    colorPicker.setOnAction(event -> {
-      Color selectedColor = colorPicker.getValue();
-      colorPicker.setStyle("-fx-background-color: " + String.format("rgb(%d, %d, %d)",
-          (int) (selectedColor.getRed() * 255),
-          (int) (selectedColor.getGreen() * 255),
-          (int) (selectedColor.getBlue() * 255)) + ";");
-      callback.accept(selectedColor.toString());
+    // Create TextArea for hex color input
+    TextField textField = new TextField();
+    textField.setText("#" + String.format("%02X%02X%02X", (int) red, (int) green, (int) blue));
+    textField.setAlignment(Pos.CENTER);
+    textField.getStyleClass().add("color-text-field");
+    textField.prefHeightProperty().bind(colorPicker.prefHeightProperty());
+
+    // Restrict input to # and 0-F, limit to 6 characters
+    UnaryOperator<Change> hexFilter = change -> {
+      String newText = change.getControlNewText();
+      if (newText.matches("^#[0-9A-Fa-f]{0,6}$")) {
+        return change;
+      } else {
+        return null;
+      }
+    };
+    textField.setTextFormatter(new TextFormatter<>(hexFilter));
+
+    // Shared listener for color changes (both ColorPicker and TextArea)
+    ChangeListener<Color> colorChangeListener = (observable, oldValue, newValue) -> {
+      // Update the TextArea and ColorPicker when the other changes
+      double newRed = newValue.getRed() * 255;
+      double newGreen = newValue.getGreen() * 255;
+      double newBlue = newValue.getBlue() * 255;
+
+      // Update TextArea
+      textField.setText(String.format("#%02X%02X%02X", (int) newRed, (int) newGreen, (int) newBlue));
+
+      // Update ColorPicker background color
+      colorPicker.setStyle("-fx-background-color: rgb(" + (int) newRed + ", " + (int) newGreen + ", " + (int) newBlue + "); ");
+      callback.accept(textField.getText().trim());
+    };
+
+    // When ColorPicker value changes, update TextArea
+    colorPicker.valueProperty().addListener(colorChangeListener);
+
+    // Handle Enter key press to finalize color input
+    textField.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER) {
+        String inputColor = textField.getText().trim();
+        if (inputColor.matches("^#[0-9A-Fa-f]{6}$")) {
+          Color newColor = Color.web(inputColor);
+          colorPicker.setValue(newColor);
+          callback.accept(inputColor);  // Notify callback with the updated color
+        } else {
+          // Reset TextArea if input is invalid
+          textField.setText("#" + String.format("%02X%02X%02X",
+              (int) (colorPicker.getValue().getRed() * 255),
+              (int) (colorPicker.getValue().getGreen() * 255),
+              (int) (colorPicker.getValue().getBlue() * 255)));
+        }
+      }
     });
 
-    // Create HBox layout
-    HBox colorSelector = new HBox(5, labelComponent, colorPicker);
-    colorSelector.setAlignment(Pos.CENTER);
-    colorSelector.getStyleClass().add("color-selector");
+    textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+      if (!newValue) { // When focus is lost
+        String hexColor = String.format("#%02X%02X%02X",
+            (int) (colorPicker.getValue().getRed() * 255),
+            (int) (colorPicker.getValue().getGreen() * 255),
+            (int) (colorPicker.getValue().getBlue() * 255));
+        textField.setText(hexColor);
+      }
+    });
 
-    // Call callback with default color
-    callback.accept(defaultColor);
+    // Create HBox layout with label, color picker, and text area
+    HBox colorWrapper = new HBox(5, colorPicker);
+    colorWrapper.setAlignment(Pos.CENTER);
+    HBox colorSelector = new HBox(5, labelComponent, colorWrapper, textField);
+    colorSelector.setAlignment(Pos.CENTER_RIGHT);
+    HBox.setHgrow(colorWrapper, Priority.ALWAYS);
+    colorPicker.prefWidthProperty().bind(colorWrapper.widthProperty());
+    colorSelector.getStyleClass().add("color-control");
 
     return colorSelector;
   }
+
 
   /**
    * Create a draggable and zoom-able view UI control.
@@ -502,9 +562,10 @@ public class SceneUIWidget {
 
     // Create the drop-down
     ComboBox<String> dropDown = new ComboBox<>();
-    dropDown.getItems().setAll(itemsSupplier.get());
     dropDown.setPromptText("...");
     dropDown.getStyleClass().add("drop-down-box");
+    dropDown.setPrefWidth(DROPDOWN_WIDTH);
+    dropDown.setPrefHeight(DROPDOWN_HEIGHT);
 
     // Create an HBox control
     HBox dropDownControl = new HBox(5, labelComponent, dropDown);
@@ -512,8 +573,10 @@ public class SceneUIWidget {
     dropDownControl.getStyleClass().add("drop-down-control");
 
     // Update items on click
-    dropDown.setOnMouseClicked(event -> {
+    dropDown.setOnMousePressed(event -> {
+      String value = dropDown.getValue();
       dropDown.getItems().setAll(itemsSupplier.get());
+      dropDown.setValue(value);
     });
 
     // Add drop-down listener
@@ -523,6 +586,7 @@ public class SceneUIWidget {
         callback.accept(selectedValue);
       }
     });
+    dropDownControl.setUserData(dropDown);
 
     return dropDownControl;
   }
@@ -633,7 +697,7 @@ public class SceneUIWidget {
    * @param themeConsumer    the consumer for the selected theme
    */
   public static void createSplashScreen(StringProperty title, StringProperty buttonText,
-      StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer,
+      StringProperty languageText, StringProperty themeText, Language defaultLanguage, Theme defaultTheme, Consumer<Language> languageConsumer,
       Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
@@ -663,6 +727,9 @@ public class SceneUIWidget {
           splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
         }
     );
+    Map<String, ComboBox<String>> themeLanguageSelectorsData = (Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData();
+    themeLanguageSelectorsData.get("language").setValue(defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1).toLowerCase());
+    themeLanguageSelectorsData.get("theme").setValue(defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase());
 
     // Create the Start button
     Button startButton = new Button();
@@ -722,6 +789,11 @@ public class SceneUIWidget {
     box.setAlignment(Pos.CENTER);
     box.setPadding(new Insets(10));
 
+    box.setUserData(Map.of(
+        "language", languageContainer.getUserData(),
+        "theme", themeContainer.getUserData()
+    ));
+
     return box;
   }
 
@@ -733,7 +805,7 @@ public class SceneUIWidget {
    * @param styleSheet the style sheet to add
    */
   public static void setWidgetStyleSheet(String styleSheet) {
-    SceneUIWidget.WIDGET_STYLE_SHEET = styleSheet;
+    SceneUIWidgetFactory.WIDGET_STYLE_SHEET = styleSheet;
   }
 
   /* PRIVATE HELPER METHODS */

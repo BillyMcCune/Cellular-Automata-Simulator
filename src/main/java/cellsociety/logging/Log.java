@@ -61,21 +61,23 @@ public class Log {
   private static void printFormattedMessage(LogLevel level, String formattedMessage) {
     switch (level) {
       case TRACE:
-        notifyLogListeners(TRACE_COLOR + formattedMessage + "\n");
+        formattedMessage = TRACE_COLOR + formattedMessage + "\n";
         break;
       case INFO:
-        notifyLogListeners(INFO_COLOR + formattedMessage + "\n");
+        formattedMessage = INFO_COLOR + formattedMessage + "\n";
         break;
       case WARN:
-        notifyLogListeners(WARN_COLOR + formattedMessage + "\n");
+        formattedMessage = WARN_COLOR + formattedMessage + "\n";
         break;
       case ERROR:
-        // Format the error message itself
-        notifyLogListeners(ERROR_COLOR + formattedMessage + "\n");
+        formattedMessage = ERROR_COLOR + formattedMessage + "\n";
         break;
       default:
-        notifyLogListeners(formattedMessage + "\n");
+        formattedMessage = formattedMessage + "\n";
     }
+
+    System.out.print(formattedMessage + RESTORE_COLOR);
+    notifyLogListeners(formattedMessage);
   }
 
   private static String formatMessage(LogLevel level, String msg) {
