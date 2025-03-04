@@ -57,8 +57,12 @@ public class ModelApi {
     if (grid == null || gameLogic == null) {
       return;
     }
-    gameLogic.update();
-    myCellColorManager.setGrid(grid);
+    try {
+      gameLogic.update();
+      myCellColorManager.setGrid(grid);
+    } catch (NullPointerException e) {
+      throw new NoSuchElementException(e.getMessage());
+    }
   }
 
   /**
@@ -86,7 +90,7 @@ public class ModelApi {
       myCellColorManager.setGrid(grid);
     } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
              InstantiationException | IllegalAccessException e) {
-      throw new ClassNotFoundException("error-resetGrid", e);
+      throw new ClassNotFoundException(e.getMessage());
     }
   }
 
@@ -111,7 +115,7 @@ public class ModelApi {
       }
       return myParameterRecord.myDoubleParameters();
     } catch (NullPointerException e) {
-      throw new NullPointerException("error-configInfo-NULL");
+      throw new NullPointerException(e.getMessage());
     }
   }
 
@@ -128,7 +132,7 @@ public class ModelApi {
       }
       return myParameterRecord.myStringParameters();
     } catch (NullPointerException e) {
-      throw new NullPointerException("error-configInfo-NULL");
+      throw new NullPointerException(e.getMessage());
     }
   }
 
@@ -137,11 +141,15 @@ public class ModelApi {
    * current state. If that color is WHITE, the method will check if any of the cell’s property
    * values (if nonzero) have an associated color.
    */
-  public String getCellColor(int row, int col, boolean wantDefaultColor) {
+  public String getCellColor(int row, int col, boolean wantDefaultColor) throws NullPointerException {
     if (myCellColorManager == null) {
       myCellColorManager = new CellColorManager(grid);
     }
-    return myCellColorManager.getCellColor(row, col, wantDefaultColor);
+    try {
+      return myCellColorManager.getCellColor(row, col, wantDefaultColor);
+    } catch (NullPointerException e) {
+      throw new NullPointerException(e.getMessage());
+    }
   }
 
 
@@ -158,8 +166,12 @@ public class ModelApi {
    */
   public void resetParameters()
       throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-    myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
-    myParameterManager.resetParameters();
+    try {
+      myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
+      myParameterManager.resetParameters();
+    } catch (IllegalArgumentException| NullPointerException | IllegalStateException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e){
+      throw new NoSuchMethodException(e.getMessage());
+    }
   }
 
   /**
@@ -191,7 +203,7 @@ public class ModelApi {
       myCellColorManager.setGrid(grid);
     } catch (ClassNotFoundException | InvocationTargetException | InstantiationException |
              IllegalAccessException e) {
-      throw new RuntimeException("error-resetModel", e);
+      throw new RuntimeException(e.getMessage());
     }
   }
 
@@ -205,6 +217,7 @@ public class ModelApi {
     if (grid == null) {
       return cellStates;
     }
+    try{
     for (int i = 0; i < grid.getNumRows(); i++) {
       List<Integer> rowStates = new ArrayList<>();
       for (int j = 0; j < grid.getNumCols(); j++) {
@@ -214,6 +227,9 @@ public class ModelApi {
       cellStates.add(rowStates);
     }
     return cellStates;
+  } catch (NullPointerException e) {
+      throw new NullPointerException(e.getMessage());
+    }
   }
 
   /**
@@ -281,7 +297,11 @@ public class ModelApi {
     if (myParameterManager == null) {
       myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
     }
-    return myParameterManager.getParameterBounds(paramName);
+    try {
+      return myParameterManager.getParameterBounds(paramName);
+    } catch (NullPointerException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new NoSuchMethodException(e.getMessage());
+    }
   }
 
   /**
@@ -336,7 +356,11 @@ public class ModelApi {
     if (myCellColorManager == null) {
       myCellColorManager = new CellColorManager(grid);
     }
-    return myCellColorManager.getDefaultColorByState(stateName);
+    try {
+      return myCellColorManager.getDefaultColorByState(stateName);
+    } catch (NullPointerException e) {
+      throw new NullPointerException(e.getMessage());
+    }
   }
 
   /**
@@ -346,11 +370,15 @@ public class ModelApi {
    * @throws NoSuchElementException if the neighbor arrangement cannot be updated due to an I/O
    *                                error
    */
-  public void setNeighborArrangement(String neighborArrangement) {
+  public void setNeighborArrangement(String neighborArrangement) throws NullPointerException {
     if (myStyleManager == null) {
       myStyleManager = new StyleManager(myNeighborCalculator);
     }
-    myStyleManager.setNeighborArrangement(neighborArrangement);
+    try {
+      myStyleManager.setNeighborArrangement(neighborArrangement);
+    } catch (NullPointerException e) {
+      throw new NullPointerException(e.getMessage());
+    }
   }
 
 
@@ -360,11 +388,15 @@ public class ModelApi {
    * @param edgePolicy the new edge policy value
    * @throws NoSuchElementException if the edge policy cannot be updated due to an I/O error
    */
-  public void setEdgePolicy(String edgePolicy) {
+  public void setEdgePolicy(String edgePolicy) throws NullPointerException {
     if (myStyleManager == null) {
       myStyleManager = new StyleManager(myNeighborCalculator);
     }
-    myStyleManager.setEdgePolicy(edgePolicy);
+    try {
+      myStyleManager.setEdgePolicy(edgePolicy);
+    } catch (NullPointerException e) {
+      throw new NullPointerException(e.getMessage());
+    }
   }
 
 
@@ -374,7 +406,7 @@ public class ModelApi {
    * @param cellShape the new cell shape value (e.g., "SQUARE", "HEXAGON")
    * @throws NoSuchElementException if the cell shape cannot be updated due to an I/O error
    */
-  public void setCellShape(String cellShape) {
+  public void setCellShape(String cellShape) throws NullPointerException {
     if (myStyleManager == null) {
       myStyleManager = new StyleManager(myNeighborCalculator);
     }

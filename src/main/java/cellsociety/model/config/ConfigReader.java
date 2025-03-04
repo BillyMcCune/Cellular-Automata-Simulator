@@ -67,12 +67,12 @@ public class ConfigReader {
    * @throws IOException                  if an I/O error occurs.
    */
   private ConfigInfo getConfigInformation(File xmlFile, String fileName)
-      throws ParserConfigurationException, SAXException, IOException {
+      throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException{
 
     if (xmlFile.length() == 0) {
       throw new IOException("error-xmlFile-isEmpty");
     }
-
+  try {
     Document xmlDocument =
         DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
     Element root = xmlDocument.getDocumentElement();
@@ -113,6 +113,13 @@ public class ConfigReader {
         acceptedStates,
         fileName
     );
+  } catch (ParserConfigurationException e) {
+    throw new ParserConfigurationException(e.getMessage());
+  } catch (SAXException e) {
+    throw new SAXException(e.getMessage());
+  } catch (IOException e) {
+    throw new IOException(e.getMessage());
+  }
   }
 
   /**
@@ -129,24 +136,32 @@ public class ConfigReader {
    * @throws IllegalArgumentException if parameter elements are missing required attributes or
    *                                  contain invalid values.
    */
-  private ParameterRecord parseForParameters(Element root) {
-    Element parametersElement = getParametersElement(root);
-    if (parametersElement == null) {
-      return new ParameterRecord(new HashMap<>(), new HashMap<>());
-    }
-
-    Map<String, Double> doubleParams = new HashMap<>();
-    Map<String, String> stringParams = new HashMap<>();
-    NodeList paramNodes = parametersElement.getChildNodes();
-
-    for (int i = 0; i < paramNodes.getLength(); i++) {
-      Node node = paramNodes.item(i);
-      if (node.getNodeType() == Node.ELEMENT_NODE) {
-        Element paramElement = (Element) node;
-        processParameterElement(paramElement, doubleParams, stringParams);
+  private ParameterRecord parseForParameters(Element root) throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
+    try {
+      Element parametersElement = getParametersElement(root);
+      if (parametersElement == null) {
+        return new ParameterRecord(new HashMap<>(), new HashMap<>());
       }
+
+      Map<String, Double> doubleParams = new HashMap<>();
+      Map<String, String> stringParams = new HashMap<>();
+      NodeList paramNodes = parametersElement.getChildNodes();
+
+      for (int i = 0; i < paramNodes.getLength(); i++) {
+        Node node = paramNodes.item(i);
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+          Element paramElement = (Element) node;
+          processParameterElement(paramElement, doubleParams, stringParams);
+        }
+      }
+      return new ParameterRecord(doubleParams, stringParams);
+    } catch (NullPointerException e) {
+      throw new NullPointerException(e.getMessage());
+    } catch (NumberFormatException e) {
+      throw new NumberFormatException(e.getMessage());
+    } catch (IllegalArgumentException | IllegalStateException e) {
+      throw new IllegalArgumentException(e.getMessage());
     }
-    return new ParameterRecord(doubleParams, stringParams);
   }
 
   /**
@@ -170,7 +185,7 @@ public class ConfigReader {
    *                                  values.
    */
   private void processParameterElement(Element paramElement, Map<String, Double> doubleParams,
-      Map<String, String> stringParams) {
+      Map<String, String> stringParams) throws IllegalArgumentException {
     String tagName = paramElement.getTagName();
     String name = getParameterName(paramElement);
     String textContent = paramElement.getTextContent().trim();
