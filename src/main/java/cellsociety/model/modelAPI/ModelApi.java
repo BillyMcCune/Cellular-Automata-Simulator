@@ -394,6 +394,13 @@ public class ModelApi {
     myStyleManager.setGridOutlinePreference(wantsGridOutline);
   }
 
+  public boolean getGridOutlinePreference() {
+    if (myStyleManager == null) {
+      myStyleManager = new StyleManager(myNeighborCalculator);
+    }
+    return myStyleManager.getGridOutlinePreference();
+  }
+
   /**
    * Retrieves a list of possible neighbor arrangements defined in the simulation style properties.
    *
@@ -433,6 +440,18 @@ public class ModelApi {
     return myStyleManager.getPossibleCellShapes();
   }
 
+  public String getDefaultNeighborArrangement() {
+    return configInfo.myneighborArrangementType().name();
+  }
+
+  public String getDefaultEdgePolicy() {
+    return configInfo.myGridEdgeType().name();
+  }
+
+  public String getDefaultCellShape() {
+    return configInfo.myCellShapeType().name();
+  }
+
   private GridShape getGridShape() {
     return GridShape.valueOf(configInfo.myCellShapeType().name());
   }
@@ -449,5 +468,6 @@ public class ModelApi {
     SimulationType type = configInfo.myType();
     return type.name().charAt(0) + type.name().substring(1).toLowerCase();
   }
+
 }
 
