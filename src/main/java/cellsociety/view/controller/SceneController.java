@@ -2,6 +2,8 @@ package cellsociety.view.controller;
 
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.modelAPI.ModelApi;
+import cellsociety.view.renderer.drawer.GridDrawer;
+import cellsociety.view.renderer.drawer.SquareGridDrawer;
 import cellsociety.view.scene.SceneUIWidget;
 import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
@@ -35,6 +37,9 @@ public class SceneController {
   private double timeSinceLastUpdate;
 
   private String configTitle;
+
+  // TODO: Add support for different grid drawer types.
+  private Class<? extends GridDrawer> gridDrawerClass = SquareGridDrawer.class;
 
   /**
    * Constructor for the SceneController. Creates the model and configuration APIs and links them
@@ -288,7 +293,7 @@ public class SceneController {
   private void initViewGrid() throws NullPointerException {
     numRows = myConfigAPI.getGridHeight();
     numCols = myConfigAPI.getGridWidth();
-    simulationScene.setGrid(numRows, numCols);
+    simulationScene.setGrid(numRows, numCols, gridDrawerClass);
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numCols; j++) {
         // TODO: Add support for wantDefaultColor.

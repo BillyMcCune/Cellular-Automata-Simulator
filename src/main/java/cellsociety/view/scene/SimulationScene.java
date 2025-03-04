@@ -519,9 +519,9 @@ public class SimulationScene {
    * @param numOfRows the number of rows in the grid
    * @param numOfCols the number of columns in the grid
    */
-  public void setGrid(int numOfRows, int numOfCols) {
-    SceneRenderer.drawGrid(grid, numOfRows, numOfCols);
-    SceneRenderer.drawGrid(miniGrid, numOfRows, numOfCols);
+  public <T extends GridDrawer> void setGrid(int numOfRows, int numOfCols, Class<T> gridDrawerClass) {
+    SceneRenderer.drawGrid(grid, numOfRows, numOfCols, gridDrawerClass);
+    SceneRenderer.drawGrid(miniGrid, numOfRows, numOfCols, gridDrawerClass);
   }
 
   /**
