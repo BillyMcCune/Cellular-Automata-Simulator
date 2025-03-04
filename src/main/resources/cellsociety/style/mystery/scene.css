@@ -90,6 +90,13 @@
   -fx-border-radius: 6px;
 }
 
+.color-box {
+  -fx-border-color: #3f2a5b;
+  -fx-padding: 8px;
+  -fx-background-color: linear-gradient(to bottom, #292929, #3e1f47);
+  -fx-border-radius: 6px;
+}
+
 .log-box {
   -fx-border-color: #3f2a5b;
   -fx-padding: 8px;

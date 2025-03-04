@@ -73,5 +73,4 @@ public record ConfigInfo(
   public enum neighborArrangementType {
     MOORE, NEUMANN
   }
-
 }

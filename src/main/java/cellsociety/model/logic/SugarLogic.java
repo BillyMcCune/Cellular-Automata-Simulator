@@ -37,8 +37,7 @@ public class SugarLogic extends Logic<SugarState> {
    *                   and sugarGrowBackInterval
    * @throws IllegalArgumentException if any parameter is out of bounds
    */
-  public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters)
-      throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public SugarLogic(Grid<SugarState> grid, ParameterRecord parameters) {
     super(grid, parameters);
     setVision(getDoubleParamOrFallback("vision"));
     setSugarMetabolism(getDoubleParamOrFallback("sugarMetabolism"));
@@ -110,8 +109,7 @@ public class SugarLogic extends Logic<SugarState> {
    * @param vision the new vision distance
    * @throws IllegalArgumentException if vision is out of valid range
    */
-  public void setVision(double vision)
-      throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+  public void setVision(double vision) {
     double min = getMinParam("vision");
     double max = getMaxParam("vision");
     checkBounds(vision, min, max);
