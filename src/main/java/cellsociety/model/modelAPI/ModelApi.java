@@ -1,5 +1,6 @@
 package cellsociety.model.modelAPI;
 
+import cellsociety.logging.Log;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.config.ConfigInfo;
 import cellsociety.model.config.ConfigInfo.SimulationType;

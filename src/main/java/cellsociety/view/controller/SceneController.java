@@ -1,16 +1,20 @@
 package cellsociety.view.controller;
 
+import cellsociety.logging.Log;
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.modelAPI.ModelApi;
 import cellsociety.view.renderer.drawer.GridDrawer;
+import cellsociety.view.renderer.drawer.HexGridDrawer;
 import cellsociety.view.renderer.drawer.SquareGridDrawer;
-import cellsociety.view.scene.SceneUIWidget;
+import cellsociety.view.scene.SceneUIWidgetFactory;
 import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -20,26 +24,28 @@ public class SceneController {
   public static final double MAX_SPEED = 100;
   public static final double MIN_SPEED = 0;
   public static final double SPEED_MULTIPLIER = 3;
+  public static final String GRIDDRAWER_PACKAGE = "cellsociety.view.renderer.drawer.";
+  // TODO: Change this to the default configuration file.
+  public static final String DEFAULT_LOADED_SIMULATION_CONFIG = "GameOfLifeGlider.xml";
 
-  // Instance variables
+  // Controller instance variables
   private final ModelApi myModelApi;
   private final configAPI myConfigAPI;
   private final SimulationScene simulationScene;
 
+  // Simulation state variables
   private boolean isLoaded;
   private boolean isPaused;
 
+  // Grid variables
   private int numRows;
   private int numCols;
   private int numIterations;
+  private Class<? extends GridDrawer> gridDrawerClass;
 
+  // Frame update variables
   private double updateInterval;
   private double timeSinceLastUpdate;
-
-  private String configTitle;
-
-  // TODO: Add support for different grid drawer types.
-  private Class<? extends GridDrawer> gridDrawerClass = SquareGridDrawer.class;
 
   /**
    * Constructor for the SceneController. Creates the model and configuration APIs and links them
@@ -54,12 +60,16 @@ public class SceneController {
     myConfigAPI = new configAPI();
     myConfigAPI.setModelAPI(myModelApi);
 
+    // Initialize the simulation controller
     this.simulationScene = scene;
     this.isPaused = true;
     this.isLoaded = false;
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
     this.numIterations = 0;
+
+    // Initialize the styles
+    initSimulationStyle();
   }
 
   /**
@@ -98,7 +108,7 @@ public class SceneController {
       isLoaded = true;
     } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException |
              InvocationTargetException | IllegalAccessException | NullPointerException ex) {
-      SceneUIWidget.createErrorDialog(
+      SceneUIWidgetFactory.createErrorDialog(
           LanguageController.getStringProperty("error-loadConfig").getValue(),
           ex.getMessage(), ex);
     }
@@ -111,14 +121,15 @@ public class SceneController {
    */
   public void saveConfig(String path) {
     try {
+      // TODO: Make User Change the Simulation Details
       String savedFile = myConfigAPI.saveSimulation(path);
       String message = String.format(
           LanguageController.getStringProperty("success-saveConfigMessage").getValue(), path);
-      SceneUIWidget.createSuccessSaveDialog(
+      SceneUIWidgetFactory.createSuccessSaveDialog(
           LanguageController.getStringProperty("success-saveConfigTitle").getValue(),
           message, savedFile);
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(
+      SceneUIWidgetFactory.createErrorDialog(
           LanguageController.getStringProperty("error-saveConfig").getValue(),
           e.getMessage(), e);
     }
@@ -134,6 +145,30 @@ public class SceneController {
   }
 
   /**
+   * Retrieves a list of all available cell shape names.
+   * @return a list of cell shape names
+   */
+  public List<String> getAllCellShapeNames() {
+    return myModelApi.getPossibleCellShapes().stream().map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase()).collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves a list of all available edge policy names.
+   * @return a list of edge policy names
+   */
+  public List<String> getALlEdgePolicies() {
+    return myModelApi.getPossibleEdgePolicies().stream().map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase()).collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves a list of all available neighbor arrangement names.
+   * @return a list of neighbor arrangement names
+   */
+  public List<String> getAllNeighborArrangements() {
+    return myModelApi.getPossibleNeighborArrangements().stream().map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase()).collect(Collectors.toList());
+  }
+
+  /**
    * Retrieves simulation information from the configuration.
    *
    * @return a formatted string containing author, title, type, and description.
@@ -141,7 +176,6 @@ public class SceneController {
   public String getConfigInformation() {
     try {
       Map<String, String> simulationInfo = myConfigAPI.getSimulationInformation();
-      configTitle = simulationInfo.get("title");
       return String.format("Author: %s\nTitle: %s\nType: %s\nIterations: %d\nDescription: %s",
           simulationInfo.get("author"),
           simulationInfo.get("title"),
@@ -161,7 +195,7 @@ public class SceneController {
    * @return the title of the simulation
    */
   public String getSimulationTitle() {
-    return configTitle;
+    return myConfigAPI.getSimulationInformation().get("title");
   }
 
   /* MODEL APIS */
@@ -178,7 +212,7 @@ public class SceneController {
       numIterations = 0;
       updateViewInfo();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(
+      SceneUIWidgetFactory.createErrorDialog(
           LanguageController.getStringProperty("error-resetModel").getValue(),
           e.getMessage(), e);
     }
@@ -195,7 +229,7 @@ public class SceneController {
       numIterations = 0;
       updateViewInfo();
     } catch (Exception e) {
-      SceneUIWidget.createErrorDialog(
+      SceneUIWidgetFactory.createErrorDialog(
           LanguageController.getStringProperty("error-resetGrid").getValue(),
           e.getMessage(), e);
     }
@@ -255,7 +289,6 @@ public class SceneController {
     }
   }
 
-
   /* CONTROLLER APIS */
 
   /**
@@ -265,6 +298,63 @@ public class SceneController {
    */
   public void setStartPause(boolean isPaused) {
     this.isPaused = isPaused;
+  }
+
+  /**
+   * Sets the cell shape of the simulation.
+   * @param cellShape the cell shape to set, the first letter should be capitalized
+   *                  (e.g. "Square", "Triangle", "Hex")
+   */
+  public void setCellShape(String cellShape) {
+    try {
+      Class<?> clazz = Class.forName(GRIDDRAWER_PACKAGE + cellShape + "GridDrawer");
+      if (GridDrawer.class.isAssignableFrom(clazz)) {
+        gridDrawerClass = clazz.asSubclass(GridDrawer.class);
+        myModelApi.setCellShape(cellShape.toUpperCase());
+
+        initViewGrid();
+        updateViewGrid();
+      } else {
+        throw new ClassCastException("Class " + cellShape + "GridDrawer does not extend GridDrawer.");
+      }
+    } catch (ClassNotFoundException | ClassCastException e) {
+      SceneUIWidgetFactory.createErrorDialog(
+          // TODO: Add error message to the language controller
+          LanguageController.getStringProperty("error-setCellShape").getValue(),
+          e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Sets the edge policy of the simulation.
+   * @param edgePolicy the edge policy to set, the first letter should be capitalized
+   *                  (e.g. "Finite", "Toroidal", "Infinite")
+   */
+  public void setEdgePolicy(String edgePolicy) {
+    try {
+      myModelApi.setEdgePolicy(edgePolicy.toUpperCase());
+    } catch (Exception e) {
+      SceneUIWidgetFactory.createErrorDialog(
+          // TODO: Add error message to the language controller
+          LanguageController.getStringProperty("error-setEdgePolicy").getValue(),
+          e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Sets the neighbor arrangement of the simulation.
+   * @param neighborArrangement the neighbor arrangement to set, the first letter should be capitalized
+   *                  (e.g. "Cardinal", "Diagonal", "Both")
+   */
+  public void setNeighborArrangement(String neighborArrangement) {
+    try {
+      myModelApi.setNeighborArrangement(neighborArrangement.toUpperCase());
+    } catch (Exception e) {
+      SceneUIWidgetFactory.createErrorDialog(
+          // TODO: Add error message to the language controller
+          LanguageController.getStringProperty("error-setNeighborArrangement").getValue(),
+          e.getMessage(), e);
+    }
   }
 
   /**
@@ -285,18 +375,26 @@ public class SceneController {
     return this.isPaused;
   }
 
-  /**
-   * Initializes the grid on the simulation scene by retrieving the cell states and properties from
-   * the model API.
-   */
-  //TODO fix this
+  /* PRIVATE HELPER METHODS */
+
+  private void initSimulationStyle() {
+    // TODO: Initialize the Simulation Style as the preference ones.
+    // Cell shape
+    gridDrawerClass = SquareGridDrawer.class;
+
+    // Edge type
+  }
+
   private void initViewGrid() throws NullPointerException {
     numRows = myConfigAPI.getGridHeight();
     numCols = myConfigAPI.getGridWidth();
     simulationScene.setGrid(numRows, numCols, gridDrawerClass);
+
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numCols; j++) {
         // TODO: Add support for wantDefaultColor.
+        // NOTES: I'm not sure what wantDefaultColor is supposed to do.
+        //    BY: Hsuan-Kai Liao
         simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, true));
       }
     }
@@ -310,6 +408,8 @@ public class SceneController {
       for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
           // TODO: Add support for wantDefaultColor.
+          // NOTES: I'm not sure what wantDefaultColor is supposed to do.
+          //    BY: Hsuan-Kai Liao
           simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, true));
         }
       }
@@ -321,7 +421,6 @@ public class SceneController {
       simulationScene.setInfo(getConfigInformation());
     }
   }
-
 
   private int getTickSpeed() {
     return (int) (10 / updateInterval / SPEED_MULTIPLIER);

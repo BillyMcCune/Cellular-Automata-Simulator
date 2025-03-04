@@ -47,7 +47,7 @@ import javafx.stage.Stage;
  *
  * @author Hsuan-Kai Liao
  */
-public class SceneUIWidget {
+public class SceneUIWidgetFactory {
 
   // UI constants
   public static final double MAX_ZOOM_RATE = 8.0;
@@ -55,6 +55,8 @@ public class SceneUIWidget {
   public static final double BUTTON_WIDTH = 100;
   public static final double BUTTON_HEIGHT = 35;
   public static final double MAX_BUTTON_WIDTH = 200;
+  public static final double DROPDOWN_WIDTH = 100;
+  public static final double DROPDOWN_HEIGHT = 35;
 
   // Error Stage
   private static final double DEFAULT_SPLASH_WIDTH = 400;
@@ -493,6 +495,7 @@ public class SceneUIWidget {
    * @param callback      callback function to be called when selection changes
    * @return the drop-down UI control HBox
    */
+  // FIXME: The Scroller of the CSS is SOMETIMES BROKEN for the drop-down list
   public static HBox createDropDownUI(StringProperty label,
       Supplier<Collection<String>> itemsSupplier, Consumer<String> callback) {
     // Create the label with tooltip
@@ -502,9 +505,10 @@ public class SceneUIWidget {
 
     // Create the drop-down
     ComboBox<String> dropDown = new ComboBox<>();
-    dropDown.getItems().setAll(itemsSupplier.get());
     dropDown.setPromptText("...");
     dropDown.getStyleClass().add("drop-down-box");
+    dropDown.setPrefWidth(DROPDOWN_WIDTH);
+    dropDown.setPrefHeight(DROPDOWN_HEIGHT);
 
     // Create an HBox control
     HBox dropDownControl = new HBox(5, labelComponent, dropDown);
@@ -733,7 +737,7 @@ public class SceneUIWidget {
    * @param styleSheet the style sheet to add
    */
   public static void setWidgetStyleSheet(String styleSheet) {
-    SceneUIWidget.WIDGET_STYLE_SHEET = styleSheet;
+    SceneUIWidgetFactory.WIDGET_STYLE_SHEET = styleSheet;
   }
 
   /* PRIVATE HELPER METHODS */
