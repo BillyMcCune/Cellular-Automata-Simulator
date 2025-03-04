@@ -174,6 +174,12 @@ public class StyleManager {
     saveProperties(simulationStyle);
   }
 
+
+  public boolean getGridOutlinePreference() {
+    Properties simulationStyle = loadProperties();
+    return Boolean.parseBoolean(simulationStyle.getProperty(gridOutlineProperty));
+  }
+
   /**
    * Retrieves a list of possible cell shapes defined in the simulation style properties.
    *
