@@ -178,17 +178,18 @@ public class NeighborCalculator<T extends Enum<T> & State> {
   }
 
   public Map<Direction, Cell<T>> raycastDirection(Grid<T> grid, int startRow, int startCol,
-      Direction rawDir, int steps)
-      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+      Direction rawDir, int steps) {
     return raycastImplementor.raycast(grid, startRow, startCol, rawDir, steps);
   }
 
+  public List<Direction> getAllRaycastDirections(int startRow, int startCol) {
+    return raycastImplementor.getDefaultRawDirections(startRow, startCol);
+  }
+
   public Map<Direction, Map<Direction, Cell<T>>> raycastAllDirections(Grid<T> grid, int startRow,
-      int startCol, int steps)
-      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-    List<Direction> defaultDirs = raycastImplementor.getDefaultRawDirections(startRow, startCol);
+      int startCol, int steps) {
     Map<Direction, Map<Direction, Cell<T>>> results = new HashMap<>();
-    for (Direction d : defaultDirs) {
+    for (Direction d : getAllRaycastDirections(startRow, startCol)) {
       results.put(d, raycastImplementor.raycast(grid, startRow, startCol, d, steps));
     }
     return results;
