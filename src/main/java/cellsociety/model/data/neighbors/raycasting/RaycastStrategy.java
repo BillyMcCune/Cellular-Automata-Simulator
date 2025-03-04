@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * Generic interface for "raycasting" in a particular shape (square, hex, triangle).
+ *
  * @author Jacob You
  */
 public interface RaycastStrategy<T extends Enum<T> & State> {
@@ -22,9 +23,9 @@ public interface RaycastStrategy<T extends Enum<T> & State> {
       Direction rawDir, int steps, EdgeType boundary);
 
   /**
-   * Returns the default raw directions for this strategy given the starting cell.
-   * For hex and triangle strategies, the set of default raw directions may depend
-   * on the cell’s orientation (row parity for hex; up/down for triangles).
+   * Returns the default raw directions for this strategy given the starting cell. For hex and
+   * triangle strategies, the set of default raw directions may depend on the cell’s orientation
+   * (row parity for hex; up/down for triangles).
    */
   List<Direction> getDefaultRawDirections(int startRow, int startCol);
 }

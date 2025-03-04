@@ -3,11 +3,8 @@ package cellsociety.model.data.cells;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.ArrayDeque;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,10 +34,19 @@ public class Cell<T extends Enum<T> & State> {
   /**
    * Returns the neighbors of this cell.
    *
-   * @return a map of coordinates to neighboring cells
+   * @return a map of directions to neighboring cells
    */
   public Map<Direction, Cell<T>> getNeighbors() {
     return neighbors;
+  }
+
+  /**
+   * Sets the neighbors of this cell.
+   *
+   * @param neighbors a map of directions to neighboring cells
+   */
+  public void setNeighbors(Map<Direction, Cell<T>> neighbors) {
+    this.neighbors = neighbors;
   }
 
   /**
@@ -68,15 +74,6 @@ public class Cell<T extends Enum<T> & State> {
    */
   public T getNextState() {
     return nextState;
-  }
-
-  /**
-   * Sets the neighbors of this cell.
-   *
-   * @param neighbors a map of coordinates to neighboring cells
-   */
-  public void setNeighbors(Map<Direction, Cell<T>> neighbors) {
-    this.neighbors = neighbors;
   }
 
   /**
@@ -162,7 +159,7 @@ public class Cell<T extends Enum<T> & State> {
   }
 
   /**
-   * Add a record to the queue.
+   * Adds a record to the queue.
    *
    * @param record the record to add to the queue
    */
@@ -171,36 +168,51 @@ public class Cell<T extends Enum<T> & State> {
   }
 
   /**
-   * Remove the most recent record from the queue
+   * Removes the most recent record from the queue.
    */
   public void removeQueueRecord() {
     queue.pollLast();
   }
 
   /**
-   * Take a look at the most record on the queue and return it.
-   * @return the most recent value in the queue.
+   * Returns the most recent record on the queue without removing it.
+   *
+   * @return the most recent value in the queue
    */
   public CellQueueRecord peekQueueRecord() {
     return queue.peekLast();
   }
 
   /**
-   * Get the entire queue.
+   * Returns the entire queue.
+   *
    * @return the queue
    */
   public Deque<CellQueueRecord> getQueueRecords() {
     return queue;
   }
 
+  /**
+   * Sets the queue records from the provided deque.
+   *
+   * @param records the queue records to set
+   */
   public void setQueueRecords(Deque<CellQueueRecord> records) {
     queue = new ArrayDeque<>(records);
   }
 
+  /**
+   * Copies this cell's queue to another cell.
+   *
+   * @param other the cell to which the queue is copied
+   */
   public void copyQueueTo(Cell<T> other) {
     other.setQueueRecords(this.getQueueRecords());
   }
 
+  /**
+   * Clears all queue records of this cell.
+   */
   public void clearQueueRecords() {
     queue.clear();
   }

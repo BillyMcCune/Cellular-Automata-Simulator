@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
+/**
+ * @author Jacob You
+ */
 public class NeighborCalculatorTest {
 
   private static final CellFactory<DummyState> FACTORY = new CellFactory<>(DummyState.class);
@@ -32,7 +35,8 @@ public class NeighborCalculatorTest {
     }
   }
 
-  private Grid<DummyState> createGrid(int rows, int cols, GridShape shape, NeighborType type, EdgeType edgeType) {
+  private Grid<DummyState> createGrid(int rows, int cols, GridShape shape, NeighborType type,
+      EdgeType edgeType) {
     List<List<CellRecord>> raw = new ArrayList<>();
     for (int r = 0; r < rows; r++) {
       List<CellRecord> row = new ArrayList<>();
@@ -98,7 +102,7 @@ public class NeighborCalculatorTest {
 
     Direction[] expectedDirections = {
         new Direction(-1, -1), new Direction(-1, 0), new Direction(-1, 1),
-        new Direction(0, -1),                      new Direction(0, 1),
+        new Direction(0, -1), new Direction(0, 1),
         new Direction(1, -1), new Direction(1, 0), new Direction(1, 1)
     };
 

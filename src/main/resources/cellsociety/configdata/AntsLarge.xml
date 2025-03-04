@@ -23,13 +23,13 @@
     <doubleParameter name="maxAnts">10</doubleParameter>
     
     
-    <doubleParameter name="evaporationRate">75</doubleParameter>
+    <doubleParameter name="evaporationRate">10</doubleParameter>
     
     
-    <doubleParameter name="maxHomePheromone">10</doubleParameter>
+    <doubleParameter name="maxHomePheromone">100</doubleParameter>
     
     
-    <doubleParameter name="maxFoodPheromone">10</doubleParameter>
+    <doubleParameter name="maxFoodPheromone">100</doubleParameter>
     
     
     <doubleParameter name="basePheromoneWeight">1</doubleParameter>

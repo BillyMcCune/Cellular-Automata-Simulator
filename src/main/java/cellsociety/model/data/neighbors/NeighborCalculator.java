@@ -41,9 +41,34 @@ public class NeighborCalculator<T extends Enum<T> & State> {
   }
 
 
-  public List<Direction> getDirections() {
+  /**
+   * Retrieves the list of available directions for a cell at the specified row and column,
+   * adjusting the direction offsets for hexagonal and triangular grids by flipping the dy value as
+   * needed.
+   *
+   * @param row the row index of the cell
+   * @param col the column index of the cell
+   * @return a list of directions adjusted based on the cell's position and grid shape
+   */
+  public List<Direction> getDirections(int row, int col) {
     String baseKey = shape + "_" + neighborType;
-    return NEIGHBOR_MAP.get(baseKey);
+    List<Direction> baseOffsets = NEIGHBOR_MAP.get(baseKey);
+    boolean flip = false;
+    if (shape == GridShape.HEX) {
+      flip = (col % 2 != 0);
+    } else if (shape == GridShape.TRI) {
+      flip = ((row + col) % 2 != 0);
+    }
+    List<Direction> adjustedDirections = new ArrayList<>();
+    for (Direction offset : baseOffsets) {
+      int dy = offset.dy();
+      int dx = offset.dx();
+      if (flip) {
+        dy = -dy;
+      }
+      adjustedDirections.add(new Direction(dy, dx));
+    }
+    return adjustedDirections;
   }
 
   public void setSteps(int steps) {
@@ -60,6 +85,10 @@ public class NeighborCalculator<T extends Enum<T> & State> {
 
   public void setEdgeType(EdgeType edgeType) {
     this.edgeType = edgeType;
+  }
+
+  public int getSteps() {
+    return steps;
   }
 
   public GridShape getShape() {
@@ -84,12 +113,13 @@ public class NeighborCalculator<T extends Enum<T> & State> {
   }
 
   /**
-   * Returns the ring (exact BFS distance) of cells at distance 'distTarget' from (row,col),
-   * as a Map<Direction,Cell<T>>.
+   * Returns the ring (exact BFS distance) of cells at distance 'distTarget' from (row,col), as a
+   * Map<Direction,Cell<T>>.
    */
   public Map<Direction, Cell<T>> getNeighborsAtDistance(
       Grid<T> grid, int startRow, int startCol, int distTarget) {
-    List<Map<Direction, Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol, distTarget);
+    List<Map<Direction, Cell<T>>> expansionsByDist = bfsExpansions(grid, startRow, startCol,
+        distTarget);
     if (distTarget < expansionsByDist.size()) {
       return expansionsByDist.get(distTarget);
     }

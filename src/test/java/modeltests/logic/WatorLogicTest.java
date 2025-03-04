@@ -1,6 +1,7 @@
 package modeltests.logic;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.config.CellRecord;
 import cellsociety.model.data.Grid;

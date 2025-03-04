@@ -198,9 +198,9 @@ public class BacteriaLogicTest {
   @Test
   public void update_MultipleSteps_GradualSpread() {
     List<List<Integer>> data = new ArrayList<>();
-    data.add(List.of(0,1,0));
-    data.add(List.of(1,1,1));
-    data.add(List.of(0,1,0));
+    data.add(List.of(0, 1, 0));
+    data.add(List.of(1, 1, 1));
+    data.add(List.of(0, 1, 0));
     Grid<BacteriaState> grid = createGridFromData(data);
     ParameterRecord params = createParams(40.0, 2.0);
     BacteriaLogic logic = new BacteriaLogic(grid, params);

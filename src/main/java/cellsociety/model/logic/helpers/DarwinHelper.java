@@ -31,7 +31,8 @@ public class DarwinHelper {
     registerInstructions();
   }
 
-  public DarwinHelper(Map<Integer, List<String>> species, DarwinLogic darwinLogic, Grid<DarwinState> grid) {
+  public DarwinHelper(Map<Integer, List<String>> species, DarwinLogic darwinLogic,
+      Grid<DarwinState> grid) {
     this.darwinLogic = darwinLogic;
     this.grid = grid;
     this.speciesPrograms = species;
@@ -107,8 +108,8 @@ public class DarwinHelper {
   }
 
   /**
-   * Converts an instruction name into its alias if one exists.
-   * Otherwise, returns the original instruction name.
+   * Converts an instruction name into its alias if one exists. Otherwise, returns the original
+   * instruction name.
    */
   private String getAlias(String instruction) {
     return switch (instruction) {
@@ -159,11 +160,11 @@ public class DarwinHelper {
       return new InstructionResult(0, null);
     }
 
-    if (instructionIndex-1 >= instructions.size()) {
+    if (instructionIndex - 1 >= instructions.size()) {
       instructionIndex = 1;
       cell.setProperty("instructionIndex", instructionIndex);
     }
-    String instruction = instructions.get(instructionIndex-1);
+    String instruction = instructions.get(instructionIndex - 1);
     return processInstruction(instruction, cell);
   }
 
@@ -278,5 +279,7 @@ public class DarwinHelper {
     return (angle + 360) % 360;
   }
 
-  public record InstructionResult(int moveDistance, Cell<DarwinState> infectedCell) {}
+  public record InstructionResult(int moveDistance, Cell<DarwinState> infectedCell) {
+
+  }
 }

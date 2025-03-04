@@ -26,8 +26,9 @@ public class CellFactoryTest {
 
     public static TestState fromInt(Class<TestState> enumClass, int value) {
       for (TestState s : enumClass.getEnumConstants()) {
-        if (s.getValue() == value)
+        if (s.getValue() == value) {
           return s;
+        }
       }
       return enumClass.getEnumConstants()[0];
     }

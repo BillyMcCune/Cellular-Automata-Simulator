@@ -11,7 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Concrete implementation of {@link Logic} for the Foraging Ants simulation.
+ * Concrete implementation of {@link Logic} for the Foraging Ants simulation. This class
+ * encapsulates the logic for ant behavior including movement, pheromone evaporation, and decision
+ * making based on environmental stimuli. It manages ant states within each cell on the grid.
+ *
+ * <p>The simulation parameters (e.g., maxAnts, evaporationRate, pheromone sensitivities, etc.) are
+ * set
+ * via a {@link ParameterRecord} provided at construction time. The logic updates the state of the
+ * grid by processing each cell's ants, moving them according to pheromone gradients, and handling
+ * state transitions.
  *
  * @author Jacob You
  */
@@ -26,19 +34,20 @@ public class AntLogic extends Logic<AntState> {
   private double pheromoneDiffusionDecay;
   private final Map<Cell<AntState>, List<AntInfo>> cellAntsMap = new HashMap<>();
 
-
   /**
-   * Record representing an individual ant in the simulation.
+   * Immutable record representing an individual ant in the simulation. Each ant has an orientation
+   * indicating its current movement direction and a flag indicating whether it is currently
+   * carrying food.
    *
-   * @param orientation the ant's current orientation as a Direction
-   * @param hasFood     true if the ant is carrying food, false otherwise
+   * @param orientation the ant's current orientation as a {@link Direction}
+   * @param hasFood     {@code true} if the ant is carrying food, {@code false} otherwise
    */
   public record AntInfo(Direction orientation, boolean hasFood) {
 
   }
 
   /**
-   * Constructs an AntLogic instance for the foraging ant simulation.
+   * Constructs an {@code AntLogic} instance for the foraging ant simulation.
    *
    * @param grid       the grid representing the simulation state
    * @param parameters the parameter record containing simulation-specific configurations
@@ -56,6 +65,12 @@ public class AntLogic extends Logic<AntState> {
     initializeAnts();
   }
 
+  /**
+   * Sets the maximum number of ants allowed in a cell.
+   *
+   * @param maxAnts the maximum ants value
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setMaxAnts(double maxAnts) throws IllegalArgumentException {
     double min = getMinParam("maxAnts");
     double max = getMaxParam("maxAnts");
@@ -63,10 +78,21 @@ public class AntLogic extends Logic<AntState> {
     this.maxAnts = maxAnts;
   }
 
+  /**
+   * Returns the maximum number of ants allowed in a cell.
+   *
+   * @return the maximum ants value
+   */
   public double getMaxAnts() {
     return maxAnts;
   }
 
+  /**
+   * Sets the evaporation rate for pheromones.
+   *
+   * @param evaporationRate the evaporation rate (in percent) to set
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setEvaporationRate(double evaporationRate) throws IllegalArgumentException {
     double min = getMinParam("evaporationRate");
     double max = getMaxParam("evaporationRate");
@@ -74,10 +100,21 @@ public class AntLogic extends Logic<AntState> {
     this.evaporationRate = evaporationRate / 100;
   }
 
+  /**
+   * Returns the evaporation rate for pheromones (in percent).
+   *
+   * @return the evaporation rate as a percentage
+   */
   public double getEvaporationRate() {
     return evaporationRate * 100;
   }
 
+  /**
+   * Sets the maximum home pheromone level.
+   *
+   * @param maxHomePheromone the maximum home pheromone value to set
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setMaxHomePheromone(double maxHomePheromone) throws IllegalArgumentException {
     double min = getMinParam("maxHomePheromone");
     double max = getMaxParam("maxHomePheromone");
@@ -85,10 +122,21 @@ public class AntLogic extends Logic<AntState> {
     this.maxHomePheromone = maxHomePheromone;
   }
 
+  /**
+   * Returns the maximum home pheromone level.
+   *
+   * @return the maximum home pheromone value
+   */
   public double getMaxHomePheromone() {
     return maxHomePheromone;
   }
 
+  /**
+   * Sets the maximum food pheromone level.
+   *
+   * @param maxFoodPheromone the maximum food pheromone value to set
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setMaxFoodPheromone(double maxFoodPheromone) throws IllegalArgumentException {
     double min = getMinParam("maxFoodPheromone");
     double max = getMaxParam("maxFoodPheromone");
@@ -96,10 +144,21 @@ public class AntLogic extends Logic<AntState> {
     this.maxFoodPheromone = maxFoodPheromone;
   }
 
+  /**
+   * Returns the maximum food pheromone level.
+   *
+   * @return the maximum food pheromone value
+   */
   public double getMaxFoodPheromone() {
     return maxFoodPheromone;
   }
 
+  /**
+   * Sets the base pheromone weight, which influences how pheromone levels affect ant movement.
+   *
+   * @param basePheromoneWeight the base pheromone weight to set
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setBasePheromoneWeight(double basePheromoneWeight) throws IllegalArgumentException {
     double min = getMinParam("basePheromoneWeight");
     double max = getMaxParam("basePheromoneWeight");
@@ -107,10 +166,22 @@ public class AntLogic extends Logic<AntState> {
     this.basePheromoneWeight = basePheromoneWeight;
   }
 
+  /**
+   * Returns the base pheromone weight.
+   *
+   * @return the base pheromone weight value
+   */
   public double getBasePheromoneWeight() {
     return basePheromoneWeight;
   }
 
+  /**
+   * Sets the pheromone sensitivity which determines how strongly ants respond to pheromone
+   * gradients.
+   *
+   * @param pheromoneSensitivity the pheromone sensitivity to set
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setPheromoneSensitivity(double pheromoneSensitivity) throws IllegalArgumentException {
     double min = getMinParam("pheromoneSensitivity");
     double max = getMaxParam("pheromoneSensitivity");
@@ -118,10 +189,22 @@ public class AntLogic extends Logic<AntState> {
     this.pheromoneSensitivity = pheromoneSensitivity;
   }
 
+  /**
+   * Returns the pheromone sensitivity.
+   *
+   * @return the pheromone sensitivity value
+   */
   public double getPheromoneSensitivity() {
     return pheromoneSensitivity;
   }
 
+  /**
+   * Sets the pheromone diffusion decay, which controls how quickly pheromone signals weaken over
+   * distance.
+   *
+   * @param pheromoneDiffusionDecay the pheromone diffusion decay value to set
+   * @throws IllegalArgumentException if the value is out of allowed bounds
+   */
   public void setPheromoneDiffusionDecay(double pheromoneDiffusionDecay)
       throws IllegalArgumentException {
     double min = getMinParam("pheromoneDiffusionDecay");
@@ -130,10 +213,20 @@ public class AntLogic extends Logic<AntState> {
     this.pheromoneDiffusionDecay = pheromoneDiffusionDecay;
   }
 
+  /**
+   * Returns the pheromone diffusion decay.
+   *
+   * @return the pheromone diffusion decay value
+   */
   public double getPheromoneDiffusionDecay() {
     return pheromoneDiffusionDecay;
   }
 
+  /**
+   * Initializes the ants on the grid based on the properties of each cell. This method sets up the
+   * initial ant distribution by examining the cell properties "searchingEntities" and
+   * "returningEntities", and assigns initial directions based on pheromone levels.
+   */
   private void initializeAnts() {
     for (int r = 0; r < grid.getNumRows(); r++) {
       for (int c = 0; c < grid.getNumCols(); c++) {
@@ -141,7 +234,7 @@ public class AntLogic extends Logic<AntState> {
         double searchingEntities = cell.getProperty("searchingEntities");
         double returningEntities = cell.getProperty("returningEntities");
         List<Direction> validDirections = getValidDirections(
-            grid.getNeighborCalculator().getDirections(), cell);
+            grid.getDirections(cell), cell);
         Direction chosenSearching = getPheromoneWeightedDirection(validDirections, cell,
             "foodPheromone");
         Direction chosenReturning = getPheromoneWeightedDirection(validDirections, cell,
@@ -164,6 +257,11 @@ public class AntLogic extends Logic<AntState> {
     }
   }
 
+  /**
+   * Updates the simulation by processing ant movements, pheromone evaporation, and state updates.
+   * This method iterates over each cell to update its ants and pheromone levels, and then updates
+   * the grid to reflect the new states.
+   */
   @Override
   public void update() {
     int numRows = grid.getNumRows();
@@ -192,6 +290,12 @@ public class AntLogic extends Logic<AntState> {
     grid.updateGrid();
   }
 
+  /**
+   * Updates the state of a single cell by processing the ants within it. If the cell has no ants,
+   * it is removed from the internal ant mapping.
+   *
+   * @param cell the cell to update
+   */
   @Override
   public void updateSingleCell(Cell<AntState> cell) {
     List<AntInfo> ants = cellAntsMap.get(cell);
@@ -239,21 +343,22 @@ public class AntLogic extends Logic<AntState> {
   // STUFF TO FIND THE DIRECTION TO GO TO
 
   private Direction determineDirection(Cell<AntState> cell, AntInfo ant) {
-    List<Direction> possibleDirections = getPossibleDirections(ant.orientation());
+    List<Direction> possibleDirections = getPossibleDirections(ant.orientation(), cell);
     String pheromoneType = ant.hasFood() ? "homePheromone" : "foodPheromone";
     List<Direction> validDirections = getValidDirections(possibleDirections, cell);
     Direction chosen = getPheromoneWeightedDirection(validDirections, cell, pheromoneType);
     if (chosen != null) {
       return chosen;
     }
-    validDirections = getValidDirections(grid.getNeighborCalculator().getDirections(), cell);
+    validDirections = getValidDirections(grid.getDirections(cell), cell);
     chosen = getPheromoneWeightedDirection(validDirections, cell, pheromoneType);
     return (chosen != null) ? chosen : new Direction(0, 0);
   }
 
-  private List<Direction> getPossibleDirections(Direction orientation) {
+  private List<Direction> getPossibleDirections(Direction orientation, Cell<AntState> cell) {
+    List<Direction> allDirections = new ArrayList<>(grid.getDirections(cell));
     if (orientation.toString().equals(new Direction(0, 0).toString())) {
-      return grid.getNeighborCalculator().getDirections();
+      return allDirections;
     }
     int dx = orientation.dx();
     int dy = orientation.dy();
@@ -262,10 +367,13 @@ public class AntLogic extends Logic<AntState> {
     for (int[] candidate : candidates) {
       int x = candidate[0];
       int y = candidate[1];
-      if (Math.abs(x) > 1 || Math.abs(y) > 1 || (x == 0 && y == 0)) {
+      if (x == 0 && y == 0) {
         continue;
       }
-      result.add(new Direction(x, y));
+      Direction direction = new Direction(x, y);
+      if (allDirections.contains(direction)) {
+        result.add(direction);
+      }
     }
     result.add(orientation);
     return result;
@@ -324,7 +432,9 @@ public class AntLogic extends Logic<AntState> {
 
   private void moveAnt(Cell<AntState> cell, AntInfo ant) {
     Cell<AntState> neighbor = getCellInDirection(ant.orientation(), cell);
-    assert neighbor != null; // The validDirections should confirm this
+    if (neighbor == null) {
+      return;
+    }
 
     dropPheromone(cell, ant.hasFood() ? "foodPheromone" : "homePheromone");
     if (ant.hasFood()) {

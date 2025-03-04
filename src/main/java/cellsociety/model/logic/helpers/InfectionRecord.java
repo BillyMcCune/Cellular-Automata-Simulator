@@ -3,6 +3,7 @@ package cellsociety.model.logic.helpers;
 import cellsociety.model.data.cells.CellQueueRecord;
 
 public class InfectionRecord extends CellQueueRecord {
+
   private double speciesID;
   private double duration;
 

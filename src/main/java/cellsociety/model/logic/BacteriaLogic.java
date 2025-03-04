@@ -8,7 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Concrete implementation of {@link Logic} for the Bacteria simulation.
+ * Concrete implementation of {@link Logic} for the Bacteria simulation. This class encapsulates the
+ * rules and state transitions for a bacteria model based on cell interactions. It uses a beating
+ * threshold to determine when a cell's state should change.
+ *
+ * <p>The simulation parameters (e.g., beatingThreshold, numStates) are provided via a
+ * {@link ParameterRecord} and are validated upon construction.
  *
  * @author Jacob You
  */
@@ -22,8 +27,7 @@ public class BacteriaLogic extends Logic<BacteriaState> {
    * Constructs a {@code BacteriaLogic} instance with the specified grid and parameters.
    *
    * @param grid       The grid representing the simulation state.
-   * @param parameters The parameters defining the probabilities of fire spread, ignition, and tree
-   *                   growth.
+   * @param parameters The parameters defining the simulation behavior.
    * @throws IllegalArgumentException if any parameter value is out of bounds or missing.
    */
   public BacteriaLogic(Grid<BacteriaState> grid, ParameterRecord parameters)
@@ -34,11 +38,11 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   }
 
   /**
-   * Sets the threshold for the percentage of surrounding cells that must beat the current cell
-   * to change the current cell state
+   * Sets the threshold for the percentage of surrounding cells that must beat the current cell to
+   * change the current cell state.
    *
-   * @param percThreshold The percentage of surrounding cells required to change the cell
-   * @throws IllegalArgumentException if the beatingThreshold is out of bounds or invalid
+   * @param percThreshold The percentage of surrounding cells required to change the cell.
+   * @throws IllegalArgumentException if the beatingThreshold is out of bounds or invalid.
    */
   public void setBeatingThreshold(double percThreshold) throws IllegalArgumentException {
     double min = getMinParam("beatingThreshold");
@@ -48,19 +52,19 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   }
 
   /**
-   * Returns the beating threshold in percentage form for the Controller
+   * Returns the beating threshold in percentage form.
    *
-   * @return The beating threshold in percentage form
+   * @return The beating threshold as a percentage.
    */
   public double getBeatingThreshold() {
     return beatingThreshold * 100;
   }
 
   /**
-   * Sets the total number of states in the simulation
+   * Sets the total number of states in the simulation.
    *
-   * @param n The number of states in the simulation
-   * @throws IllegalArgumentException if the number of states is out of bounds invalid
+   * @param n The number of states in the simulation.
+   * @throws IllegalArgumentException if the number of states is out of bounds or invalid.
    */
   public void setNumStates(double n) throws IllegalArgumentException {
     checkBounds(n, 1, Double.MAX_VALUE);
@@ -68,26 +72,19 @@ public class BacteriaLogic extends Logic<BacteriaState> {
   }
 
   /**
-   * Returns the number of states
+   * Returns the number of states in the simulation.
    *
-   * @return The number of states
+   * @return The total number of states.
    */
   public double getNumStates() {
     return numStates;
   }
 
-  @Override
-  protected void updateSingleCell(Cell<BacteriaState> cell) {
-    double id = cell.getProperty("coloredId");
-    double beatingId = (id + 1) % numStates;
-
-    double numBeating = getNumBeating(cell, beatingId);
-    int numNeighbors = cell.getNeighbors().size();
-    if (numNeighbors != 0 && numBeating / numNeighbors >= beatingThreshold) {
-      nextStates.put(cell, beatingId);
-    }
-  }
-
+  /**
+   * Updates the simulation by processing each cell in the grid. For each cell, it computes the next
+   * state based on the beating rules, updates cell properties, and then applies all state changes
+   * to the grid.
+   */
   @Override
   public void update() {
     int numRows = grid.getNumRows();
@@ -104,6 +101,19 @@ public class BacteriaLogic extends Logic<BacteriaState> {
       changedCell.setProperty("coloredId", nextStates.get(changedCell));
     }
     grid.updateGrid();
+  }
+
+  // updateSingleCell is overridden from Logic and marked as protected.
+  @Override
+  protected void updateSingleCell(Cell<BacteriaState> cell) {
+    double id = cell.getProperty("coloredId");
+    double beatingId = (id + 1) % numStates;
+
+    double numBeating = getNumBeating(cell, beatingId);
+    int numNeighbors = cell.getNeighbors().size();
+    if (numNeighbors != 0 && numBeating / numNeighbors >= beatingThreshold) {
+      nextStates.put(cell, beatingId);
+    }
   }
 
   private int getNumBeating(Cell<BacteriaState> cell, double beatingId) {

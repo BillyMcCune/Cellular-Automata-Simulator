@@ -12,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Implements the raycasting strategy for triangular cells.
  *
- * @param <T>
+ * @param <T> the enum type representing the cell state.
  * @author Jacob You
  */
 public class TriRaycastStrategy<T extends Enum<T> & State>
@@ -29,19 +30,22 @@ public class TriRaycastStrategy<T extends Enum<T> & State>
   private static final Map<Direction, TriDirection> UP_REVERSE = new HashMap<>();
   private static final Map<Direction, TriDirection> DOWN_REVERSE = new HashMap<>();
 
+  /**
+   * Initializes the mapping for upward and downward directions and reverse mappings for triangular cells.
+   */
   static {
-    UP_MAP.put(TriDirection.UP_LEFT,    new Direction(0, -1));
-    UP_MAP.put(TriDirection.UP_RIGHT,   new Direction(0, +1));
-    UP_MAP.put(TriDirection.LEFT,       new Direction(0, -1));
-    UP_MAP.put(TriDirection.RIGHT,      new Direction(0, +1));
-    UP_MAP.put(TriDirection.DOWN_LEFT,  new Direction(+1, 0));
+    UP_MAP.put(TriDirection.UP_LEFT, new Direction(0, -1));
+    UP_MAP.put(TriDirection.UP_RIGHT, new Direction(0, +1));
+    UP_MAP.put(TriDirection.LEFT, new Direction(0, -1));
+    UP_MAP.put(TriDirection.RIGHT, new Direction(0, +1));
+    UP_MAP.put(TriDirection.DOWN_LEFT, new Direction(+1, 0));
     UP_MAP.put(TriDirection.DOWN_RIGHT, new Direction(+1, 0));
 
-    DOWN_MAP.put(TriDirection.UP_LEFT,    new Direction(-1, 0));
-    DOWN_MAP.put(TriDirection.UP_RIGHT,   new Direction(-1, 0));
-    DOWN_MAP.put(TriDirection.LEFT,       new Direction(0, -1));
-    DOWN_MAP.put(TriDirection.RIGHT,      new Direction(0, +1));
-    DOWN_MAP.put(TriDirection.DOWN_LEFT,  new Direction(0, -1));
+    DOWN_MAP.put(TriDirection.UP_LEFT, new Direction(-1, 0));
+    DOWN_MAP.put(TriDirection.UP_RIGHT, new Direction(-1, 0));
+    DOWN_MAP.put(TriDirection.LEFT, new Direction(0, -1));
+    DOWN_MAP.put(TriDirection.RIGHT, new Direction(0, +1));
+    DOWN_MAP.put(TriDirection.DOWN_LEFT, new Direction(0, -1));
     DOWN_MAP.put(TriDirection.DOWN_RIGHT, new Direction(0, +1));
 
     for (var entry : UP_MAP.entrySet()) {
@@ -57,9 +61,10 @@ public class TriRaycastStrategy<T extends Enum<T> & State>
   }
 
   @Override
-  public Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol, Direction rawDir, int steps, EdgeType boundary) {
+  public Map<Direction, Cell<T>> doRaycast(Grid<T> grid, int startRow, int startCol,
+      Direction rawDir, int steps, EdgeType boundary) {
     Map<Direction, Cell<T>> result = new LinkedHashMap<>();
-    int[] pos = new int[] { startRow, startCol };
+    int[] pos = new int[]{startRow, startCol};
     boolean startUp = ((startRow + startCol) % 2 == 0);
     TriDirection baseDir = startUp ? UP_REVERSE.get(rawDir) : DOWN_REVERSE.get(rawDir);
     for (int i = 0; i < steps; i++) {

@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @param <T>
+ * Implements the raycasting strategy for hexagons.
+ *
+ * @param <T> the enum type representing the cell state
  * @author Jacob You
  */
 public class HexRaycastStrategy<T extends Enum<T> & State>

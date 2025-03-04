@@ -61,7 +61,7 @@ public class ModelApi {
       gameLogic.update();
       myCellColorManager.setGrid(grid);
     } catch (NullPointerException e) {
-      throw new NoSuchElementException(e.getMessage());
+      throw new NoSuchElementException(e.getMessage(), e);
     }
   }
 

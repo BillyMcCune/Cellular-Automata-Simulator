@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @param <T>
+ * Implements the raycasting strategy for square grids.
+ *
+ * @param <T> the enum type representing the cell state.
  * @author Jacob You
  */
 public class SquareRaycastStrategy<T extends Enum<T> & State>
@@ -29,6 +31,9 @@ public class SquareRaycastStrategy<T extends Enum<T> & State>
 
   private static final Map<Direction, SquareDirection> REVERSE_MAP = new HashMap<>();
 
+  /**
+   * Initializes the REVERSE_MAP with mappings from raw directions to square directions.
+   */
   static {
     REVERSE_MAP.put(new Direction(-1, 0), SquareDirection.UP);
     REVERSE_MAP.put(new Direction(+1, 0), SquareDirection.DOWN);
@@ -58,7 +63,6 @@ public class SquareRaycastStrategy<T extends Enum<T> & State>
 
   @Override
   public List<Direction> getDefaultRawDirections(int startRow, int startCol) {
-    // Simply return a copy of the offset values.
     return new ArrayList<>(SQUARE_OFFSETS.values());
   }
 }
