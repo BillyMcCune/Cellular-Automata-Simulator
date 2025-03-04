@@ -63,7 +63,7 @@ public class configAPI {
    *                                      more information regarding load simulation errors
    */
   public void loadSimulation(String fileName)
-      throws ParserConfigurationException, IOException, SAXException {
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
     try {
       configReader = new ConfigReader();
       configInfo = configReader.readConfig(fileName);

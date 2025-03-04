@@ -47,13 +47,17 @@ public class ConfigReader {
    * @throws SAXException                 if a SAX parsing error occurs.
    */
   public ConfigInfo readConfig(String fileName)
-      throws ParserConfigurationException, IOException, SAXException {
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
     if (!fileMap.containsKey(fileName)) {
       createListOfConfigFiles();
     }
-    File dataFile = fileMap.get(fileName);
-    Log.trace("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
-    return getConfigInformation(dataFile, fileName);
+    try {
+      File dataFile = fileMap.get(fileName);
+      Log.trace("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+      return getConfigInformation(dataFile, fileName);
+    } catch (ParserConfigurationException | SAXException | IOException | IllegalArgumentException e) {
+      throw new ParserConfigurationException(e.getMessage());
+    }
   }
 
   /**
@@ -119,6 +123,8 @@ public class ConfigReader {
     throw new SAXException(e.getMessage());
   } catch (IOException e) {
     throw new IOException(e.getMessage());
+  } catch (IllegalArgumentException e) {
+    throw new IllegalArgumentException(e.getMessage());
   }
   }
 
@@ -279,9 +285,13 @@ public class ConfigReader {
    * @throws IllegalArgumentException if the grid dimensions or cell states are invalid.
    */
   private void checkForInvalidInformation(int gridWidth, int gridHeight,
-      Set<Integer> acceptedStates, List<List<CellRecord>> grid) {
-    checkGridBounds(gridWidth, gridHeight, grid);
-    checkInvalidStates(acceptedStates, grid);
+      Set<Integer> acceptedStates, List<List<CellRecord>> grid)  throws IllegalArgumentException {
+    try {
+      checkGridBounds(gridWidth, gridHeight, grid);
+      checkInvalidStates(acceptedStates, grid);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**
@@ -292,7 +302,7 @@ public class ConfigReader {
    * @param grid   the 2D grid of {@code CellRecord}.
    * @throws IllegalArgumentException if the grid dimensions do not match.
    */
-  private void checkGridBounds(int width, int height, List<List<CellRecord>> grid) {
+  private void checkGridBounds(int width, int height, List<List<CellRecord>> grid) throws IllegalArgumentException {
     if (grid.size() != height) {
       throw new IllegalArgumentException(
           "error-wrongNumberOfRows" + "," + height + "," + grid.size()
@@ -313,7 +323,7 @@ public class ConfigReader {
    * @param grid           the 2D grid of {@code CellRecord} to be validated.
    * @throws IllegalArgumentException if any cell contains an invalid state.
    */
-  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<CellRecord>> grid) {
+  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<CellRecord>> grid) throws IllegalArgumentException {
     for (List<CellRecord> row : grid) {
       for (CellRecord cell : row) {
         if (!acceptedStates.contains(cell.state())) {

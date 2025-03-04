@@ -131,7 +131,7 @@ public class GridReader {
    * @param rowIndex   the index of the row (for error reporting)
    * @return a list of {@code CellRecord} objects for that row
    */
-  private static List<CellRecord> parseRow(Element rowElement, int rowIndex) {
+  private static List<CellRecord> parseRow(Element rowElement, int rowIndex)  throws IllegalArgumentException {
     NodeList cellNodes = rowElement.getElementsByTagName("cell");
     List<CellRecord> rowCells = new ArrayList<>();
     for (int j = 0; j < cellNodes.getLength(); j++) {
