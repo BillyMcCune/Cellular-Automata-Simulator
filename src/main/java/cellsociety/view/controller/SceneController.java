@@ -255,7 +255,7 @@ public class SceneController {
    */
   public void resetGrid() {
     try {
-      myModelApi.resetGrid();
+      myModelApi.resetGrid(false);
       initViewGrid();
 
       numIterations = 0;

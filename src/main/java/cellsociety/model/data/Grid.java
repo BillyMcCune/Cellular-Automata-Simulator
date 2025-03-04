@@ -9,7 +9,6 @@ import cellsociety.model.data.constants.NeighborType;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.neighbors.NeighborCalculator;
 import cellsociety.model.data.states.State;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +90,7 @@ public class Grid<T extends Enum<T> & State> {
    *
    * @param shape the new grid shape
    */
-  public void setShape(GridShape shape) {
+  public void setGridShape(GridShape shape) {
     this.neighborCalculator.setShape(shape);
   }
 
@@ -190,18 +189,6 @@ public class Grid<T extends Enum<T> & State> {
    */
   public NeighborCalculator<T> getNeighborCalculator() {
     return neighborCalculator;
-  }
-
-  public void setEdgeType(EdgeType edgeType) {
-    neighborCalculator.setEdgeType(edgeType);
-  }
-
-  public void setNeighborType(NeighborType neighborType) {
-    neighborCalculator.setNeighborType(neighborType);
-  }
-
-  public void setGridShape(GridShape gridShape) {
-    neighborCalculator.setShape(gridShape);
   }
 
   private void initializeGrid(List<List<CellRecord>> rawGrid, CellFactory<T> factory) {
