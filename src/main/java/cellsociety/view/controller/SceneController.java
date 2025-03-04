@@ -1,22 +1,17 @@
 package cellsociety.view.controller;
 
-import cellsociety.logging.Log;
 import cellsociety.model.configAPI.configAPI;
 import cellsociety.model.modelAPI.ModelApi;
 import cellsociety.view.renderer.drawer.GridDrawer;
-import cellsociety.view.renderer.drawer.HexGridDrawer;
 import cellsociety.view.renderer.drawer.SquareGridDrawer;
 import cellsociety.view.scene.SceneUIWidgetFactory;
 import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javafx.scene.paint.Color;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -110,9 +105,7 @@ public class SceneController {
       setCellShape(getSimulationCellShape());
     } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException |
              InvocationTargetException | IllegalAccessException | NullPointerException ex) {
-      SceneUIWidgetFactory.createErrorDialog(
-          LanguageController.getStringProperty("error-loadConfig").getValue(),
-          ex.getMessage(), ex);
+      errorHandler("error-loadConfig", ex);
     }
   }
 
@@ -131,9 +124,7 @@ public class SceneController {
           LanguageController.getStringProperty("success-saveConfigTitle").getValue(),
           message, savedFile);
     } catch (Exception e) {
-      SceneUIWidgetFactory.createErrorDialog(
-          LanguageController.getStringProperty("error-saveConfig").getValue(),
-          e.getMessage(), e);
+      errorHandler("error-saveConfig", e);
     }
   }
 
@@ -186,7 +177,8 @@ public class SceneController {
           simulationInfo.get("description")
       );
     } catch (NullPointerException ex) {
-      // TODO: Handle missing configuration appropriately.
+      // TODO: Add error message to the language property files
+      errorHandler("error-getConfigInformation", ex);
     }
     return "";
   }
@@ -244,9 +236,7 @@ public class SceneController {
       numIterations = 0;
       updateViewInfo();
     } catch (Exception e) {
-      SceneUIWidgetFactory.createErrorDialog(
-          LanguageController.getStringProperty("error-resetModel").getValue(),
-          e.getMessage(), e);
+      errorHandler("error-resetModel", e);
     }
   }
 
@@ -261,9 +251,7 @@ public class SceneController {
       numIterations = 0;
       updateViewInfo();
     } catch (Exception e) {
-      SceneUIWidgetFactory.createErrorDialog(
-          LanguageController.getStringProperty("error-resetGrid").getValue(),
-          e.getMessage(), e);
+      errorHandler("error-resetGrid", e);
     }
   }
 
@@ -376,10 +364,8 @@ public class SceneController {
         throw new ClassCastException("Class " + cellShape + "GridDrawer does not extend GridDrawer.");
       }
     } catch (ClassNotFoundException | ClassCastException e) {
-      SceneUIWidgetFactory.createErrorDialog(
-          // TODO: Add error message to the language controller
-          LanguageController.getStringProperty("error-setCellShape").getValue(),
-          e.getMessage(), e);
+      // TODO: Add error message to the language property files
+      errorHandler("error-setCellShape", e);
     }
   }
 
@@ -392,10 +378,8 @@ public class SceneController {
     try {
       myModelApi.setEdgePolicy(edgePolicy.toUpperCase());
     } catch (Exception e) {
-      SceneUIWidgetFactory.createErrorDialog(
-          // TODO: Add error message to the language controller
-          LanguageController.getStringProperty("error-setEdgePolicy").getValue(),
-          e.getMessage(), e);
+      // TODO: Add error message to the language property files
+      errorHandler("error-setEdgePolicy", e);
     }
   }
 
@@ -408,10 +392,8 @@ public class SceneController {
     try {
       myModelApi.setNeighborArrangement(neighborArrangement.toUpperCase());
     } catch (Exception e) {
-      SceneUIWidgetFactory.createErrorDialog(
-          // TODO: Add error message to the language controller
-          LanguageController.getStringProperty("error-setNeighborArrangement").getValue(),
-          e.getMessage(), e);
+      // TODO: Add error message to the language property files
+      errorHandler("error-setNeighborArrangement", e);
     }
   }
 
@@ -442,7 +424,6 @@ public class SceneController {
 
     for (int i = 0; i < numRows; i++) {
       for (int j = 0; j < numCols; j++) {
-        // TODO: Add support for wantDefaultColor.
         // NOTES: I'm not sure what wantDefaultColor is supposed to do.
         //    BY: Hsuan-Kai Liao
         simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, false));
@@ -457,7 +438,6 @@ public class SceneController {
       }
       for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
-          // TODO: Add support for wantDefaultColor.
           // NOTES: I'm not sure what wantDefaultColor is supposed to do.
           //    BY: Hsuan-Kai Liao
           simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, false));
@@ -474,6 +454,15 @@ public class SceneController {
 
   private int getTickSpeed() {
     return (int) (10 / updateInterval / SPEED_MULTIPLIER);
+  }
+
+  private void errorHandler(String titleKey, Exception e) {
+    String title = LanguageController.getStringProperty(titleKey).getValue();
+    String message = e.getMessage();
+    String errorType = LanguageController.getStringProperty(message.split(",")[0]).getValue();
+    String formattedMessage = message.split(",").length > 1 ? String.format(errorType, message.split(",")[1]) : errorType;
+
+    SceneUIWidgetFactory.createErrorDialog(title, formattedMessage, e);
   }
 
 }
