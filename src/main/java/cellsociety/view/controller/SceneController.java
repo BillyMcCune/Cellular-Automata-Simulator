@@ -67,9 +67,7 @@ public class SceneController {
     this.updateInterval = 2.0 / (MAX_SPEED + MIN_SPEED);
     this.timeSinceLastUpdate = 0.0;
     this.numIterations = 0;
-
-    // Initialize the styles
-    initSimulationStyle();
+    this.gridDrawerClass = SquareGridDrawer.class;
   }
 
   /**
@@ -106,6 +104,7 @@ public class SceneController {
       initViewGrid();
       resetParameters();
       isLoaded = true;
+      setCellShape(getSimulationCellShape());
     } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException |
              InvocationTargetException | IllegalAccessException | NullPointerException ex) {
       SceneUIWidgetFactory.createErrorDialog(
@@ -189,6 +188,8 @@ public class SceneController {
     return "";
   }
 
+  /* SIMULATION APIS */
+
   /**
    * Retrieves the title of the simulation from the configuration.
    *
@@ -196,6 +197,33 @@ public class SceneController {
    */
   public String getSimulationTitle() {
     return myConfigAPI.getSimulationInformation().get("title");
+  }
+
+  /**
+   * Retrieves the author of the simulation from the configuration.
+   *
+   * @return the author of the simulation
+   */
+  public String getSimulationCellShape() {
+    return myModelApi.getDefaultCellShape().substring(0, 1).toUpperCase() + myModelApi.getDefaultCellShape().substring(1).toLowerCase();
+  }
+
+  /**
+   * Retrieves the edge policy of the simulation from the configuration.
+   *
+   * @return the edge policy of the simulation
+   */
+  public String getSimulationEdgePolicy() {
+    return myModelApi.getDefaultEdgePolicy().substring(0, 1).toUpperCase() + myModelApi.getDefaultEdgePolicy().substring(1).toLowerCase();
+  }
+
+  /**
+   * Retrieves the neighbor arrangement of the simulation from the configuration.
+   *
+   * @return the neighbor arrangement of the simulation
+   */
+  public String getSimulationNeighborArrangement() {
+    return myModelApi.getDefaultNeighborArrangement().substring(0, 1).toUpperCase() + myModelApi.getDefaultNeighborArrangement().substring(1).toLowerCase();
   }
 
   /* MODEL APIS */
@@ -376,14 +404,6 @@ public class SceneController {
   }
 
   /* PRIVATE HELPER METHODS */
-
-  private void initSimulationStyle() {
-    // TODO: Initialize the Simulation Style as the preference ones.
-    // Cell shape
-    gridDrawerClass = SquareGridDrawer.class;
-
-    // Edge type
-  }
 
   private void initViewGrid() throws NullPointerException {
     numRows = myConfigAPI.getGridHeight();

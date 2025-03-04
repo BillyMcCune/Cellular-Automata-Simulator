@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -516,8 +517,10 @@ public class SceneUIWidgetFactory {
     dropDownControl.getStyleClass().add("drop-down-control");
 
     // Update items on click
-    dropDown.setOnMouseClicked(event -> {
+    dropDown.setOnMousePressed(event -> {
+      String value = dropDown.getValue();
       dropDown.getItems().setAll(itemsSupplier.get());
+      dropDown.setValue(value);
     });
 
     // Add drop-down listener
@@ -527,6 +530,7 @@ public class SceneUIWidgetFactory {
         callback.accept(selectedValue);
       }
     });
+    dropDownControl.setUserData(dropDown);
 
     return dropDownControl;
   }
@@ -637,7 +641,7 @@ public class SceneUIWidgetFactory {
    * @param themeConsumer    the consumer for the selected theme
    */
   public static void createSplashScreen(StringProperty title, StringProperty buttonText,
-      StringProperty languageText, StringProperty themeText, Consumer<Language> languageConsumer,
+      StringProperty languageText, StringProperty themeText, Language defaultLanguage, Theme defaultTheme, Consumer<Language> languageConsumer,
       Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
@@ -667,6 +671,9 @@ public class SceneUIWidgetFactory {
           splashScene.getStylesheets().setAll(WIDGET_STYLE_SHEET);
         }
     );
+    Map<String, ComboBox<String>> themeLanguageSelectorsData = (Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData();
+    themeLanguageSelectorsData.get("language").setValue(defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1).toLowerCase());
+    themeLanguageSelectorsData.get("theme").setValue(defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase());
 
     // Create the Start button
     Button startButton = new Button();
@@ -725,6 +732,11 @@ public class SceneUIWidgetFactory {
     HBox box = new HBox(10, languageContainer, themeContainer);
     box.setAlignment(Pos.CENTER);
     box.setPadding(new Insets(10));
+
+    box.setUserData(Map.of(
+        "language", languageContainer.getUserData(),
+        "theme", themeContainer.getUserData()
+    ));
 
     return box;
   }
