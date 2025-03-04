@@ -12,11 +12,12 @@ import javafx.scene.shape.StrokeType;
  * @author Hsuan-Kai Liao
  */
 public class HexGridDrawer extends GridDrawer {
+  private static final double DEFAULT_HEX_CELL_SIZE = DEFAULT_CELL_SIZE / 1.5;
 
   @Override
   protected void drawGridContents(Pane pane, int numOfRows, int numOfCols) {
     pane.getChildren().clear();
-    double sideLength = DEFAULT_CELL_SIZE;
+    double sideLength = DEFAULT_HEX_CELL_SIZE;
     double width = 2 * sideLength;
     double height = Math.sqrt(3) * sideLength;
     double offsetX = sideLength;
@@ -33,7 +34,7 @@ public class HexGridDrawer extends GridDrawer {
 
   @Override
   protected void drawGridBound(Pane pane, int numOfRows, int numOfCols) {
-    double sideLength = DEFAULT_CELL_SIZE;
+    double sideLength = DEFAULT_HEX_CELL_SIZE;
     boolean isColOdd = numOfCols % 2 == 1;
     boolean isRowOdd = numOfRows % 2 == 1;
 
