@@ -50,7 +50,8 @@ public class DarwinLogicTest {
 
     cellFactory = new CellFactory<>(DarwinState.class);
     grid = new Grid<>(rawGrid, cellFactory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.TORUS);
-    baseEdgeGrid = new Grid<>(rawGrid, cellFactory, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
+    baseEdgeGrid = new Grid<>(rawGrid, cellFactory, GridShape.SQUARE, NeighborType.MOORE,
+        EdgeType.BASE);
 
     for (int i = 0; i < grid.getNumRows(); i++) {
       for (int j = 0; j < grid.getNumCols(); j++) {
@@ -105,7 +106,7 @@ public class DarwinLogicTest {
   public void DarwinLogic_CellRotateLeft180_SetsOrientation180() throws Exception {
     List<String> rotateProgram = new ArrayList<>();
     rotateProgram.add("LEFT 180");
-    rotateProgram.add("MOVE 1");
+    rotateProgram.add("move 1");
     rotateProgram.add("GO 1");
     testSpeciesPrograms.put(1, rotateProgram);
     darwinLogic.assignSpeciesPrograms(testSpeciesPrograms);

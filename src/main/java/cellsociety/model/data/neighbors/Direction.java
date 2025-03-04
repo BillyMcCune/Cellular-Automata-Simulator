@@ -7,4 +7,6 @@ package cellsociety.model.data.neighbors;
  * @param dx The col offset to store
  * @author Jacob You
  */
-public record Direction(int dy, int dx) {}
+public record Direction(int dy, int dx) {
+
+}

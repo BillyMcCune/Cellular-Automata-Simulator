@@ -9,6 +9,7 @@ import cellsociety.model.data.cells.CellFactory;
 import cellsociety.model.data.constants.EdgeType;
 import cellsociety.model.data.constants.GridShape;
 import cellsociety.model.data.constants.NeighborType;
+import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +51,6 @@ public class GridTest {
       super(TestState.class);
     }
   }
-
 
   private List<List<CellRecord>> createRawGrid(int rows, int cols, int defaultState) {
     List<List<CellRecord>> raw = new ArrayList<>();
@@ -216,5 +216,53 @@ public class GridTest {
     grid.updateGrid();
     Map<?, ?> updatedNeighbors = grid.getCell(1, 1).getNeighbors();
     assertEquals(originalNeighbors.keySet(), updatedNeighbors.keySet());
+  }
+
+  @Test
+  public void Grid_AssignRaycastNeighbor_AssignsCorrectNeighbor() {
+    List<List<CellRecord>> raw = createRawGrid(3, 3, 0);
+    Grid<TestState> grid = createGrid(raw);
+    Cell<TestState> cell = grid.getCell(1, 1);
+    grid.assignRaycastNeighbor(cell, new Direction(-1, 0), 1);
+    Map<Direction, Cell<TestState>> rayNeighbors = cell.getNeighbors();
+    Cell<TestState> expectedNeighbor = grid.getCell(0, 1);
+    boolean found = rayNeighbors.values().stream().anyMatch(n -> n == expectedNeighbor);
+    assertTrue(found, "The raycast neighbor in the upward direction should be assigned correctly.");
+  }
+
+  @Test
+  public void Grid_AssignAllRaycastNeighbors_AssignsAllRaycastNeighbors() {
+    List<List<CellRecord>> raw = createRawGrid(3, 3, 0);
+    Grid<TestState> grid = createGrid(raw);
+    grid.assignAllRaycastNeighbors(1);
+    Cell<TestState> cell = grid.getCell(1, 1);
+    Map<Direction, Cell<TestState>> rayNeighbors = cell.getNeighbors();
+    assertEquals(4, rayNeighbors.size(),
+        "Center cell should have 4 raycast neighbors in a square grid.");
+    assertSame(grid.getCell(0, 1), rayNeighbors.get(new Direction(-1, 0)));
+    assertSame(grid.getCell(2, 1), rayNeighbors.get(new Direction(1, 0)));
+    assertSame(grid.getCell(1, 0), rayNeighbors.get(new Direction(0, -1)));
+    assertSame(grid.getCell(1, 2), rayNeighbors.get(new Direction(0, 1)));
+  }
+
+  @Test
+  public void Grid_GetAllRaycastDirections_ReturnsNonEmptyList() {
+    List<List<CellRecord>> raw = createRawGrid(3, 3, 0);
+    Grid<TestState> grid = createGrid(raw);
+    Cell<TestState> cell = grid.getCell(1, 1);
+    List<Direction> rayDirs = grid.getAllRaycastDirections(cell);
+    assertNotNull(rayDirs, "The list of all raycast directions should not be null.");
+    assertFalse(rayDirs.isEmpty(), "The list of all raycast directions should not be empty.");
+    assertEquals(4, rayDirs.size(), "Expected 4 raycast directions for a square grid.");
+  }
+
+  @Test
+  public void Grid_GetDirections_ReturnsAdjustedDirections() {
+    List<List<CellRecord>> raw = createRawGrid(3, 3, 0);
+    Grid<TestState> grid = createGrid(raw);
+    Cell<TestState> cell = grid.getCell(1, 1);
+    List<Direction> directions = grid.getDirections(cell);
+    assertNotNull(directions, "The list of directions should not be null.");
+    assertFalse(directions.isEmpty(), "The list of directions should not be empty.");
   }
 }

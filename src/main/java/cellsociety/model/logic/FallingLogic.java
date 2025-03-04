@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Concrete implementation of {@link Logic} for the Falling Sand simulation.
- * Each update tick processes one random valid cell (either sand or water).
- * Sand falling onto water will swap the two, and sand and water movements
- * are handled in separate methods.
+ * Concrete implementation of {@link Logic} for the Falling Sand simulation. Each update tick
+ * processes one random valid cell (either sand or water). Sand falling onto water will swap the
+ * two, and sand and water movements are handled in separate methods.
  *
  * @author Jacob You
  */
@@ -42,8 +41,8 @@ public class FallingLogic extends Logic<FallingState> {
   }
 
   /**
-   * Each update tick, a single random cell (holding sand or water) is processed.
-   * Then the grid is updated to finalize state changes.
+   * Each update tick, a single random cell (holding sand or water) is processed. Then the grid is
+   * updated to finalize state changes.
    */
   @Override
   public void update() {
@@ -111,7 +110,8 @@ public class FallingLogic extends Logic<FallingState> {
       possibleTargets.add(belowRight);
     }
     if (!possibleTargets.isEmpty()) {
-      Cell<FallingState> target = possibleTargets.get((int) (Math.random() * possibleTargets.size()));
+      Cell<FallingState> target = possibleTargets.get(
+          (int) (Math.random() * possibleTargets.size()));
       target.setNextState(FallingState.WATER);
       cell.setNextState(FallingState.EMPTY);
       waterCells.remove(cell);

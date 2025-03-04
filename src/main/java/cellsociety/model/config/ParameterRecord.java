@@ -6,7 +6,7 @@ import java.util.Map;
  * @author Billy McCune
  * @param myDoubleParameters the mapping of parameter names to their double values
  * @param myStringParameters the mapping of parameter names to their string values
- * @author Billy McCune Immutable record representing simulation parameters.
+ * Immutable record representing simulation parameters.
  * <p>
  * This record encapsulates two maps:
  * <ul>

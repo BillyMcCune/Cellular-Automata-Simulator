@@ -3,8 +3,11 @@ package modeltests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.cells.CellQueueRecord;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,10 @@ public class CellTest {
       }
       throw new IllegalArgumentException("Invalid TestState value: " + value);
     }
+  }
+
+  private class DummyCellRecord extends CellQueueRecord {
+
   }
 
   @Test
@@ -178,5 +185,64 @@ public class CellTest {
     cell.clearAllProperties();
     assertEquals(0, cell.getProperty("energy"));
     assertNull(cell.getAllProperties());
+  }
+
+  @Test
+  public void SetQueueRecords_CopyingQueue_QueueMatches() {
+    Cell<TestState> cell = new Cell<>(TestState.ZERO);
+    CellQueueRecord record = new DummyCellRecord();
+    cell.addQueueRecord(record);
+
+    Deque<CellQueueRecord> copiedQueue = new ArrayDeque<>(cell.getQueueRecords());
+    Cell<TestState> newCell = new Cell<>(TestState.ONE);
+    newCell.setQueueRecords(copiedQueue);
+
+    assertEquals(cell.getQueueRecords().size(), newCell.getQueueRecords().size());
+    assertEquals(record, newCell.peekQueueRecord());
+  }
+
+  @Test
+  public void CopyQueueTo_AnotherCell_QueueCopied() {
+    Cell<TestState> cell1 = new Cell<>(TestState.ZERO);
+    CellQueueRecord record = new DummyCellRecord();
+    cell1.addQueueRecord(record);
+    Cell<TestState> cell2 = new Cell<>(TestState.ONE);
+
+    cell1.copyQueueTo(cell2);
+    assertEquals(cell1.getQueueRecords().size(), cell2.getQueueRecords().size());
+    assertEquals(record, cell2.peekQueueRecord());
+  }
+
+  @Test
+  public void ClearQueueRecords_RemovesAllRecords() {
+    Cell<TestState> cell = new Cell<>(TestState.ONE);
+    cell.addQueueRecord(new DummyCellRecord());
+    cell.clearQueueRecords();
+
+    assertTrue(cell.getQueueRecords().isEmpty());
+  }
+
+  @Test
+  public void AddQueueRecord_AddsToQueue_QueueSizeIncreases() {
+    Cell<TestState> cell = new Cell<>(TestState.ZERO);
+    CellQueueRecord record = new DummyCellRecord();
+    cell.addQueueRecord(record);
+
+    assertEquals(1, cell.getQueueRecords().size());
+    assertEquals(record, cell.peekQueueRecord());
+  }
+
+  @Test
+  public void RemoveQueueRecord_RemovesMostRecent_QueueSizeDecreases() {
+    Cell<TestState> cell = new Cell<>(TestState.ONE);
+    CellQueueRecord record1 = new DummyCellRecord();
+    CellQueueRecord record2 = new DummyCellRecord();
+
+    cell.addQueueRecord(record1);
+    cell.addQueueRecord(record2);
+    cell.removeQueueRecord();
+
+    assertEquals(1, cell.getQueueRecords().size());
+    assertEquals(record1, cell.peekQueueRecord());
   }
 }

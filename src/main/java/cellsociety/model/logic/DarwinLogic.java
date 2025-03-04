@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 /**
  * Handles Darwin simulation logic.
  */
-public class DarwinLogic extends Logic<DarwinState>{
+public class DarwinLogic extends Logic<DarwinState> {
 
   private DarwinHelper darwinHelper;
   private double nearbyAhead;
@@ -48,8 +48,12 @@ public class DarwinLogic extends Logic<DarwinState>{
         if (cell.getProperty("speciesID") == 0) {
           continue;
         }
-        cell.setProperty("instructionIndex", 1);
-        cell.setProperty("orientation", 0);
+        if (cell.getProperty("instructionIndex") == 0) {
+          cell.setProperty("instructionIndex", 1);
+        }
+        if (cell.getProperty("orientation") == 0) {
+          cell.setProperty("orientation", 0);
+        }
         InfectionRecord infectionRecord = new InfectionRecord(cell.getProperty("speciesID"), 0);
         cell.addQueueRecord(infectionRecord);
       }
@@ -93,23 +97,20 @@ public class DarwinLogic extends Logic<DarwinState>{
   protected void updateSingleCell(Cell<DarwinState> cell) {
     InstructionResult result = darwinHelper.processCell(cell);
     cell.setProperty("instructionIndex", cell.getProperty("instructionIndex") + 1);
-    if (result == null) return;
+    if (result == null) {
+      return;
+    }
     if (result.moveDistance() > 0) {
       movingCells.put(cell, result.moveDistance());
-    }
-    else if (result.infectedCell() != null) {
+    } else if (result.infectedCell() != null) {
       infectedCells.add(result.infectedCell());
-    }
-    else {
+    } else {
       stationaryCells.add(cell);
     }
   }
 
   private void updateCellData(Cell<DarwinState> cell) {
     InfectionRecord infectionRecord = (InfectionRecord) cell.peekQueueRecord();
-    for (CellQueueRecord record : cell.getQueueRecords()) {
-    }
-
     if (cell.getQueueRecords().size() > 1 && infectionRecord.decrementDuration()) {
       cell.removeQueueRecord();
       infectionRecord = (InfectionRecord) cell.peekQueueRecord();
