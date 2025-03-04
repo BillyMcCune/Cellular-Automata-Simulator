@@ -11,10 +11,12 @@ import cellsociety.view.scene.SimulationScene;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javafx.scene.paint.Color;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -103,6 +105,7 @@ public class SceneController {
       resetModel();
       initViewGrid();
       resetParameters();
+      resetColorParameters();
       isLoaded = true;
       setCellShape(getSimulationCellShape());
     } catch (ParserConfigurationException | IOException | SAXException | NoSuchMethodException |
@@ -235,6 +238,7 @@ public class SceneController {
     try {
       myModelApi.resetModel();
       resetParameters();
+      resetColorParameters();
       updateViewGrid();
 
       numIterations = 0;
@@ -316,6 +320,32 @@ public class SceneController {
           paramName + "-label", paramName + "-tooltip", consumer);
     }
   }
+
+  /**
+   * Updates the color parameters in the UI by retrieving the parameter values from modelAPI.
+   */
+  public void resetColorParameters() {
+    simulationScene.clearColorParameters();
+    Map<String, String> colorParams = myModelApi.getCellTypesAndDefaultColors(myConfigAPI.getSimulationInformation().get("type"));
+    for (Map.Entry<String, String> entry : colorParams.entrySet()) {
+      String paramName = entry.getKey();
+      String prefColor = myModelApi.getColorFromPreferences(paramName);
+
+      // Create the consumer
+      Consumer<String> consumer = new Consumer<String>() {
+        @Override
+        public void accept(String color) {
+          myModelApi.setNewColorPreference(paramName, color);
+          initViewGrid();
+        }
+      };
+
+      // Register the parameter in the simulation UI.
+      simulationScene.setColorParameter(prefColor,
+          paramName + "-label", paramName + "-tooltip", consumer);
+    }
+  }
+
 
   /* CONTROLLER APIS */
 
@@ -415,7 +445,7 @@ public class SceneController {
         // TODO: Add support for wantDefaultColor.
         // NOTES: I'm not sure what wantDefaultColor is supposed to do.
         //    BY: Hsuan-Kai Liao
-        simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, true));
+        simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, false));
       }
     }
   }
@@ -430,7 +460,7 @@ public class SceneController {
           // TODO: Add support for wantDefaultColor.
           // NOTES: I'm not sure what wantDefaultColor is supposed to do.
           //    BY: Hsuan-Kai Liao
-          simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, true));
+          simulationScene.setCell(numCols, i, j, myModelApi.getCellColor(i, j, false));
         }
       }
     }

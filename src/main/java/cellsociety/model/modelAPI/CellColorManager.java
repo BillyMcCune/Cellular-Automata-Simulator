@@ -193,6 +193,7 @@ public class CellColorManager {
    */
   public void setNewColorPreference(String stateName, String newColor) {
     try {
+      USER_STYLE_PREFERENCES.put(stateName, newColor);
       Properties simulationStyle = new Properties();
       // Load existing preferences from the SimulationStyle resource
       try (InputStream in = getClass().getResourceAsStream("/cellsociety/property/SimulationStyle.properties")) {

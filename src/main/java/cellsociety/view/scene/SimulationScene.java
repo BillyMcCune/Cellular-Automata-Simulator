@@ -75,6 +75,7 @@ public class SimulationScene {
   private Pane grid;
   private Pane miniGrid;
   private VBox parameterBox;
+  private VBox colorBox;
   private ComboBox<String> selectSimulationType;
   private ComboBox<String> selectCellShape;
   private ComboBox<String> selectEdgePolicy;
@@ -106,6 +107,7 @@ public class SimulationScene {
     ScrollPane stylePanel = createStylesPanel();
     ScrollPane infoLabel = createInfoPanel();
     ScrollPane parameterPanel = createParameterPanel();
+    ScrollPane colorPanel = createColorPanel();
     ScrollPane logPanel = createLogPanel();
 
     // Create a floating window for each component
@@ -115,9 +117,11 @@ public class SimulationScene {
         DockPosition.BOTTOM, null);
     docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent,
         DockPosition.RIGHT, null);
+    DWindow colorWindow = docker.createDWindow(LanguageController.getStringProperty("colors-window"),
+        colorPanel, DockPosition.RIGHT, null);
     DWindow parameterWindow = docker.createDWindow(
         LanguageController.getStringProperty("parameters-window"), parameterPanel,
-        DockPosition.RIGHT, null);
+        DockPosition.CENTER, colorWindow);
     DWindow logWindow = docker.createDWindow(LanguageController.getStringProperty("log-window"),
         logPanel, DockPosition.BOTTOM, parameterWindow);
     docker.createDWindow(LanguageController.getStringProperty("info-window"), infoLabel,
@@ -228,7 +232,21 @@ public class SimulationScene {
     VBox.setVgrow(parameterBox, Priority.ALWAYS);
 
     return SceneUIWidgetFactory.createContainerUI(parameterBox,
-        LanguageController.getStringProperty("parameter-panel"));
+        LanguageController.getStringProperty("parameters-panel"));
+  }
+
+  // TODO: Implement the style panel with the following style change
+  //       - Cell Color
+  // TODO: Implement Tool Tips for Colors
+  private ScrollPane createColorPanel() {
+    colorBox = new VBox(5);
+    colorBox.setAlignment(Pos.TOP_CENTER);
+    colorBox.getStyleClass().add("color-box");
+    colorBox.setMinHeight(Region.USE_COMPUTED_SIZE);
+    VBox.setVgrow(colorBox, Priority.ALWAYS);
+
+    return SceneUIWidgetFactory.createContainerUI(colorBox,
+        LanguageController.getStringProperty("colors-panel"));
   }
 
   private ScrollPane createControls() {
@@ -310,9 +328,6 @@ public class SimulationScene {
         LanguageController.getStringProperty("controls-panel"));
   }
 
-  // TODO: Implement the style panel with the following style change
-  //       - Cell Color
-  // TODO: Implement Tool Tips for Colors
   private ScrollPane createStylesPanel() {
     //#### Theme and Language selectors ####//
     HBox themeLanguageSelectors = SceneUIWidgetFactory.createThemeLanguageSelectorUI(
@@ -624,8 +639,6 @@ public class SimulationScene {
         LanguageController.getStringProperty(tooltipKey), callback));
   }
 
-  /* PRIVATE UI HELPER METHODS */
-
   /**
    * Set the parameter with the given default value, label, tooltip, and callback
    *
@@ -640,6 +653,28 @@ public class SimulationScene {
         SceneUIWidgetFactory.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey),
             LanguageController.getStringProperty(tooltipKey), callback));
   }
+
+  /**
+   * Clear all the color parameters in the color box
+   */
+  public void clearColorParameters() {
+    colorBox.getChildren().clear();
+  }
+
+  /**
+   * Set the color with the given default color, label, tooltip, and callback
+   * @param defaultColor the default color of the parameter
+   * @param labelKey the label key for the StringProperty of the parameter
+   * @param tooltipKey the tooltip key for the StringProperty of the parameter
+   * @param callback the callback function of the parameter
+   */
+  public void setColorParameter(String defaultColor, String labelKey, String tooltipKey, Consumer<String> callback) {
+    colorBox.getChildren().add(
+        SceneUIWidgetFactory.createColorSelectorUI(defaultColor, LanguageController.getStringProperty(labelKey),
+            LanguageController.getStringProperty(tooltipKey), callback));
+  }
+
+  /* PRIVATE UI HELPER METHODS */
 
   private void toggleStartPauseButton(boolean isPause) {
     if (isPause) {
