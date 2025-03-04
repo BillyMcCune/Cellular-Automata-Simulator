@@ -38,7 +38,7 @@
   <gridEdgeType>BASE</gridEdgeType>
   
   
-  <neighborArrangementType>Custom</neighborArrangementType>
+  <neighborArrangementType>Moore</neighborArrangementType>
   
 
   
