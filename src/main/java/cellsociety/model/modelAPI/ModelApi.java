@@ -70,7 +70,7 @@ public class ModelApi {
    *
    * @throws ClassNotFoundException if the required logic class cannot be found
    */
-  public void resetGrid() throws ClassNotFoundException {
+  public void resetGrid(boolean wantsDefaultStyles) throws ClassNotFoundException {
     if (configInfo == null) {
       return;
     }
@@ -81,8 +81,14 @@ public class ModelApi {
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
-
-      grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getEdgeType());
+      if (wantsDefaultStyles) {
+        grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getEdgeType());
+      } else {
+        grid = new Grid<>(configInfo.myGrid(), cellFactory,
+            GridShape.valueOf(myStyleManager.getCellShapePreference()),
+            NeighborType.valueOf(myStyleManager.getNeighborArrangementPreference()),
+            EdgeType.valueOf(myStyleManager.getEdgePolicyPreference()));
+      }
       myNeighborCalculator = grid.getNeighborCalculator();
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
@@ -141,7 +147,8 @@ public class ModelApi {
    * current state. If that color is WHITE, the method will check if any of the cell’s property
    * values (if nonzero) have an associated color.
    */
-  public String getCellColor(int row, int col, boolean wantDefaultColor) throws NullPointerException {
+  public String getCellColor(int row, int col, boolean wantDefaultColor)
+      throws NullPointerException {
     if (myCellColorManager == null) {
       myCellColorManager = new CellColorManager(grid);
     }
@@ -169,7 +176,8 @@ public class ModelApi {
     try {
       myParameterManager = new ParameterManager(gameLogic, myParameterRecord);
       myParameterManager.resetParameters();
-    } catch (IllegalArgumentException| NullPointerException | IllegalStateException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e){
+    } catch (IllegalArgumentException | NullPointerException | IllegalStateException |
+             NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
       throw new NoSuchMethodException(e.getMessage());
     }
   }
@@ -191,9 +199,9 @@ public class ModelApi {
       // Dynamically create cell factory, grid, and logic.
       Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
-
       grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(),
           getEdgeType());
+
       myNeighborCalculator = grid.getNeighborCalculator();
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());
@@ -217,17 +225,17 @@ public class ModelApi {
     if (grid == null) {
       return cellStates;
     }
-    try{
-    for (int i = 0; i < grid.getNumRows(); i++) {
-      List<Integer> rowStates = new ArrayList<>();
-      for (int j = 0; j < grid.getNumCols(); j++) {
-        Cell<?> cell = grid.getCell(i, j);
-        rowStates.add(cell.getCurrentState().getValue());
+    try {
+      for (int i = 0; i < grid.getNumRows(); i++) {
+        List<Integer> rowStates = new ArrayList<>();
+        for (int j = 0; j < grid.getNumCols(); j++) {
+          Cell<?> cell = grid.getCell(i, j);
+          rowStates.add(cell.getCurrentState().getValue());
+        }
+        cellStates.add(rowStates);
       }
-      cellStates.add(rowStates);
-    }
-    return cellStates;
-  } catch (NullPointerException e) {
+      return cellStates;
+    } catch (NullPointerException e) {
       throw new NullPointerException(e.getMessage());
     }
   }
@@ -299,7 +307,8 @@ public class ModelApi {
     }
     try {
       return myParameterManager.getParameterBounds(paramName);
-    } catch (NullPointerException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+    } catch (NullPointerException | NoSuchMethodException | InvocationTargetException |
+             IllegalAccessException e) {
       throw new NoSuchMethodException(e.getMessage());
     }
   }
@@ -372,10 +381,11 @@ public class ModelApi {
    */
   public void setNeighborArrangement(String neighborArrangement) throws NullPointerException {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     try {
       myStyleManager.setNeighborArrangement(neighborArrangement);
+      grid.setNeighborType(NeighborType.valueOf(neighborArrangement.toUpperCase()));
     } catch (NullPointerException e) {
       throw new NullPointerException(e.getMessage());
     }
@@ -390,10 +400,11 @@ public class ModelApi {
    */
   public void setEdgePolicy(String edgePolicy) throws NullPointerException {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     try {
       myStyleManager.setEdgePolicy(edgePolicy);
+      grid.setEdgeType(EdgeType.valueOf(edgePolicy.toUpperCase()));
     } catch (NullPointerException e) {
       throw new NullPointerException(e.getMessage());
     }
@@ -408,9 +419,10 @@ public class ModelApi {
    */
   public void setCellShape(String cellShape) throws NullPointerException {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     myStyleManager.setCellShape(cellShape);
+    grid.setGridShape(GridShape.valueOf(cellShape.toUpperCase()));
   }
 
   /**
@@ -421,14 +433,14 @@ public class ModelApi {
    */
   public void setGridOutlinePreference(boolean wantsGridOutline) {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     myStyleManager.setGridOutlinePreference(wantsGridOutline);
   }
 
   public boolean getGridOutlinePreference() {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     return myStyleManager.getGridOutlinePreference();
   }
@@ -441,7 +453,7 @@ public class ModelApi {
    */
   public List<String> getPossibleNeighborArrangements() {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     return myStyleManager.getPossibleNeighborArrangements();
   }
@@ -454,7 +466,7 @@ public class ModelApi {
    */
   public List<String> getPossibleEdgePolicies() {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     return myStyleManager.getPossibleEdgePolicies();
   }
@@ -467,7 +479,7 @@ public class ModelApi {
    */
   public List<String> getPossibleCellShapes() {
     if (myStyleManager == null) {
-      myStyleManager = new StyleManager(myNeighborCalculator);
+      myStyleManager = new StyleManager();
     }
     return myStyleManager.getPossibleCellShapes();
   }
@@ -500,6 +512,7 @@ public class ModelApi {
     SimulationType type = configInfo.myType();
     return type.name().charAt(0) + type.name().substring(1).toLowerCase();
   }
+
 
 }
 

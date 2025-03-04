@@ -1,6 +1,6 @@
 package cellsociety.view.controller;
 
-import cellsociety.view.scene.SceneUIWidget;
+import cellsociety.view.scene.SceneUIWidgetFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -53,7 +53,7 @@ public class ThemeController {
     try {
       return Objects.requireNonNull(component.themeSheetFilePaths.get(theme));
     } catch (NullPointerException e) {
-      SceneUIWidget.createErrorDialog("Theme Error", "The theme " + theme + " was not found.", e);
+      SceneUIWidgetFactory.createErrorDialog("Theme Error", "The theme " + theme + " was not found.", e);
     }
     return null;
   }
