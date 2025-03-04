@@ -1,9 +1,8 @@
 package cellsociety.model.data.states;
 
 /**
- * A placeholder enum that implements State for Bacteria Simulations but doesn't actually do
- * anything. The purpose of this class is to satisfy abstraction. The real value is stored
- * elsewhere.
+ * A placeholder enum that implements State but doesn't actually do anything The purpose of this
+ * class is to satisfy abstraction. The real value is stored elsewhere.
  *
  * @author Jacob You
  */

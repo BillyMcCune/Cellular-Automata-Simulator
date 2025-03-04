@@ -28,31 +28,31 @@ public class RaycastImplementor<T extends Enum<T> & State> {
     this.boundary = boundary;
   }
 
-  public RaycastStrategy<T> getStrategy() {
-    try {
-      String basePackage = "cellsociety.model.data.neighbors.raycasting.";
-      String shapeName = shape.name().substring(0, 1).toUpperCase() +
-          shape.name().substring(1).toLowerCase();
-      String className = basePackage + shapeName + "RaycastStrategy";
-      Class<?> clazz = Class.forName(className);
-      return (RaycastStrategy<T>) clazz.getDeclaredConstructor().newInstance();
-    }
-    catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-      // Should never happen
-      e.printStackTrace();
-      return null;
-    }
+  public RaycastStrategy<T> getStrategy()
+      throws ClassNotFoundException, NoSuchMethodException,
+      InvocationTargetException, InstantiationException, IllegalAccessException {
+    String basePackage = "cellsociety.model.data.neighbors.raycasting.";
+    String shapeName = shape.name().substring(0, 1).toUpperCase() +
+        shape.name().substring(1).toLowerCase();
+    String className = basePackage + shapeName + "RaycastStrategy";
+    Class<?> clazz = Class.forName(className);
+    return (RaycastStrategy<T>) clazz.getDeclaredConstructor().newInstance();
   }
 
   public Map<Direction, Cell<T>> raycast(Grid<T> grid,
       int startRow,
       int startCol,
       Direction rawDir,
-      int steps){
+      int steps)
+      throws ClassNotFoundException, NoSuchMethodException,
+      InvocationTargetException, InstantiationException, IllegalAccessException {
+
     return getStrategy().doRaycast(grid, startRow, startCol, rawDir, steps, boundary);
   }
 
-  public List<Direction> getDefaultRawDirections(int startRow, int startCol) {
+  public List<Direction> getDefaultRawDirections(int startRow, int startCol)
+      throws ClassNotFoundException, NoSuchMethodException,
+      InvocationTargetException, InstantiationException, IllegalAccessException {
     return getStrategy().getDefaultRawDirections(startRow, startCol);
   }
 }

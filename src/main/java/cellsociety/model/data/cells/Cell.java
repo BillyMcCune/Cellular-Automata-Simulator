@@ -2,12 +2,7 @@ package cellsociety.model.data.cells;
 
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +17,6 @@ public class Cell<T extends Enum<T> & State> {
   private T currState;
   private T nextState;
   private Map<String, Double> properties;
-  private Deque<CellQueueRecord> queue = new ArrayDeque<>();
 
   /**
    * Constructs a {@code Cell} with the specified initial state.
@@ -159,49 +153,5 @@ public class Cell<T extends Enum<T> & State> {
    */
   public void clearAllProperties() {
     properties = null;
-  }
-
-  /**
-   * Add a record to the queue.
-   *
-   * @param record the record to add to the queue
-   */
-  public void addQueueRecord(CellQueueRecord record) {
-    queue.addLast(record);
-  }
-
-  /**
-   * Remove the most recent record from the queue
-   */
-  public void removeQueueRecord() {
-    queue.pollLast();
-  }
-
-  /**
-   * Take a look at the most record on the queue and return it.
-   * @return the most recent value in the queue.
-   */
-  public CellQueueRecord peekQueueRecord() {
-    return queue.peekLast();
-  }
-
-  /**
-   * Get the entire queue.
-   * @return the queue
-   */
-  public Deque<CellQueueRecord> getQueueRecords() {
-    return queue;
-  }
-
-  public void setQueueRecords(Deque<CellQueueRecord> records) {
-    queue = new ArrayDeque<>(records);
-  }
-
-  public void copyQueueTo(Cell<T> other) {
-    other.setQueueRecords(this.getQueueRecords());
-  }
-
-  public void clearQueueRecords() {
-    queue.clear();
   }
 }

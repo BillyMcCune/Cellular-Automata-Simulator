@@ -1,6 +1,6 @@
 package cellsociety.view.controller;
 
-import cellsociety.view.scene.SceneUIWidgetFactory;
+import cellsociety.view.scene.SceneUIWidget;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -81,7 +81,7 @@ public class LanguageController {
         }
 
       } catch (IOException ex) {
-        SceneUIWidgetFactory.createErrorDialog("Error loading language file", ex.getMessage(), ex);
+        SceneUIWidget.createErrorDialog("Error loading language file", ex.getMessage(), ex);
       }
     }
   }

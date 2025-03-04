@@ -141,13 +141,17 @@ public class Grid<T extends Enum<T> & State> {
     }
   }
 
-  public void assignRaycastNeighbor(Cell<T> cell, Direction direction, int steps) {
-    int[] coordinates = getCellCoordinates(cell);
-    Map<Direction, Cell<T>> neighbors = neighborCalculator.raycastDirection(this, coordinates[0], coordinates[1], direction, steps);
-    cell.setNeighbors(neighbors);
+  public void assignRaycastNeighbors(Direction direction, int steps)
+      throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    for (int row = 0; row < getNumRows(); row++) {
+      for (int col = 0; col < getNumCols(); col++) {
+        getCell(row, col).setNeighbors(neighborCalculator.raycastDirection(this, row, col, direction, steps));
+      }
+    }
   }
 
-  public void assignAllRaycastNeighbors(int steps) {
+  public void assignAllRaycastNeighbors(int steps)
+      throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     for (int row = 0; row < getNumRows(); row++) {
       for (int col = 0; col < getNumCols(); col++) {
         Map<Direction, Map<Direction, Cell<T>>> allRays = neighborCalculator.raycastAllDirections(this, row, col, steps);
@@ -158,21 +162,5 @@ public class Grid<T extends Enum<T> & State> {
         getCell(row, col).setNeighbors(merged);
       }
     }
-  }
-
-  private int[] getCellCoordinates(Cell<T> cell) {
-    for (int row = 0; row < getNumRows(); row++) {
-      for (int col = 0; col < getNumCols(); col++) {
-        if (getCell(row, col).equals(cell)) {
-          return new int[]{row, col};
-        }
-      }
-    }
-    return new int[]{0, 0};
-  }
-
-  public List<Direction> getAllRaycastDirections(Cell<T> cell) {
-    int[] coordinates = getCellCoordinates(cell);
-    return neighborCalculator.getAllRaycastDirections(coordinates[0], coordinates[1]);
   }
 }
