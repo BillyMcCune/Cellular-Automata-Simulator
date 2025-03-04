@@ -71,7 +71,7 @@ public class ModelApi {
    *
    * @throws ClassNotFoundException if the required logic class cannot be found
    */
-  public void resetGrid() throws ClassNotFoundException {
+  public void resetGrid(boolean wantsDefaultStyles) throws ClassNotFoundException {
     if (configInfo == null) {
       return;
     }
@@ -82,9 +82,14 @@ public class ModelApi {
       Class<?> logicClass = Class.forName(LOGIC_PACKAGE + "." + name + "Logic");
       // Initialize the internal grid using the configuration.
       List<List<CellRecord>> gridCopy = deepCopyGrid(configInfo.myGrid());
-
-      grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getEdgeType());
+      if (wantsDefaultStyles) {
+        grid = new Grid<>(gridCopy, cellFactory, getGridShape(), getNeighborType(), getEdgeType());
+      } else {
+        System.out.println(myStyleManager.getCellShapePreference() + " " + myStyleManager.getNeighborArrangementPreference() + " " + myStyleManager.getEdgePolicyPreference());
+        grid = new Grid<>(configInfo.myGrid(), cellFactory,  GridShape.valueOf(myStyleManager.getCellShapePreference()), NeighborType.valueOf(myStyleManager.getNeighborArrangementPreference()), EdgeType.valueOf(myStyleManager.getEdgePolicyPreference()));
+      }
       myNeighborCalculator = grid.getNeighborCalculator();
+      System.out.println(myNeighborCalculator.getShape());
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, myParameterRecord);
@@ -192,9 +197,9 @@ public class ModelApi {
       // Dynamically create cell factory, grid, and logic.
       Constructor<?> cellFactoryConstructor = CellFactory.class.getConstructor(Class.class);
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
-
       grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(),
           getEdgeType());
+
       myNeighborCalculator = grid.getNeighborCalculator();
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());
@@ -376,7 +381,8 @@ public class ModelApi {
       myStyleManager = new StyleManager(myNeighborCalculator);
     }
     try {
-      myStyleManager.setNeighborArrangement(neighborArrangement);
+     myNeighborCalculator = myStyleManager.setNeighborArrangement(neighborArrangement);
+     grid.setNeighborType(myNeighborCalculator.getNeighborType());
     } catch (NullPointerException e) {
       throw new NullPointerException(e.getMessage());
     }
@@ -394,7 +400,8 @@ public class ModelApi {
       myStyleManager = new StyleManager(myNeighborCalculator);
     }
     try {
-      myStyleManager.setEdgePolicy(edgePolicy);
+     myNeighborCalculator = myStyleManager.setEdgePolicy(edgePolicy);
+     grid.setEdgeType(myNeighborCalculator.getEdgeType());
     } catch (NullPointerException e) {
       throw new NullPointerException(e.getMessage());
     }
@@ -411,7 +418,9 @@ public class ModelApi {
     if (myStyleManager == null) {
       myStyleManager = new StyleManager(myNeighborCalculator);
     }
-    myStyleManager.setCellShape(cellShape);
+    myNeighborCalculator = myStyleManager.setCellShape(cellShape);
+    grid.setGridShape(myNeighborCalculator.getShape());
+    System.out.println(grid.getNeighborCalculator().getShape());
   }
 
   /**
@@ -501,6 +510,9 @@ public class ModelApi {
     SimulationType type = configInfo.myType();
     return type.name().charAt(0) + type.name().substring(1).toLowerCase();
   }
+
+
+
 
 }
 

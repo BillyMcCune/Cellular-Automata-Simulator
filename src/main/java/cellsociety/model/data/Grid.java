@@ -115,6 +115,18 @@ public class Grid<T extends Enum<T> & State> {
     return neighborCalculator;
   }
 
+  public void setEdgeType(EdgeType edgeType) {
+    neighborCalculator.setEdgeType(edgeType);
+  }
+
+  public void setNeighborType(NeighborType neighborType) {
+    neighborCalculator.setNeighborType(neighborType);
+  }
+
+  public void setGridShape(GridShape gridShape) {
+    neighborCalculator.setShape(gridShape);
+  }
+
   private void initializeGrid(List<List<CellRecord>> rawGrid, CellFactory<T> factory) {
     for (List<CellRecord> rowStates : rawGrid) {
       List<Cell<T>> newRow = new ArrayList<>();
