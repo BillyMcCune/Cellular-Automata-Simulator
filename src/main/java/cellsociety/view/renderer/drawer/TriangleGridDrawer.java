@@ -12,7 +12,7 @@ import javafx.scene.shape.StrokeType;
  *
  * @author Hsuan-Kai Liao
  */
-public class TriGridDrawer extends GridDrawer {
+public class TriangleGridDrawer extends GridDrawer {
 
   @Override
   protected void drawGridContents(Pane pane, int numOfRows, int numOfCols) {

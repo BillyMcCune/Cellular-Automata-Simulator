@@ -4,11 +4,9 @@ import cellsociety.logging.Log;
 import cellsociety.model.config.ParameterRecord;
 import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Properties;
 
 /**

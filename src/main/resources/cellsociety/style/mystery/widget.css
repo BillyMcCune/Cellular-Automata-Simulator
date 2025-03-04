@@ -124,53 +124,6 @@
 }
 
 /* ==========================
-   Color Selector
-   ========================== */
-
-.color-label {
-  -fx-font-size: 14px;
-  -fx-font-weight: bold;
-  -fx-text-fill: linear-gradient(to bottom, #ffffff, #aaaaaa); /* Soft white gradient */
-}
-
-.color-tooltip {
-  -fx-background-color: #420e4e;
-  -fx-text-fill: linear-gradient(to bottom, #ffffff, #aaaaaa); /* Soft white gradient */
-  -fx-font-size: 14px;
-  -fx-padding: 5px 10px;
-  -fx-background-radius: 5px;
-  -fx-border-color: #7a5cff;
-  -fx-border-width: 1px;
-}
-
-.color-picker {
-  -fx-background-color: #ffffff;
-  -fx-border-color: #cccccc;
-  -fx-border-radius: 5px;
-  -fx-background-radius: 5px;
-}
-
-.color-picker .label {
-  -fx-opacity: 0;
-}
-
-.color-text-field {
-  -fx-pref-width: 80px;
-  -fx-background-color: #ffffff;
-  -fx-border-color: #cccccc;
-  -fx-border-radius: 5px;
-  -fx-background-radius: 5px;
-  -fx-text-fill: #000000;
-  -fx-focus-color: linear-gradient(to bottom, #7a5cff, #ffffff); /* Soft focus effect */
-}
-
-.color-control {
-  -fx-padding: 5px;
-  -fx-background-color: #333333;
-  -fx-border-color: #555555;
-}
-
-/* ==========================
    Containers
    ========================== */
 .container-container {
@@ -178,7 +131,6 @@
   -fx-background-color: #333333;
   -fx-border-color: #444444;
 }
-
 
 /* ==========================
    Section

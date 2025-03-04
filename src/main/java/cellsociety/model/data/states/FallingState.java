@@ -1,7 +1,7 @@
 package cellsociety.model.data.states;
 
 /**
- * Represents the different possible states for Falling Sand.
+ * Represents the different possible states for Falling Sand.w
  *
  * @author Jacob You
  */

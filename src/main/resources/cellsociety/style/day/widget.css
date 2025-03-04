@@ -111,52 +111,6 @@
 }
 
 /* ==========================
-   Color Selector
-   ========================== */
-
-.color-label {
-  -fx-font-size: 14px;
-  -fx-text-fill: #000000;
-  -fx-font-weight: bold;
-}
-
-.color-tooltip {
-  -fx-background-color: #2a2a2a;
-  -fx-text-fill: #ffffff;
-  -fx-font-size: 14px;
-  -fx-padding: 5px 10px;
-  -fx-background-radius: 5px;
-  -fx-border-color: #000000;
-  -fx-border-width: 1px;
-}
-
-.color-picker {
-  -fx-border-color: #cccccc;
-  -fx-border-radius: 5px;
-  -fx-background-radius: 5px;
-}
-
-.color-picker .label {
-  -fx-opacity: 0;
-}
-
-.color-text-field {
-  -fx-pref-width: 80px;
-  -fx-background-color: #ffffff;
-  -fx-border-color: #cccccc;
-  -fx-border-radius: 5px;
-  -fx-background-radius: 5px;
-  -fx-text-fill: #000000;
-  -fx-focus-color: #7a5cff;
-}
-
-.color-control {
-  -fx-padding: 5px;
-  -fx-background-color: #ffffff;
-  -fx-border-color: #cccccc;
-}
-
-/* ==========================
    Containers
    ========================== */
 .container-container {

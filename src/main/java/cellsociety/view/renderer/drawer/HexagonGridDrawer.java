@@ -11,7 +11,7 @@ import javafx.scene.shape.StrokeType;
  *
  * @author Hsuan-Kai Liao
  */
-public class HexGridDrawer extends GridDrawer {
+public class HexagonGridDrawer extends GridDrawer {
 
   @Override
   protected void drawGridContents(Pane pane, int numOfRows, int numOfCols) {

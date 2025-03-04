@@ -18,7 +18,7 @@ public abstract class GridDrawer {
   private static GridDrawer instance;
 
   private static <T extends GridDrawer> GridDrawer getInstance(Class<T> clazz) {
-    if (instance == null || !instance.getClass().equals(clazz)) {
+    if (instance == null) {
       instance = createInstance(clazz);
     }
     return instance;
