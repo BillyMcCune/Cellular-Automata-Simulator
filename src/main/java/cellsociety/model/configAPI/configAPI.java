@@ -17,6 +17,9 @@ import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 
 /**
+ * The configAPI is responsible for managing the interactions between the configuration and the
+ * Scene Controller. It deals with the functions of the ConfigReader and ConfigWriter.
+ *
  * @author Billy McCune
  */
 public class configAPI {
@@ -176,7 +179,7 @@ public class configAPI {
    * @return the grid height
    * @throws NumberFormatException if the configuration information is not loaded
    */
-  public int getGridHeight() throws NullPointerException{
+  public int getGridHeight() throws NullPointerException {
     try {
       return configInfo.myGridHeight();
     } catch (NullPointerException e) {
@@ -210,7 +213,8 @@ public class configAPI {
    *                          description.
    * @throws NullPointerException if the current configuration information is not loaded.
    */
-  public void setSimulationInformation(Map<String, String> simulationDetails) throws NullPointerException {
+  public void setSimulationInformation(Map<String, String> simulationDetails)
+      throws NullPointerException {
     try {
       ConfigInfo tempConfigInfo = new ConfigInfo(
           configInfo.myType(),

@@ -17,15 +17,18 @@ import org.xml.sax.SAXException;
 public class GridReader {
 
   /**
-   * @author Billy McCune
-   * Reads the initial grid configuration from the XML root element. The method determines whether the grid
-   * is specified using <code>initialCells</code>, <code>initialStates</code>, or <code>initialProportions</code>.
+   * Reads the initial grid configuration from the XML root element. The method determines whether
+   * the grid is specified using <code>initialCells</code>, <code>initialStates</code>, or
+   * <code>initialProportions</code>.
    *
    * @param root the root XML element
    * @return a 2D list of {@code CellRecord} representing the initial grid
-   * @throws ParserConfigurationException if multiple grid configuration elements are found or if the grid configuration is missing
+   * @throws ParserConfigurationException if multiple grid configuration elements are found or if
+   *                                      the grid configuration is missing
+   * @author Billy McCune
    */
-  public static List<List<CellRecord>> readInitialGrid(Element root) throws ParserConfigurationException, IllegalArgumentException {
+  public static List<List<CellRecord>> readInitialGrid(Element root)
+      throws ParserConfigurationException, IllegalArgumentException {
     int initialCellsCount = root.getElementsByTagName("initialCells").getLength();
     int initialStatesCount = root.getElementsByTagName("initialStates").getLength();
     int initialProportionsCount = root.getElementsByTagName("initialProportions").getLength();
@@ -55,7 +58,8 @@ public class GridReader {
    *
    * @param root the XML root element
    * @return a set of accepted state integers
-   * @throws IllegalArgumentException if the accepted states element is missing or empty, or if an accepted state cannot be parsed as an integer
+   * @throws IllegalArgumentException if the accepted states element is missing or empty, or if an
+   *                                  accepted state cannot be parsed as an integer
    */
   public static Set<Integer> readAcceptedStates(Element root) throws IllegalArgumentException {
     Element acceptedStatesElement = (Element) root.getElementsByTagName("acceptedStates").item(0);
@@ -85,7 +89,8 @@ public class GridReader {
    * @return a 2D list of {@code CellRecord} representing the grid
    * @throws IllegalArgumentException if there are no rows or if any row is empty
    */
-  private static List<List<CellRecord>> parseInitialCells(Element root) throws IllegalArgumentException {
+  private static List<List<CellRecord>> parseInitialCells(Element root)
+      throws IllegalArgumentException {
     Element initialCellsElement = getInitialCellsElement(root);
     NodeList rowNodes = initialCellsElement.getElementsByTagName("row");
     if (rowNodes == null || rowNodes.getLength() == 0) {
@@ -131,7 +136,8 @@ public class GridReader {
    * @param rowIndex   the index of the row (for error reporting)
    * @return a list of {@code CellRecord} objects for that row
    */
-  private static List<CellRecord> parseRow(Element rowElement, int rowIndex)  throws IllegalArgumentException {
+  private static List<CellRecord> parseRow(Element rowElement, int rowIndex)
+      throws IllegalArgumentException {
     NodeList cellNodes = rowElement.getElementsByTagName("cell");
     List<CellRecord> rowCells = new ArrayList<>();
     for (int j = 0; j < cellNodes.getLength(); j++) {
@@ -154,7 +160,8 @@ public class GridReader {
    * @return a {@code CellRecord} object representing the cell
    * @throws IllegalArgumentException if the "state" attribute is missing or invalid
    */
-  private static CellRecord parseCell(Element cellElement, int rowIndex, int colIndex) throws IllegalArgumentException {
+  private static CellRecord parseCell(Element cellElement, int rowIndex, int colIndex)
+      throws IllegalArgumentException {
     String stateStr = cellElement.getAttribute("state");
     if (stateStr == null || stateStr.isEmpty()) {
       throw new IllegalArgumentException("error-missingCellState," + rowIndex + "," + colIndex);
@@ -163,7 +170,8 @@ public class GridReader {
     try {
       state = Integer.parseInt(stateStr);
     } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException("error-invalidCellState," + rowIndex + "," + colIndex + "," + stateStr);
+      throw new IllegalArgumentException(
+          "error-invalidCellState," + rowIndex + "," + colIndex + "," + stateStr);
     }
     Map<String, Double> properties = parseCellProperties(cellElement, rowIndex, colIndex);
     return new CellRecord(state, properties);
@@ -179,7 +187,8 @@ public class GridReader {
    * @return a map of property names to their double values
    * @throws IllegalArgumentException if any property value cannot be parsed as a double
    */
-  private static Map<String, Double> parseCellProperties(Element cellElement, int rowIndex, int colIndex) throws IllegalArgumentException {
+  private static Map<String, Double> parseCellProperties(Element cellElement, int rowIndex,
+      int colIndex) throws IllegalArgumentException {
     Map<String, Double> properties = new HashMap<>();
     for (int k = 0; k < cellElement.getAttributes().getLength(); k++) {
       Node attr = cellElement.getAttributes().item(k);
@@ -190,7 +199,8 @@ public class GridReader {
           double value = Double.parseDouble(attrValue);
           properties.put(attrName, value);
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("error-InvalidCellState," + rowIndex + "," + colIndex + "," + attrName);
+          throw new IllegalArgumentException(
+              "error-InvalidCellState," + rowIndex + "," + colIndex + "," + attrName);
         }
       }
     }

@@ -15,6 +15,11 @@ import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
+/**
+ * Manages the interactions between the modelApi and configApi and updates the view.
+ *
+ * @author Hsuan-Kai Liao
+ */
 public class SceneController {
 
   // Constants
@@ -139,26 +144,35 @@ public class SceneController {
 
   /**
    * Retrieves a list of all available cell shape names.
+   *
    * @return a list of cell shape names
    */
   public List<String> getAllCellShapeNames() {
-    return myModelApi.getPossibleCellShapes().stream().map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase()).collect(Collectors.toList());
+    return myModelApi.getPossibleCellShapes().stream()
+        .map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase())
+        .collect(Collectors.toList());
   }
 
   /**
    * Retrieves a list of all available edge policy names.
+   *
    * @return a list of edge policy names
    */
   public List<String> getALlEdgePolicies() {
-    return myModelApi.getPossibleEdgePolicies().stream().map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase()).collect(Collectors.toList());
+    return myModelApi.getPossibleEdgePolicies().stream()
+        .map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase())
+        .collect(Collectors.toList());
   }
 
   /**
    * Retrieves a list of all available neighbor arrangement names.
+   *
    * @return a list of neighbor arrangement names
    */
   public List<String> getAllNeighborArrangements() {
-    return myModelApi.getPossibleNeighborArrangements().stream().map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase()).collect(Collectors.toList());
+    return myModelApi.getPossibleNeighborArrangements().stream()
+        .map(shape -> shape.substring(0, 1).toUpperCase() + shape.substring(1).toLowerCase())
+        .collect(Collectors.toList());
   }
 
   /**
@@ -200,7 +214,8 @@ public class SceneController {
    * @return the author of the simulation
    */
   public String getSimulationCellShape() {
-    return myModelApi.getDefaultCellShape().substring(0, 1).toUpperCase() + myModelApi.getDefaultCellShape().substring(1).toLowerCase();
+    return myModelApi.getDefaultCellShape().substring(0, 1).toUpperCase()
+        + myModelApi.getDefaultCellShape().substring(1).toLowerCase();
   }
 
   /**
@@ -209,7 +224,8 @@ public class SceneController {
    * @return the edge policy of the simulation
    */
   public String getSimulationEdgePolicy() {
-    return myModelApi.getDefaultEdgePolicy().substring(0, 1).toUpperCase() + myModelApi.getDefaultEdgePolicy().substring(1).toLowerCase();
+    return myModelApi.getDefaultEdgePolicy().substring(0, 1).toUpperCase()
+        + myModelApi.getDefaultEdgePolicy().substring(1).toLowerCase();
   }
 
   /**
@@ -218,7 +234,8 @@ public class SceneController {
    * @return the neighbor arrangement of the simulation
    */
   public String getSimulationNeighborArrangement() {
-    return myModelApi.getDefaultNeighborArrangement().substring(0, 1).toUpperCase() + myModelApi.getDefaultNeighborArrangement().substring(1).toLowerCase();
+    return myModelApi.getDefaultNeighborArrangement().substring(0, 1).toUpperCase()
+        + myModelApi.getDefaultNeighborArrangement().substring(1).toLowerCase();
   }
 
   /* MODEL APIS */
@@ -314,7 +331,8 @@ public class SceneController {
    */
   public void resetColorParameters() {
     simulationScene.clearColorParameters();
-    Map<String, String> colorParams = myModelApi.getCellTypesAndDefaultColors(myConfigAPI.getSimulationInformation().get("type"));
+    Map<String, String> colorParams = myModelApi.getCellTypesAndDefaultColors(
+        myConfigAPI.getSimulationInformation().get("type"));
     for (Map.Entry<String, String> entry : colorParams.entrySet()) {
       String paramName = entry.getKey();
       String prefColor = myModelApi.getColorFromPreferences(paramName);
@@ -348,8 +366,9 @@ public class SceneController {
 
   /**
    * Sets the cell shape of the simulation.
-   * @param cellShape the cell shape to set, the first letter should be capitalized
-   *                  (e.g. "Square", "Triangle", "Hex")
+   *
+   * @param cellShape the cell shape to set, the first letter should be capitalized (e.g. "Square",
+   *                  "Triangle", "Hex")
    */
   public void setCellShape(String cellShape) {
     try {
@@ -361,7 +380,8 @@ public class SceneController {
         initViewGrid();
         updateViewGrid();
       } else {
-        throw new ClassCastException("Class " + cellShape + "GridDrawer does not extend GridDrawer.");
+        throw new ClassCastException(
+            "Class " + cellShape + "GridDrawer does not extend GridDrawer.");
       }
     } catch (ClassNotFoundException | ClassCastException e) {
       // TODO: Add error message to the language property files
@@ -371,8 +391,9 @@ public class SceneController {
 
   /**
    * Sets the edge policy of the simulation.
-   * @param edgePolicy the edge policy to set, the first letter should be capitalized
-   *                  (e.g. "Finite", "Toroidal", "Infinite")
+   *
+   * @param edgePolicy the edge policy to set, the first letter should be capitalized (e.g.
+   *                   "Finite", "Toroidal", "Infinite")
    */
   public void setEdgePolicy(String edgePolicy) {
     try {
@@ -385,8 +406,9 @@ public class SceneController {
 
   /**
    * Sets the neighbor arrangement of the simulation.
-   * @param neighborArrangement the neighbor arrangement to set, the first letter should be capitalized
-   *                  (e.g. "Cardinal", "Diagonal", "Both")
+   *
+   * @param neighborArrangement the neighbor arrangement to set, the first letter should be
+   *                            capitalized (e.g. "Cardinal", "Diagonal", "Both")
    */
   public void setNeighborArrangement(String neighborArrangement) {
     try {
@@ -460,7 +482,8 @@ public class SceneController {
     String title = LanguageController.getStringProperty(titleKey).getValue();
     String message = e.getMessage();
     String errorType = LanguageController.getStringProperty(message.split(",")[0]).getValue();
-    String formattedMessage = message.split(",").length > 1 ? String.format(errorType, message.split(",")[1]) : errorType;
+    String formattedMessage =
+        message.split(",").length > 1 ? String.format(errorType, message.split(",")[1]) : errorType;
 
     SceneUIWidgetFactory.createErrorDialog(title, formattedMessage, e);
   }

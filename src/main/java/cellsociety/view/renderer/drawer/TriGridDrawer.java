@@ -13,6 +13,7 @@ import javafx.scene.shape.StrokeType;
  * @author Hsuan-Kai Liao
  */
 public class TriGridDrawer extends GridDrawer {
+
   private static final double DEFAULT_TRI_CELL_SIZE = DEFAULT_CELL_SIZE * 1.3;
 
   @Override

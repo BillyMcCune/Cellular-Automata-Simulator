@@ -23,12 +23,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * @author Billy McCune
- * The GridReader class is responsible for parsing the grid configuration from
- * an XML document. It supports reading grid information from various XML elements such as
+ * The GridReader class is responsible for parsing the grid configuration from an XML document. It
+ * supports reading grid information from various XML elements such as
  * <code>initialCells</code>,
  * <code>initialStates</code>, and <code>initialProportions</code>. In addition, it provides helper
  * methods to parse individual rows and cells.
+ *
+ * @author Billy McCune
  */
 public class ConfigReader {
 
@@ -55,7 +56,8 @@ public class ConfigReader {
       File dataFile = fileMap.get(fileName);
       Log.trace("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
       return getConfigInformation(dataFile, fileName);
-    } catch (ParserConfigurationException | SAXException | IOException | IllegalArgumentException e) {
+    } catch (ParserConfigurationException | SAXException | IOException |
+             IllegalArgumentException e) {
       throw new ParserConfigurationException(e.getMessage());
     }
   }
@@ -71,61 +73,61 @@ public class ConfigReader {
    * @throws IOException                  if an I/O error occurs.
    */
   private ConfigInfo getConfigInformation(File xmlFile, String fileName)
-      throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException{
+      throws ParserConfigurationException, SAXException, IOException, IllegalArgumentException {
 
     if (xmlFile.length() == 0) {
       throw new IOException("error-xmlFile-isEmpty");
     }
-  try {
-    Document xmlDocument =
-        DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
-    Element root = xmlDocument.getDocumentElement();
+    try {
+      Document xmlDocument =
+          DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xmlFile);
+      Element root = xmlDocument.getDocumentElement();
 
-    String simType = getTextValue(root, "type");
-    String cellShape = getTextValue(root, "cellShapeType");
-    String gridType = getTextValue(root, "gridEdgeType");
-    String neighborArrangement = getTextValue(root, "neighborArrangementType");
-    String title = getTextValue(root, "title");
-    String author = getTextValue(root, "author");
-    String description = getTextValue(root, "description");
-    int width = Integer.parseInt(getTextValue(root, "width"));
-    int height = Integer.parseInt(getTextValue(root, "height"));
-    int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
-    int neighborRadius = Integer.parseInt(getTextValue(root, "neighborRadius"));
+      String simType = getTextValue(root, "type");
+      String cellShape = getTextValue(root, "cellShapeType");
+      String gridType = getTextValue(root, "gridEdgeType");
+      String neighborArrangement = getTextValue(root, "neighborArrangementType");
+      String title = getTextValue(root, "title");
+      String author = getTextValue(root, "author");
+      String description = getTextValue(root, "description");
+      int width = Integer.parseInt(getTextValue(root, "width"));
+      int height = Integer.parseInt(getTextValue(root, "height"));
+      int defaultSpeed = Integer.parseInt(getTextValue(root, "defaultSpeed"));
+      int neighborRadius = Integer.parseInt(getTextValue(root, "neighborRadius"));
 
-    // Delegate grid parsing and validation to GridReader
-    List<List<CellRecord>> initialGrid = GridReader.readInitialGrid(root);
-    Set<Integer> acceptedStates = GridReader.readAcceptedStates(root);
-    checkForInvalidInformation(width, height, acceptedStates, initialGrid);
+      // Delegate grid parsing and validation to GridReader
+      List<List<CellRecord>> initialGrid = GridReader.readInitialGrid(root);
+      Set<Integer> acceptedStates = GridReader.readAcceptedStates(root);
+      checkForInvalidInformation(width, height, acceptedStates, initialGrid);
 
-    ParameterRecord parameters = parseForParameters(root);
+      ParameterRecord parameters = parseForParameters(root);
 
-    return new ConfigInfo(
-        SimulationType.valueOf(simType.toUpperCase()),
-        cellShapeType.valueOf(cellShape.toUpperCase()),
-        gridEdgeType.valueOf(gridType.toUpperCase()),
-        neighborArrangementType.valueOf(neighborArrangement.toUpperCase()),
-        neighborRadius,
-        title,
-        author,
-        description,
-        width,
-        height,
-        defaultSpeed,
-        initialGrid,
-        parameters,
-        acceptedStates,
-        fileName
-    );
-  } catch (ParserConfigurationException e) {
-    throw new ParserConfigurationException(e.getMessage());
-  } catch (SAXException e) {
-    throw new SAXException(e.getMessage());
-  } catch (IOException e) {
-    throw new IOException(e.getMessage());
-  } catch (IllegalArgumentException e) {
-    throw new IllegalArgumentException(e.getMessage());
-  }
+      return new ConfigInfo(
+          SimulationType.valueOf(simType.toUpperCase()),
+          cellShapeType.valueOf(cellShape.toUpperCase()),
+          gridEdgeType.valueOf(gridType.toUpperCase()),
+          neighborArrangementType.valueOf(neighborArrangement.toUpperCase()),
+          neighborRadius,
+          title,
+          author,
+          description,
+          width,
+          height,
+          defaultSpeed,
+          initialGrid,
+          parameters,
+          acceptedStates,
+          fileName
+      );
+    } catch (ParserConfigurationException e) {
+      throw new ParserConfigurationException(e.getMessage());
+    } catch (SAXException e) {
+      throw new SAXException(e.getMessage());
+    } catch (IOException e) {
+      throw new IOException(e.getMessage());
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   /**
@@ -142,7 +144,8 @@ public class ConfigReader {
    * @throws IllegalArgumentException if parameter elements are missing required attributes or
    *                                  contain invalid values.
    */
-  private ParameterRecord parseForParameters(Element root) throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
+  private ParameterRecord parseForParameters(Element root)
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
     try {
       Element parametersElement = getParametersElement(root);
       if (parametersElement == null) {
@@ -285,7 +288,7 @@ public class ConfigReader {
    * @throws IllegalArgumentException if the grid dimensions or cell states are invalid.
    */
   private void checkForInvalidInformation(int gridWidth, int gridHeight,
-      Set<Integer> acceptedStates, List<List<CellRecord>> grid)  throws IllegalArgumentException {
+      Set<Integer> acceptedStates, List<List<CellRecord>> grid) throws IllegalArgumentException {
     try {
       checkGridBounds(gridWidth, gridHeight, grid);
       checkInvalidStates(acceptedStates, grid);
@@ -302,7 +305,8 @@ public class ConfigReader {
    * @param grid   the 2D grid of {@code CellRecord}.
    * @throws IllegalArgumentException if the grid dimensions do not match.
    */
-  private void checkGridBounds(int width, int height, List<List<CellRecord>> grid) throws IllegalArgumentException {
+  private void checkGridBounds(int width, int height, List<List<CellRecord>> grid)
+      throws IllegalArgumentException {
     if (grid.size() != height) {
       throw new IllegalArgumentException(
           "error-wrongNumberOfRows" + "," + height + "," + grid.size()
@@ -323,7 +327,8 @@ public class ConfigReader {
    * @param grid           the 2D grid of {@code CellRecord} to be validated.
    * @throws IllegalArgumentException if any cell contains an invalid state.
    */
-  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<CellRecord>> grid) throws IllegalArgumentException {
+  private void checkInvalidStates(Set<Integer> acceptedStates, List<List<CellRecord>> grid)
+      throws IllegalArgumentException {
     for (List<CellRecord> row : grid) {
       for (CellRecord cell : row) {
         if (!acceptedStates.contains(cell.state())) {

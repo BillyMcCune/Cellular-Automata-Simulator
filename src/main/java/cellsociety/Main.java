@@ -6,8 +6,10 @@ import javafx.stage.Stage;
 
 /**
  * The entry point of the program, which sets up the main scene and game loop.
+ * @author Hsuan-Kai Liao, Billy McCune, Jacob You
  */
 public class Main extends Application {
+
   public static final int FRAMES_PER_SECOND = 60;
 
   @Override
@@ -22,6 +24,7 @@ public class Main extends Application {
 
   /**
    * Start the program, give complete control to JavaFX.
+   *
    * @param args command line arguments
    */
   public static void main(String[] args) {

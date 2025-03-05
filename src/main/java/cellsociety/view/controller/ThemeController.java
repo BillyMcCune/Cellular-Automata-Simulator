@@ -53,7 +53,8 @@ public class ThemeController {
     try {
       return Objects.requireNonNull(component.themeSheetFilePaths.get(theme));
     } catch (NullPointerException e) {
-      SceneUIWidgetFactory.createErrorDialog("Theme Error", "The theme " + theme + " was not found.", e);
+      SceneUIWidgetFactory.createErrorDialog("Theme Error",
+          "The theme " + theme + " was not found.", e);
     }
     return null;
   }

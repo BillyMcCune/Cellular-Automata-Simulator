@@ -13,6 +13,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
+/**
+ * Manages the Cell Color preferences and the GetCellColor method.
+ *
+ * @author Billy McCune
+ */
 public class CellColorManager {
 
   private Grid<?> grid;

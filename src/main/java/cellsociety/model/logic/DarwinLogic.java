@@ -16,11 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Handles Darwin simulation logic.
- * <p>
- * This class processes each cell's instructions using a DarwinHelper,
- * updates cell states based on infections and movement, and coordinates overall simulation updates.
- * </p>
+ * Handles Darwin simulation logic. This class processes each cell's instructions using a
+ * DarwinHelper, updates cell states based on infections and movement, and coordinates overall
+ * simulation updates.
  *
  * @author Jacob You
  */
@@ -55,11 +53,9 @@ public class DarwinLogic extends Logic<DarwinState> {
   }
 
   /**
-   * Initializes species data for each cell in the grid.
-   * <p>
-   * For every cell with a non-zero speciesID, this method initializes the cell's instructionIndex
-   * (if not already set), sets its orientation (if not already set), and adds an initial InfectionRecord.
-   * </p>
+   * Initializes species data for each cell in the grid. For every cell with a non-zero speciesID,
+   * this method initializes the cell's instructionIndex (if not already set), sets its orientation
+   * (if not already set), and adds an initial InfectionRecord.
    */
   public void initializeSpecies() {
     int numRows = grid.getNumRows();
@@ -83,11 +79,9 @@ public class DarwinLogic extends Logic<DarwinState> {
   }
 
   /**
-   * Updates the simulation for one time step.
-   * <p>
-   * Processes each cell with a non-zero speciesID, updates cells based on infections,
-   * moves cells that need to move, and finally updates the grid to finalize state changes.
-   * </p>
+   * Updates the simulation for one time step. Processes each cell with a non-zero speciesID,
+   * updates cells based on infections, moves cells that need to move, and finally updates the grid
+   * to finalize state changes.
    */
   @Override
   public void update() {
@@ -132,11 +126,9 @@ public class DarwinLogic extends Logic<DarwinState> {
   }
 
   /**
-   * Updates a single cell's state by processing its current instruction.
-   * <p>
-   * Uses the DarwinHelper to process the cell's instruction, updates the instructionIndex,
-   * and classifies the cell for movement, infection, or stationary processing.
-   * </p>
+   * Updates a single cell's state by processing its current instruction. Uses the DarwinHelper to
+   * process the cell's instruction, updates the instructionIndex, and classifies the cell for
+   * movement, infection, or stationary processing.
    *
    * @param cell the cell to update
    */
@@ -176,11 +168,9 @@ public class DarwinLogic extends Logic<DarwinState> {
   }
 
   /**
-   * Moves the specified cell by a given distance.
-   * <p>
-   * Performs a raycast based on the cell's orientation, sorts the potential path by Manhattan distance,
-   * and moves the cell to the furthest available destination that is empty.
-   * </p>
+   * Moves the specified cell by a given distance. Performs a raycast based on the cell's
+   * orientation, sorts the potential path by Manhattan distance, and moves the cell to the furthest
+   * available destination that is empty.
    *
    * @param cell     the cell to move
    * @param distance the number of steps to move

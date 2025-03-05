@@ -117,7 +117,8 @@ public class SimulationScene {
         DockPosition.BOTTOM, null);
     docker.createDWindow(LanguageController.getStringProperty("grid-window"), gridParent,
         DockPosition.RIGHT, null);
-    DWindow colorWindow = docker.createDWindow(LanguageController.getStringProperty("colors-window"),
+    DWindow colorWindow = docker.createDWindow(
+        LanguageController.getStringProperty("colors-window"),
         colorPanel, DockPosition.RIGHT, null);
     DWindow parameterWindow = docker.createDWindow(
         LanguageController.getStringProperty("parameters-window"), parameterPanel,
@@ -177,8 +178,12 @@ public class SimulationScene {
       selectSimulationType.setValue(SceneController.DEFAULT_LOADED_SIMULATION_CONFIG);
 
       // Set the initial language and theme
-      selectTheme.setValue(currentTheme.toString().substring(0, 1).toUpperCase() + currentTheme.toString().substring(1).toLowerCase());
-      selectLanguage.setValue(currentLanguage.toString().substring(0, 1).toUpperCase() + currentLanguage.toString().substring(1).toLowerCase());
+      selectTheme.setValue(
+          currentTheme.toString().substring(0, 1).toUpperCase() + currentTheme.toString()
+              .substring(1).toLowerCase());
+      selectLanguage.setValue(
+          currentLanguage.toString().substring(0, 1).toUpperCase() + currentLanguage.toString()
+              .substring(1).toLowerCase());
     };
 
     // Create the splash screen
@@ -333,8 +338,10 @@ public class SimulationScene {
         this::splashScreenLanguageCallback,
         this::splashScreenThemeCallback
     );
-    selectTheme = ((Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData()).get("theme");
-    selectLanguage = ((Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData()).get("language");
+    selectTheme = ((Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData()).get(
+        "theme");
+    selectLanguage = ((Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData()).get(
+        "language");
 
     //#### Grid Style selectors ####//
     HBox cellShapeSelector = SceneUIWidgetFactory.createDropDownUI(
@@ -388,8 +395,10 @@ public class SimulationScene {
     StyleSelectorBox.setAlignment(Pos.CENTER);
 
     //#### Create sections ####//
-    BorderPane section2 = SceneUIWidgetFactory.createSectionUI(LanguageController.getStringProperty("themelang-section"), themeLanguageSelectors);
-    BorderPane section3 = SceneUIWidgetFactory.createSectionUI(LanguageController.getStringProperty("gridstyle-section"), StyleSelectorBox);
+    BorderPane section2 = SceneUIWidgetFactory.createSectionUI(
+        LanguageController.getStringProperty("themelang-section"), themeLanguageSelectors);
+    BorderPane section3 = SceneUIWidgetFactory.createSectionUI(
+        LanguageController.getStringProperty("gridstyle-section"), StyleSelectorBox);
 
     //#### Main VBox containing all sections ####//
     VBox styleBox = new VBox(10, section2, section3);
@@ -586,7 +595,8 @@ public class SimulationScene {
    * @param numOfRows the number of rows in the grid
    * @param numOfCols the number of columns in the grid
    */
-  public <T extends GridDrawer> void setGrid(int numOfRows, int numOfCols, Class<T> gridDrawerClass) {
+  public <T extends GridDrawer> void setGrid(int numOfRows, int numOfCols,
+      Class<T> gridDrawerClass) {
     SceneRenderer.drawGrid(grid, numOfRows, numOfCols, gridDrawerClass);
     SceneRenderer.drawGrid(miniGrid, numOfRows, numOfCols, gridDrawerClass);
   }
@@ -647,7 +657,8 @@ public class SimulationScene {
   public void setParameter(String defaultValue, String labelKey, String tooltipKey,
       Consumer<String> callback) {
     parameterBox.getChildren().add(
-        SceneUIWidgetFactory.createRangeUI(defaultValue, LanguageController.getStringProperty(labelKey),
+        SceneUIWidgetFactory.createRangeUI(defaultValue,
+            LanguageController.getStringProperty(labelKey),
             LanguageController.getStringProperty(tooltipKey), callback));
   }
 
@@ -660,14 +671,17 @@ public class SimulationScene {
 
   /**
    * Set the color with the given default color, label, tooltip, and callback
+   *
    * @param defaultColor the default color of the parameter
-   * @param labelKey the label key for the StringProperty of the parameter
-   * @param tooltipKey the tooltip key for the StringProperty of the parameter
-   * @param callback the callback function of the parameter
+   * @param labelKey     the label key for the StringProperty of the parameter
+   * @param tooltipKey   the tooltip key for the StringProperty of the parameter
+   * @param callback     the callback function of the parameter
    */
-  public void setColorParameter(String defaultColor, String labelKey, String tooltipKey, Consumer<String> callback) {
+  public void setColorParameter(String defaultColor, String labelKey, String tooltipKey,
+      Consumer<String> callback) {
     colorBox.getChildren().add(
-        SceneUIWidgetFactory.createColorSelectorUI(defaultColor, LanguageController.getStringProperty(labelKey),
+        SceneUIWidgetFactory.createColorSelectorUI(defaultColor,
+            LanguageController.getStringProperty(labelKey),
             LanguageController.getStringProperty(tooltipKey), callback));
   }
 

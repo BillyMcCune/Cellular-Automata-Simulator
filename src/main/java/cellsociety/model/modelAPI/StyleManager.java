@@ -15,10 +15,12 @@ import java.util.Properties;
 /**
  * The StyleManager class is responsible for managing simulation style preferences.
  * <p>
- * It provides methods to retrieve possible values for neighbor arrangements, edge policies,
- * and cell shapes from the style properties file. It also supports updating style preferences
- * such as edge policy, neighbor arrangement, cell shape, and grid outline preference.
+ * It provides methods to retrieve possible values for neighbor arrangements, edge policies, and
+ * cell shapes from the style properties file. It also supports updating style preferences such as
+ * edge policy, neighbor arrangement, cell shape, and grid outline preference.
  * </p>
+ *
+ * @author Billy McCune
  */
 public class StyleManager {
 
@@ -35,13 +37,14 @@ public class StyleManager {
     // The external properties file in the working directory.
     propertiesFile = new File("SimulationStyle.properties");
 
-
     // If the external file doesn't exist, copy the default resource to this location.
     if (!propertiesFile.exists()) {
-      try (InputStream input = getClass().getResourceAsStream("/cellsociety/property/SimulationStyle.properties");
+      try (InputStream input = getClass().getResourceAsStream(
+          "/cellsociety/property/SimulationStyle.properties");
           OutputStream output = new FileOutputStream(propertiesFile)) {
         if (input == null) {
-          throw new NoSuchElementException("Default properties file not found in resources at /cellsociety/property/SimulationStyle.properties");
+          throw new NoSuchElementException(
+              "Default properties file not found in resources at /cellsociety/property/SimulationStyle.properties");
         }
         byte[] buffer = new byte[1024];
         int bytesRead;
@@ -49,7 +52,8 @@ public class StyleManager {
           output.write(buffer, 0, bytesRead);
         }
       } catch (IOException e) {
-        throw new NoSuchElementException("Error copying default properties file to working directory: " + e.getMessage());
+        throw new NoSuchElementException(
+            "Error copying default properties file to working directory: " + e.getMessage());
       }
     }
   }
@@ -65,7 +69,9 @@ public class StyleManager {
     try (InputStream input = new FileInputStream(propertiesFile)) {
       simulationStyle.load(input);
     } catch (IOException e) {
-      throw new NoSuchElementException("Error loading properties file from " + propertiesFile.getAbsolutePath() + ": " + e.getMessage());
+      throw new NoSuchElementException(
+          "Error loading properties file from " + propertiesFile.getAbsolutePath() + ": "
+              + e.getMessage());
     }
     return simulationStyle;
   }
@@ -80,7 +86,9 @@ public class StyleManager {
     try (OutputStream output = new FileOutputStream(propertiesFile)) {
       simulationStyle.store(output, "User-defined cell colors");
     } catch (IOException e) {
-      throw new NoSuchElementException("Error saving properties file to " + propertiesFile.getAbsolutePath() + ": " + e.getMessage());
+      throw new NoSuchElementException(
+          "Error saving properties file to " + propertiesFile.getAbsolutePath() + ": "
+              + e.getMessage());
     }
   }
 
@@ -88,7 +96,8 @@ public class StyleManager {
    * Sets the neighbor arrangement preference.
    *
    * @param neighborArrangement the new neighbor arrangement value
-   * @throws NoSuchElementException if the neighbor arrangement cannot be updated due to an I/O error
+   * @throws NoSuchElementException if the neighbor arrangement cannot be updated due to an I/O
+   *                                error
    */
   public void setNeighborArrangement(String neighborArrangement) throws NoSuchElementException {
     Properties simulationStyle = loadProperties();

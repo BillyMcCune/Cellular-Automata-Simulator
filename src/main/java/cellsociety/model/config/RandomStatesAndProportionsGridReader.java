@@ -13,12 +13,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * @author Billy McCune
- * The RandomStatesAndProportionsGridReader class is responsible for creating
- * grids based on random state counts or proportions defined in an XML document.
+ * The RandomStatesAndProportionsGridReader class is responsible for creating grids based on random
+ * state counts or proportions defined in an XML document.
  * <p>
  * It provides methods to generate a grid (as a 2D list of CellRecord) using either total state
  * counts or state proportions.
+ *
+ * @author Billy McCune
  */
 public class RandomStatesAndProportionsGridReader {
 
@@ -192,7 +193,8 @@ public class RandomStatesAndProportionsGridReader {
    * @throws IllegalArgumentException if validation fails
    */
   private static void validateTotalSum(int specifiedSum, int totalCells,
-      Map<Integer, Integer> stateCounts, Set<Integer> acceptedStates) throws IllegalArgumentException {
+      Map<Integer, Integer> stateCounts, Set<Integer> acceptedStates)
+      throws IllegalArgumentException {
     if (specifiedSum > totalCells) {
       throw new IllegalArgumentException(
           "error-TotalCellExceedsGridSize," + specifiedSum + "," + totalCells);

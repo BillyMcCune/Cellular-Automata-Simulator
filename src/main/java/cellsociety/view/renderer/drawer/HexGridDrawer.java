@@ -12,6 +12,7 @@ import javafx.scene.shape.StrokeType;
  * @author Hsuan-Kai Liao
  */
 public class HexGridDrawer extends GridDrawer {
+
   private static final double DEFAULT_HEX_CELL_SIZE = DEFAULT_CELL_SIZE / 1.5;
 
   @Override

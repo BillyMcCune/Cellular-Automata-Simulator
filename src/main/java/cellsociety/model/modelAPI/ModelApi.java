@@ -21,6 +21,9 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 /**
+ * The ModelApi is responsible for managing all interactions with the model and the SceneController.
+ * It also manages the user style preferences.
+ *
  * @author Billy McCune
  */
 public class ModelApi {

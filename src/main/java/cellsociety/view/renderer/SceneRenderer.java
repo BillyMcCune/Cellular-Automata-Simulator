@@ -10,18 +10,21 @@ import javafx.scene.shape.Shape;
 /**
  * The SceneRenderer class is responsible for drawing the grid and cells on screen. It now relies on
  * the model (modelAPI) to determine the appropriate cell color.
+ *
+ * @author Hsuan-Kai Liao
  */
 public class SceneRenderer {
 
   /**
    * Draw the grid on the given pane with the given number of rows and columns.
    *
-   * @param pane      The pane to draw the grid on.
-   * @param numOfRows The number of rows in the grid.
-   * @param numOfCols The number of columns in the grid.
+   * @param pane            The pane to draw the grid on.
+   * @param numOfRows       The number of rows in the grid.
+   * @param numOfCols       The number of columns in the grid.
    * @param gridDrawerClass The class of the GridDrawer to use.
    */
-  public static <T extends GridDrawer> void drawGrid(Pane pane, int numOfRows, int numOfCols, Class<T> gridDrawerClass) {
+  public static <T extends GridDrawer> void drawGrid(Pane pane, int numOfRows, int numOfCols,
+      Class<T> gridDrawerClass) {
     GridDrawer.drawGrid(pane, numOfRows, numOfCols, gridDrawerClass);
   }
 

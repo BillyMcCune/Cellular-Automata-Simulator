@@ -240,7 +240,7 @@ public class SceneUIWidgetFactory {
           callback.accept(newValue);
           textField.setUserData(newValue);
         } catch (Exception e) {
-          String oldValue = (String)textField.getUserData();
+          String oldValue = (String) textField.getUserData();
           textField.setText(oldValue);
           callback.accept(oldValue);
         }
@@ -250,7 +250,7 @@ public class SceneUIWidgetFactory {
     // Add text focus listener
     textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) { // When focus is lost
-        textField.setText((String)textField.getUserData());
+        textField.setText((String) textField.getUserData());
       }
     });
 
@@ -288,7 +288,8 @@ public class SceneUIWidgetFactory {
     double red = colorPicker.getValue().getRed() * 255;
     double green = colorPicker.getValue().getGreen() * 255;
     double blue = colorPicker.getValue().getBlue() * 255;
-    colorPicker.setStyle("-fx-background-color: rgb(" + (int) red + ", " + (int) green + ", " + (int) blue + "); ");
+    colorPicker.setStyle(
+        "-fx-background-color: rgb(" + (int) red + ", " + (int) green + ", " + (int) blue + "); ");
 
     // Create TextArea for hex color input
     TextField textField = new TextField();
@@ -316,10 +317,13 @@ public class SceneUIWidgetFactory {
       double newBlue = newValue.getBlue() * 255;
 
       // Update TextArea
-      textField.setText(String.format("#%02X%02X%02X", (int) newRed, (int) newGreen, (int) newBlue));
+      textField.setText(
+          String.format("#%02X%02X%02X", (int) newRed, (int) newGreen, (int) newBlue));
 
       // Update ColorPicker background color
-      colorPicker.setStyle("-fx-background-color: rgb(" + (int) newRed + ", " + (int) newGreen + ", " + (int) newBlue + "); ");
+      colorPicker.setStyle(
+          "-fx-background-color: rgb(" + (int) newRed + ", " + (int) newGreen + ", " + (int) newBlue
+              + "); ");
       callback.accept(textField.getText().trim());
     };
 
@@ -702,7 +706,8 @@ public class SceneUIWidgetFactory {
    * @param themeConsumer    the consumer for the selected theme
    */
   public static void createSplashScreen(StringProperty title, StringProperty buttonText,
-      StringProperty languageText, StringProperty themeText, Language defaultLanguage, Theme defaultTheme, Consumer<Language> languageConsumer,
+      StringProperty languageText, StringProperty themeText, Language defaultLanguage,
+      Theme defaultTheme, Consumer<Language> languageConsumer,
       Consumer<Theme> themeConsumer, Runnable startCallback) {
     // Create a new stage for the splash screen
     Stage splashStage = new Stage();
@@ -733,8 +738,12 @@ public class SceneUIWidgetFactory {
         }
     );
     Map<String, ComboBox<String>> themeLanguageSelectorsData = (Map<String, ComboBox<String>>) themeLanguageSelectors.getUserData();
-    themeLanguageSelectorsData.get("language").setValue(defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1).toLowerCase());
-    themeLanguageSelectorsData.get("theme").setValue(defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1).toLowerCase());
+    themeLanguageSelectorsData.get("language").setValue(
+        defaultLanguage.name().substring(0, 1).toUpperCase() + defaultLanguage.name().substring(1)
+            .toLowerCase());
+    themeLanguageSelectorsData.get("theme").setValue(
+        defaultTheme.name().substring(0, 1).toUpperCase() + defaultTheme.name().substring(1)
+            .toLowerCase());
 
     // Create the Start button
     Button startButton = new Button();

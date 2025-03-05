@@ -11,9 +11,11 @@ import java.util.function.Consumer;
  * The ParameterManager class is responsible for managing simulation parameters.
  * <p>
  * It provides functionality to reset the parameters by iterating over the public setter methods of
- * the game logic and updating the parameter record with the default values obtained from the corresponding
- * getter methods.
+ * the game logic and updating the parameter record with the default values obtained from the
+ * corresponding getter methods.
  * </p>
+ *
+ * @author Billy McCune
  */
 public class ParameterManager {
 
@@ -23,7 +25,7 @@ public class ParameterManager {
   /**
    * Constructs a new ParameterManager with the specified game logic and parameter record.
    *
-   * @param gameLogic       the game logic instance used by the simulation
+   * @param gameLogic         the game logic instance used by the simulation
    * @param myParameterRecord the parameter record containing simulation parameters
    */
   public ParameterManager(Logic<?> gameLogic, ParameterRecord myParameterRecord) {
@@ -32,10 +34,12 @@ public class ParameterManager {
   }
 
   /**
-   * Resets the simulation parameters by iterating over the public setter methods of the game logic.
+   * Resets the simulation parameters by iterating over the public setter methods of the game
+   * logic.
    * <p>
-   * For each setter method (starting with "set" and accepting one parameter), the corresponding getter
-   * method is invoked to obtain the default value, and the parameter record is updated accordingly.
+   * For each setter method (starting with "set" and accepting one parameter), the corresponding
+   * getter method is invoked to obtain the default value, and the parameter record is updated
+   * accordingly.
    * </p>
    *
    * @throws NoSuchMethodException     if a required getter method is not found
@@ -43,7 +47,8 @@ public class ParameterManager {
    * @throws IllegalAccessException    if a getter method cannot be accessed
    * @throws IllegalStateException     if the game logic is not initialized
    */
-  public void resetParameters() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+  public void resetParameters()
+      throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     if (gameLogic == null) {
       throw new IllegalStateException("Game logic is not initialized.");
     }

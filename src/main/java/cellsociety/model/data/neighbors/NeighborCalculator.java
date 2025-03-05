@@ -9,7 +9,6 @@ import cellsociety.model.data.neighbors.raycasting.RaycastImplementor;
 import cellsociety.model.data.states.State;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**

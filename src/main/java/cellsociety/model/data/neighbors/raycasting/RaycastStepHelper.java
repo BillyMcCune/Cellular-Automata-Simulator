@@ -7,6 +7,11 @@ import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.State;
 import java.util.Map;
 
+/**
+ * The RaycastStepHelper holds the function to raycast for one step.
+ *
+ * @author Jacob You
+ */
 public final class RaycastStepHelper {
 
   private RaycastStepHelper() {

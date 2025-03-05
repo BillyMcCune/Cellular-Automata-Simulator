@@ -6,6 +6,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeType;
 
+/**
+ * An abstract class that defines how to create and draw the grid according to the set parameters
+ *
+ * @author Hsuan-Kai Liao
+ */
 public abstract class GridDrawer {
 
   public static final int DEFAULT_BORDER_SIZE = 1;

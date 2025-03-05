@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * @author Billy McCune A config writer class to create xml files The format includes:
+ * A config writer class to create xml files The format includes:
  * <ul>
  *   <li><code>&lt;simulation&gt;</code> as the root element</li>
  *   <li><code>&lt;type&gt;</code>, <code>&lt;title&gt;</code>, <code>&lt;author&gt;</code>, and <code>&lt;description&gt;</code></li>
@@ -29,6 +29,8 @@ import org.w3c.dom.Element;
  *   <li><code>&lt;initialCells&gt;</code> containing rows of <code>&lt;cell&gt;</code> elements with attributes</li>
  *   <li><code>&lt;acceptedStates&gt;</code> as a space–separated list</li>
  * </ul>
+ *
+ * @author Billy McCune
  */
 public class ConfigWriter {
 
@@ -241,7 +243,8 @@ public class ConfigWriter {
    * @return a File object representing the output file
    * @throws ParserConfigurationException if the output file cannot be created
    */
-  private File createOutputFile(String path) throws ParserConfigurationException, IllegalArgumentException {
+  private File createOutputFile(String path)
+      throws ParserConfigurationException, IllegalArgumentException {
     try {
       String baseFilename = generateBaseFilename();
       String fileExtension = ".xml";
