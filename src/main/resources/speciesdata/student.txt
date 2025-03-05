@@ -1,0 +1,6 @@
+ifenemy 4
+left 90
+go 1
+infect 8
+left 90
+go 1
