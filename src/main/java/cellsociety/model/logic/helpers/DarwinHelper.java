@@ -4,7 +4,6 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.DarwinState;
-
 import cellsociety.model.logic.DarwinLogic;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -194,59 +193,54 @@ public class DarwinHelper {
     return new InstructionResult(0, null);
   }
 
-  private void executeIfempty(Cell<DarwinState> cell, int argument) {
+  private InstructionResult executeIfempty(Cell<DarwinState> cell, int argument) {
     setNeighbors(cell);
     for (Cell<DarwinState> neighbor : cell.getNeighbors().values()) {
       if (neighbor.getProperty("speciesID") != 0) {
-        executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
-        return;
+        return executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
       }
     }
-    executeGo(cell, argument);
+    return executeGo(cell, argument);
   }
 
-  private void executeIfwall(Cell<DarwinState> cell, int argument) {
+  private InstructionResult executeIfwall(Cell<DarwinState> cell, int argument) {
     setNeighbors(cell);
     if (cell.getNeighbors().size() != darwinLogic.getNearbyAhead()) {
-      executeGo(cell, argument);
-      return;
+      return executeGo(cell, argument);
     }
-    executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
+    return executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
   }
 
-  private void executeIfsame(Cell<DarwinState> cell, int argument) {
+  private InstructionResult executeIfsame(Cell<DarwinState> cell, int argument) {
     setNeighbors(cell);
     for (Cell<DarwinState> neighbor : cell.getNeighbors().values()) {
       if (cell.getProperty("speciesID") == neighbor.getProperty("speciesID")) {
-        executeGo(cell, argument);
-        return;
+        return executeGo(cell, argument);
       }
     }
-    executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
+    return executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
   }
 
-  private void executeIfenemy(Cell<DarwinState> cell, int argument) {
+  private InstructionResult executeIfenemy(Cell<DarwinState> cell, int argument) {
     setNeighbors(cell);
     for (Cell<DarwinState> neighbor : cell.getNeighbors().values()) {
       if (cell.getProperty("speciesID") != neighbor.getProperty("speciesID")) {
-        executeGo(cell, argument);
-        return;
+        return executeGo(cell, argument);
       }
     }
-    executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
+    return executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
   }
 
-  private void executeIfrandom(Cell<DarwinState> cell, int argument) {
+  private InstructionResult executeIfrandom(Cell<DarwinState> cell, int argument) {
     if (Math.random() < 0.5) {
-      executeGo(cell, argument);
-      return;
+      return executeGo(cell, argument);
     }
-    executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
+    return executeGo(cell, (int) (cell.getProperty("instructionIndex") + 1));
   }
 
-  private void executeGo(Cell<DarwinState> cell, int argument) {
+  private InstructionResult executeGo(Cell<DarwinState> cell, int argument) {
     cell.setProperty("instructionIndex", argument);
-    processCell(cell);
+    return processCell(cell);
   }
 
   private void setNeighbors(Cell<DarwinState> cell) {

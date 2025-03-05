@@ -1,26 +1,6 @@
-# Crab Species
-# Crabs tend to scuttle sideways along boundaries and attack any enemy they encounter.
-# This program simulates lateral movement and opportunistic infection.
-
-# --- Attack if enemy encountered ---
-ifenemy 1
-infect 5
-go 1
-
-# --- If near a wall, turn right to follow the boundary ---
-ifwall 3
-right 90
-go 1
-
-# --- Simulate sideways movement ---
-# If the space ahead is empty, turn left to simulate lateral movement,
-# move forward a short distance, then turn right to reorient.
-ifempty 4
+# Flytrap species
+ifenemy 4
 left 90
-move 10
-right 90
 go 1
-
-# --- Otherwise, move forward ---
-move 10
+infect 12
 go 1

@@ -4,7 +4,7 @@
 # They also change direction when encountering a wall or randomly to mimic their amorphous nature.
 
 # --- Attack Behavior ---
-ifenemy 1
+ifenemy 2
 infect 3
 go 1
 

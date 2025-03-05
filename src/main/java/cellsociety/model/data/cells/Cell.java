@@ -127,7 +127,7 @@ public class Cell<T extends Enum<T> & State> {
    */
   public void setAllProperties(Map<String, Double> props) {
     if (props == null) {
-      properties = null;
+      properties = new HashMap<>();
     } else {
       properties = new HashMap<>(props);
     }
@@ -155,7 +155,7 @@ public class Cell<T extends Enum<T> & State> {
    * Clears all properties of this cell.
    */
   public void clearAllProperties() {
-    properties = null;
+    properties = new HashMap<>();
   }
 
   /**
