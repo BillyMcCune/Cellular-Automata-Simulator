@@ -29,6 +29,30 @@ This project implements a cellular automata simulator.
 * Main class:
 
 * Data files needed:
+  * Language Properties Files:
+      *  English.properties
+      *  French.properties 
+      *  Mandarin.properties
+  * Model Properties Files: 
+      *  CellNeighbor.properties
+      *  Parameters.properties
+  * Style and Visual Properties Files (Non-language):
+      *  CellColor.properties
+      *  SimulationStyle.properties
+  * Style Css Files
+    * Dark Mode
+      * docking.css
+      * scene.css
+      * widget.css
+    * Day Mode
+      * docking.css
+      * scene.css
+      * widget.css
+    * Mystery Mode 
+      * docking.css
+      * scene.css
+      * widget.css
+  * Version.properties
 
 * Interesting data files:
     * There are error throwing data files that you can use to test our error throwing.
@@ -36,16 +60,25 @@ This project implements a cellular automata simulator.
     * Style css files in resources/cellsociety/style/mystery that define color and style
     * Language property files in resources/cellsociety/lang have set values for each item for all
       locations
-    * SimulationStyle.properties is stored in base directory, as it is a per user file that
-      is accessed upon runtime. There may be other possible implementations, but this is the way we
-      found
-      with our current time remaining.
+    * There are two (kind of) SimulationStyle.properties files: 
+      * One is stored within the properties file and acts as the default Simulation Styles for the User
+      * The second one is dynamically made in the base directory to read and write the specific user Simulation Styles
+        * This approach while not ideal works quite well and is what we ended up doing due to time constraints
 
 * Key/Mouse inputs:
 
 ### Notes/Assumptions
 
 * Assumptions or Simplifications:
+
+#### Configuration Assumptions/Simplifications
+
+ * All configuration files are XML.
+   * It is possible to allow for non-XML configuration files its just that the XML constraint was made
+ * Saving a random total states or random total proportions will change the XML file to a normal one
+   * The random total states and random total proportions allow for the randomly generated grid to be randomly generated. 
+   However, since the user is saving the grid, I am assuming they want to save the grid at that state. Thus, the states cannot be random.
+    Do to this, the saved XML files will never be random total states nor random proportions. 
 
 #### Logic Assumptions/Simplifications
 
@@ -100,6 +133,15 @@ This project implements a cellular automata simulator.
       cells with very large neighborhoods greater than 36, I would most likely create a new way of
       implementing rulestrings that would take in comma seperated numbers.
 
+
+#### Configuration Bugs
+
+* There are no-know bugs to the configuration writer.
+    * The code writes the XMl document and as such the XMl document produced should not create any bugs.
+* The current code in the configuration reader throws all errors to the view and I believe that it is "bug free" by my current software standards.
+  This of course will change as users push the configuration functionality to its limit and/or more features are added.
+
+
 * Features implemented:
 
     * Simulation Features:
@@ -108,6 +150,15 @@ This project implements a cellular automata simulator.
 
 
 * Features unimplemented:
+
+#### Configuration Unimplemented Features
+
+* There is currently no implementation for the configAPI to set the ring (go to logic to understand this) of the neighbors.
+    * While the ring parameter exists in the XMl is currently does nothing.
+* I also could've added a way to store a color that wanted to be random in the properties file
+    * This would've allowed users to choose random as a color preference, which could've led to some interesting simulations
+    * We also discussed this as a way to color properties with no specific color assigned such as a new undefined species in Darwin.
+
 
 #### Logic Unimplemented Features
 
@@ -167,6 +218,14 @@ This project implements a cellular automata simulator.
   reflection in order to call specific methods in its class, passing in the correct argument. This
   way, it avoids a large case statement for instructions.
 
+#### Configuration Features:
+* The two API abstraction. 
+  * The entire model and configuration packages and all their functionality (that we want to show) are managed by two API's.
+    * The configAPI class manages all the configuration aspects of the project. 
+    * The modelAPI class manages all the model aspects of the project: 
+      * Meaning it handles: the grid, logic, cells, cell colors, and style preferences.
+      * The API has helper classes which abstract out methods and increases the readability of the API. 
+
 ### Assignment Impressions
 
 Jacob: Overall, I think this assignment really improved my current knowledge of proper coding
@@ -178,4 +237,14 @@ ways that we would eventually have to implement our code (if we were asked stuff
 number of states changed?) or had some understanding that there would eventually be new features
 added on, but I also understand why this might not be the case. Overall, I think this was a great
 (but slightly brutal) way to introduce us to standard design principles and coding practices.
+
+Billy: I enjoyed the assignment. I found that working on the backend was quite an enjoyable experience. 
+I expanded my coding knowledge base and encountered new ideas and better ways to abstract my code. I 
+also got so much better at figuring out how to separate different methods into different purposes. This 
+helped me a lot when trying to figure out abstraction for the configReader class as well as the API's. 
+I also became a lot better at refactoring. When making the API's I spent a lot of time refactoring code to make it 
+more flexible. I also spent a lot of time working to reduce my method complexity. I feel more confident now
+with the code that I write and my own ability to improve the code that I and other people right. The assignment
+was also interesting as the group aspect made it much more fun and dynamic. In general, I would say this assignment
+strengthened my coding practices and increased my enjoyment of coding. 
 
