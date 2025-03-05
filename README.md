@@ -20,7 +20,10 @@ This project implements a cellular automata simulator.
     * Common design patterns - https://refactoring.guru/design-patterns/catalog
     * Testing naming
       conventions - https://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
+    * XML Resources - https://en.wikipedia.org/wiki/XML_Resource
+                    - https://www.w3schools.com/xml/xml_whatis.asp
     * Enum properties and flexibility - ChatGPT 4o
+    * Course Lectures for 308
 
 * Resources used directly (including AI assistance)
 
