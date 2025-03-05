@@ -99,12 +99,38 @@ This project implements a cellular automata simulator.
     * With time, I would probably choose to implement letter values, like A = 10, B = 11, etc. For
       cells with very large neighborhoods greater than 36, I would most likely create a new way of
       implementing rulestrings that would take in comma seperated numbers.
+* SugarScape can find the greatest value sugar pile in front of it, but due to changes made for
+  Darwin, the sugar agent now teleports straight to the grid with the most sugar in its raycast.
+    * The way that I would implement this would most likely be to raycast in all directions by using
+      the getAllRaycastDirections, then see which direction contains the best direction, and go in
+      that direction
 
 * Features implemented:
 
-    * Simulation Features:
-    * UI Features:
-    * Configuration Features:
+#### Logic Implemented Features
+
+* Simulations:
+    * Game of Life
+        * Rulestring parsing of S/B and B/S notation
+    * Percolation
+    * Spreading of Fire
+    * Model of Segregation
+    * Wa-Tor World
+    * Falling Sand
+    * Rock Paper Scissors (Bacteria)
+    * Foraging Ants
+    * SugarScape
+    * Darwin
+* Customization:
+  * Moore and Von Neumann neighborhoods
+  * Hexagon, Triangle, and Square shapes
+  * Standard and Torus boundaries
+  * Raycasting in a specific direction
+  * (not fully implemented) Radius for neighborhoods
+  * (not fully implemented) Ring neighborhood
+
+* UI Features:
+* Configuration Features:
 
 
 * Features unimplemented:
