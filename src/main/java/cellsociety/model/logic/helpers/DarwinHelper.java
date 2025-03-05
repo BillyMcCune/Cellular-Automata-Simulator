@@ -153,6 +153,7 @@ public class DarwinHelper {
       case "IFSAME" -> "SM?";
       case "IFENEMY" -> "EMY?";
       case "IFRANDOM" -> "RND?";
+      case "GO" -> "GO";
       default -> instruction;
     };
   }
