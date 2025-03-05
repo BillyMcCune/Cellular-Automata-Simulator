@@ -72,10 +72,6 @@ This project implements a cellular automata simulator.
       * Mouse scrolling is for zooming in and out of the grid.
       * Text inputs are for the user to dynamically change the parameters for the simulation.
 
-### Notes/Assumptions
-
-* Assumptions or Simplifications:
-
 #### Configuration Assumptions/Simplifications
 
  * All configuration files are XML.
@@ -116,7 +112,6 @@ This project implements a cellular automata simulator.
     * In Darwin, species rotate first, then get infected, then move left or right if not infected.
 * In Darwin, when a species reverts to its old species, it reverts to instruction 1.
 
-
 #### View Assumptions/Simplifications
 
 * The view is designed to be as flexible as possible, with the ability to add new simulations and
@@ -140,8 +135,6 @@ This project implements a cellular automata simulator.
 * Customized css files are used to define the style of the simulation. The css files are stored in
   resources/cellsociety/style/. The css files define the color and style of the simulation.
 
-* Known Bugs:
-
 #### Logic Bugs
 
 * FallingLogic looks for cells down left, down right, and down. With some implementations, shapes
@@ -162,7 +155,11 @@ This project implements a cellular automata simulator.
     * With time, I would probably choose to implement letter values, like A = 10, B = 11, etc. For
       cells with very large neighborhoods greater than 36, I would most likely create a new way of
       implementing rulestrings that would take in comma seperated numbers.
-
+* SugarScape can find the greatest value sugar pile in front of it, but due to changes made for
+  Darwin, the sugar agent now teleports straight to the grid with the most sugar in its raycast.
+    * The way that I would implement this would most likely be to raycast in all directions by using
+      the getAllRaycastDirections, then see which direction contains the best direction, and go in
+      that direction
 
 #### Configuration Bugs
 
@@ -170,7 +167,6 @@ This project implements a cellular automata simulator.
     * The code writes the XMl document and as such the XMl document produced should not create any bugs.
 * The current code in the configuration reader throws all errors to the view and I believe that it is "bug free" by my current software standards.
   This of course will change as users push the configuration functionality to its limit and/or more features are added.
-
 
 #### View Bugs
 
@@ -183,8 +179,30 @@ This project implements a cellular automata simulator.
 * The error dialog is keep popping up every frame when error occurs when user is running a 
   simulation.
 
-* Features implemented:
+#### Logic Implemented Features
 
+* Simulations:
+    * Game of Life
+        * Rulestring parsing of S/B and B/S notation
+    * Percolation
+    * Spreading of Fire
+    * Model of Segregation
+    * Wa-Tor World
+    * Falling Sand
+    * Rock Paper Scissors (Bacteria)
+    * Foraging Ants
+    * SugarScape
+    * Darwin
+* Customization:
+  * Moore and Von Neumann neighborhoods
+  * Hexagon, Triangle, and Square shapes
+  * Standard and Torus boundaries
+  * Raycasting in a specific direction
+  * (not fully implemented) Radius for neighborhoods
+  * (not fully implemented) Ring neighborhood
+
+* UI Features:
+* Configuration Features:
     * Simulation Features:
     * UI Features:
     * Configuration Features: 
@@ -203,8 +221,6 @@ This project implements a cellular automata simulator.
       * Simulation Styles
       * API's: configAPI and modelAPI
 
-
-* Features unimplemented:
 
 #### Configuration Unimplemented Features
 
@@ -241,8 +257,6 @@ This project implements a cellular automata simulator.
 * The view does not have a way to change or interact with the cell in the simulation grid.
 * The minigrid in the view is not showing bounds as a light outline within this view so the user 
   knows what part of the simulation they are zoomed into.
-
-* Noteworthy Features:
 
 #### Logic Features:
 
@@ -317,7 +331,6 @@ on cool front end functionality like docking system and zooming in and out of th
 I communicate with my teammates, the more I realize that the design is more important for a large
 project to make sure that everyone is on the same page, and new feature can be easily added. Overall,
 I think this assignment allows me to understand deeper in both the design and the coding in a team.
-
 
 Billy: I enjoyed the assignment. I found that working on the backend was quite an enjoyable experience. 
 I expanded my coding knowledge base and encountered new ideas and better ways to abstract my code. I 
