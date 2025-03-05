@@ -89,6 +89,7 @@ public class ModelApi {
             NeighborType.valueOf(myStyleManager.getNeighborArrangementPreference()),
             EdgeType.valueOf(myStyleManager.getEdgePolicyPreference()));
       }
+      grid.setSteps(configInfo.neighborRadius());
       myNeighborCalculator = grid.getNeighborCalculator();
       // Initialize the game logic instance using the grid and parameters.
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
@@ -201,7 +202,7 @@ public class ModelApi {
       cellFactory = (CellFactory<?>) cellFactoryConstructor.newInstance(stateClass);
       grid = new Grid<>(configInfo.myGrid(), cellFactory, getGridShape(), getNeighborType(),
           getEdgeType());
-
+      grid.setSteps(configInfo.neighborRadius());
       myNeighborCalculator = grid.getNeighborCalculator();
       gameLogic = (Logic<?>) logicClass.getDeclaredConstructor(Grid.class, ParameterRecord.class)
           .newInstance(grid, configInfo.myParameters());

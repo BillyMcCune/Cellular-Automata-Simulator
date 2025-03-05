@@ -13,14 +13,15 @@ import javafx.scene.shape.StrokeType;
  * @author Hsuan-Kai Liao
  */
 public class TriGridDrawer extends GridDrawer {
+  private static final double DEFAULT_TRI_CELL_SIZE = DEFAULT_CELL_SIZE * 1.3;
 
   @Override
   protected void drawGridContents(Pane pane, int numOfRows, int numOfCols) {
     pane.getChildren().clear();
 
     // Get the side length and height of the triangle
-    double sideLength = DEFAULT_CELL_SIZE;
-    double height = Math.sqrt(3) * DEFAULT_CELL_SIZE / 2;
+    double sideLength = DEFAULT_TRI_CELL_SIZE;
+    double height = Math.sqrt(3) * sideLength / 2;
 
     // Center the grid
     double offsetX = sideLength / 2;
@@ -37,7 +38,7 @@ public class TriGridDrawer extends GridDrawer {
   @Override
   protected void drawGridBound(Pane pane, int numOfRows, int numOfCols) {
     List<Double> points = new ArrayList<>();
-    double sideLength = DEFAULT_CELL_SIZE;
+    double sideLength = DEFAULT_TRI_CELL_SIZE;
     double height = Math.sqrt(3) * sideLength / 2;
     double totalWidth = numOfCols * sideLength / 2 + sideLength / 2;
     double totalHeight = numOfRows * height;

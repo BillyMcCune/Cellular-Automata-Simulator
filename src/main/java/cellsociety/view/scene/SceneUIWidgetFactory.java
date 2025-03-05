@@ -235,23 +235,28 @@ public class SceneUIWidgetFactory {
     // Add text listener
     textField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
       if (event.getCode().toString().equals("ENTER")) {
-        // TODO: Handle invalid input
         String newValue = textField.getText();
-        callback.accept(newValue);
+        try {
+          callback.accept(newValue);
+          textField.setUserData(newValue);
+        } catch (Exception e) {
+          String oldValue = (String)textField.getUserData();
+          textField.setText(oldValue);
+          callback.accept(oldValue);
+        }
       }
     });
 
     // Add text focus listener
     textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue) { // When focus is lost
-        // TODO: Handle invalid input
-        String textValue = textField.getText();
-        callback.accept(textValue);
+        textField.setText((String)textField.getUserData());
       }
     });
 
     // Call the callback with the default value
     callback.accept(defaultValue);
+    textField.setUserData(defaultValue);
 
     return rangeControl;
   }

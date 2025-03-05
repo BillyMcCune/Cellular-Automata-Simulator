@@ -1,11 +1,6 @@
-package viewtests;
+package viewtests.controllertests;
 
-import cellsociety.model.data.states.FireState;
-import cellsociety.model.data.states.LifeState;
 import cellsociety.view.renderer.SceneRenderer;
-import java.util.Map;
-import javafx.scene.layout.GridPane;
-import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the {@link SceneRenderer} class.

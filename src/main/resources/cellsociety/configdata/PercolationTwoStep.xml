@@ -1,0 +1,176 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+
+
+  <type>PERCOLATION</type>
+
+
+
+
+  <title>Single Water Percolation Simulation</title>
+
+
+
+
+  <author>Billy</author>
+
+
+
+
+  <description>Testing the properties of a single water block and nothing else.</description>
+
+
+
+
+  <parameters>
+  </parameters>
+
+
+
+  <cellShapeType>Square</cellShapeType>
+
+
+  <gridEdgeType>BASE</gridEdgeType>
+
+
+  <neighborArrangementType>Moore</neighborArrangementType>
+
+
+
+  <width>5</width>
+
+
+
+
+  <height>5</height>
+
+
+
+
+  <defaultSpeed>1</defaultSpeed>
+
+
+
+
+  <initialCells>
+
+
+    <row>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="2"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+      <cell state="1"/>
+
+
+    </row>
+
+
+  </initialCells>
+
+
+  <acceptedStates>
+    0 1 2
+  </acceptedStates>
+
+
+
+
+  <neighborRadius>2</neighborRadius>
+</simulation>

@@ -1,0 +1,10 @@
+move 1
+ifenemy 4
+ifwall 8
+infect 100
+move 1
+right 90
+go 1
+right 180
+go 1
+# Hunter

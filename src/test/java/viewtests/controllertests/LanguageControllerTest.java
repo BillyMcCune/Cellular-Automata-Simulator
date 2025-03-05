@@ -1,4 +1,4 @@
-package viewtests;
+package viewtests.controllertests;
 
 import cellsociety.view.controller.LanguageController;
 import cellsociety.view.controller.LanguageController.Language;
