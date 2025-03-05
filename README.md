@@ -12,7 +12,7 @@ This project implements a cellular automata simulator.
 
 * Finish Date: 03/05/25
 
-* Hours Spent: ~120 hours per person
+* Hours Spent: ~121 hours per person
 
 ### Attributions
 
@@ -21,7 +21,7 @@ This project implements a cellular automata simulator.
     * Testing naming
       conventions - https://osherove.com/blog/2005/4/3/naming-standards-for-unit-tests.html
     * XML Resources - https://en.wikipedia.org/wiki/XML_Resource
-                    - https://www.w3schools.com/xml/xml_whatis.asp
+        - https://www.w3schools.com/xml/xml_whatis.asp
     * Enum properties and flexibility - ChatGPT 4o
     * Course Lectures for 308
 
@@ -32,30 +32,30 @@ This project implements a cellular automata simulator.
 * Main class:
 
 * Data files needed:
-  * Language Properties Files:
-      *  English.properties
-      *  French.properties 
-      *  Mandarin.properties
-  * Model Properties Files: 
-      *  CellNeighbor.properties
-      *  Parameters.properties
-  * Style and Visual Properties Files (Non-language):
-      *  CellColor.properties
-      *  SimulationStyle.properties
-  * Style Css Files
-    * Dark Mode
-      * docking.css
-      * scene.css
-      * widget.css
-    * Day Mode
-      * docking.css
-      * scene.css
-      * widget.css
-    * Mystery Mode 
-      * docking.css
-      * scene.css
-      * widget.css
-  * Version.properties
+    * Language Properties Files:
+        * English.properties
+        * French.properties
+        * Mandarin.properties
+    * Model Properties Files:
+        * CellNeighbor.properties
+        * Parameters.properties
+    * Style and Visual Properties Files (Non-language):
+        * CellColor.properties
+        * SimulationStyle.properties
+    * Style Css Files
+        * Dark Mode
+            * docking.css
+            * scene.css
+            * widget.css
+        * Day Mode
+            * docking.css
+            * scene.css
+            * widget.css
+        * Mystery Mode
+            * docking.css
+            * scene.css
+            * widget.css
+    * Version.properties
 
 * Interesting data files:
     * There are error throwing data files that you can use to test our error throwing.
@@ -63,29 +63,38 @@ This project implements a cellular automata simulator.
     * Style css files in resources/cellsociety/style/mystery that define color and style
     * Language property files in resources/cellsociety/lang have set values for each item for all
       locations
-    * There are two (kind of) SimulationStyle.properties files: 
-      * One is stored within the properties file and acts as the default Simulation Styles for the User
-      * The second one is dynamically made in the base directory to read and write the specific user Simulation Styles
-        * This approach while not ideal works quite well and is what we ended up doing due to time constraints
+    * There are two (kind of) SimulationStyle.properties files:
+        * One is stored within the properties file and acts as the default Simulation Styles for the
+          User
+        * The second one is dynamically made in the base directory to read and write the specific
+          user Simulation Styles
+            * This approach while not ideal works quite well and is what we ended up doing due to
+              time constraints
 
 * Key/Mouse inputs:
     * The only inputs needed are mouse clicking, mouse dragging, mouse scrolling and text inputs.
-      * Mouse clicking are for the buttons, it is the main way user can interact with the controls.
-      * Mouse dragging is for the sliders and window dragging. We implemented the docking system which we can drag the window to the edge of the screen and it will dock to the edge.
-      * Mouse scrolling is for zooming in and out of the grid.
-      * Text inputs are for the user to dynamically change the parameters for the simulation.
+        * Mouse clicking are for the buttons, it is the main way user can interact with the
+          controls.
+        * Mouse dragging is for the sliders and window dragging. We implemented the docking system
+          which we can drag the window to the edge of the screen and it will dock to the edge.
+        * Mouse scrolling is for zooming in and out of the grid.
+        * Text inputs are for the user to dynamically change the parameters for the simulation.
 
 #### Configuration Assumptions/Simplifications
 
- * All configuration files are XML.
-   * It is possible to allow for non-XML configuration files its just that the XML constraint was made
- * Saving a random total states or random total proportions will change the XML file to a normal one
-   * The random total states and random total proportions allow for the randomly generated grid to be randomly generated. 
-   However, since the user is saving the grid, I am assuming they want to save the grid at that state. Thus, the states cannot be random.
-    Do to this, the saved XML files will never be random total states nor random proportions.
- * Darwin currently has 6 colors defined if a user wants to add a species they must change the cell color properties file 
- and simulation properties files.
- 
+* All configuration files are XML.
+    * It is possible to allow for non-XML configuration files its just that the XML constraint was
+      made
+* Saving a random total states or random total proportions will change the XML file to a normal one
+    * The random total states and random total proportions allow for the randomly generated grid to
+      be randomly generated.
+      However, since the user is saving the grid, I am assuming they want to save the grid at that
+      state. Thus, the states cannot be random.
+      Do to this, the saved XML files will never be random total states nor random proportions.
+* Darwin currently has 6 colors defined if a user wants to add a species they must change the cell
+  color properties file
+  and simulation properties files.
+
 #### Logic Assumptions/Simplifications
 
 * All Cell properties are doubles, and can only be doubles. When properties don't exist, they are
@@ -119,20 +128,27 @@ This project implements a cellular automata simulator.
 
 * The view is designed to be as flexible as possible, with the ability to add new simulations and
   dynamically change interact with the backend with the showing GUI.
-* The simulation begins with a splash screen, and the user can choose the start-up theme and start-up
+* The simulation begins with a splash screen, and the user can choose the start-up theme and
+  start-up
   language.
 * The main window has 5 sections:
-  * The control panel: This is the main control panel that allows the user to start, pause, load,
-    reset. It also allows the user to save the current simulation states to the file.
-  * The style panel: This panel allows the user to change the style of the simulation. The user can
-    change the theme and the language of the simulation, and also change the style of the grid: Cell Shape, Edge Policy, and Neighbour Arrangement for the backend.
-  * The grid panel: This panel shows the grid of the simulation. The user can zoom in and out of the
-    grid, and also drag the grid to see different parts of the grid.
-  * The info panel: This panel shows the information of the current simulation. It shows the current
-    iterations, the author of the simulation, and the description of the simulation.
-  * The parameter panel: This panel shows the parameters of the simulation. The user can change the
-    parameters and the color of each simulation type of the simulation dynamically. The user can also change the parameters of the
-    simulation by dragging the sliders.
+    * The control panel: This is the main control panel that allows the user to start, pause, load,
+      reset. It also allows the user to save the current simulation states to the file.
+    * The style panel: This panel allows the user to change the style of the simulation. The user
+      can
+      change the theme and the language of the simulation, and also change the style of the grid:
+      Cell Shape, Edge Policy, and Neighbour Arrangement for the backend.
+    * The grid panel: This panel shows the grid of the simulation. The user can zoom in and out of
+      the
+      grid, and also drag the grid to see different parts of the grid.
+    * The info panel: This panel shows the information of the current simulation. It shows the
+      current
+      iterations, the author of the simulation, and the description of the simulation.
+    * The parameter panel: This panel shows the parameters of the simulation. The user can change
+      the
+      parameters and the color of each simulation type of the simulation dynamically. The user can
+      also change the parameters of the
+      simulation by dragging the sliders.
 * The view implements a docking system, where all the secions mentioned above will be docked to the
   edge of the window when the user drags the window to the edge of the target edge.
 * Customized css files are used to define the style of the simulation. The css files are stored in
@@ -163,23 +179,30 @@ This project implements a cellular automata simulator.
     * The way that I would implement this would most likely be to raycast in all directions by using
       the getAllRaycastDirections, then see which direction contains the best direction, and go in
       that direction
+* A lot of my Logic classes use strings to set parameters. A better way to do this would probably to
+  make an enum, property file, or some other universal or hard to change value in order to prevent
+  errors from spelling mistakes. I implemented this long before I realized the issue from the
+  failing the codebase tests, so this would be an implementation for the future.
 
 #### Configuration Bugs
 
 * There are no-know bugs to the configuration writer.
-    * The code writes the XMl document and as such the XMl document produced should not create any bugs.
-* The current code in the configuration reader throws all errors to the view and I believe that it is "bug free" by my current software standards.
-  This of course will change as users push the configuration functionality to its limit and/or more features are added.
+    * The code writes the XMl document and as such the XMl document produced should not create any
+      bugs.
+* The current code in the configuration reader throws all errors to the view and I believe that it
+  is "bug free" by my current software standards.
+  This of course will change as users push the configuration functionality to its limit and/or more
+  features are added.
 
 #### View Bugs
 
 * The color selector for the cell property will not affect the color of the cell until the user.
 * The zoom in and out of the grid is not center to the grid widget, its zooming center is always the
   center of the grid, which is not correct.
-* The text field input is checking the validity of the input by trying and catching the exception 
+* The text field input is checking the validity of the input by trying and catching the exception
   in the callback, which is unsafe.
-  * The text field input data is not updating the simulation after the simulation get reset.
-* The error dialog is keep popping up every frame when error occurs when user is running a 
+    * The text field input data is not updating the simulation after the simulation get reset.
+* The error dialog is keep popping up every frame when error occurs when user is running a
   simulation.
 
 #### Logic Implemented Features
@@ -197,42 +220,43 @@ This project implements a cellular automata simulator.
     * SugarScape
     * Darwin
 * Customization:
-  * Moore and Von Neumann neighborhoods
-  * Hexagon, Triangle, and Square shapes
-  * Standard and Torus boundaries
-  * Raycasting in a specific direction
-  * Radius for neighborhoods
-  * (not fully implemented) Ring neighborhood
+    * Moore and Von Neumann neighborhoods
+    * Hexagon, Triangle, and Square shapes
+    * Standard and Torus boundaries
+    * Raycasting in a specific direction
+    * Radius for neighborhoods
+    * (not fully implemented) Ring neighborhood
 
 * UI Features:
 * Configuration Features:
     * Simulation Features:
     * UI Features:
-    * Configuration Features: 
-      * Default Simulation Parameter Properties
-      * Simulation Language Customization 
-      * Random Configuration by Probability Distribution
-      * Random Configuration by Total States
-      * File Format Validation
-      * Grid Bounds Check
-      * Invalid Cell State Check
-      * Input Missing Parameters
-      * Save Simulation State as XML
-      * XML-Based Simulation Configuration
-      * Load New Configuration File
-      * Darwin Species Files
-      * Simulation Styles
-      * API's: configAPI and modelAPI
-
+    * Configuration Features:
+        * Default Simulation Parameter Properties
+        * Simulation Language Customization
+        * Random Configuration by Probability Distribution
+        * Random Configuration by Total States
+        * File Format Validation
+        * Grid Bounds Check
+        * Invalid Cell State Check
+        * Input Missing Parameters
+        * Save Simulation State as XML
+        * XML-Based Simulation Configuration
+        * Load New Configuration File
+        * Darwin Species Files
+        * Simulation Styles
+        * API's: configAPI and modelAPI
 
 #### Configuration Unimplemented Features
 
-* There is currently no implementation for the configAPI to set the ring (go to logic to understand this) of the neighbors.
+* There is currently no implementation for the configAPI to set the ring (go to logic to understand
+  this) of the neighbors.
     * While the ring parameter exists in the XMl is currently does nothing.
 * I also could've added a way to store a color that wanted to be random in the properties file
-    * This would've allowed users to choose random as a color preference, which could've led to some interesting simulations
-    * We also discussed this as a way to color properties with no specific color assigned such as a new undefined species in Darwin.
-
+    * This would've allowed users to choose random as a color preference, which could've led to some
+      interesting simulations
+    * We also discussed this as a way to color properties with no specific color assigned such as a
+      new undefined species in Darwin.
 
 #### Logic Unimplemented Features
 
@@ -254,7 +278,7 @@ This project implements a cellular automata simulator.
 #### View Unimplemented Features
 
 * The view does not have a way to change or interact with the cell in the simulation grid.
-* The minigrid in the view is not showing bounds as a light outline within this view so the user 
+* The minigrid in the view is not showing bounds as a light outline within this view so the user
   knows what part of the simulation they are zoomed into.
 
 #### Logic Features:
@@ -294,20 +318,23 @@ This project implements a cellular automata simulator.
 
 #### View Features:
 
-* The auto-fitting grid outlines. The grid will automatically calculate the outside border of 
+* The auto-fitting grid outlines. The grid will automatically calculate the outside border of
   the current grid.
-* The zooming in and out of the grid. The user can zoom in and out of the grid by the zooming 
+* The zooming in and out of the grid. The user can zoom in and out of the grid by the zooming
   gestures or scrolling the mouse wheel.
-* The docking system. The user can dock the sections of the window to the edge of the window by 
+* The docking system. The user can dock the sections of the window to the edge of the window by
   dragging the window to the edge of the section windows.
 
 #### Configuration Features:
-* The two API abstraction. 
-  * The entire model and configuration packages and all their functionality (that we want to show) are managed by two API's.
-    * The configAPI class manages all the configuration aspects of the project. 
-    * The modelAPI class manages all the model aspects of the project: 
-      * Meaning it handles: the grid, logic, cells, cell colors, and style preferences.
-      * The API has helper classes which abstract out methods and increases the readability of the API. 
+
+* The two API abstraction.
+    * The entire model and configuration packages and all their functionality (that we want to show)
+      are managed by two API's.
+        * The configAPI class manages all the configuration aspects of the project.
+        * The modelAPI class manages all the model aspects of the project:
+            * Meaning it handles: the grid, logic, cells, cell colors, and style preferences.
+            * The API has helper classes which abstract out methods and increases the readability of
+              the API.
 
 ### Assignment Impressions
 
@@ -322,22 +349,31 @@ added on, but I also understand why this might not be the case. Overall, I think
 (but slightly brutal) way to introduce us to standard design principles and coding practices.
 
 Hsuan-Kai Liao: This assignment is a great opportunity for me to learn how to design a project with
-collaboration with teammates. I learned a lot about how to design a project with a clear structure 
+collaboration with teammates. I learned a lot about how to design a project with a clear structure
 and how to strongly follow the rules of Model View Separation. I also learned how to write a design
-document before the team actually code. At the beginning of the project, I was struggling with how to
+document before the team actually code. At the beginning of the project, I was struggling with how
+to
 balance the time between the design document and the actual coding. I spent a lot of time on working
 on cool front end functionality like docking system and zooming in and out of the grid, but the more
 I communicate with my teammates, the more I realize that the design is more important for a large
-project to make sure that everyone is on the same page, and new feature can be easily added. Overall,
+project to make sure that everyone is on the same page, and new feature can be easily added.
+Overall,
 I think this assignment allows me to understand deeper in both the design and the coding in a team.
 
-Billy: I enjoyed the assignment. I found that working on the backend was quite an enjoyable experience. 
-I expanded my coding knowledge base and encountered new ideas and better ways to abstract my code. I 
-also got so much better at figuring out how to separate different methods into different purposes. This 
-helped me a lot when trying to figure out abstraction for the configReader class as well as the API's. 
-I also became a lot better at refactoring. When making the API's I spent a lot of time refactoring code to make it 
-more flexible. I also spent a lot of time working to reduce my method complexity. I feel more confident now
-with the code that I write and my own ability to improve the code that I and other people right. The assignment
-was also interesting as the group aspect made it much more fun and dynamic. In general, I would say this assignment
+Billy: I enjoyed the assignment. I found that working on the backend was quite an enjoyable
+experience.
+I expanded my coding knowledge base and encountered new ideas and better ways to abstract my code. I
+also got so much better at figuring out how to separate different methods into different purposes.
+This
+helped me a lot when trying to figure out abstraction for the configReader class as well as the
+API's.
+I also became a lot better at refactoring. When making the API's I spent a lot of time refactoring
+code to make it
+more flexible. I also spent a lot of time working to reduce my method complexity. I feel more
+confident now
+with the code that I write and my own ability to improve the code that I and other people right. The
+assignment
+was also interesting as the group aspect made it much more fun and dynamic. In general, I would say
+this assignment
 strengthened my coding practices and increased my enjoyment of coding. 
 
