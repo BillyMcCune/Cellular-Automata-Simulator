@@ -235,9 +235,6 @@ public class SimulationScene {
         LanguageController.getStringProperty("parameters-panel"));
   }
 
-  // TODO: Implement the style panel with the following style change
-  //       - Cell Color
-  // TODO: Implement Tool Tips for Colors
   private ScrollPane createColorPanel() {
     colorBox = new VBox(5);
     colorBox.setAlignment(Pos.TOP_CENTER);

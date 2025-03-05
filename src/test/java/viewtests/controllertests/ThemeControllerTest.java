@@ -1,4 +1,4 @@
-package viewtests;
+package viewtests.controllertests;
 
 import cellsociety.view.controller.ThemeController;
 import org.junit.jupiter.api.Assertions;

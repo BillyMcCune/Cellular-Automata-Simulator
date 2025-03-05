@@ -9,6 +9,8 @@ import javafx.scene.shape.StrokeType;
 
 /**
  * A class that draws a square grid.
+ *
+ * @author Hsuan-Kai Liao
  */
 public class SquareGridDrawer extends GridDrawer {
 
