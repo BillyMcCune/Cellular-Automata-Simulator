@@ -30,6 +30,8 @@
 
     <!-- Row 1 -->
     <row>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
@@ -41,8 +43,6 @@
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
     </row>
@@ -51,6 +51,8 @@
     <row>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
@@ -60,14 +62,14 @@
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
     </row>
 
     <!-- Row 3 -->
     <row>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
@@ -79,8 +81,6 @@
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
     </row>
@@ -89,6 +89,8 @@
     <row>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
@@ -98,14 +100,14 @@
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
     </row>
 
     <!-- Row 5 -->
     <row>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="6"/>
@@ -117,8 +119,6 @@
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="6"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
     </row>
