@@ -83,6 +83,7 @@ public class Grid<T extends Enum<T> & State> {
    */
   public void setSteps(int steps) {
     this.neighborCalculator.setSteps(steps);
+    assignNeighbors();
   }
 
   /**
@@ -92,6 +93,7 @@ public class Grid<T extends Enum<T> & State> {
    */
   public void setGridShape(GridShape shape) {
     this.neighborCalculator.setShape(shape);
+    assignNeighbors();
   }
 
   /**
@@ -101,6 +103,7 @@ public class Grid<T extends Enum<T> & State> {
    */
   public void setNeighborType(NeighborType neighborType) {
     this.neighborCalculator.setNeighborType(neighborType);
+    assignNeighbors();
   }
 
   /**
@@ -110,6 +113,7 @@ public class Grid<T extends Enum<T> & State> {
    */
   public void setEdgeType(EdgeType edgeType) {
     this.neighborCalculator.setEdgeType(edgeType);
+    assignNeighbors();
   }
 
   /**

@@ -201,7 +201,7 @@ This project implements a cellular automata simulator.
   * Hexagon, Triangle, and Square shapes
   * Standard and Torus boundaries
   * Raycasting in a specific direction
-  * (not fully implemented) Radius for neighborhoods
+  * Radius for neighborhoods
   * (not fully implemented) Ring neighborhood
 
 * UI Features:
@@ -236,10 +236,6 @@ This project implements a cellular automata simulator.
 
 #### Logic Unimplemented Features
 
-* Radius for cell neighborhoods exists in XML files, but is not actually implemented in the API.
-  The functionality also exists in Grid and NeighborCalculator, but it would take lots of time
-  to implement. However, all functionality does exist (look at NeighborCalculatorTest).
-    * This would essentially include the functionality for ExtendedMoore, and even go beyond it
 * The ring for cell neighborhoods has not been implemented in the API. It is implemented in the XML
   and NeighborCalculator though. It would essentially get the ring of neighbors at radius x, and
   nothing else. This would fall under custom neighborhoods (logic used in NeighborCalculatorTest).
