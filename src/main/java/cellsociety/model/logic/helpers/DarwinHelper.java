@@ -4,7 +4,6 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.neighbors.Direction;
 import cellsociety.model.data.states.DarwinState;
-
 import cellsociety.model.logic.DarwinLogic;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +23,14 @@ public class DarwinHelper {
   private final DarwinLogic darwinLogic;
   private final Grid<DarwinState> grid;
 
+  /**
+   * Constructs a {@code DarwinHelper} instance with the specified {@link DarwinLogic} and
+   * {@link Grid}. This constructor loads species programs from the species data directory and
+   * registers instruction methods.
+   *
+   * @param darwinLogic the DarwinLogic instance controlling the simulation
+   * @param grid        the grid containing DarwinState cells
+   */
   public DarwinHelper(DarwinLogic darwinLogic, Grid<DarwinState> grid) {
     this.darwinLogic = darwinLogic;
     this.grid = grid;
@@ -31,6 +38,14 @@ public class DarwinHelper {
     registerInstructions();
   }
 
+  /**
+   * Constructs a {@code DarwinHelper} instance with the provided species programs map,
+   * {@link DarwinLogic}, and {@link Grid}.
+   *
+   * @param species     a map of species IDs to their program instructions
+   * @param darwinLogic the DarwinLogic instance controlling the simulation
+   * @param grid        the grid containing DarwinState cells
+   */
   public DarwinHelper(Map<Integer, List<String>> species, DarwinLogic darwinLogic,
       Grid<DarwinState> grid) {
     this.darwinLogic = darwinLogic;
@@ -40,8 +55,79 @@ public class DarwinHelper {
   }
 
   /**
-   * Reads all species programs from files and registers them.
+   * Gets the program instructions for a given species ID.
+   *
+   * @param speciesID the identifier of the species
+   * @return a list of instruction strings for the species, or an empty list if none are found
    */
+  public List<String> getProgram(int speciesID) {
+    return speciesPrograms.getOrDefault(speciesID, Collections.emptyList());
+  }
+
+  /**
+   * Processes the current instruction for the specified cell. This method retrieves the species
+   * program based on the cell's speciesID and executes the instruction corresponding to the cell's
+   * current instructionIndex.
+   *
+   * @param cell the cell to process
+   * @return an {@link InstructionResult} indicating the result of processing the instruction
+   */
+  public InstructionResult processCell(Cell<DarwinState> cell) {
+    int speciesID = (int) cell.getProperty("speciesID");
+    int instructionIndex = (int) cell.getProperty("instructionIndex");
+    List<String> instructions = getProgram(speciesID);
+
+    if (instructions == null || instructions.isEmpty()) {
+      return new InstructionResult(0, null);
+    }
+
+    if (instructionIndex - 1 >= instructions.size()) {
+      instructionIndex = 1;
+      cell.setProperty("instructionIndex", instructionIndex);
+    }
+    String instruction = instructions.get(instructionIndex - 1);
+    return processInstruction(instruction, cell);
+  }
+
+  /**
+   * Returns the best matching orientation for the specified cell based on its current orientation
+   * property and the available raycast directions.
+   *
+   * @param cell the cell whose orientation is to be determined
+   * @return the {@link Direction} that best matches the cell's orientation
+   */
+  public Direction getOrientation(Cell<DarwinState> cell) {
+    double orientation = (cell.getProperty("orientation") + 360) % 360;
+
+    List<Direction> directions = grid.getAllRaycastDirections(cell);
+
+    Direction bestDirection = null;
+    double smallestDifference = Double.MAX_VALUE;
+
+    for (Direction dir : directions) {
+      double dirAngle = getAngleFromDirection(dir);
+      double difference = Math.abs(orientation - dirAngle);
+
+      if (difference < smallestDifference) {
+        smallestDifference = difference;
+        bestDirection = dir;
+      }
+    }
+    return bestDirection;
+  }
+
+  /**
+   * Immutable record representing the result of executing a Darwin instruction. It contains the
+   * move distance (if any) and the cell that was infected, if applicable.
+   *
+   * @param moveDistance the distance the cell should move
+   * @param infectedCell the cell that was infected as a result of the instruction, or null if none
+   */
+  public record InstructionResult(int moveDistance, Cell<DarwinState> infectedCell) {
+
+  }
+
+  // Private methods below are not commented as they are not part of the public API.
   private void loadSpeciesPrograms() {
     try {
       List<Path> speciesFiles = getSpeciesFiles();
@@ -58,9 +144,6 @@ public class DarwinHelper {
     }
   }
 
-  /**
-   * Returns all files in the species data directory.
-   */
   private List<Path> getSpeciesFiles() throws IOException {
     List<Path> files = new ArrayList<>();
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(SPECIES_DIR), "*.txt")) {
@@ -73,9 +156,6 @@ public class DarwinHelper {
     return files;
   }
 
-  /**
-   * Reads the program instructions from a file.
-   */
   private List<String> readProgram(Path file) throws IOException {
     List<String> instructions = new ArrayList<>();
     try (BufferedReader reader = Files.newBufferedReader(file)) {
@@ -90,13 +170,6 @@ public class DarwinHelper {
     return instructions;
   }
 
-  /**
-   * Gets a program by species ID.
-   */
-  public List<String> getProgram(int speciesID) {
-    return speciesPrograms.getOrDefault(speciesID, Collections.emptyList());
-  }
-
   private void registerInstructions() {
     for (Method method : this.getClass().getDeclaredMethods()) {
       if (method.getName().startsWith("execute")) {
@@ -107,10 +180,6 @@ public class DarwinHelper {
     }
   }
 
-  /**
-   * Converts an instruction name into its alias if one exists. Otherwise, returns the original
-   * instruction name.
-   */
   private String getAlias(String instruction) {
     return switch (instruction) {
       case "MOVE" -> "MV";
@@ -126,9 +195,6 @@ public class DarwinHelper {
     };
   }
 
-  /**
-   * Processes a Darwin instruction dynamically.
-   */
   private InstructionResult processInstruction(String instructionLine, Cell<DarwinState> cell) {
     String[] parts = instructionLine.split(" ");
     String command = parts[0].toUpperCase();
@@ -149,23 +215,6 @@ public class DarwinHelper {
     } catch (InvocationTargetException | IllegalAccessException e) {
       throw new RuntimeException("Failed to execute instruction: " + command, e);
     }
-  }
-
-  public InstructionResult processCell(Cell<DarwinState> cell) {
-    int speciesID = (int) cell.getProperty("speciesID");
-    int instructionIndex = (int) cell.getProperty("instructionIndex");
-    List<String> instructions = getProgram(speciesID);
-
-    if (instructions == null || instructions.isEmpty()) {
-      return new InstructionResult(0, null);
-    }
-
-    if (instructionIndex - 1 >= instructions.size()) {
-      instructionIndex = 1;
-      cell.setProperty("instructionIndex", instructionIndex);
-    }
-    String instruction = instructions.get(instructionIndex - 1);
-    return processInstruction(instruction, cell);
   }
 
   private InstructionResult executeMove(Cell<DarwinState> cell, int argument) {
@@ -254,32 +303,8 @@ public class DarwinHelper {
     grid.assignRaycastNeighbor(cell, facing, (int) darwinLogic.getNearbyAhead());
   }
 
-  public Direction getOrientation(Cell<DarwinState> cell) {
-    double orientation = (cell.getProperty("orientation") + 360) % 360;
-
-    List<Direction> directions = grid.getAllRaycastDirections(cell);
-
-    Direction bestDirection = null;
-    double smallestDifference = Double.MAX_VALUE;
-
-    for (Direction dir : directions) {
-      double dirAngle = getAngleFromDirection(dir);
-      double difference = Math.abs(orientation - dirAngle);
-
-      if (difference < smallestDifference) {
-        smallestDifference = difference;
-        bestDirection = dir;
-      }
-    }
-    return bestDirection;
-  }
-
   private double getAngleFromDirection(Direction dir) {
     double angle = Math.toDegrees(Math.atan2(-dir.dx(), -dir.dy()));
     return (angle + 360) % 360;
-  }
-
-  public record InstructionResult(int moveDistance, Cell<DarwinState> infectedCell) {
-
   }
 }

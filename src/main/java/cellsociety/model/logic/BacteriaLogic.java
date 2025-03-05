@@ -103,7 +103,6 @@ public class BacteriaLogic extends Logic<BacteriaState> {
     grid.updateGrid();
   }
 
-  // updateSingleCell is overridden from Logic and marked as protected.
   @Override
   protected void updateSingleCell(Cell<BacteriaState> cell) {
     double id = cell.getProperty("coloredId");
