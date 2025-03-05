@@ -20,6 +20,12 @@ public class FallingLogic extends Logic<FallingState> {
   private final List<Cell<FallingState>> sandCells = new ArrayList<>();
   private final List<Cell<FallingState>> waterCells = new ArrayList<>();
 
+  /**
+   * Constructs a {@code FireLogic} instance with the specified grid and parameters.
+   *
+   * @param grid       The grid representing the simulation state.
+   * @param parameters the parameter record containing simulation-specific configurations
+   */
   public FallingLogic(Grid<FallingState> grid, ParameterRecord parameters) {
     super(grid, parameters);
     initializeParticles();

@@ -21,6 +21,7 @@ public class InfectionRecord extends CellQueueRecord {
    * @param duration  the duration of the infection
    */
   public InfectionRecord(double speciesID, double duration) {
+    super();
     this.speciesID = speciesID;
     this.duration = duration;
   }

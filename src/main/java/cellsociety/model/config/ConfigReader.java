@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 public class ConfigReader {
 
   private static final String DATA_FILE_EXTENSION = "*.xml";
-  private static final String DATA_FILE_FOLDER = "/src/main/resources/cellsociety/configdata";
+  private static final String DATA_FILE_FOLDER = "/src/main/resources/cellsociety/data";
   private static final String INTERNAL_CONFIGURATION = "cellsociety.Version";
   private final Map<String, File> fileMap = new HashMap<>();
 

@@ -5,6 +5,7 @@ import cellsociety.model.data.Grid;
 import cellsociety.model.data.cells.Cell;
 import cellsociety.model.data.states.SegregationState;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Concrete implementation of {@link Logic} for the Schelling Segregation Model.
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  */
 public class SegregationLogic extends Logic<SegregationState> {
 
-  private final ArrayList<Cell<SegregationState>> empty = new ArrayList<>();
+  private final List<Cell<SegregationState>> empty = new ArrayList<>();
   private double satisfiedThreshold;
 
   /**

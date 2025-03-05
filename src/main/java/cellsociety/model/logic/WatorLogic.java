@@ -7,6 +7,7 @@ import cellsociety.model.data.states.WatorState;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implements the Wa-Tor world simulation logic for {@link Logic}, updating sharks and fish based on
@@ -23,8 +24,8 @@ public class WatorLogic extends Logic<WatorState> {
   private static double fishReproductionTime;
   private final List<Cell<WatorState>> sharkCells;
   private final List<Cell<WatorState>> fishCells;
-  private static HashMap<String, Double> baseSharkProperties;
-  private static HashMap<String, Double> baseFishProperties;
+  private static Map<String, Double> baseSharkProperties;
+  private static Map<String, Double> baseFishProperties;
 
   /**
    * Constructs a WatorLogic instance for the given grid.
