@@ -42,6 +42,11 @@ This project implements a cellular automata simulator.
       with our current time remaining.
 
 * Key/Mouse inputs:
+    * The only inputs needed are mouse clicking, mouse dragging, mouse scrolling and text inputs.
+      * Mouse clicking are for the buttons, it is the main way user can interact with the controls.
+      * Mouse dragging is for the sliders and window dragging. We implemented the docking system which we can drag the window to the edge of the screen and it will dock to the edge.
+      * Mouse scrolling is for zooming in and out of the grid.
+      * Text inputs are for the user to dynamically change the parameters for the simulation.
 
 ### Notes/Assumptions
 
@@ -77,6 +82,29 @@ This project implements a cellular automata simulator.
 * In Darwin, when a species reverts to its old species, it reverts to instruction 1.
 
 
+#### View Assumptions/Simplifications
+
+* The view is designed to be as flexible as possible, with the ability to add new simulations and
+  dynamically change interact with the backend with the showing GUI.
+* The simulation begins with a splash screen, and the user can choose the start-up theme and start-up
+  language.
+* The main window has 5 sections:
+  * The control panel: This is the main control panel that allows the user to start, pause, load,
+    reset. It also allows the user to save the current simulation states to the file.
+  * The style panel: This panel allows the user to change the style of the simulation. The user can
+    change the theme and the language of the simulation, and also change the style of the grid: Cell Shape, Edge Policy, and Neighbour Arrangement for the backend.
+  * The grid panel: This panel shows the grid of the simulation. The user can zoom in and out of the
+    grid, and also drag the grid to see different parts of the grid.
+  * The info panel: This panel shows the information of the current simulation. It shows the current
+    iterations, the author of the simulation, and the description of the simulation.
+  * The parameter panel: This panel shows the parameters of the simulation. The user can change the
+    parameters and the color of each simulation type of the simulation dynamically. The user can also change the parameters of the
+    simulation by dragging the sliders.
+* The view implements a docking system, where all the secions mentioned above will be docked to the
+  edge of the window when the user drags the window to the edge of the target edge.
+* Customized css files are used to define the style of the simulation. The css files are stored in
+  resources/cellsociety/style/. The css files define the color and style of the simulation.
+
 * Known Bugs:
 
 #### Logic Bugs
@@ -99,6 +127,17 @@ This project implements a cellular automata simulator.
     * With time, I would probably choose to implement letter values, like A = 10, B = 11, etc. For
       cells with very large neighborhoods greater than 36, I would most likely create a new way of
       implementing rulestrings that would take in comma seperated numbers.
+
+#### View Bugs
+
+* The color selector for the cell property will not affect the color of the cell until the user.
+* The zoom in and out of the grid is not center to the grid widget, its zooming center is always the
+  center of the grid, which is not correct.
+* The text field input is checking the validity of the input by trying and catching the exception 
+  in the callback, which is unsafe.
+  * The text field input data is not updating the simulation after the simulation get reset.
+* The error dialog is keep popping up every frame when error occurs when user is running a 
+  simulation.
 
 * Features implemented:
 
@@ -129,6 +168,12 @@ This project implements a cellular automata simulator.
 * Darwin instructions have not been translated to other languages. If they were, they would simply
   all be assigned to the english mapping used in naming the methods, essentially the same way that
   the shortened instruction names were translated to their longer names.
+
+#### View Unimplemented Features
+
+* The view does not have a way to change or interact with the cell in the simulation grid.
+* The minigrid in the view is not showing bounds as a light outline within this view so the user 
+  knows what part of the simulation they are zoomed into.
 
 * Noteworthy Features:
 
@@ -167,6 +212,15 @@ This project implements a cellular automata simulator.
   reflection in order to call specific methods in its class, passing in the correct argument. This
   way, it avoids a large case statement for instructions.
 
+#### View Features:
+
+* The auto-fitting grid outlines. The grid will automatically calculate the outside border of 
+  the current grid.
+* The zooming in and out of the grid. The user can zoom in and out of the grid by the zooming 
+  gestures or scrolling the mouse wheel.
+* The docking system. The user can dock the sections of the window to the edge of the window by 
+  dragging the window to the edge of the section windows.
+
 ### Assignment Impressions
 
 Jacob: Overall, I think this assignment really improved my current knowledge of proper coding
@@ -178,4 +232,15 @@ ways that we would eventually have to implement our code (if we were asked stuff
 number of states changed?) or had some understanding that there would eventually be new features
 added on, but I also understand why this might not be the case. Overall, I think this was a great
 (but slightly brutal) way to introduce us to standard design principles and coding practices.
+
+Hsuan-Kai Liao: This assignment is a great opportunity for me to learn how to design a project with
+collaboration with teammates. I learned a lot about how to design a project with a clear structure 
+and how to strongly follow the rules of Model View Separation. I also learned how to write a design
+document before the team actually code. At the beginning of the project, I was struggling with how to
+balance the time between the design document and the actual coding. I spent a lot of time on working
+on cool front end functionality like docking system and zooming in and out of the grid, but the more
+I communicate with my teammates, the more I realize that the design is more important for a large
+project to make sure that everyone is on the same page, and new feature can be easily added. Overall,
+I think this assignment allows me to understand deeper in both the design and the coding in a team.
+
 
