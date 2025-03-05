@@ -65,7 +65,9 @@ public class configAPI {
   public void loadSimulation(String fileName)
       throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
     try {
-      configReader = new ConfigReader();
+      if (configReader == null) {
+        configReader = new ConfigReader();
+      }
       configInfo = configReader.readConfig(fileName);
       if (configInfo != null) {
         isLoaded = true;
@@ -97,7 +99,9 @@ public class configAPI {
    */
   public String saveSimulation(String FilePath)
       throws ParserConfigurationException, IOException, TransformerException {
-    configWriter = new ConfigWriter();
+    if (configWriter == null) {
+      configWriter = new ConfigWriter();
+    }
     //Save the grid dataGrid<?>
     myGridStates = myModelApi.getCellStates();
     myGridProperties = myModelApi.getCellProperties();
