@@ -1,4 +1,4 @@
-package viewtests;
+package logtests;
 
 import cellsociety.logging.Log;
 import org.junit.jupiter.api.Test;
