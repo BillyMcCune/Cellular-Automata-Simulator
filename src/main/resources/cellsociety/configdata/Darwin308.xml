@@ -1,173 +1,131 @@
 <?xml version="1.0" ?>
 <simulation>
 
-
   <type>DARWIN</type>
 
-
-  <title>Darwin Crazy Frog</title>
-
+  <title>Darwin Crazy People</title>
 
   <author>Billy McCune</author>
 
-
   <description>
-    A Froggy boy that loves to jump.
+    A classroom full of CS students.
   </description>
 
-
-
   <parameters>
-
     <doubleParameter name="nearbyAhead">2</doubleParameter>
-
   </parameters>
-
-
 
   <cellShapeType>Square</cellShapeType>
 
-
   <gridEdgeType>BASE</gridEdgeType>
-
 
   <neighborArrangementType>Moore</neighborArrangementType>
 
-
-
-
   <width>15</width>
-
-
   <height>5</height>
-
 
   <defaultSpeed>10</defaultSpeed>
 
-
-
   <initialCells>
 
-
+    <!-- Row 1 -->
     <row>
-
-
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-
     </row>
 
-
+    <!-- Row 2 -->
     <row>
-
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-
     </row>
 
-
+    <!-- Row 3 -->
     <row>
-
-
-      <cell state="0" speciesID="2"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-
-
     </row>
 
-
+    <!-- Row 4 -->
     <row>
-
-
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-
-
     </row>
 
-
+    <!-- Row 5 -->
     <row>
-
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="6"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="6"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="5"/>
+      <cell state="0" speciesID="6"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-
-
-
-
     </row>
-
 
   </initialCells>
 
-
-
-  <acceptedStates>0 </acceptedStates>
-
+  <acceptedStates>0</acceptedStates>
 
   <neighborRadius>1</neighborRadius>
 </simulation>
