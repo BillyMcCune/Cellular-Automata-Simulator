@@ -83,8 +83,10 @@ This project implements a cellular automata simulator.
  * Saving a random total states or random total proportions will change the XML file to a normal one
    * The random total states and random total proportions allow for the randomly generated grid to be randomly generated. 
    However, since the user is saving the grid, I am assuming they want to save the grid at that state. Thus, the states cannot be random.
-    Do to this, the saved XML files will never be random total states nor random proportions. 
-
+    Do to this, the saved XML files will never be random total states nor random proportions.
+ * Darwin currently has 6 colors defined if a user wants to add a species they must change the cell color properties file 
+ and simulation properties files.
+ 
 #### Logic Assumptions/Simplifications
 
 * All Cell properties are doubles, and can only be doubles. When properties don't exist, they are
@@ -185,7 +187,21 @@ This project implements a cellular automata simulator.
 
     * Simulation Features:
     * UI Features:
-    * Configuration Features:
+    * Configuration Features: 
+      * Default Simulation Parameter Properties
+      * Simulation Language Customization 
+      * Random Configuration by Probability Distribution
+      * Random Configuration by Total States
+      * File Format Validation
+      * Grid Bounds Check
+      * Invalid Cell State Check
+      * Input Missing Parameters
+      * Save Simulation State as XML
+      * XML-Based Simulation Configuration
+      * Load New Configuration File
+      * Darwin Species Files
+      * Simulation Styles
+      * API's: configAPI and modelAPI
 
 
 * Features unimplemented:
