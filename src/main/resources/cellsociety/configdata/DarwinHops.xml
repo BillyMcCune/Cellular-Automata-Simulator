@@ -1,0 +1,174 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+  <type>DARWIN</type>
+
+
+  <title>SPECIES WAR</title>
+
+
+  <author>Billy McCune</author>
+
+
+  <description>
+    Demonstrates a bacteria CA following Rock-Paper-Scissors logic:
+    each cell's &quot;coloredId&quot; competes with the next coloredId in a cyclic chain.
+  </description>
+
+
+
+  <parameters>
+
+    <doubleParameter name="nearbyAhead">2</doubleParameter>
+
+  </parameters>
+
+
+
+  <cellShapeType>Square</cellShapeType>
+
+
+  <gridEdgeType>BASE</gridEdgeType>
+
+
+  <neighborArrangementType>Moore</neighborArrangementType>
+
+
+
+
+  <width>15</width>
+
+
+  <height>5</height>
+
+
+  <defaultSpeed>10</defaultSpeed>
+
+
+
+  <initialCells>
+
+
+    <row>
+
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+    </row>
+
+
+    <row>
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="0" speciesID="2"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+
+    </row>
+
+
+    <row>
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+
+
+
+    </row>
+
+
+  </initialCells>
+
+
+
+  <acceptedStates>0 </acceptedStates>
+
+
+  <neighborRadius>1</neighborRadius>
+</simulation>

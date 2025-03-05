@@ -333,9 +333,9 @@ public class DarwinLogicTest {
   @Test
   public void DarwinLogic_SquareAngleAbove45_AutoRoundTo90() throws Exception {
     List<String> moveProgram = new ArrayList<>();
-    moveProgram.add("LEFT 45");
+    moveProgram.add("LEFT 44");
     moveProgram.add("MOVE 1");
-    moveProgram.add("LEFT 1");
+    moveProgram.add("LEFT 2");
     moveProgram.add("MOVE 1");
     testSpeciesPrograms.put(1, moveProgram);
     darwinLogic.assignSpeciesPrograms(testSpeciesPrograms);
@@ -345,16 +345,16 @@ public class DarwinLogicTest {
     Cell<DarwinState> secondDestination = grid.getCell(0, 0);
 
     darwinLogic.update();
-    assertEquals(45, testCell.getProperty("orientation"),
-        "Orientation should remain 45 after LEFT 45");
+    assertEquals(44, testCell.getProperty("orientation"),
+        "Orientation should remain 45 after LEFT 44");
 
     darwinLogic.update();
     assertEquals(1, destination.getProperty("speciesID"),
-        "Cell should move left, as 45 is closer to 0 in this implementation");
+        "Cell should move up, as 44 is closer to 0 in this implementation");
 
     darwinLogic.update();
     assertEquals(46, destination.getProperty("orientation"),
-        "Orientation should become 46 after LEFT 46");
+        "Orientation should become 46 after LEFT 2");
 
     darwinLogic.update();
     assertEquals(1, secondDestination.getProperty("speciesID"),

@@ -85,7 +85,7 @@ public class StyleManagerTest {
     // Create a test grid. Initially we use a SQUARE grid with MOORE neighbor type.
     testGrid = createGrid(3, 3, GridShape.SQUARE, NeighborType.MOORE, EdgeType.BASE);
     neighborCalculator = testGrid.getNeighborCalculator();
-    styleManager = new StyleManager(neighborCalculator);
+    styleManager = new StyleManager();
   }
 
   @AfterEach
