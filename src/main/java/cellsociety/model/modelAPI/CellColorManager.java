@@ -104,6 +104,9 @@ public class CellColorManager {
    * @return the first non-white color found from the properties; returns null if none exists.
    */
   public String getPropertyColor(Cell<?> cell) {
+    if (cell == null) {
+      return null;
+    }
     Map<String, Double> properties = cell.getAllProperties();
 
     // Check if the special "coloredId" property exists.
@@ -117,10 +120,16 @@ public class CellColorManager {
     for (Map.Entry<String, Double> entry : properties.entrySet()) {
       if (entry.getValue() != 0) {
         // Construct key like "AntState.searchingEntities"
-        String propertyKey = statePrefix + "." + entry.getKey();
-        String color = COLOR_MAPPING.getProperty(propertyKey);
-        if (color != null && !"WHITE".equalsIgnoreCase(color)) {
-          return color;
+        String propertyKeyForTypeOne = statePrefix + "." + entry.getKey();
+        String colorTypeOne = COLOR_MAPPING.getProperty(propertyKeyForTypeOne);
+        if (colorTypeOne != null && !"WHITE".equalsIgnoreCase(colorTypeOne)) {
+          return colorTypeOne;
+        }
+
+        String propertyKeyForTypeTwo = statePrefix + "." + entry.getKey() + "." + entry.getValue().intValue();
+        String colorTypeTwo = COLOR_MAPPING.getProperty(propertyKeyForTypeTwo);
+        if (colorTypeTwo != null && !"WHITE".equalsIgnoreCase(colorTypeTwo)) {
+          return colorTypeTwo;
         }
       }
     }
