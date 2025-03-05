@@ -186,7 +186,7 @@ public class GridTest {
     cell.copyAllPropertiesTo(cell2);
     assertEquals(props, cell2.getAllProperties());
     cell.clearAllProperties();
-    assertNull(cell.getAllProperties());
+    assertEquals(cell.getAllProperties(), new HashMap<String, Double>());
   }
 
   @Test

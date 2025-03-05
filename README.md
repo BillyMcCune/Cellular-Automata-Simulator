@@ -59,6 +59,9 @@ This project implements a cellular automata simulator.
     * This causes some discrepancies with Direction, as for example, up right for a hexagon is made
       to be Direction(-1, 1), when its actually a 60 degree angle. Despite this, all implementation
       should not break.
+* BacteriaLogic and DarwinLogic use DUMMY enum variables instead of real enum states, as these
+  simulations have a variable number of states. This makes implementing enums impossible, so the
+  real value are stored in the cell properties instead under speciesID and coloredID.
 
 
 * Known Bugs:
@@ -66,10 +69,15 @@ This project implements a cellular automata simulator.
 #### Logic Bugs
 
 * FallingState looks for cells down left, down right, and down. With some implementations, shapes
-  like hexagon do not have down left or down right on hexagons on the higher part of the row. 
-  * This means that cells can only go downward, despite there being a down left and down right, which are
-    coded as Direction(0, -1) and Direction(0, 1) in neighbors instead. This is one of the
-    aforementioned discrepancies with the square grid.
+  like hexagon do not have down left or down right on hexagons on the higher part of the row.
+    * This means that cells can only go downward, despite there being a down left and down right,
+      which are
+      coded as Direction(0, -1) and Direction(0, 1) in neighbors instead. This is one of the
+      aforementioned discrepancies with the square grid.
+* If DarwinLogic has an infinite loop, such as (GO 2, GO 1), the species breaks, and the code
+  errors.
+    * The idea I had was to set a timer in Logic, but this would require a bit more time to figure
+      out.
 
 
 * Features implemented:

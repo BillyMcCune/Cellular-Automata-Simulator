@@ -43,7 +43,7 @@
   <gridEdgeType>BASE</gridEdgeType>
   
   
-  <neighborArrangementType>Custom</neighborArrangementType>
+  <neighborArrangementType>NEUMANN</neighborArrangementType>
   
 
   
