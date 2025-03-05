@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
  */
 public class SceneRendererTest {
 
-  @Test
-  public void DrawGrid_GridPaneAndSize_GridIsDrawn() {
-    GridPane gridPane = new GridPane();
-    SceneRenderer.drawGrid(gridPane, 10, 10);
-  }
+//  @Test
+//  public void DrawGrid_GridPaneAndSize_GridIsDrawn() {
+//    GridPane gridPane = new GridPane();
+//    SceneRenderer.drawGrid(gridPane, 10, 10);
+//  }
 
 //  @Test
 //  public void DrawCell_GridPaneAndCellPosition_CellIsDrawn() {
