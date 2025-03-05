@@ -1,0 +1,12 @@
+ifrandom 5
+right 90
+move 2
+go 1
+left 180
+move 1
+go 1
+
+#we're the crazy boy of course we move like cooper flag at the court or something
+
+
+

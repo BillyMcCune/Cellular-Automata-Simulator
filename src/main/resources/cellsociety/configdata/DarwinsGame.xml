@@ -39,7 +39,7 @@
   <width>15</width>
 
 
-  <height>5</height>
+  <height>10</height>
 
 
   <defaultSpeed>10</defaultSpeed>
@@ -47,7 +47,117 @@
 
 
   <initialCells>
+    <row>
 
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="3"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="4"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+    </row>
+
+
+    <row>
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="0" speciesID="2"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+
+    </row>
+
+
+    <row>
+
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+
+    </row>
+
+
+    <row>
+
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="0"/>
+
+
+
+
+    </row>
 
     <row>
 
@@ -144,6 +254,7 @@
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="2"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
@@ -151,8 +262,7 @@
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
-      <cell state="0" speciesID="0"/>
+      <cell state="0" speciesID="1"/>
       <cell state="0" speciesID="0"/>
       <cell state="0" speciesID="0"/>
 

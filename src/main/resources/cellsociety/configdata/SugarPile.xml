@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<simulation>
+
+
+  <type>SUGAR</type>
+
+
+  <title>Basic SugarScape Simulation</title>
+
+
+  <author>Jacob You</author>
+
+
+  <description>
+    Demonstrates agents moving to the patch with the most sugar within a given vision range,
+    consuming sugar, and regrowing sugar at patches every specified interval.
+  </description>
+
+
+
+  <parameters>
+
+
+    <doubleParameter name="vision">2</doubleParameter>
+
+
+    <doubleParameter name="sugarMetabolism">1</doubleParameter>
+
+
+    <doubleParameter name="sugarGrowBackRate">2</doubleParameter>
+
+
+    <doubleParameter name="sugarGrowBackInterval">3</doubleParameter>
+
+
+  </parameters>
+
+
+
+  <cellShapeType>Square</cellShapeType>
+
+
+  <gridEdgeType>BASE</gridEdgeType>
+
+
+  <neighborArrangementType>NEUMANN</neighborArrangementType>
+
+
+
+  <width>5</width>
+
+
+  <height>5</height>
+
+
+  <defaultSpeed>10</defaultSpeed>
+
+
+
+  <initialCells>
+
+
+
+    <row>
+
+
+      <cell state="1" sugarAmount="0" maxSugar="0" agentSugar="10"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="1" sugarAmount="0" maxSugar="0" agentSugar="5"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+
+
+    </row>
+
+
+
+    <row>
+
+
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+
+
+    </row>
+
+
+
+    <row>
+
+
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="20" maxSugar="20"/>
+      <cell state="0" sugarAmount="0" maxSugar="0" />
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+
+
+    </row>
+
+
+
+    <row>
+
+
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+
+
+    </row>
+
+
+
+    <row>
+
+
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="1" sugarAmount="0" maxSugar="0" agentSugar="7"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+      <cell state="0" ssugarAmount="0" maxSugar="0"/>
+      <cell state="0" sugarAmount="0" maxSugar="0"/>
+
+
+    </row>
+
+
+  </initialCells>
+
+
+
+
+  <acceptedStates>0 1</acceptedStates>
+
+
+  <neighborRadius>1</neighborRadius>
+</simulation>
