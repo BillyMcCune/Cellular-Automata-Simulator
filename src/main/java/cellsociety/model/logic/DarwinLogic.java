@@ -18,6 +18,8 @@ import java.util.Map.Entry;
 
 /**
  * Handles Darwin simulation logic.
+ *
+ * @author Jacob You
  */
 public class DarwinLogic extends Logic<DarwinState> {
 

@@ -6,6 +6,8 @@ import cellsociety.model.data.cells.CellQueueRecord;
  * Represents an infection record containing information about the species responsible for an
  * infection and the remaining duration of that infection. This record is used to track infection
  * states within the simulation.
+ *
+ * @author Jacob You
  */
 public class InfectionRecord extends CellQueueRecord {
 

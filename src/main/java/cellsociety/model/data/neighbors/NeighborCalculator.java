@@ -15,6 +15,8 @@ import java.util.*;
 /**
  * A unified NeighborCalculator that supports both BFS-based neighbor expansion and raycasting. Its
  * behavior is configured via a ConfigInfo record.
+ *
+ * @author Jacob You
  */
 public class NeighborCalculator<T extends Enum<T> & State> {
 
