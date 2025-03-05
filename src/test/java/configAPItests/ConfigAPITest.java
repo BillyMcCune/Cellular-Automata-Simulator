@@ -30,7 +30,19 @@ import org.xml.sax.SAXException;
 /**
  * JUnit tests for configAPI.
  *
- * Dummy classes simulate external dependencies.
+ * This test document uses the following rules:
+ *
+ * - Each test method is annotated with @Test.
+ * - The method names follow the [MethodName_StateUnderTest_ExpectedBehavior] format.
+ *   For example: getAcceptedStates_NullConfig_ThrowsNullPointerException().
+ * - Variable names in tests reflect the input and expected state (e.g., ZERO_DIM_CONFIG, SINGLE_STATE_CONFIG).
+ * - The ZOMBIES acronym is used to cover scenarios: Zero, One, Many, Boundary, Invalid, Exception, Stress.
+ *
+ * If any test fails:
+ * 1. Comment out the buggy code.
+ * 2. Write a comment indicating the cause of the error.
+ * 3. Provide the corrected code.
+ * 4. Re-run the tests to verify they pass.
  */
 public class ConfigAPITest {
 
@@ -74,18 +86,21 @@ public class ConfigAPITest {
 
   /**
    * DummyConfigReader overrides readConfig to return a dummy configuration
-   * (instead of performing file I/O).
+   * without performing file I/O.
    */
   private static class DummyConfigReader extends cellsociety.model.config.ConfigReader {
     @Override
     public ConfigInfo readConfig(String fileName)
         throws ParserConfigurationException, IOException, SAXException {
-      // Return a dummy configuration (could be customized further)
+      // Return a dummy configuration with standard dimensions.
       return createStaticDummyConfigInfo();
     }
   }
 
-  // A static helper to create a dummy ConfigInfo (used by DummyConfigReader)
+  /**
+   * Creates a dummy ConfigInfo with standard dimensions (width=10, height=20).
+   * Expected outcome: A valid ConfigInfo with accepted states {0,1}.
+   */
   private static ConfigInfo createStaticDummyConfigInfo() {
     int width = 10;
     int height = 20;
@@ -119,25 +134,24 @@ public class ConfigAPITest {
   }
 
   /**
-   * DummyModelAPI extends modelAPI.
-   * It creates a dummy grid using the actual Grid constructor and provides dummy implementations
-   * for getCellStates() and getCellProperties().
+   * DummyModelApi extends ModelApi.
+   * It creates a dummy grid (2x2) and provides dummy implementations for getCellStates() and getCellProperties().
+   * It also overrides setConfigInfo to capture the config for verification.
    */
   @Nested
   public class DummyModelApi extends ModelApi {
 
-    public ConfigInfo configInfoDummy; // For verification
+    public ConfigInfo configInfoDummy; // For later verification
     private Grid<TestState> grid;
     private Map<String, Double> doubleParams;
     private Map<String, String> stringParams;
 
     public DummyModelApi() {
-      // Create a dummy raw grid for a 2x2 grid.
+      // Create a dummy grid of size 2x2; each cell's state is set to 1.
       List<List<CellRecord>> raw = new ArrayList<>();
       for (int i = 0; i < 2; i++) {
         List<CellRecord> row = new ArrayList<>();
         for (int j = 0; j < 2; j++) {
-          // For testing, set state value to 1.
           row.add(new CellRecord(1, new HashMap<>()));
         }
         raw.add(row);
@@ -149,7 +163,9 @@ public class ConfigAPITest {
       stringParams.put("param2", "value2");
     }
 
-    public void setConfiginfo(ConfigInfo configInfo) {
+    @Override
+    public void setConfigInfo(ConfigInfo configInfo) {
+      // Expected outcome: Provided configInfo is stored in configInfoDummy.
       this.configInfoDummy = configInfo;
     }
 
@@ -163,9 +179,43 @@ public class ConfigAPITest {
       return stringParams;
     }
 
+    /**
+     * Returns a 2x2 grid of integers (all 1's).
+     * Expected outcome: A 2x2 matrix where every element is 1.
+     */
+    @Override
+    public List<List<Integer>> getCellStates() {
+      List<List<Integer>> states = new ArrayList<>();
+      for (int i = 0; i < 2; i++) {
+        List<Integer> row = new ArrayList<>();
+        for (int j = 0; j < 2; j++) {
+          row.add(1);
+        }
+        states.add(row);
+      }
+      return states;
+    }
 
     /**
-     * DummyConfigWriter extends ConfigWriter so that saveCurrentConfig stores the file path.
+     * Returns a 2x2 grid of empty property maps.
+     * Expected outcome: A 2x2 matrix where each cell's property map is empty.
+     */
+    @Override
+    public List<List<Map<String, Double>>> getCellProperties() {
+      List<List<Map<String, Double>>> properties = new ArrayList<>();
+      for (int i = 0; i < 2; i++) {
+        List<Map<String, Double>> row = new ArrayList<>();
+        for (int j = 0; j < 2; j++) {
+          row.add(new HashMap<>());
+        }
+        properties.add(row);
+      }
+      return properties;
+    }
+
+    /**
+     * DummyConfigWriter to simulate saving configuration.
+     * Expected outcome: lastFileSaved contains the file path provided to saveSimulation.
      */
     private static class DummyConfigWriter extends cellsociety.model.config.ConfigWriter {
 
@@ -174,6 +224,7 @@ public class ConfigAPITest {
       @Override
       public void saveCurrentConfig(ConfigInfo configInfo, String filePath)
           throws ParserConfigurationException, IOException, TransformerException {
+        // Capture the file path instead of writing to disk.
         lastFileSaved = filePath;
       }
 
@@ -184,8 +235,8 @@ public class ConfigAPITest {
     }
 
     /**
-     * TestableConfigAPI is a subclass of configAPI that overrides saveSimulation to use
-     * DummyConfigWriter.
+     * TestableConfigAPI overrides saveSimulation to use DummyConfigWriter.
+     * Expected outcome: Calling saveSimulation returns the provided file path.
      */
     private static class TestableConfigAPI extends configAPI {
 
@@ -204,7 +255,7 @@ public class ConfigAPITest {
     }
 
     /**
-     * A robust reflection helper that searches the class hierarchy for the given field.
+     * Helper method to set private fields using reflection.
      */
     private void setPrivateField(Object target, String fieldName, Object value) {
       Field field = null;
@@ -218,8 +269,7 @@ public class ConfigAPITest {
         }
       }
       if (field == null) {
-        fail("Field '" + fieldName + "' not found in class hierarchy of " + target.getClass()
-            .getName());
+        fail("Field '" + fieldName + "' not found in class hierarchy of " + target.getClass().getName());
       }
       try {
         field.setAccessible(true);
@@ -230,7 +280,8 @@ public class ConfigAPITest {
     }
 
     /**
-     * Helper method to create a dummy ConfigInfo record.
+     * Creates a dummy ConfigInfo record with standard dimensions.
+     * Expected outcome: A valid ConfigInfo with width=10 and height=20.
      */
     private ConfigInfo createDummyConfigInfo() {
       int width = 10;
@@ -264,130 +315,231 @@ public class ConfigAPITest {
       );
     }
 
-    // ==================== Begin JUnit tests ====================
+    /**
+     * Creates a dummy ConfigInfo record with zero dimensions.
+     * Expected outcome: getGridWidth() and getGridHeight() return 0.
+     */
+    private ConfigInfo createZeroDimensionConfigInfo() {
+      int width = 0;
+      int height = 0;
+      List<List<CellRecord>> gridData = new ArrayList<>();
+      for (int i = 0; i < height; i++) {
+        gridData.add(new ArrayList<>());
+      }
+      ParameterRecord parameters = new ParameterRecord(new HashMap<>(), new HashMap<>());
+      Set<Integer> acceptedStates = new HashSet<>(Arrays.asList(0));
+      return new ConfigInfo(
+          SimulationType.LIFE,
+          cellShapeType.SQUARE,
+          gridEdgeType.BASE,
+          neighborArrangementType.MOORE,
+          1,
+          "Zero Dimension Simulation",
+          "Dummy Author",
+          "Dummy Description",
+          width,
+          height,
+          1,
+          gridData,
+          parameters,
+          acceptedStates,
+          "dummyFile.xml"
+      );
+    }
+
+    /**
+     * Creates a dummy ConfigInfo record with a single accepted state.
+     * Expected outcome: getAcceptedStates() returns a set with one element.
+     */
+    private ConfigInfo createSingleStateConfigInfo() {
+      int width = 10;
+      int height = 20;
+      List<List<CellRecord>> gridData = new ArrayList<>();
+      for (int i = 0; i < height; i++) {
+        List<CellRecord> row = new ArrayList<>();
+        for (int j = 0; j < width; j++) {
+          row.add(new CellRecord(0, new HashMap<>()));
+        }
+        gridData.add(row);
+      }
+      ParameterRecord parameters = new ParameterRecord(new HashMap<>(), new HashMap<>());
+      Set<Integer> acceptedStates = new HashSet<>(Arrays.asList(0)); // Only one accepted state
+      return new ConfigInfo(
+          SimulationType.LIFE,
+          cellShapeType.SQUARE,
+          gridEdgeType.BASE,
+          neighborArrangementType.MOORE,
+          1,
+          "Single State Simulation",
+          "Dummy Author",
+          "Dummy Description",
+          width,
+          height,
+          1,
+          gridData,
+          parameters,
+          acceptedStates,
+          "dummyFile.xml"
+      );
+    }
+
+    // ==================== Begin JUnit tests with descriptive names ====================
 
     @Test
-    public void testGetFileNames() {
+    public void getFileNames_ReturnsNonNullList() {
+      // Testing configAPI.getFileNames()
       configAPI api = new configAPI();
       List<String> fileNames = api.getFileNames();
-      assertNotNull(fileNames, "getFileNames should not return null");
+      assertNotNull(fileNames, "getFileNames() should return a non-null list");
     }
 
     @Test
-    public void testGetAcceptedStates_NullConfig() {
+    public void getAcceptedStates_NullConfig_ThrowsNullPointerException() {
+      // Testing configAPI.getAcceptedStates() when configInfo is null.
       configAPI api = new configAPI();
       Exception exception = assertThrows(NullPointerException.class, () -> api.getAcceptedStates());
       assertEquals("error-configInfo-NULL", exception.getMessage());
     }
 
     @Test
-    public void testGetAcceptedStates_WithConfig() {
+    public void getAcceptedStates_ConfigSet_ReturnsCorrectStates() {
+      // Testing configAPI.getAcceptedStates() with a valid config.
       configAPI api = new configAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
       Set<Integer> states = api.getAcceptedStates();
-      assertEquals(dummyConfig.acceptedStates(), states,
-          "Accepted states should match dummy config info");
+      assertEquals(dummyConfig.acceptedStates(), states, "getAcceptedStates() should return accepted states from config");
     }
 
     @Test
-    public void testGetGridWidth_NullConfig() {
+    public void getAcceptedStates_SingleState_ReturnsSingleElementSet() {
+      // Testing configAPI.getAcceptedStates() with a config that accepts only one state.
+      configAPI api = new configAPI();
+      ConfigInfo singleStateConfig = createSingleStateConfigInfo();
+      setPrivateField(api, "configInfo", singleStateConfig);
+      Set<Integer> states = api.getAcceptedStates();
+      assertEquals(1, states.size(), "Expected one accepted state in the config");
+      assertTrue(states.contains(0), "Expected the accepted state to be 0");
+    }
+
+    @Test
+    public void getGridWidth_NullConfig_ThrowsNumberFormatException() {
+      // Testing configAPI.getGridWidth() when configInfo is null.
       configAPI api = new configAPI();
       Exception exception = assertThrows(NumberFormatException.class, () -> api.getGridWidth());
       assertEquals("error-configInfo-NULL", exception.getMessage());
     }
 
     @Test
-    public void testGetGridWidth_WithConfig() {
+    public void getGridWidth_ConfigSet_ReturnsCorrectWidth() {
+      // Testing configAPI.getGridWidth() with a valid config.
       configAPI api = new configAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
       int width = api.getGridWidth();
-      assertEquals(dummyConfig.myGridWidth(), width, "Grid width should match dummy config info");
+      assertEquals(dummyConfig.myGridWidth(), width, "getGridWidth() should return the grid width from config");
     }
 
     @Test
-    public void testGetGridHeight_NullConfig() {
+    public void getGridWidth_ZeroDimensions_ReturnsZero() {
+      // Testing configAPI.getGridWidth() when configInfo has zero dimensions.
+      configAPI api = new configAPI();
+      ConfigInfo zeroConfig = createZeroDimensionConfigInfo();
+      setPrivateField(api, "configInfo", zeroConfig);
+      int width = api.getGridWidth();
+      assertEquals(0, width, "Expected grid width to be 0 for zero-dimension config");
+    }
+
+    @Test
+    public void getGridHeight_NullConfig_ThrowsNumberFormatException() {
+      // Testing configAPI.getGridHeight() when configInfo is null.
       configAPI api = new configAPI();
       Exception exception = assertThrows(NumberFormatException.class, () -> api.getGridHeight());
       assertEquals("error-configInfo-NULL", exception.getMessage());
     }
 
     @Test
-    public void testGetGridHeight_WithConfig() {
+    public void getGridHeight_ConfigSet_ReturnsCorrectHeight() {
+      // Testing configAPI.getGridHeight() with a valid config.
       configAPI api = new configAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
       int height = api.getGridHeight();
-      assertEquals(dummyConfig.myGridHeight(), height,
-          "Grid height should match dummy config info");
+      assertEquals(dummyConfig.myGridHeight(), height, "getGridHeight() should return the grid height from config");
     }
 
     @Test
-    public void testGetSimulationInformation_NullConfig() {
+    public void getGridHeight_ZeroDimensions_ReturnsZero() {
+      // Testing configAPI.getGridHeight() when configInfo has zero dimensions.
       configAPI api = new configAPI();
-      Exception exception = assertThrows(NullPointerException.class,
-          () -> api.getSimulationInformation());
+      ConfigInfo zeroConfig = createZeroDimensionConfigInfo();
+      setPrivateField(api, "configInfo", zeroConfig);
+      int height = api.getGridHeight();
+      assertEquals(0, height, "Expected grid height to be 0 for zero-dimension config");
+    }
+
+    @Test
+    public void getSimulationInformation_NullConfig_ThrowsNullPointerException() {
+      // Testing configAPI.getSimulationInformation() when configInfo is null.
+      configAPI api = new configAPI();
+      Exception exception = assertThrows(NullPointerException.class, () -> api.getSimulationInformation());
       assertEquals("error-configInfo-NULL", exception.getMessage());
     }
 
     @Test
-    public void testGetSimulationInformation_WithConfig() {
+    public void getSimulationInformation_ConfigSet_ReturnsCorrectInfo() {
+      // Testing configAPI.getSimulationInformation() with a valid config.
       configAPI api = new configAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
       Map<String, String> simInfo = api.getSimulationInformation();
-      assertEquals(dummyConfig.myAuthor(), simInfo.get("author"),
-          "Author should match dummy config info");
-      assertEquals(dummyConfig.myTitle(), simInfo.get("title"),
-          "Title should match dummy config info");
-      assertEquals(dummyConfig.myType().toString(), simInfo.get("type"),
-          "Type should match dummy config info");
-      assertEquals(dummyConfig.myDescription(), simInfo.get("description"),
-          "Description should match dummy config info");
+      assertEquals(dummyConfig.myAuthor(), simInfo.get("author"), "Author in simulation information should match config");
+      assertEquals(dummyConfig.myTitle(), simInfo.get("title"), "Title in simulation information should match config");
+      assertEquals(dummyConfig.myType().toString(), simInfo.get("type"), "Type in simulation information should match config");
+      assertEquals(dummyConfig.myDescription(), simInfo.get("description"), "Description in simulation information should match config");
     }
 
     @Test
-    public void testGetConfigSpeed_NullConfig() {
+    public void getConfigSpeed_NullConfig_ThrowsNumberFormatException() {
+      // Testing configAPI.getConfigSpeed() when configInfo is null.
       configAPI api = new configAPI();
       Exception exception = assertThrows(NumberFormatException.class, () -> api.getConfigSpeed());
       assertEquals("error-configInfo-NULL", exception.getMessage());
     }
 
     @Test
-    public void testGetConfigSpeed_WithConfig() {
+    public void getConfigSpeed_ConfigSet_ReturnsCorrectSpeed() {
+      // Testing configAPI.getConfigSpeed() with a valid config.
       configAPI api = new configAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
       double speed = api.getConfigSpeed();
-      assertEquals(dummyConfig.myTickSpeed(), speed, "Tick speed should match dummy config info");
+      assertEquals(dummyConfig.myTickSpeed(), speed, "getConfigSpeed() should return the tick speed from config");
     }
 
     @Test
-    public void testSaveSimulation()
-        throws ParserConfigurationException, IOException, TransformerException {
+    public void saveSimulation_ValidInput_ReturnsProvidedFilePath() throws ParserConfigurationException, IOException, TransformerException {
+      // Testing configAPI.saveSimulation() using TestableConfigAPI.
       TestableConfigAPI api = new TestableConfigAPI();
       ConfigInfo dummyConfig = createDummyConfigInfo();
       setPrivateField(api, "configInfo", dummyConfig);
       DummyModelApi dummyModel = new DummyModelApi();
-      api.setModelAPI(dummyModel); // Set modelAPI via setter
+      api.setModelAPI(dummyModel); // Set the model API via setter
       String filePath = "dummy/path/config.xml";
       String savedFile = api.saveSimulation(filePath);
-      assertEquals(filePath, savedFile,
-          "Saved file name should match the provided file path from DummyConfigWriter");
+      assertEquals(filePath, savedFile, "saveSimulation() should return the file path provided as argument");
     }
 
     @Test
-    public void testLoadSimulation_Success()
-        throws ParserConfigurationException, IOException, SAXException {
+    public void loadSimulation_ValidFile_SetsModelApiConfigInfo() throws ParserConfigurationException, IOException, SAXException {
+      // Testing configAPI.loadSimulation() to ensure that DummyModelApi receives the dummy config.
       configAPI api = new configAPI();
       DummyModelApi dummyModel = new DummyModelApi();
-      api.setModelAPI(dummyModel); // Set modelAPI before loading
+      api.setModelAPI(dummyModel); // Set the model API before loading
       // Inject DummyConfigReader so that readConfig returns a dummy config instead of reading a file.
       setPrivateField(api, "configReader", new DummyConfigReader());
       api.loadSimulation("dummyFile.xml");
-      assertEquals(createStaticDummyConfigInfo(), dummyModel.configInfoDummy,
-          "Model API should have the dummy config info set");
+      assertEquals(createStaticDummyConfigInfo(), dummyModel.configInfoDummy, "After loadSimulation(), model API should have the dummy config info set");
     }
   }
 }
