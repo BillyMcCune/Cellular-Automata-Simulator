@@ -90,12 +90,7 @@ styles-panel=Styles
 colors-panel=Colors
 ```
 
---- 
-
-The implementation involves
-a LanguageController, which creates a separate StringProperty for each key in these files.
-All UI components that require text are then bound to the corresponding StringProperty.
-
+---
 ```java
 // Initialize the String Properties
 public LanguageEnumConstructor() {
@@ -114,7 +109,6 @@ public static void switchLanguage(Language lang) {
   }
 }
 ```
-
 ---
 
 # The Model
@@ -338,6 +332,10 @@ GO 1
 
 ---
 
+# DEMO
+
+---
+
 # The Config
 
 ---
@@ -476,9 +474,7 @@ The following is a xml file for the SugarScape Simulation:
     writeXMLDocument(xmlDocument, outputFile);
   }
 ````
-
-
-
+---
 
 # The APIs
 
@@ -573,6 +569,8 @@ Separates file parsing and saving into ConfigReader and ConfigWriter, allowing e
 * Model Integration:
 Uses setModelAPI() to seamlessly link configuration changes with the simulation model.
 
+---
+
 ### Support:
 
 * Clear API Methods:
@@ -580,6 +578,8 @@ Well-named methods (e.g., loadSimulation, saveSimulation) guide users in configu
 
 * Encapsulation:
 Hides XML parsing, file I/O, and data aggregation details to prevent misuse.
+
+---
 
 ### Key Hidden Implementation details:
 
@@ -589,22 +589,24 @@ Abstracts the handling of grid states, simulation details, and parameter records
 * Data Conversion:
 Automatically aggregates simulation data into ConfigInfo objects.
 
+---
+
 ### Use Case:
 
 * Load:
-Call loadSimulation(fileName) to update configuration and propagate changes to the model.
+Update configuration and propagate changes to the model.
 
 * Save:
-Retrieve grid data from the Model API, create a ConfigInfo, and invoke saveSimulation(filePath) to persist settings.
+Retrieve grid data from the Model API, create a ConfigInfo, and invoke methods to persist settings.
 
 * Parameter Updates:
-Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() to adjust simulation parameters safely, without knowing the underlying implementation.
+Teammates can adjust parameters safely, without knowing the underlying implementation.
 
 ---
 
 ## Model API
 
-```` java
+``` java
 package cellsociety.model.modelAPI;
 
 import cellsociety.model.config.CellRecord;
@@ -715,44 +717,48 @@ public class ModelApi {
 }
 
 
-````
-
+```
 ---
 
 ### Extension:
 * Dynamic Logic Loading:
-  Uses reflection to load simulation-specific logic classes (e.g., Cellsociety.model.logic. + simulation name + "Logic"), enabling new simulation types to be added without altering the API.
+  Uses reflection to load simulation-specific logic classes, implementing new simulation types.
 
 * Pluggable Components:
-  Supports various cell factories, grid shapes, neighbor calculators, and style managers that can be replaced or extended to support new features.
+  Supports various model components that can be replaced or extended to support new features.
 
 * Flexible Parameter Management:
-  Exposes Consumers (for double and string parameters) that allow easy integration of new simulation parameters.
+  Exposes Consumers that allow easy integration of new simulation parameters.
 
+---
 
 ### Support:
 * Clear Separation of Concerns:
-  Divides responsibilities among specialized managers (e.g., ParameterManager, CellColorManager, StyleManager) to maintain clean code organization.
+  Divides responsibilities among specialized managers to maintain clean code organization.
 
 * Robust Error Handling:
   Employs consistent try/catch blocks and specific exception types to provide clear error feedback.
 
 * Encapsulated Configuration:
-  Hides complex configuration and grid initialization details behind well-named methods, allowing teammates to focus on high-level logic.
+  Hides complex configuration and grid initialization details behind well-named methods.
+
+---
 
 ### Key Hidden Implementation details:
 
 * Internal Grid Management:
-  The API encapsulates grid initialization, deep copying, and neighbor calculations, so users need not worry about low-level grid construction.
+  The API encapsulates grid initialization, deep copying, and neighbor calculations.
 * Reflection and Dynamic Instantiation:
-  Abstracts away the complexity of using Java reflection for loading classes and instantiating simulation logic and state objects.
+  Abstracts away the complexity of using Java reflection for loading classes and instantiating simulation logic.
 * Style and State Abstractions:
-  Manages user style preferences and cell state details internally, so changes to presentation do not affect the core simulation logic.
+  Manages user style preferences and cell state details internally.
+
+---
 
 ### Use Case:
 
 * Parameter Updates:
-  Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() to adjust simulation parameters safely, without knowing the underlying implementation.
+  Teammates can adjust simulation parameters safely, without knowing the underlying implementation.
 
 --- 
 
@@ -961,12 +967,10 @@ public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
   container.setMaxHeight(300);
   container.setMinHeight(300);
   Button finishButton = createBasicSplashScreen(container, "Drag Zoom View UI");
-
-  // Assertions for UI initialization
+  
   Pane miniMapPane = (Pane) dragZoomViewUI.lookup(".mini-map-pane");
   Assertions.assertNotNull(miniMapPane);
 
-  // Action Test
   drag(dragZoomViewUI).moveBy(50, 50);
   drag(dragZoomViewUI).moveBy(-100, -100);
   drag(dragZoomViewUI).drop();
@@ -977,7 +981,6 @@ public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
   clickOn(finishButton);
 }
 ```
-
 ---
 # DESIGN
 ---
@@ -1035,8 +1038,6 @@ public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
 ---
 
 # Teamwork
-
-(Teamwork makes the Darwin work)
 
 ---
 
