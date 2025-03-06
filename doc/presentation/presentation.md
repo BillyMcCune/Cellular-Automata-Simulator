@@ -488,42 +488,7 @@ public record ConfigInfo(
 
 ## Config API 
 ```java 
-package cellsociety.model.configAPI;
-
-import cellsociety.model.config.CellRecord;
-import cellsociety.model.config.ConfigInfo;
-import cellsociety.model.config.ConfigReader;
-import cellsociety.model.config.ConfigWriter;
-import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.modelAPI.ModelApi;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.xml.sax.SAXException;
-
-/**
- * The configAPI is responsible for managing the interactions between the configuration and the
- * Scene Controller. It deals with the functions of the ConfigReader and ConfigWriter.
- *
- * @author Billy McCune
- */
 public class configAPI {
-
-  private ConfigReader configReader;
-  private ConfigWriter configWriter;
-  private ConfigInfo configInfo;
-  private ParameterRecord parameterRecord;
-  private boolean isLoaded;
-  private ModelApi myModelApi;
-  private List<List<Integer>> myGridStates;
-  private List<List<Map<String, Double>>> myGridProperties;
-
-
   public configAPI() {}
   
   public List<String> getFileNames() {}
@@ -548,7 +513,6 @@ public class configAPI {
       throws NullPointerException {}
   
   public double getConfigSpeed() throws NullPointerException {}
-
 }
 
 ```
@@ -592,53 +556,8 @@ Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() 
 
 ## Model API
 
-```` java
-package cellsociety.model.modelAPI;
-
-import cellsociety.model.config.CellRecord;
-import cellsociety.model.config.ConfigInfo;
-import cellsociety.model.config.ConfigInfo.SimulationType;
-import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.data.Grid;
-import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.EdgeType;
-import cellsociety.model.data.constants.GridShape;
-import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
-import cellsociety.model.logic.Logic;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.function.Consumer;
-
-/**
- * The ModelApi is responsible for managing all interactions with the model and the SceneController.
- * It also manages the user style preferences.
- *
- * @author Billy McCune
- */
+````java
 public class ModelApi {
-
-  private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
-  private static final String STATE_PACKAGE = "cellsociety.model.data.states";
-  private ParameterRecord myParameterRecord;
-  private ConfigInfo configInfo;
-
-  ParameterManager myParameterManager;
-  CellColorManager myCellColorManager;
-  StyleManager myStyleManager;
-
-  // Model
-  private Grid<?> grid;
-  private CellFactory<?> cellFactory;
-  private Logic<?> gameLogic;
-  private NeighborCalculator<?> myNeighborCalculator;
-
-
   public ModelApi() {}
 
   public void setConfigInfo(ConfigInfo configInfo) {}
@@ -698,8 +617,6 @@ public class ModelApi {
   public String getDefaultEdgePolicy() {}
 
   public String getDefaultCellShape() {}
-
-
 }
 
 
@@ -1066,5 +983,9 @@ of work the weekend before.
   abstractions, which helps us to better separate the view and the model.
 
 
-**3**
+**Billy McCune**
+
+* I enjoyed working with the team and more meetings would be appreciated but it worked out well. The conficts where much easier to fix as a team. 
+* In the future, I would like to spend more time coding with others and having regularly schedules 
+team meetings.
 ---
