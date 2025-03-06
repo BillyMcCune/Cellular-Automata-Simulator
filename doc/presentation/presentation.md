@@ -555,12 +555,38 @@ public class configAPI {
 ---
 
 ### Extension:
+* Modular I/O:
+Separates file parsing and saving into ConfigReader and ConfigWriter, allowing easy extensions.
+
+* Model Integration:
+Uses setModelAPI() to seamlessly link configuration changes with the simulation model.
 
 ### Support:
 
+* Clear API Methods:
+Well-named methods (e.g., loadSimulation, saveSimulation) guide users in configuration management.
+
+* Encapsulation:
+Hides XML parsing, file I/O, and data aggregation details to prevent misuse.
+
 ### Key Hidden Implementation details:
 
+* Internal State Management:
+Abstracts the handling of grid states, simulation details, and parameter records.
+
+* Data Conversion:
+Automatically aggregates simulation data into ConfigInfo objects.
+
 ### Use Case:
+
+* Load:
+Call loadSimulation(fileName) to update configuration and propagate changes to the model.
+
+* Save:
+Retrieve grid data from the Model API, create a ConfigInfo, and invoke saveSimulation(filePath) to persist settings.
+
+* Parameter Updates:
+Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() to adjust simulation parameters safely, without knowing the underlying implementation.
 
 ---
 
@@ -682,13 +708,41 @@ public class ModelApi {
 
 ---
 
-### Extension: 
+### Extension:
+* Dynamic Logic Loading:
+  Uses reflection to load simulation-specific logic classes (e.g., Cellsociety.model.logic. + simulation name + "Logic"), enabling new simulation types to be added without altering the API.
+
+* Pluggable Components:
+  Supports various cell factories, grid shapes, neighbor calculators, and style managers that can be replaced or extended to support new features.
+
+* Flexible Parameter Management:
+  Exposes Consumers (for double and string parameters) that allow easy integration of new simulation parameters.
+
 
 ### Support:
+* Clear Separation of Concerns:
+  Divides responsibilities among specialized managers (e.g., ParameterManager, CellColorManager, StyleManager) to maintain clean code organization.
+
+* Robust Error Handling:
+  Employs consistent try/catch blocks and specific exception types to provide clear error feedback.
+
+* Encapsulated Configuration:
+  Hides complex configuration and grid initialization details behind well-named methods, allowing teammates to focus on high-level logic.
 
 ### Key Hidden Implementation details:
 
-### Use Case: 
+* Internal Grid Management:
+  The API encapsulates grid initialization, deep copying, and neighbor calculations, so users need not worry about low-level grid construction.
+* Reflection and Dynamic Instantiation:
+  Abstracts away the complexity of using Java reflection for loading classes and instantiating simulation logic and state objects.
+* Style and State Abstractions:
+  Manages user style preferences and cell state details internally, so changes to presentation do not affect the core simulation logic.
+
+### Use Case:
+
+* Parameter Updates:
+  Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() to adjust simulation parameters safely, without knowing the underlying implementation.
+ 
 
 --- 
 
