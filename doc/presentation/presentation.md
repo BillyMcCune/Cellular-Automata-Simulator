@@ -456,7 +456,6 @@ The following is a xml file for the SugarScape Simulation:
     }
   }
 ````
-
 ---
 
 ## The Config Writer
@@ -478,6 +477,9 @@ The following is a xml file for the SugarScape Simulation:
   }
 ````
 
+
+
+
 # The APIs
 
 ![general model of the API](/doc/presentation/images/api.jpg)
@@ -491,7 +493,6 @@ The following is a xml file for the SugarScape Simulation:
     * This means abstracting away the different configuration classes and how the configuration file
       work.
 * For the model (logic) API, to manage the model and simulation style properties.
-
 ---
 
 ---
@@ -535,55 +536,69 @@ public class configAPI {
   private List<List<Map<String, Double>>> myGridProperties;
 
 
-  public configAPI() {
-  }
-
-  public List<String> getFileNames() {
-  }
-
-  public void setModelAPI(ModelApi modelAPI) {
-  }
-
+  public configAPI() {}
+  
+  public List<String> getFileNames() {}
+  
+  public void setModelAPI(ModelApi modelAPI) {}
+  
   public void loadSimulation(String fileName)
-      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
-  }
-
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {}
+  
   public String saveSimulation(String FilePath)
-      throws ParserConfigurationException, IOException, TransformerException {
-  }
-
-  public Set<Integer> getAcceptedStates() {
-  }
-
-  public int getGridWidth() throws NullPointerException {
-  }
-
-  public int getGridHeight() throws NullPointerException {
-  }
-
-  public Map<String, String> getSimulationInformation() throws NullPointerException {
-  }
-
+      throws ParserConfigurationException, IOException, TransformerException {}
+  
+  public Set<Integer> getAcceptedStates() {}
+  
+  public int getGridWidth() throws NullPointerException {}
+  
+  public int getGridHeight() throws NullPointerException {}
+  
+  public Map<String, String> getSimulationInformation() throws NullPointerException {}
+  
   public void setSimulationInformation(Map<String, String> simulationDetails)
-      throws NullPointerException {
-  }
-
-  public double getConfigSpeed() throws NullPointerException {
-  }
+      throws NullPointerException {}
+  
+  public double getConfigSpeed() throws NullPointerException {}
 
 }
 
 ```
-
 ---
 
 ### Extension:
+* Modular I/O:
+Separates file parsing and saving into ConfigReader and ConfigWriter, allowing easy extensions.
+
+* Model Integration:
+Uses setModelAPI() to seamlessly link configuration changes with the simulation model.
 
 ### Support:
 
+* Clear API Methods:
+Well-named methods (e.g., loadSimulation, saveSimulation) guide users in configuration management.
+
+* Encapsulation:
+Hides XML parsing, file I/O, and data aggregation details to prevent misuse.
+
 ### Key Hidden Implementation details:
 
+* Internal State Management:
+Abstracts the handling of grid states, simulation details, and parameter records.
+
+* Data Conversion:
+Automatically aggregates simulation data into ConfigInfo objects.
+
 ### Use Case:
+
+* Load:
+Call loadSimulation(fileName) to update configuration and propagate changes to the model.
+
+* Save:
+Retrieve grid data from the Model API, create a ConfigInfo, and invoke saveSimulation(filePath) to persist settings.
+
+* Parameter Updates:
+Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() to adjust simulation parameters safely, without knowing the underlying implementation.
 
 ---
 
@@ -705,12 +720,39 @@ public class ModelApi {
 ---
 
 ### Extension:
+* Dynamic Logic Loading:
+  Uses reflection to load simulation-specific logic classes (e.g., Cellsociety.model.logic. + simulation name + "Logic"), enabling new simulation types to be added without altering the API.
+
+* Pluggable Components:
+  Supports various cell factories, grid shapes, neighbor calculators, and style managers that can be replaced or extended to support new features.
+
+* Flexible Parameter Management:
+  Exposes Consumers (for double and string parameters) that allow easy integration of new simulation parameters.
+
 
 ### Support:
+* Clear Separation of Concerns:
+  Divides responsibilities among specialized managers (e.g., ParameterManager, CellColorManager, StyleManager) to maintain clean code organization.
+
+* Robust Error Handling:
+  Employs consistent try/catch blocks and specific exception types to provide clear error feedback.
+
+* Encapsulated Configuration:
+  Hides complex configuration and grid initialization details behind well-named methods, allowing teammates to focus on high-level logic.
 
 ### Key Hidden Implementation details:
 
+* Internal Grid Management:
+  The API encapsulates grid initialization, deep copying, and neighbor calculations, so users need not worry about low-level grid construction.
+* Reflection and Dynamic Instantiation:
+  Abstracts away the complexity of using Java reflection for loading classes and instantiating simulation logic and state objects.
+* Style and State Abstractions:
+  Manages user style preferences and cell state details internally, so changes to presentation do not affect the core simulation logic.
+
 ### Use Case:
+
+* Parameter Updates:
+  Teammates can use getDoubleParameterConsumer() and getStringParameterConsumer() to adjust simulation parameters safely, without knowing the underlying implementation.
 
 --- 
 
@@ -998,7 +1040,13 @@ of work the weekend before.
 * In the future, the consistency, number, and length of productive team meetings could be used as
   evidence.
 
-**2**
+**Hsuan-Kai Liao**
+
+* I enjoyed how we figure out the conflicts and issues when we meet. I think we can improve by
+  having more meetings and discussing more about the project. The in-person can solve the problems
+  way faster than texting or through merging reviews.
+* In the future, I would like to have more and highly-efficient meetings for designing APIs and 
+  abstractions, which helps us to better separate the view and the model.
 
 
 **3**
