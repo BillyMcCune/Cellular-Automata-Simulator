@@ -28,9 +28,12 @@ TEAM 1 - Jacob You, Billy McCune, Hsuan-Kai Liao
 
 ## General Goals for View
 
-* 1
-* 2
-* 3, etc.
+* The interface is clean and visually appealing,
+  * Good UX, intuitive, and easy to understand
+* A modular widget system, where most major components are created through 
+  `SceneUIWidgetFactory` and have independent unit tests.
+* Callbacks are completely separated from the model, with communication between callbacks and APIs 
+  handled through SceneController
 
 ---
 
@@ -40,11 +43,72 @@ TEAM 1 - Jacob You, Billy McCune, Hsuan-Kai Liao
 
 ## Stylizing with CSS and properties
 
-* CSS
-* Language (you can put these on different slides)
-```aiignore
-THIS IS HOW YOU TYPE IN CODE. PLEASE DO THIS WHEN NECESSARY.
+![Screenshot of the Grid In Day and Dark Themes](/doc/presentation/images/theme.png)
+
+---
+
+### Theme Css
+
+Most components in the interface support theme customization. We use CSS files to classify different
+themes. Below is an example of the minimaps:
+```css
+/* DAY */
+.mini-map-pane {
+  -fx-background-color: #d1d1d1;
+  -fx-border-color: #020202;
+}
+/* DARK */
+.mini-map-pane {
+  -fx-background-color: #333333;
+  -fx-border-color: #9e9e9e;
+  -fx-border-width: 3px;
+}
+/* MYSTERY */
+.mini-map-pane {
+  -fx-background-color: #333333;
+  -fx-border-color: #583c85;
+  -fx-border-width: 3px;
+}
 ```
+---
+
+### Language Properties
+
+The language is determined by looking up keys stored in property files.
+```properties
+# English Property Example
+controls-panel=Controls
+parameters-panel=Parameters
+info-panel=Information
+log-panel=Log
+styles-panel=Styles
+colors-panel=Colors
+```
+The implementation involves
+a LanguageController, which creates a separate StringProperty for each key in these files.
+All UI components that require text are then bound to the corresponding StringProperty.
+
+
+```java
+// Initialize the String Properties
+public LanguageEnumConstructor() {
+  for (String key : properties.stringPropertyNames()) {
+    translation.put(key, properties.getProperty(key));
+
+    if (!translations.containsKey(key)) {
+      translations.put(key, new SimpleStringProperty("??")); // Unmatched Keys
+    }
+  }
+}
+
+// Switch the language
+public static void switchLanguage(Language lang) {
+  for (Map.Entry<String, StringProperty> entry : translations.entrySet()) {
+    entry.getValue().setValue(lang.translation.get(entry.getKey()));
+  }
+}
+```
+
 ---
 
 # The Model
