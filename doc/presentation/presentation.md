@@ -972,7 +972,13 @@ of work the weekend before.
 * In the future, the consistency, number, and length of productive team meetings could be used as
   evidence.
 
-**2**
+**Hsuan-Kai Liao**
+
+* I enjoyed how we figure out the conflicts and issues when we meet. I think we can improve by
+  having more meetings and discussing more about the project. The in-person can solve the problems
+  way faster than texting or through merging reviews.
+* In the future, I would like to have more and highly-efficient meetings for designing APIs and 
+  abstractions, which helps us to better separate the view and the model.
 
 
 **3**
