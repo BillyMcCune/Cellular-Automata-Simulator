@@ -28,9 +28,12 @@ TEAM 1 - Jacob You, Billy McCune, Hsuan-Kai Liao
 
 ## General Goals for View
 
-* 1
-* 2
-* 3, etc.
+* The interface is clean and visually appealing,
+    * Good UX, intuitive, and easy to understand
+* A modular widget system, where most major components are created through
+  `SceneUIWidgetFactory` and have independent unit tests.
+* Callbacks are completely separated from the model, with communication between callbacks and APIs
+  handled through SceneController
 
 ---
 
@@ -40,11 +43,78 @@ TEAM 1 - Jacob You, Billy McCune, Hsuan-Kai Liao
 
 ## Stylizing with CSS and properties
 
-* CSS
-* Language (you can put these on different slides)
-```aiignore
-THIS IS HOW YOU TYPE IN CODE. PLEASE DO THIS WHEN NECESSARY.
+![Screenshot of the Grid In Day and Dark Themes](/doc/presentation/images/theme.png)
+
+---
+
+## Theme Css
+
+Most components in the interface support theme customization. We use CSS files to classify different
+themes. Below is an example of the minimaps:
+
+```css
+/* DAY */
+.mini-map-pane {
+  -fx-background-color: #d1d1d1;
+  -fx-border-color: #020202;
+}
+
+/* DARK */
+.mini-map-pane {
+  -fx-background-color: #333333;
+  -fx-border-color: #9e9e9e;
+  -fx-border-width: 3px;
+}
+
+/* MYSTERY */
+.mini-map-pane {
+  -fx-background-color: #333333;
+  -fx-border-color: #583c85;
+  -fx-border-width: 3px;
+}
 ```
+
+---
+
+## Language Properties
+
+The language is determined by looking up keys stored in property files.
+
+```properties
+# English Property Example
+controls-panel=Controls
+parameters-panel=Parameters
+info-panel=Information
+log-panel=Log
+styles-panel=Styles
+colors-panel=Colors
+```
+
+--- 
+
+The implementation involves
+a LanguageController, which creates a separate StringProperty for each key in these files.
+All UI components that require text are then bound to the corresponding StringProperty.
+
+```java
+// Initialize the String Properties
+public LanguageEnumConstructor() {
+  for (String key : properties.stringPropertyNames()) {
+    translation.put(key, properties.getProperty(key));
+
+    if (!translations.containsKey(key)) {
+      translations.put(key, new SimpleStringProperty("??"));
+    }
+  }
+}
+
+public static void switchLanguage(Language lang) {
+  for (Map.Entry<String, StringProperty> entry : translations.entrySet()) {
+    entry.getValue().setValue(lang.translation.get(entry.getKey()));
+  }
+}
+```
+
 ---
 
 # The Model
@@ -54,24 +124,28 @@ THIS IS HOW YOU TYPE IN CODE. PLEASE DO THIS WHEN NECESSARY.
 ---
 
 ## General Goals for Model
-- Update the grid according to a general predefined algorithm 
-  - Adjustable mid-simulation through user input
+
+- Update the grid according to a general predefined algorithm
+    - Adjustable mid-simulation through user input
 - Easy to implement new logic systems of any kind
 - Completely unrelated to view/JavaFX
 
 ---
 
 ## The Necessities
+
 - A grid that can hold an array of data
 - Cells that can store the data of any state or property
 - A logic system that can update the states and data of the cells
-  - Somehow, there must be a way to find the neighbors of a cell
+    - Somehow, there must be a way to find the neighbors of a cell
 
 ---
 
 ## The Grid
+
 ```java
 public class Grid<T extends Enum<T> & State> {
+
   private List<List<Cell<T>>> grid = new ArrayList<>();
 
   public Cell<T> getCell(int row, int col) {
@@ -87,6 +161,7 @@ public class Grid<T extends Enum<T> & State> {
   }
 }
 ```
+
 ---
 
 ## The State
@@ -95,11 +170,14 @@ In order to have a class to abstract enums, we must make a State interface
 
 ```java
 public interface State {
-  
+
   int getValue();
-  static <T extends Enum<T> & State> T fromInt(Class<T> enumClass, int value) {}
+
+  static <T extends Enum<T> & State> T fromInt(Class<T> enumClass, int value) {
+  }
 }
 ```
+
 ---
 
 ## The State Implementation
@@ -121,13 +199,14 @@ public enum LifeState implements State {
   }
 }
 ```
+
 ---
 
 ## The Logic
 
 ```java
 public abstract class Logic<T extends Enum<T> & State> {
-  
+
   public void update() {
     int numRows = grid.getNumRows();
     int numCols = grid.getNumCols();
@@ -144,11 +223,13 @@ public abstract class Logic<T extends Enum<T> & State> {
   protected abstract void updateSingleCell(Cell<T> cell);
 }
 ```
+
 ---
 
 ## The Logic Implementation
 
 ```java
+
 @Override
 protected void updateSingleCell(Cell<LifeState> cell) {
   if (currentState == LifeState.ALIVE) {
@@ -162,36 +243,45 @@ protected void updateSingleCell(Cell<LifeState> cell) {
   }
 }
 ```
+
 ---
 
 ## The NeighborCalculator
 
 * Uses Breadth First Search to find all neighbors within X-steps away
-  * Neighbors stored in CellNeighbor.properties
+    * Neighbors stored in CellNeighbor.properties
+
 ```
 SQUARE_MOORE=-1,-1; 1,0; 1,1; 0,1; -1,1; -1,0; -1,-1; -1,0
 SQUARE_NEUMANN=-1,0; 1,0; 0,1; 0,-1
 ```
+
 ---
+
 ## The NeighborCalculator
+
 * Grid calls the NeighborCalculator to assign each cell a neighbor
 
 ```java
 public void assignNeighbors() {
-    for (int row = 0; row < getNumRows(); row++) {
-      for (int col = 0; col < getNumCols(); col++) {
-        getCell(row, col).setNeighbors(
-            neighborCalculator.getNeighbors(this, row, col));
-      }
+  for (int row = 0; row < getNumRows(); row++) {
+    for (int col = 0; col < getNumCols(); col++) {
+      getCell(row, col).setNeighbors(
+          neighborCalculator.getNeighbors(this, row, col));
     }
+  }
 }
 ```
+
 ---
+
 ## Edge Cases
+
 - Variable number of states: Store states in Cell properties
 - Hexagon/Triangle: Store different neighbor directions assigned to a 2D grid
 - Get neighbors in 1 direction X steps away (Darwin/Sugar): DFS in one direction
 - Ensure it doesn't affect encapsulation/abstraction
+
 ---
 
 # DEMO
@@ -201,19 +291,24 @@ public void assignNeighbors() {
 ## Darwin
 
 * Build an interpreter to read/parse instructions
-  * Map instructions to a general form (MV -> MOVE)
+    * Map instructions to a general form (MV -> MOVE)
 * Use reflection to call instructions:
+
 ```aiignore
 if (method.getName().startsWith("execute")) {
   String instructionName = method.getName().substring(7).toUpperCase();
   instructionMethods.put(instructionName, method);
 }
 ```
-* Instructions just like assembly code, 
-  * GO X: branch X
-  * IFENEMY, IFWALL, etc.: beq, beqz, bneq
+
+* Instructions just like assembly code,
+    * GO X: branch X
+    * IFENEMY, IFWALL, etc.: beq, beqz, bneq
+
 ---
+
 ## Example Darwin Files
+
 ```aiignore
 # Example Flytrap
 ifenemy 4
@@ -222,7 +317,9 @@ go 1
 infect 12
 go 1
 ```
+
 ---
+
 ```aiignore
 # Student
 ifenemy 4
@@ -238,7 +335,9 @@ go 1
 LEFT 0
 GO 1
 ```
+
 ---
+
 # The Config
 
 ---
@@ -258,10 +357,25 @@ GO 1
 ![w:400 h:800testing meme](/doc/presentation/images/testing.png)
 
 ---
+
+## Config/API Test 1
+
+---
+
+## Config/API Test 2
+
+---
+
+## Config/API Test 3
+
+---
+
 ## CellFactory
 
 * Throw every possible value at it, 0, -1, MAX_VALUE, MIN_VALUE, "42", etc.
+
 ```java
+
 @Test
 public void CellFactory_CreateCell_InvalidInputMinInt_ReturnsDefaultState() {
   CellFactory<TestState> factory = new CellFactory<>(TestState.class);
@@ -270,10 +384,13 @@ public void CellFactory_CreateCell_InvalidInputMinInt_ReturnsDefaultState() {
       "Invalid input Integer.MIN_VALUE should return default state ZERO.");
 }
 ```
+
 ---
+
 ## Grid
 
 ```java
+
 @Test
 public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
   Grid<DummyState> g = createGrid(6, 6, GridShape.TRI, NeighborType.MOORE, EdgeType.BASE);
@@ -295,35 +412,146 @@ public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
 ```
 
 ---
+
 ## Darwin
+
 ```java
   public void DarwinLogic_IfEmptyRotatesLeft90_WhenCellHasEmptyNeighbor() throws Exception {
-    List<String> ifEmptyProgram = new ArrayList<>();
-    ifEmptyProgram.add("IFEMPTY 2");
-    ifEmptyProgram.add("LEFT 90");
-    ifEmptyProgram.add("GO 1");
-    testSpeciesPrograms.put(1, ifEmptyProgram);
-    darwinLogic.assignSpeciesPrograms(testSpeciesPrograms);
+  List<String> ifEmptyProgram = new ArrayList<>();
+  ifEmptyProgram.add("IFEMPTY 2");
+  ifEmptyProgram.add("LEFT 90");
+  ifEmptyProgram.add("GO 1");
+  testSpeciesPrograms.put(1, ifEmptyProgram);
+  darwinLogic.assignSpeciesPrograms(testSpeciesPrograms);
 
-    Cell<DarwinState> testCell = grid.getCell(1, 1);
+  Cell<DarwinState> testCell = grid.getCell(1, 1);
 
-    assertEquals(0, testCell.getProperty("orientation"),
-        "Initial orientation should be 0 degrees.");
+  assertEquals(0, testCell.getProperty("orientation"),
+      "Initial orientation should be 0 degrees.");
 
-    darwinLogic.update();
+  darwinLogic.update();
 
-    assertEquals(90, testCell.getProperty("orientation"),
-        "Cell should rotate left to 90 degrees due to IFEMPTY.");
-  }
+  assertEquals(90, testCell.getProperty("orientation"),
+      "Cell should rotate left to 90 degrees due to IFEMPTY.");
+}
 ```
+
+---
+
+## Slider UI
+
+```java
+
+@Test
+public void createRangeUI_DoubleInput_ValidAndInValidWrite() {
+  HBox rangeUI = SceneUIWidgetFactory.createRangeUI(
+      0,
+      10,
+      5,
+      DUMMY_LABEL,
+      DUMMY_TOOLTIP,
+      DUMMY_DOUBLE_CONSUMER
+  );
+  Button finishButton = createBasicSplashScreen(rangeUI, "Double Range UI");
+
+  // Assertions for UI initialization
+  Slider slider = (Slider) rangeUI.lookup(".slider");
+  Node thumb = slider.lookup(".thumb");
+  TextField rangeTextField = (TextField) rangeUI.lookup(".range-text-field");
+  Assertions.assertEquals("5.0", rangeTextField.getText());
+  Assertions.assertEquals(5.0, slider.getValue());
+  Assertions.assertNotNull(thumb);
+
+  // Action Test
+  drag(thumb).moveBy(50, 0);
+  drag(thumb).moveBy(-100, 0);
+  drag(thumb).drop();
+  writeInputTo(rangeTextField, "7.5"); // Valid input
+  press(KeyCode.ENTER);
+  writeInputTo(rangeTextField, "###"); // Invalid input
+  press(KeyCode.ENTER);
+
+  // Close
+  clickOn(finishButton);
+}
+```
+
+---
+
+## Color Selector UI
+
+```java
+
+@Test
+public void createColorSelectorUI_CreateBasicWidget_PickColorInPickerAndTextInput() {
+  HBox colorSelectorUI = SceneUIWidgetFactory.createColorSelectorUI(
+      "#AABBCC",
+      DUMMY_LABEL,
+      DUMMY_TOOLTIP,
+      DUMMY_STRING_CONSUMER
+  );
+  Button finishButton = createBasicSplashScreen(colorSelectorUI, "Color Selector UI");
+
+  // Assertions for UI initialization
+  TextField colorTextField = (TextField) colorSelectorUI.lookup(".color-text-field");
+  Assertions.assertEquals("#AABBCC", colorTextField.getText());
+  ColorPicker colorPicker = (ColorPicker) colorSelectorUI.lookup(".color-picker");
+  Assertions.assertEquals("0xaabbccff", colorPicker.getValue().toString());
+
+  // Action Test
+  clickOn(colorPicker).moveBy(0, 100).clickOn(MouseButton.PRIMARY);
+  writeInputTo(colorTextField, "#123456"); // Valid input
+  press(KeyCode.ENTER);
+  writeInputTo(colorTextField, "###"); // Invalid input
+  press(KeyCode.ENTER);
+
+  // Close
+  clickOn(finishButton);
+}
+```
+
+---
+
+## Zoom-able Pane UI
+
+```java
+
+@Test
+public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
+  Pane dragZoomViewUI = SceneUIWidgetFactory.dragZoomViewUI(
+      DUMMY_RECTANGLE,
+      DUMMY_RECTANGLE_2
+  );
+  StackPane container = new StackPane(dragZoomViewUI);
+  container.setMaxHeight(300);
+  container.setMinHeight(300);
+  Button finishButton = createBasicSplashScreen(container, "Drag Zoom View UI");
+
+  // Assertions for UI initialization
+  Pane miniMapPane = (Pane) dragZoomViewUI.lookup(".mini-map-pane");
+  Assertions.assertNotNull(miniMapPane);
+
+  // Action Test
+  drag(dragZoomViewUI).moveBy(50, 50);
+  drag(dragZoomViewUI).moveBy(-100, -100);
+  drag(dragZoomViewUI).drop();
+  scroll(VerticalDirection.UP);
+  scroll(VerticalDirection.DOWN);
+
+  // Close
+  clickOn(finishButton);
+}
+```
+
 ---
 # DESIGN
 ---
+
 ## Stable Design: Logic
 
 * Logic's only job is to update the state of the grid, cells, and parameters
 * Any necessary changes/additions usually happens in grid, cell, neighbor calculator, etc.
-  * Logic's design never substantially changes, it just uses the new design of its subcomponents
+    * Logic's design never substantially changes, it just uses the new design of its subcomponents
 * The only addition was the restricting of parameters loaded in from a property file
 
 ---
@@ -331,45 +559,81 @@ public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
 ## Unstable Design: Neighbor Calculator
 
 * Grid used to have an if statement
-  * If type = WATOR, switch to TorusNeighbors
-  * Breaks abstraction
+    * If type = WATOR, switch to TorusNeighbors
+    * Breaks abstraction
 * Created a NeighborCalculator class, holding both methods
-  * The Logic could call the corresponding calculator
+    * The Logic could call the corresponding calculator
 * Using abstraction, create LifeNeighborCalculator, PercolationNeighborCalculator
-  * Have the default calculator be set in constructor of the class
-  * SugarCalculator overrode the standard calculator to implement its special logic
+    * Have the default calculator be set in constructor of the class
+    * SugarCalculator overrode the standard calculator to implement its special logic
+
 ---
+
 ## Unstable Design
 
 * Hexagons and Triangles implemented for grid shape
-  * Store neighbors in a property class, then implement logic to handle different shapes
+    * Store neighbors in a property class, then implement logic to handle different shapes
 * Grid shape, neighborhood, and edge type became customizable
-  * Make setters/getters for each value, change superclasses to input these parameters instead
+    * Make setters/getters for each value, change superclasses to input these parameters instead
 * Added style parameters into XML files
-  * Superclasses became essentially obsolete, as the defaults were set in the XML
+    * Superclasses became essentially obsolete, as the defaults were set in the XML
 * Darwin and Sugarscape have unique neighbor calculations in one direction
-  * Implement a Raycasting helper class, and add new methods to access raycasting neighbors
+    * Implement a Raycasting helper class, and add new methods to access raycasting neighbors
 
 ---
 
-## Helped By Good Design
+## Implementation Helped By Good Design
 
 ---
 
 ## Implementation Challenged by Hidden Assumptions: States
 
 * Initially, enums seemed perfect for states
-  * Unchanging, unalterable, clearly defined states that can have integer values
+    * Unchanging, unalterable, clearly defined states that can have integer values
 * Enums CANNOT be dynamically set
-  * Bacteria and Darwin have a variable number of states
+    * Bacteria and Darwin have a variable number of states
 * Enums CANNOT store extensive data
-  * Shark energy, orientation of ant, etc.
+    * Shark energy, orientation of ant, etc.
 * Looked for workaround, like setting a map in the enum
 * Stored many properties in the Cell class instead
 
 ---
 
 # Teamwork
-(makes the Darwin work)
 
+(Teamwork makes the Darwin work)
+
+---
+
+## Significant Events
+
+**Positive**
+
+**Negative**
+
+---
+
+## Teamwork That Worked Well
+
+**Great:** Scheduling blocks of time to work together is incredibly helpful.
+
+**Improvable:** Be more proactive in scheduling meetings and assigning deadlines to avoid 30 hours
+of work the weekend before.
+
+---
+
+## Improving Teamwork
+
+**Jacob:**
+
+* I personally tried to always have a next team meeting lined up at the end of the current
+  meeting. I found team meetings to be incredibly helpful, giving me a time to solely focus on a
+  task, as well as a space to talk through problems with multiple complex sections.
+* In the future, the consistency, number, and length of productive team meetings could be used as
+  evidence.
+
+**2**
+
+
+**3**
 ---
