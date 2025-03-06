@@ -41,6 +41,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import util.DukeApplicationTest;
 
+/**
+ * Tests for the SceneUIWidgetFactory class. Tests the creation of various UI widgets and their
+ * functionality.
+ *
+ * @author Hsuan-Kai Liao
+ */
 public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   /* DUMMY DATA BELOW */
 
@@ -131,7 +137,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   /* UI TESTS BELOW */
 
   @Test
-  public void createRangeUI_DoubleInput() {
+  public void createRangeUI_DoubleInput_ValidAndInValidWrite() {
     HBox rangeUI = SceneUIWidgetFactory.createRangeUI(
         0,
         10,
@@ -164,7 +170,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void createRangeUI_StringInput() {
+  public void createRangeUI_StringInput_ValidAndInvalidWrite() {
     HBox rangeUI = SceneUIWidgetFactory.createRangeUI(
         "B3/34",
         DUMMY_LABEL,
@@ -188,7 +194,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void createColorSelectorUI_CreateBasicWidget() {
+  public void createColorSelectorUI_CreateBasicWidget_PickColorInPickerAndTextInput() {
     HBox colorSelectorUI = SceneUIWidgetFactory.createColorSelectorUI(
         "#AABBCC",
         DUMMY_LABEL,
@@ -215,7 +221,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void dragZoomViewUI_CreateBasicWidget() {
+  public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
     Pane dragZoomViewUI = SceneUIWidgetFactory.dragZoomViewUI(
         DUMMY_RECTANGLE,
         DUMMY_RECTANGLE_2
@@ -241,7 +247,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void createContainerUI_CreateBasicWidget() {
+  public void createContainerUI_CreateBasicWidget_ScrollVertically() {
     ScrollPane containerUI = SceneUIWidgetFactory.createContainerUI(
         DUMMY_RECTANGLE,
         DUMMY_TITLE
@@ -262,7 +268,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void createSectionUI_CreateBasicWidget() {
+  public void createSectionUI_CreateBasicWidget_InitializationTextCheck() {
     BorderPane sectionUI = SceneUIWidgetFactory.createSectionUI(
         DUMMY_TITLE,
         DUMMY_RECTANGLE,
@@ -281,7 +287,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void createButtonUI_CreateBasicWidget() {
+  public void createButtonUI_CreateBasicWidget_ButtonClickCallbackCheck() {
     AtomicBoolean buttonClicked = new AtomicBoolean(false);
 
     Button buttonUI = SceneUIWidgetFactory.createButtonUI(
@@ -301,7 +307,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void createDropDownUI_CreateBasicWidget() {
+  public void createDropDownUI_CreateBasicWidget_DropDownSelection() {
     HBox dropDownUI = SceneUIWidgetFactory.createDropDownUI(
         DUMMY_LABEL,
         DUMMY_STRING_COLLECTION_SUPPLIER,
@@ -326,7 +332,7 @@ public class SceneUIWidgetFactoryTest extends DukeApplicationTest {
   }
 
   @Test
-  public void setWidgetStyleSheet_SetSheet() {
+  public void setWidgetStyleSheet_SetSheet_WidgetSheetFieldCheck() {
     SceneUIWidgetFactory.setWidgetStyleSheet("test.css");
 
     // Assertions for setting the stylesheet

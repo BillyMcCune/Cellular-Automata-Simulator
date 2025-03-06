@@ -380,3 +380,104 @@ public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
   }
 ```
 ---
+## Slider UI
+```java
+  @Test
+  public void createRangeUI_DoubleInput_ValidAndInValidWrite() {
+    HBox rangeUI = SceneUIWidgetFactory.createRangeUI(
+        0,
+        10,
+        5,
+        DUMMY_LABEL,
+        DUMMY_TOOLTIP,
+        DUMMY_DOUBLE_CONSUMER
+    );
+    Button finishButton = createBasicSplashScreen(rangeUI, "Double Range UI");
+  
+    // Assertions for UI initialization
+    Slider slider = (Slider) rangeUI.lookup(".slider");
+    Node thumb = slider.lookup(".thumb");
+    TextField rangeTextField = (TextField) rangeUI.lookup(".range-text-field");
+    Assertions.assertEquals("5.0", rangeTextField.getText());
+    Assertions.assertEquals(5.0, slider.getValue());
+    Assertions.assertNotNull(thumb);
+  
+    // Action Test
+    drag(thumb).moveBy(50, 0);
+    drag(thumb).moveBy(-100, 0);
+    drag(thumb).drop();
+    writeInputTo(rangeTextField, "7.5"); // Valid input
+    press(KeyCode.ENTER);
+    writeInputTo(rangeTextField, "###"); // Invalid input
+    press(KeyCode.ENTER);
+  
+    // Close
+    clickOn(finishButton);
+  }
+```
+
+---
+
+## Color Selector UI
+```java
+  @Test
+  public void createColorSelectorUI_CreateBasicWidget_PickColorInPickerAndTextInput() {
+    HBox colorSelectorUI = SceneUIWidgetFactory.createColorSelectorUI(
+        "#AABBCC",
+        DUMMY_LABEL,
+        DUMMY_TOOLTIP,
+        DUMMY_STRING_CONSUMER
+    );
+    Button finishButton = createBasicSplashScreen(colorSelectorUI, "Color Selector UI");
+
+    // Assertions for UI initialization
+    TextField colorTextField = (TextField) colorSelectorUI.lookup(".color-text-field");
+    Assertions.assertEquals("#AABBCC", colorTextField.getText());
+    ColorPicker colorPicker = (ColorPicker) colorSelectorUI.lookup(".color-picker");
+    Assertions.assertEquals("0xaabbccff", colorPicker.getValue().toString());
+
+    // Action Test
+    clickOn(colorPicker).moveBy(0, 100).clickOn(MouseButton.PRIMARY);
+    writeInputTo(colorTextField, "#123456"); // Valid input
+    press(KeyCode.ENTER);
+    writeInputTo(colorTextField, "###"); // Invalid input
+    press(KeyCode.ENTER);
+
+    // Close
+    clickOn(finishButton);
+  }
+```
+
+---
+
+## Zoom-able Pane UI
+
+```java
+  @Test
+  public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
+    Pane dragZoomViewUI = SceneUIWidgetFactory.dragZoomViewUI(
+        DUMMY_RECTANGLE,
+        DUMMY_RECTANGLE_2
+    );
+    StackPane container = new StackPane(dragZoomViewUI);
+    container.setMaxHeight(300);
+    container.setMinHeight(300);
+    Button finishButton = createBasicSplashScreen(container, "Drag Zoom View UI");
+
+    // Assertions for UI initialization
+    Pane miniMapPane = (Pane) dragZoomViewUI.lookup(".mini-map-pane");
+    Assertions.assertNotNull(miniMapPane);
+
+    // Action Test
+    drag(dragZoomViewUI).moveBy(50, 50);
+    drag(dragZoomViewUI).moveBy(-100, -100);
+    drag(dragZoomViewUI).drop();
+    scroll(VerticalDirection.UP);
+    scroll(VerticalDirection.DOWN);
+
+    // Close
+    clickOn(finishButton);
+  }
+```
+
+---
