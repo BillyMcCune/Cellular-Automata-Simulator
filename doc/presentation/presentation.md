@@ -43,7 +43,7 @@ TEAM 1 - Jacob You, Billy McCune, Hsuan-Kai Liao
 
 ## Stylizing with CSS and properties
 
-![Screenshot of the Grid In Day and Dark Themes](/doc/presentation/images/theme.png)
+![w:800 h:480 Screenshot of the Grid In Day and Dark Themes](/doc/presentation/images/theme.png)
 
 ---
 
@@ -395,6 +395,9 @@ The following is a xml file for the SugarScape Simulation:
   <description>
     A tiny grid with one nest containing ants and one food cell.
   </description>
+```
+---
+```XML
   <parameters>
     <doubleParameter name="maxAnts">5</doubleParameter>
     <doubleParameter name="evaporationRate">10</doubleParameter>
@@ -404,29 +407,29 @@ The following is a xml file for the SugarScape Simulation:
     <doubleParameter name="pheromoneSensitivity">2</doubleParameter>
     <doubleParameter name="pheromoneDiffusionDecay">1</doubleParameter>
   </parameters>
+```
+---
+```XML
+  <initialCells>
+    <row>
+      <cell state="0"/> <cell state="0"/> <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/> <cell state="1" searchingEntities="5"/> <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/> <cell state="3"/> <cell state="0"/>
+    </row>
+  </initialCells>
+```
+---
+```XML
   <cellShapeType>Square</cellShapeType>
   <gridEdgeType>BASE</gridEdgeType>
   <neighborArrangementType>Moore</neighborArrangementType>
   <width>3</width>
   <height>3</height>
   <defaultSpeed>10</defaultSpeed>
-  <initialCells>
-    <row>
-      <cell state="0"/>
-      <cell state="0"/>
-      <cell state="0"/>
-    </row>
-    <row>
-      <cell state="0"/>
-      <cell state="1" searchingEntities="5"/>
-      <cell state="0"/>
-    </row>
-    <row>
-      <cell state="0"/>
-      <cell state="3"/>
-      <cell state="0"/>
-    </row>
-  </initialCells>
   <acceptedStates>
     0 1 3
   </acceptedStates>
@@ -496,42 +499,7 @@ The following is a xml file for the SugarScape Simulation:
 ## Config API
 
 ```java 
-package cellsociety.model.configAPI;
-
-import cellsociety.model.config.CellRecord;
-import cellsociety.model.config.ConfigInfo;
-import cellsociety.model.config.ConfigReader;
-import cellsociety.model.config.ConfigWriter;
-import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.modelAPI.ModelApi;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.xml.sax.SAXException;
-
-/**
- * The configAPI is responsible for managing the interactions between the configuration and the
- * Scene Controller. It deals with the functions of the ConfigReader and ConfigWriter.
- *
- * @author Billy McCune
- */
 public class configAPI {
-
-  private ConfigReader configReader;
-  private ConfigWriter configWriter;
-  private ConfigInfo configInfo;
-  private ParameterRecord parameterRecord;
-  private boolean isLoaded;
-  private ModelApi myModelApi;
-  private List<List<Integer>> myGridStates;
-  private List<List<Map<String, Double>>> myGridProperties;
-
-
   public configAPI() {}
   
   public List<String> getFileNames() {}
@@ -543,7 +511,9 @@ public class configAPI {
   
   public String saveSimulation(String FilePath)
       throws ParserConfigurationException, IOException, TransformerException {}
-  
+```
+---
+```java
   public Set<Integer> getAcceptedStates() {}
   
   public int getGridWidth() throws NullPointerException {}
@@ -556,9 +526,7 @@ public class configAPI {
       throws NullPointerException {}
   
   public double getConfigSpeed() throws NullPointerException {}
-
 }
-
 ```
 ---
 
@@ -606,53 +574,8 @@ Teammates can adjust parameters safely, without knowing the underlying implement
 
 ## Model API
 
-``` java
-package cellsociety.model.modelAPI;
-
-import cellsociety.model.config.CellRecord;
-import cellsociety.model.config.ConfigInfo;
-import cellsociety.model.config.ConfigInfo.SimulationType;
-import cellsociety.model.config.ParameterRecord;
-import cellsociety.model.data.Grid;
-import cellsociety.model.data.cells.Cell;
-import cellsociety.model.data.cells.CellFactory;
-import cellsociety.model.data.constants.EdgeType;
-import cellsociety.model.data.constants.GridShape;
-import cellsociety.model.data.constants.NeighborType;
-import cellsociety.model.data.neighbors.NeighborCalculator;
-import cellsociety.model.logic.Logic;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.function.Consumer;
-
-/**
- * The ModelApi is responsible for managing all interactions with the model and the SceneController.
- * It also manages the user style preferences.
- *
- * @author Billy McCune
- */
+```java
 public class ModelApi {
-
-  private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
-  private static final String STATE_PACKAGE = "cellsociety.model.data.states";
-  private ParameterRecord myParameterRecord;
-  private ConfigInfo configInfo;
-
-  ParameterManager myParameterManager;
-  CellColorManager myCellColorManager;
-  StyleManager myStyleManager;
-
-  // Model
-  private Grid<?> grid;
-  private CellFactory<?> cellFactory;
-  private Logic<?> gameLogic;
-  private NeighborCalculator<?> myNeighborCalculator;
-
-
   public ModelApi() {}
 
   public void setConfigInfo(ConfigInfo configInfo) {}
@@ -660,63 +583,13 @@ public class ModelApi {
   public void updateSimulation() {}
   
   public void resetGrid(boolean wantsDefaultStyles) throws ClassNotFoundException {}
-
-  public Map<String, Double> getDoubleParameters() {}
-
-  public Map<String, String> getStringParameters() {}
-
-  public String getCellColor(int row, int col, boolean wantDefaultColor)
-      throws NullPointerException {}
-
-  public void resetParameters()
-      throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {}
+  
+  public void resetParameters() {}
 
   public void resetModel() throws NoSuchMethodException {}
 
-  public List<List<Integer>> getCellStates() {}
-
-  public List<List<Map<String, Double>>> getCellProperties() {}
-
-  public Consumer<Double> getDoubleParameterConsumer(String paramName) {}
-
-  public Consumer<String> getStringParameterConsumer(String paramName) {}
-
-  public double[] getParameterBounds(String paramName){}
-
-  public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {}
-
-  public void setNewColorPreference(String stateName, String newColor) {}
-
-  public String getColorFromPreferences(String stateName) {}
-
-  public String getDefaultColorByState(String stateName) {}
-
-  public void setNeighborArrangement(String neighborArrangement) throws NullPointerException {}
-
-  public void setEdgePolicy(String edgePolicy) throws NullPointerException {}
-
-  public void setCellShape(String cellShape) throws NullPointerException {}
-
-  public void setGridOutlinePreference(boolean wantsGridOutline) {}
-
-  public boolean getGridOutlinePreference() {}
-
-  public List<String> getPossibleNeighborArrangements() {}
-
-  public List<String> getPossibleEdgePolicies() {}
-
-  public List<String> getPossibleCellShapes() {}
-
-  public String getDefaultNeighborArrangement() {}
-
-  public String getDefaultEdgePolicy() {}
-
-  public String getDefaultCellShape() {}
-
-
+  // Get/set cell states, colors, cell shape, edge policy, etc.
 }
-
-
 ```
 ---
 
@@ -997,26 +870,27 @@ public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
 ## Unstable Design: Neighbor Calculator
 
 * Grid used to have an if statement
-    * If type = WATOR, switch to TorusNeighbors
     * Breaks abstraction
 * Created a NeighborCalculator class, holding both methods
     * The Logic could call the corresponding calculator
-* Using abstraction, create LifeNeighborCalculator, PercolationNeighborCalculator
-    * Have the default calculator be set in constructor of the class
-    * SugarCalculator overrode the standard calculator to implement its special logic
 
 ---
 
 ## Unstable Design
 
+* Create an abstract NeighborCalculator class
+  * SugarCalculator overrode the standard calculator to implement its special logic
 * Hexagons and Triangles implemented for grid shape
     * Store neighbors in a property class, then implement logic to handle different shapes
+
+---
+
+## Unstable Design
+
 * Grid shape, neighborhood, and edge type became customizable
-    * Make setters/getters for each value, change superclasses to input these parameters instead
 * Added style parameters into XML files
-    * Superclasses became essentially obsolete, as the defaults were set in the XML
 * Darwin and Sugarscape have unique neighbor calculations in one direction
-    * Implement a Raycasting helper class, and add new methods to access raycasting neighbors
+  * Implement a Raycasting helper class, and add new methods to access raycasting neighbors
 
 ---
 
@@ -1032,7 +906,6 @@ public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
     * Bacteria and Darwin have a variable number of states
 * Enums CANNOT store extensive data
     * Shark energy, orientation of ant, etc.
-* Looked for workaround, like setting a map in the enum
 * Stored many properties in the Cell class instead
 
 ---
@@ -1081,5 +954,9 @@ of work the weekend before.
   abstractions, which helps us to better separate the view and the model.
 
 
-**3**
+**Billy McCune**
+
+* I enjoyed working with the team and more meetings would be appreciated but it worked out well. The conficts where much easier to fix as a team. 
+* In the future, I would like to spend more time coding with others and having regularly schedules 
+team meetings.
 ---
