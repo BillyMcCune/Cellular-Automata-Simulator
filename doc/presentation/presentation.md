@@ -754,14 +754,45 @@ public class ModelApi {
 
 ## Config/API Test 1
 
+````java
+@Test
+  public void resetGrid_NullConfigInfo_DoesNothing() throws ClassNotFoundException {
+    // Tested Method: resetGrid()
+    // State: configInfo is null.
+    // Expected Outcome: resetGrid() does nothing and grid remains null.
+    ModelApi api = new ModelApi();
+    api.resetGrid(true);
+    assertNull(getPrivateField(api, "grid"));
+  }
+````
 ---
 
 ## Config/API Test 2
+````java
+ @Test
+  void readConfig_EmptyRow_ThrowsParserConfigurationException() {
+    Exception e = assertThrows(ParserConfigurationException.class, () -> configReader.readConfig("ErrorEmptyRow.xml"));
+    System.out.println("[ErrorEmptyRow.xml] " + e.getMessage());
+  }
 
+````
 ---
 
 ## Config/API Test 3
 
+````java
+ @Test
+    public void loadSimulation_ValidFile_SetsModelApiConfigInfo() throws ParserConfigurationException, IOException, SAXException {
+      // Testing configAPI.loadSimulation() to ensure that DummyModelApi receives the dummy config.
+      configAPI api = new configAPI();
+      DummyModelApi dummyModel = new DummyModelApi();
+      api.setModelAPI(dummyModel); // Set the model API before loading
+      // Inject DummyConfigReader so that readConfig returns a dummy config instead of reading a file.
+      setPrivateField(api, "configReader", new DummyConfigReader());
+      api.loadSimulation("dummyFile.xml");
+      assertEquals(createStaticDummyConfigInfo(), dummyModel.configInfoDummy, "After loadSimulation(), model API should have the dummy config info set");
+    }
+````
 ---
 
 ## CellFactory
