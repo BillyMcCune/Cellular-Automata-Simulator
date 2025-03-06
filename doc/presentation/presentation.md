@@ -343,13 +343,17 @@ GO 1
 ---
 
 ## General Goals for the Config
- * Abstract away the file system from the model and view
- * Intuitive and readable configuration files with ability for variation 
-   * The files should also be flexible with implementation 
- * Provide correct data to the model and implement proper error checking
- * Create a relatively flexible way to save files
+
+* Abstract away the file system from the model and view
+* Intuitive and readable configuration files with ability for variation
+    * The files should also be flexible with implementation
+* Provide correct data to the model and implement proper error checking
+* Create a relatively flexible way to save files
+
 ---
-## The Necessities 
+
+## The Necessities
+
 * Use XML files for simulation data storage
 * A basic and flexible structure for the configuration files
 * An easy way to save files and manage data
@@ -379,8 +383,11 @@ public record ConfigInfo(
 ```
 
 ---
+
 ## Example Configuration File
-  The following is a xml file for the SugarScape Simulation:
+
+The following is a xml file for the SugarScape Simulation:
+
 ```XML
 <?xml version="1.0" ?>
 <simulation>
@@ -428,9 +435,11 @@ public record ConfigInfo(
   <neighborRadius>1</neighborRadius>
 </simulation>
 ```
+
 ---
 
 ## The Config Reader
+
 ```` java
  public ConfigInfo readConfig(String fileName)
       throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
@@ -447,6 +456,7 @@ public record ConfigInfo(
     }
   }
 ````
+
 ---
 
 ## The Config Writer
@@ -468,9 +478,6 @@ public record ConfigInfo(
   }
 ````
 
-
-
-
 # The APIs
 
 ![general model of the API](/doc/presentation/images/api.jpg)
@@ -478,15 +485,19 @@ public record ConfigInfo(
 ---
 
 ## General goal of the API's
+
 * To provide abstraction from the view.
 * For the config API, to manage the config data parsing, storage, and file system.
-  * This means abstracting away the different configuration classes and how the configuration file work. 
+    * This means abstracting away the different configuration classes and how the configuration file
+      work.
 * For the model (logic) API, to manage the model and simulation style properties.
----
 
 ---
 
-## Config API 
+---
+
+## Config API
+
 ```java 
 package cellsociety.model.configAPI;
 
@@ -524,34 +535,46 @@ public class configAPI {
   private List<List<Map<String, Double>>> myGridProperties;
 
 
-  public configAPI() {}
-  
-  public List<String> getFileNames() {}
-  
-  public void setModelAPI(ModelApi modelAPI) {}
-  
+  public configAPI() {
+  }
+
+  public List<String> getFileNames() {
+  }
+
+  public void setModelAPI(ModelApi modelAPI) {
+  }
+
   public void loadSimulation(String fileName)
-      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {}
-  
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
+  }
+
   public String saveSimulation(String FilePath)
-      throws ParserConfigurationException, IOException, TransformerException {}
-  
-  public Set<Integer> getAcceptedStates() {}
-  
-  public int getGridWidth() throws NullPointerException {}
-  
-  public int getGridHeight() throws NullPointerException {}
-  
-  public Map<String, String> getSimulationInformation() throws NullPointerException {}
-  
+      throws ParserConfigurationException, IOException, TransformerException {
+  }
+
+  public Set<Integer> getAcceptedStates() {
+  }
+
+  public int getGridWidth() throws NullPointerException {
+  }
+
+  public int getGridHeight() throws NullPointerException {
+  }
+
+  public Map<String, String> getSimulationInformation() throws NullPointerException {
+  }
+
   public void setSimulationInformation(Map<String, String> simulationDetails)
-      throws NullPointerException {}
-  
-  public double getConfigSpeed() throws NullPointerException {}
+      throws NullPointerException {
+  }
+
+  public double getConfigSpeed() throws NullPointerException {
+  }
 
 }
 
 ```
+
 ---
 
 ### Extension:
@@ -679,16 +702,15 @@ public class ModelApi {
 
 ````
 
-
 ---
 
-### Extension: 
+### Extension:
 
 ### Support:
 
 ### Key Hidden Implementation details:
 
-### Use Case: 
+### Use Case:
 
 --- 
 
@@ -947,9 +969,13 @@ public void dragZoomViewUI_CreateBasicWidget_ZoomAndDrag() {
 
 ## Significant Events
 
-**Positive**
+**Positive:** One of our meetings, we got together and drew out all of the connections between the
+model and view, and drafted out an API that could handle all communication. This helped tremendously
+with figuring out any potential overlap between the two sections.
 
-**Negative**
+**Negative:** Initially starting out, we weren't very familiar with git, and multiple times ended up
+overwriting some of each other's code and progress. This caused lots of confusion, before we met
+with our UTAs and ultimately learned a better workflow.
 
 ---
 
