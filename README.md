@@ -183,6 +183,8 @@ This project implements a cellular automata simulator.
   make an enum, property file, or some other universal or hard to change value in order to prevent
   errors from spelling mistakes. I implemented this long before I realized the issue from the
   failing the codebase tests, so this would be an implementation for the future.
+* Hexagon Grid MOORE neighbor assignment appears to be broken, at times not selecting the correct
+  neighbors. I discovered this late, so did not have time to troubleshoot or fix this.
 
 #### Configuration Bugs
 
