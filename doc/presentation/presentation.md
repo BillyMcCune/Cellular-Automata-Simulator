@@ -49,7 +49,7 @@ THIS IS HOW YOU TYPE IN CODE. PLEASE DO THIS WHEN NECESSARY.
 
 # The Model
 
-![Gosper glider gun](/doc/presentation/images/logic.png)
+![w:800 h:480 Gosper glider gun](/doc/presentation/images/logic.png)
 
 ---
 
@@ -172,7 +172,8 @@ protected void updateSingleCell(Cell<LifeState> cell) {
 SQUARE_MOORE=-1,-1; 1,0; 1,1; 0,1; -1,1; -1,0; -1,-1; -1,0
 SQUARE_NEUMANN=-1,0; 1,0; 0,1; 0,-1
 ```
-
+---
+## The NeighborCalculator
 * Grid calls the NeighborCalculator to assign each cell a neighbor
 
 ```java
@@ -254,7 +255,7 @@ GO 1
 
 # Testing
 
-![testing meme](/doc/presentation/images/testing.png)
+![w:400 h:800testing meme](/doc/presentation/images/testing.png)
 
 ---
 ## CellFactory
@@ -315,4 +316,60 @@ public void givenTriMoore6x6_whenSteps1_thenContainsExpectedDirections() {
         "Cell should rotate left to 90 degrees due to IFEMPTY.");
   }
 ```
+---
+# DESIGN
+---
+## Stable Design: Logic
+
+* Logic's only job is to update the state of the grid, cells, and parameters
+* Any necessary changes/additions usually happens in grid, cell, neighbor calculator, etc.
+  * Logic's design never substantially changes, it just uses the new design of its subcomponents
+* The only addition was the restricting of parameters loaded in from a property file
+
+---
+
+## Unstable Design: Neighbor Calculator
+
+* Grid used to have an if statement
+  * If type = WATOR, switch to TorusNeighbors
+  * Breaks abstraction
+* Created a NeighborCalculator class, holding both methods
+  * The Logic could call the corresponding calculator
+* Using abstraction, create LifeNeighborCalculator, PercolationNeighborCalculator
+  * Have the default calculator be set in constructor of the class
+  * SugarCalculator overrode the standard calculator to implement its special logic
+---
+## Unstable Design
+
+* Hexagons and Triangles implemented for grid shape
+  * Store neighbors in a property class, then implement logic to handle different shapes
+* Grid shape, neighborhood, and edge type became customizable
+  * Make setters/getters for each value, change superclasses to input these parameters instead
+* Added style parameters into XML files
+  * Superclasses became essentially obsolete, as the defaults were set in the XML
+* Darwin and Sugarscape have unique neighbor calculations in one direction
+  * Implement a Raycasting helper class, and add new methods to access raycasting neighbors
+
+---
+
+## Helped By Good Design
+
+---
+
+## Implementation Challenged by Hidden Assumptions: States
+
+* Initially, enums seemed perfect for states
+  * Unchanging, unalterable, clearly defined states that can have integer values
+* Enums CANNOT be dynamically set
+  * Bacteria and Darwin have a variable number of states
+* Enums CANNOT store extensive data
+  * Shark energy, orientation of ant, etc.
+* Looked for workaround, like setting a map in the enum
+* Stored many properties in the Cell class instead
+
+---
+
+# Teamwork
+(makes the Darwin work)
+
 ---
