@@ -306,15 +306,355 @@ GO 1
 
 ---
 
+## General Goals for the Config
+ * Abstract away the file system from the model and view
+ * Intuitive and readable configuration files with ability for variation 
+   * The files should also be flexible with implementation 
+ * Provide correct data to the model and implement proper error checking
+ * Create a relatively flexible way to save files
+---
+## The Necessities 
+* Use XML files for simulation data storage
+* A basic and flexible structure for the configuration files
+* An easy way to save files and manage data
+
+---
+
+## ConfigInfo
+
+``` java
+public record ConfigInfo(
+    SimulationType myType,
+    cellShapeType myCellShapeType,
+    gridEdgeType myGridEdgeType,
+    neighborArrangementType myneighborArrangementType,
+    Integer neighborRadius,
+    String myTitle,
+    String myAuthor,
+    String myDescription,
+    int myGridWidth,
+    int myGridHeight,
+    int myTickSpeed,
+    List<List<CellRecord>> myGrid,
+    ParameterRecord myParameters,
+    Set<Integer> acceptedStates,
+    String myFileName
+)
+```
+
+---
+## Example Configuration File
+  The following is a xml file for the SugarScape Simulation:
+```XML
+<?xml version="1.0" ?>
+<simulation>
+  <type>ANT</type>
+  <title>Tiny Foraging Ants Simulation</title>
+  <author>Jacob You</author>
+  <description>
+    A tiny grid with one nest containing ants and one food cell.
+  </description>
+  <parameters>
+    <doubleParameter name="maxAnts">5</doubleParameter>
+    <doubleParameter name="evaporationRate">10</doubleParameter>
+    <doubleParameter name="maxHomePheromone">100</doubleParameter>
+    <doubleParameter name="maxFoodPheromone">100</doubleParameter>
+    <doubleParameter name="basePheromoneWeight">1</doubleParameter>
+    <doubleParameter name="pheromoneSensitivity">2</doubleParameter>
+    <doubleParameter name="pheromoneDiffusionDecay">1</doubleParameter>
+  </parameters>
+  <cellShapeType>Square</cellShapeType>
+  <gridEdgeType>BASE</gridEdgeType>
+  <neighborArrangementType>Moore</neighborArrangementType>
+  <width>3</width>
+  <height>3</height>
+  <defaultSpeed>10</defaultSpeed>
+  <initialCells>
+    <row>
+      <cell state="0"/>
+      <cell state="0"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="1" searchingEntities="5"/>
+      <cell state="0"/>
+    </row>
+    <row>
+      <cell state="0"/>
+      <cell state="3"/>
+      <cell state="0"/>
+    </row>
+  </initialCells>
+  <acceptedStates>
+    0 1 3
+  </acceptedStates>
+  <neighborRadius>1</neighborRadius>
+</simulation>
+```
+---
+
+## The Config Reader
+```` java
+ public ConfigInfo readConfig(String fileName)
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {
+    if (!fileMap.containsKey(fileName)) {
+      createListOfConfigFiles();
+    }
+    try {
+      File dataFile = fileMap.get(fileName);
+      Log.trace("Looking for file at: " + System.getProperty("user.dir") + DATA_FILE_FOLDER);
+      return getConfigInformation(dataFile, fileName);
+    } catch (ParserConfigurationException | SAXException | IOException |
+             IllegalArgumentException e) {
+      throw new ParserConfigurationException(e.getMessage());
+    }
+  }
+````
+---
+
+## The Config Writer
+
+```` java
+ public void saveCurrentConfig(ConfigInfo myNewConfigInfo, String path)
+      throws NullPointerException, ParserConfigurationException, IOException, TransformerException {
+    if (myNewConfigInfo == null) {
+      throw new NullPointerException("error-nullConfigInfo");
+    }
+    if (path == null) {
+      throw new NullPointerException("error-nullPath");
+    }
+    myConfigInfo = myNewConfigInfo;
+    Document xmlDocument = createXMLDocument();
+    File outputFile = createOutputFile(path);
+    populateXMLDocument(xmlDocument);
+    writeXMLDocument(xmlDocument, outputFile);
+  }
+````
+
+
+
+
 # The APIs
 
 ![general model of the API](/doc/presentation/images/api.jpg)
 
 ---
 
-## General goal of the API
+## General goal of the API's
+* To provide abstraction from the view.
+* For the config API, to manage the config data parsing, storage, and file system.
+  * This means abstracting away the different configuration classes and how the configuration file work. 
+* For the model (logic) API, to manage the model and simulation style properties.
+---
 
 ---
+
+## Config API 
+```java 
+package cellsociety.model.configAPI;
+
+import cellsociety.model.config.CellRecord;
+import cellsociety.model.config.ConfigInfo;
+import cellsociety.model.config.ConfigReader;
+import cellsociety.model.config.ConfigWriter;
+import cellsociety.model.config.ParameterRecord;
+import cellsociety.model.modelAPI.ModelApi;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
+
+/**
+ * The configAPI is responsible for managing the interactions between the configuration and the
+ * Scene Controller. It deals with the functions of the ConfigReader and ConfigWriter.
+ *
+ * @author Billy McCune
+ */
+public class configAPI {
+
+  private ConfigReader configReader;
+  private ConfigWriter configWriter;
+  private ConfigInfo configInfo;
+  private ParameterRecord parameterRecord;
+  private boolean isLoaded;
+  private ModelApi myModelApi;
+  private List<List<Integer>> myGridStates;
+  private List<List<Map<String, Double>>> myGridProperties;
+
+
+  public configAPI() {}
+  
+  public List<String> getFileNames() {}
+  
+  public void setModelAPI(ModelApi modelAPI) {}
+  
+  public void loadSimulation(String fileName)
+      throws ParserConfigurationException, IOException, SAXException, IllegalArgumentException {}
+  
+  public String saveSimulation(String FilePath)
+      throws ParserConfigurationException, IOException, TransformerException {}
+  
+  public Set<Integer> getAcceptedStates() {}
+  
+  public int getGridWidth() throws NullPointerException {}
+  
+  public int getGridHeight() throws NullPointerException {}
+  
+  public Map<String, String> getSimulationInformation() throws NullPointerException {}
+  
+  public void setSimulationInformation(Map<String, String> simulationDetails)
+      throws NullPointerException {}
+  
+  public double getConfigSpeed() throws NullPointerException {}
+
+}
+
+```
+---
+
+### Extension:
+
+### Support:
+
+### Key Hidden Implementation details:
+
+### Use Case:
+
+---
+
+## Model API
+
+```` java
+package cellsociety.model.modelAPI;
+
+import cellsociety.model.config.CellRecord;
+import cellsociety.model.config.ConfigInfo;
+import cellsociety.model.config.ConfigInfo.SimulationType;
+import cellsociety.model.config.ParameterRecord;
+import cellsociety.model.data.Grid;
+import cellsociety.model.data.cells.Cell;
+import cellsociety.model.data.cells.CellFactory;
+import cellsociety.model.data.constants.EdgeType;
+import cellsociety.model.data.constants.GridShape;
+import cellsociety.model.data.constants.NeighborType;
+import cellsociety.model.data.neighbors.NeighborCalculator;
+import cellsociety.model.logic.Logic;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Consumer;
+
+/**
+ * The ModelApi is responsible for managing all interactions with the model and the SceneController.
+ * It also manages the user style preferences.
+ *
+ * @author Billy McCune
+ */
+public class ModelApi {
+
+  private static final String LOGIC_PACKAGE = "cellsociety.model.logic";
+  private static final String STATE_PACKAGE = "cellsociety.model.data.states";
+  private ParameterRecord myParameterRecord;
+  private ConfigInfo configInfo;
+
+  ParameterManager myParameterManager;
+  CellColorManager myCellColorManager;
+  StyleManager myStyleManager;
+
+  // Model
+  private Grid<?> grid;
+  private CellFactory<?> cellFactory;
+  private Logic<?> gameLogic;
+  private NeighborCalculator<?> myNeighborCalculator;
+
+
+  public ModelApi() {}
+
+  public void setConfigInfo(ConfigInfo configInfo) {}
+
+  public void updateSimulation() {}
+  
+  public void resetGrid(boolean wantsDefaultStyles) throws ClassNotFoundException {}
+
+  public Map<String, Double> getDoubleParameters() {}
+
+  public Map<String, String> getStringParameters() {}
+
+  public String getCellColor(int row, int col, boolean wantDefaultColor)
+      throws NullPointerException {}
+
+  public void resetParameters()
+      throws IllegalArgumentException, NullPointerException, IllegalStateException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {}
+
+  public void resetModel() throws NoSuchMethodException {}
+
+  public List<List<Integer>> getCellStates() {}
+
+  public List<List<Map<String, Double>>> getCellProperties() {}
+
+  public Consumer<Double> getDoubleParameterConsumer(String paramName) {}
+
+  public Consumer<String> getStringParameterConsumer(String paramName) {}
+
+  public double[] getParameterBounds(String paramName){}
+
+  public Map<String, String> getCellTypesAndDefaultColors(String SimulationType) {}
+
+  public void setNewColorPreference(String stateName, String newColor) {}
+
+  public String getColorFromPreferences(String stateName) {}
+
+  public String getDefaultColorByState(String stateName) {}
+
+  public void setNeighborArrangement(String neighborArrangement) throws NullPointerException {}
+
+  public void setEdgePolicy(String edgePolicy) throws NullPointerException {}
+
+  public void setCellShape(String cellShape) throws NullPointerException {}
+
+  public void setGridOutlinePreference(boolean wantsGridOutline) {}
+
+  public boolean getGridOutlinePreference() {}
+
+  public List<String> getPossibleNeighborArrangements() {}
+
+  public List<String> getPossibleEdgePolicies() {}
+
+  public List<String> getPossibleCellShapes() {}
+
+  public String getDefaultNeighborArrangement() {}
+
+  public String getDefaultEdgePolicy() {}
+
+  public String getDefaultCellShape() {}
+
+
+}
+
+
+````
+
+
+---
+
+### Extension: 
+
+### Support:
+
+### Key Hidden Implementation details:
+
+### Use Case: 
+
+--- 
 
 # Testing
 
