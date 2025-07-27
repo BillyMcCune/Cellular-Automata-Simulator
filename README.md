@@ -1,6 +1,6 @@
-# cell society
+# Cellular Automata Simulator
 
-Photos: 
+### Photos: 
 
 <img width="1296" height="761" alt="Screenshot 2025-07-27 at 12 35 34 PM" src="https://github.com/user-attachments/assets/1c4df93e-c7b8-475a-81be-3b79ca79c90c" />
 
