@@ -1,10 +1,16 @@
 # cell society
 
-## TEAM NUMBER 1
+Photos: 
 
-#### Billy McCune wrm29, Jacob You jay27, Hsuan-Kai Liao hl475
+<img width="1296" height="761" alt="Screenshot 2025-07-27 at 12 35 34 PM" src="https://github.com/user-attachments/assets/1c4df93e-c7b8-475a-81be-3b79ca79c90c" />
 
-This project implements a cellular automata simulator.
+<img width="1294" height="761" alt="Screenshot 2025-07-27 at 12 34 47 PM" src="https://github.com/user-attachments/assets/1578afdc-266c-46bd-bd75-a210f739368d" />
+
+
+
+#### Billy McCune, Jacob You, Hsuan-Kai Liao
+
+This repo implements a cellular automata simulator.
 
 ### Timeline
 
@@ -23,9 +29,6 @@ This project implements a cellular automata simulator.
     * XML Resources - https://en.wikipedia.org/wiki/XML_Resource
         - https://www.w3schools.com/xml/xml_whatis.asp
     * Enum properties and flexibility - ChatGPT 4o
-    * Course Lectures for 308
-
-* Resources used directly (including AI assistance)
 
 ### Running the Program
 
@@ -154,59 +157,6 @@ This project implements a cellular automata simulator.
 * Customized css files are used to define the style of the simulation. The css files are stored in
   resources/cellsociety/style/. The css files define the color and style of the simulation.
 
-#### Logic Bugs
-
-* FallingLogic looks for cells down left, down right, and down. With some implementations, shapes
-  like hexagon do not have down left or down right on hexagons on the higher part of the row.
-    * This means that cells can only go downward, despite there being a down left and down right,
-      which are
-      coded as Direction(0, -1) and Direction(0, 1) in neighbors instead. This is one of the
-      aforementioned discrepancies with the square grid.
-* When AntLogic looks for locations in the direction the ant is facing, it looks for all cells up,
-  down, left, and right of the cell currently being looked at. For hexagon and triangle
-  implementations, this might lead to unexpected possible directions.
-* If DarwinLogic has an infinite loop, such as (GO 2, GO 1), the species breaks, and the code
-  errors.
-    * The idea I had was to set a timer in Logic, but this would require a bit more time to figure
-      out.
-* LifeLogic can't take in values bigger than 9, which could pose a problem for neighborhoods with
-  more than 9 possible neighbors. Although it wouldn't error, it simply wouldn't take in the value.
-    * With time, I would probably choose to implement letter values, like A = 10, B = 11, etc. For
-      cells with very large neighborhoods greater than 36, I would most likely create a new way of
-      implementing rulestrings that would take in comma seperated numbers.
-* SugarScape can find the greatest value sugar pile in front of it, but due to changes made for
-  Darwin, the sugar agent now teleports straight to the grid with the most sugar in its raycast.
-    * The way that I would implement this would most likely be to raycast in all directions by using
-      the getAllRaycastDirections, then see which direction contains the best direction, and go in
-      that direction
-* A lot of my Logic classes use strings to set parameters. A better way to do this would probably to
-  make an enum, property file, or some other universal or hard to change value in order to prevent
-  errors from spelling mistakes. I implemented this long before I realized the issue from the
-  failing the codebase tests, so this would be an implementation for the future.
-* Hexagon Grid MOORE neighbor assignment appears to be broken, at times not selecting the correct
-  neighbors. I discovered this late, so did not have time to troubleshoot or fix this.
-
-#### Configuration Bugs
-
-* There are no-know bugs to the configuration writer.
-    * The code writes the XMl document and as such the XMl document produced should not create any
-      bugs.
-* The current code in the configuration reader throws all errors to the view and I believe that it
-  is "bug free" by my current software standards.
-  This of course will change as users push the configuration functionality to its limit and/or more
-  features are added.
-
-#### View Bugs
-
-* The color selector for the cell property will not affect the color of the cell until the user.
-* The zoom in and out of the grid is not center to the grid widget, its zooming center is always the
-  center of the grid, which is not correct.
-* The text field input is checking the validity of the input by trying and catching the exception
-  in the callback, which is unsafe.
-    * The text field input data is not updating the simulation after the simulation get reset.
-* The error dialog is keep popping up every frame when error occurs when user is running a
-  simulation.
-
 #### Logic Implemented Features
 
 * Simulations:
@@ -248,40 +198,6 @@ This project implements a cellular automata simulator.
         * Darwin Species Files
         * Simulation Styles
         * API's: configAPI and modelAPI
-
-#### Configuration Unimplemented Features
-
-* There is currently no implementation for the configAPI to set the ring (go to logic to understand
-  this) of the neighbors.
-    * While the ring parameter exists in the XMl is currently does nothing.
-* I also could've added a way to store a color that wanted to be random in the properties file
-    * This would've allowed users to choose random as a color preference, which could've led to some
-      interesting simulations
-    * We also discussed this as a way to color properties with no specific color assigned such as a
-      new undefined species in Darwin.
-
-#### Logic Unimplemented Features
-
-* The ring for cell neighborhoods has not been implemented in the API. It is implemented in the XML
-  and NeighborCalculator though. It would essentially get the ring of neighbors at radius x, and
-  nothing else. This would fall under custom neighborhoods (logic used in NeighborCalculatorTest).
-* Rulestrings greater than 9 for LifeLogic
-* Non-double property values for Cells.
-* SugarScape Spice simulation (Our choice for the 6th Generalize and Robust). It would theoretically
-  just require adding more instance variables, setters, and getters, and a few slight modifications
-  to Logic. We simply just did not have time.
-* Edge Case grid mirroring has not been implemented, but would simply be another check and simple
-  lines of logic in NeighborCalculator. The enums exist and would be handleable immediately upon
-  implementation.
-* Darwin instructions have not been translated to other languages. If they were, they would simply
-  all be assigned to the english mapping used in naming the methods, essentially the same way that
-  the shortened instruction names were translated to their longer names.
-
-#### View Unimplemented Features
-
-* The view does not have a way to change or interact with the cell in the simulation grid.
-* The minigrid in the view is not showing bounds as a light outline within this view so the user
-  knows what part of the simulation they are zoomed into.
 
 #### Logic Features:
 
@@ -337,45 +253,4 @@ This project implements a cellular automata simulator.
             * Meaning it handles: the grid, logic, cells, cell colors, and style preferences.
             * The API has helper classes which abstract out methods and increases the readability of
               the API.
-
-### Assignment Impressions
-
-Jacob: Overall, I think this assignment really improved my current knowledge of proper coding
-practices, and greatly enhanced how well designed I can make my code. Every update seemed to break
-my code, but every time it still seemed to be MOSTLY doable. It made it very obvious how important
-designing the project is, as simple misjudgements (using enums for states) can reverberate
-throughout the entire project. I do wish that we got slight nudges or hints towards the different
-ways that we would eventually have to implement our code (if we were asked stuff like what if the
-number of states changed?) or had some understanding that there would eventually be new features
-added on, but I also understand why this might not be the case. Overall, I think this was a great
-(but slightly brutal) way to introduce us to standard design principles and coding practices.
-
-Hsuan-Kai Liao: This assignment is a great opportunity for me to learn how to design a project with
-collaboration with teammates. I learned a lot about how to design a project with a clear structure
-and how to strongly follow the rules of Model View Separation. I also learned how to write a design
-document before the team actually code. At the beginning of the project, I was struggling with how
-to
-balance the time between the design document and the actual coding. I spent a lot of time on working
-on cool front end functionality like docking system and zooming in and out of the grid, but the more
-I communicate with my teammates, the more I realize that the design is more important for a large
-project to make sure that everyone is on the same page, and new feature can be easily added.
-Overall,
-I think this assignment allows me to understand deeper in both the design and the coding in a team.
-
-Billy: I enjoyed the assignment. I found that working on the backend was quite an enjoyable
-experience.
-I expanded my coding knowledge base and encountered new ideas and better ways to abstract my code. I
-also got so much better at figuring out how to separate different methods into different purposes.
-This
-helped me a lot when trying to figure out abstraction for the configReader class as well as the
-API's.
-I also became a lot better at refactoring. When making the API's I spent a lot of time refactoring
-code to make it
-more flexible. I also spent a lot of time working to reduce my method complexity. I feel more
-confident now
-with the code that I write and my own ability to improve the code that I and other people right. The
-assignment
-was also interesting as the group aspect made it much more fun and dynamic. In general, I would say
-this assignment
-strengthened my coding practices and increased my enjoyment of coding. 
 
